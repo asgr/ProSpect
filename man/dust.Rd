@@ -45,7 +45,7 @@ The pivot wavelength in Angstroms. Charlot and Fall suggested default.
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Aaron Robotham
 }
 \note{
 %%  ~~further notes~~
