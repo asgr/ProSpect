@@ -1,0 +1,11 @@
+Package: ProSpect
+Type: Package
+Title: Interface to BC03 and EMILES Libraries
+Version: 0.1.0
+Author: Aaron Robotham
+Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>
+Description: A basic interface to the BC03 (low and high resolution) and EMILES libraries
+License: GPL-3
+Depends: R (>= 2.13), celestial
+Encoding: UTF-8
+LazyData: true
