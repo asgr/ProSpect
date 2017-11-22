@@ -1,11 +1,13 @@
 \name{magABcalc}
 \alias{magABcalc}
+\alias{CGScalc}
+\alias{Janskycalc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Filter Flux and Magnitude
 }
 \description{
-Converts spectrum to measurement in filter (CGS or Jansky) or AB magnitude.
+Converts spectrum to a flux measurement in a filter (CGS or Jansky) or AB magnitude.
 }
 \usage{
 magABcalc(wave, flux, filter = "r_VST", wavefac = 1e-10)
@@ -41,7 +43,7 @@ Specified unit type converting 1m to chosen unit. Default of 1e-10 means Angstro
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Aaron Robotham
 }
 \note{
 %%  ~~further notes~~

@@ -70,7 +70,7 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - Omega
   return(cbind(wave, flux))
 }
 
-photomall=function(wave, lum, filters='all', z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
+photom=function(wave, lum, filters='all', z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       lum=wave[,2]

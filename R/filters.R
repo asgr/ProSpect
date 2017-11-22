@@ -22,11 +22,11 @@ getfilt=function(filter){
   if(filter=='W2'){data('filt_W2_WISE');out=filt_W2_WISE}
   if(filter=='W3'){data('filt_W3_WISE');out=filt_W3_WISE}
   if(filter=='W4'){data('filt_W4_WISE');out=filt_W4_WISE}
-  if(filter==100 | filter=='100'){data('filt_P100_Herschel');out=filt_P100_Herschel}
-  if(filter==160 | filter=='160'){data('filt_P160_Herschel');out=filt_P160_Herschel}
-  if(filter==250 | filter=='250'){data('filt_S250_Herschel');out=filt_S250_Herschel}
-  if(filter==350 | filter=='350'){data('filt_S350_Herschel');out=filt_S350_Herschel}
-  if(filter==450 | filter=='450' | filter==500 | filter=='500'){data('filt_S450_Herschel');out=filt_S450_Herschel}
+  if(filter==100 | filter=='P100'){data('filt_P100_Herschel');out=filt_P100_Herschel}
+  if(filter==160 | filter=='P160'){data('filt_P160_Herschel');out=filt_P160_Herschel}
+  if(filter==250 | filter=='S250'){data('filt_S250_Herschel');out=filt_S250_Herschel}
+  if(filter==350 | filter=='S350'){data('filt_S350_Herschel');out=filt_S350_Herschel}
+  if(filter==450 | filter=='S450' | filter==500 | filter=='S500'){data('filt_S450_Herschel');out=filt_S450_Herschel}
   return(out)
 }
 

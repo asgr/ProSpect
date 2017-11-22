@@ -14,6 +14,35 @@ getfilt(filter)
 \arguments{
   \item{filter}{
 %%     ~~Describe \code{filter} here~~
+\tabular{ll}{
+  Name    \tab  Filter reference \cr
+  FUV     \tab  GALEX FUV band \cr
+  NUV     \tab  GALEX NUV band \cr
+  u_SDSS  \tab  Sloan u band \cr
+  g_SDSS  \tab  Sloan g band \cr
+  r_SDSS  \tab  Sloan r band \cr
+  i_SDSS  \tab  Sloan i band \cr
+  z_SDSS  \tab  Sloan z band \cr
+  u_VST  \tab  VST u band \cr
+  g_VST  \tab  VST g band \cr
+  r_VST  \tab  VST r band \cr
+  i_VST  \tab  VST i band \cr
+  z_VST  \tab  VST z band \cr
+  Z_VISTA  \tab  VISTA Z band \cr
+  Y_VISTA  \tab  VISTA Y band \cr
+  J_VISTA  \tab  VISTA J band \cr
+  H_VISTA  \tab  VISTA H band \cr
+  K_VISTA or Ks_VISTA  \tab  VISTA Ks band \cr
+  W1      \tab  Wise W1 band  \cr
+  W2      \tab  Wise W2 band  \cr
+  W3      \tab  Wise W3 band  \cr
+  W4      \tab  Wise W4 band  \cr
+  P100 or 100   \tab  Herschel PACS 100 band  \cr
+  P160 or 160   \tab  Herschel PACS 160 band  \cr
+  S250 or 250   \tab  Herschel Spire 250 band  \cr
+  S350 or 350   \tab  Herschel Spire 350 band  \cr
+  S450 or 450 or S500 or 500  \tab  Herschel Spire 450 band  \cr
+}
 }
 }
 \details{
@@ -30,7 +59,7 @@ getfilt(filter)
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Aaron Robotham
 }
 \note{
 %%  ~~further notes~~
