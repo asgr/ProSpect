@@ -1,66 +1,59 @@
-SFHfunc=function(massfunc=function(age){1}, tau_birth=1.0, tau_screen=0.3, filters='all', Z=5, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
-  speclib=BC03lr$Zspec[[Z]]
-  if(tau_birth!=0){
-    speclib[1:70,]=t(t(speclib[1:70,])*CF_birth(BC03lr$Wave, tau=tau_birth))
+SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck', outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE){
+  if(stellpop=='BC03lr'){
+    BC03lr=NULL
+    data('BC03lr', envir = environment())
+    speclib=BC03lr
+    birthcloud=70
   }
-  if(tau_screen!=0){
-    speclib=t(t(speclib)*CF_screen(BC03lr$Wave, tau=tau_screen))
+  if(stellpop=='BC03hr'){
+    BC03hr=NULL
+    data('BC03hr', envir = environment())
+    speclib=BC03hr
+    birthcloud=70
   }
-  massvec=massfunc(BC03lr$Age)
-  lum=colSums(speclib*BC03lr$AgeWeights*massvec)
-  lumtot=sum(c(0,diff(BC03lr$Wave))*lum)
-  flux=Lum2Flux(wave = BC03lr$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
-
-  if(filters[1]=='all'){filters=cenwave$filter}
-
-  data('cenwave')
-  mag={}
-  for(i in filters){mag=c(mag, magABcalc(flux, filter=i))}
-  magout=cbind(cenwave[match(filters, cenwave$filter),], mag=mag)
-
-  masstot=sum(massvec*BC03lr$AgeWeights)
-
-  return=list(flux=flux, lum=lum, mag=magout, masstot=masstot, lumtot=lumtot, M2L=masstot/lumtot, call=match.call())
-}
-
-SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck', outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE){
+  if(stellpop=='EMILES'){
+    EMILES=NULL
+    data('EMILES', envir = environment())
+    speclib=EMILES
+    birthcloud=8
+  }
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, ref='planck')*1e9
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref=ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
     ancientage[1]=Tsplit
     ancientage[2]=Tstart
   }
-  speclib_burst=BC03lr$Zspec[[Z[1]]]
-  speclib_young=BC03lr$Zspec[[Z[2]]]
-  speclib_old=BC03lr$Zspec[[Z[3]]]
-  speclib_ancient=BC03lr$Zspec[[Z[4]]]
+  speclib_burst=speclib$Zspec[[Z[1]]]
+  speclib_young=speclib$Zspec[[Z[2]]]
+  speclib_old=speclib$Zspec[[Z[3]]]
+  speclib_ancient=speclib$Zspec[[Z[4]]]
   if(tau_birth!=0){
-    speclib_burst[1:70,]=t(t(speclib_burst[1:70,])*CF_birth(BC03lr$Wave, tau=tau_birth))
-    speclib_young[1:70,]=t(t(speclib_young[1:70,])*CF_birth(BC03lr$Wave, tau=tau_birth))
-    speclib_old[1:70,]=t(t(speclib_old[1:70,])*CF_birth(BC03lr$Wave, tau=tau_birth))
-    speclib_ancient[1:70,]=t(t(speclib_ancient[1:70,])*CF_birth(BC03lr$Wave, tau=tau_birth))
+    speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
+    speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
+    speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
+    speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
   }
   if(tau_screen!=0){
-    speclib_burst=t(t(speclib_burst)*CF_screen(BC03lr$Wave, tau=tau_screen))
-    speclib_young=t(t(speclib_young)*CF_screen(BC03lr$Wave, tau=tau_screen))
-    speclib_old=t(t(speclib_old)*CF_screen(BC03lr$Wave, tau=tau_screen))
-    speclib_ancient=t(t(speclib_ancient)*CF_screen(BC03lr$Wave, tau=tau_screen))
+    speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen))
+    speclib_young=t(t(speclib_young)*CF_screen(speclib$Wave, tau=tau_screen))
+    speclib_old=t(t(speclib_old)*CF_screen(speclib$Wave, tau=tau_screen))
+    speclib_ancient=t(t(speclib_ancient)*CF_screen(speclib$Wave, tau=tau_screen))
   }
-  burstageloc=c(which.min(abs(BC03lr$Age-burstage[1])),which.min(abs(BC03lr$Age-burstage[2])))
-  youngageloc=c(which.min(abs(BC03lr$Age-youngage[1])),which.min(abs(BC03lr$Age-youngage[2])))
-  oldageloc=c(which.min(abs(BC03lr$Age-oldage[1])),which.min(abs(BC03lr$Age-oldage[2])))
-  ancientageloc=c(which.min(abs(BC03lr$Age-ancientage[1])),which.min(abs(BC03lr$Age-ancientage[2])))
+  burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
+  youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
+  oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
+  ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
 
-  burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*BC03lr$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(BC03lr$AgeWeights[burstageloc[1]:burstageloc[2]])
-  younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*BC03lr$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(BC03lr$AgeWeights[youngageloc[1]:youngageloc[2]])
-  oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*BC03lr$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(BC03lr$AgeWeights[oldageloc[1]:oldageloc[2]])
-  ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*BC03lr$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(BC03lr$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+  burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+  younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+  oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+  ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
   lum=burstlum+younglum+oldlum+ancientlum
-  lumtot=sum(c(0,diff(BC03lr$Wave))*lum)
-  flux=Lum2Flux(wave = BC03lr$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
+  lumtot=sum(c(0,diff(speclib$Wave))*lum)
+  flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
 
   if(filters[1]=='all'){filters=cenwave$filter}
 
@@ -90,10 +83,10 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   return=list(flux=flux, lum=lum, out=out, masstot=masstot, lumtot=lumtot, M2L=masstot/lumtot, call=match.call(), ages=ages, masses=masses, SFR=SFR, sSFR=sSFR)
 }
 
-SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), Z=c(5,5,5,5), z=0, cossplit=c(9e9,1.3e10), dosplit=FALSE){
+SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), Z=c(5,5,5,5), z=0, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck', cossplit=c(9e9,1.3e10), dosplit=FALSE){
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, ref='planck')*1e9
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref=ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -101,18 +94,43 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
     ancientage[2]=Tstart
   }
 
-  burstageloc=c(which.min(abs(BC03lr$Age-burstage[1])),which.min(abs(BC03lr$Age-burstage[2])))
-  youngageloc=c(which.min(abs(BC03lr$Age-youngage[1])),which.min(abs(BC03lr$Age-youngage[2])))
-  oldageloc=c(which.min(abs(BC03lr$Age-oldage[1])),which.min(abs(BC03lr$Age-oldage[2])))
-  ancientageloc=c(which.min(abs(BC03lr$Age-ancientage[1])),which.min(abs(BC03lr$Age-ancientage[2])))
+  burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
+  youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
+  oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
+  ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
 
-  burststar=sum(BC03lr$Zevo[[Z[1]]][burstageloc[1]:burstageloc[2],'SMstar']*BC03lr$AgeWeights[burstageloc[1]:burstageloc[2]]*burstmass)/sum(BC03lr$AgeWeights[burstageloc[1]:burstageloc[2]])
-  youngstar=sum(BC03lr$Zevo[[Z[2]]][youngageloc[1]:youngageloc[2],'SMstar']*BC03lr$AgeWeights[youngageloc[1]:youngageloc[2]]*youngmass)/sum(BC03lr$AgeWeights[youngageloc[1]:youngageloc[2]])
-  oldstar=sum(BC03lr$Zevo[[Z[3]]][oldageloc[1]:oldageloc[2],'SMstar']*BC03lr$AgeWeights[oldageloc[1]:oldageloc[2]]*oldmass)/sum(BC03lr$AgeWeights[oldageloc[1]:oldageloc[2]])
-  ancientstar=sum(BC03lr$Zevo[[Z[4]]][ancientageloc[1]:ancientageloc[2],'SMstar']*BC03lr$AgeWeights[ancientageloc[1]:ancientageloc[2]]*ancientmass)/sum(BC03lr$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+  burststar=sum(speclib$Zevo[[Z[1]]][burstageloc[1]:burstageloc[2],'SMstar']*speclib$AgeWeights[burstageloc[1]:burstageloc[2]]*burstmass)/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+  youngstar=sum(speclib$Zevo[[Z[2]]][youngageloc[1]:youngageloc[2],'SMstar']*speclib$AgeWeights[youngageloc[1]:youngageloc[2]]*youngmass)/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+  oldstar=sum(speclib$Zevo[[Z[3]]][oldageloc[1]:oldageloc[2],'SMstar']*speclib$AgeWeights[oldageloc[1]:oldageloc[2]]*oldmass)/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+  ancientstar=sum(speclib$Zevo[[Z[4]]][ancientageloc[1]:ancientageloc[2],'SMstar']*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]]*ancientmass)/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
   totstar=burststar+youngstar+oldstar+ancientstar
   return(c(BurstSMstar=burststar,YoungSMstar=youngstar,OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
+
+# SFHfunc=function(massfunc=function(age){1}, tau_birth=1.0, tau_screen=0.3, filters='all', Z=5, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
+#   speclib=BC03lr$Zspec[[Z]]
+#   if(tau_birth!=0){
+#     speclib[1:70,]=t(t(speclib[1:70,])*CF_birth(BC03lr$Wave, tau=tau_birth))
+#   }
+#   if(tau_screen!=0){
+#     speclib=t(t(speclib)*CF_screen(BC03lr$Wave, tau=tau_screen))
+#   }
+#   massvec=massfunc(BC03lr$Age)
+#   lum=colSums(speclib*BC03lr$AgeWeights*massvec)
+#   lumtot=sum(c(0,diff(BC03lr$Wave))*lum)
+#   flux=Lum2Flux(wave = BC03lr$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
+# 
+#   if(filters[1]=='all'){filters=cenwave$filter}
+# 
+#   data('cenwave')
+#   mag={}
+#   for(i in filters){mag=c(mag, magABcalc(flux, filter=i))}
+#   magout=cbind(cenwave[match(filters, cenwave$filter),], mag=mag)
+# 
+#   masstot=sum(massvec*BC03lr$AgeWeights)
+# 
+#   return=list(flux=flux, lum=lum, mag=magout, masstot=masstot, lumtot=lumtot, M2L=masstot/lumtot, call=match.call())
+# }
 
 # SFH=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, burstage=1e8, youngage=1e9, oldage=1e10, tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5), z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck', outtype='mag'){
 #   if(length(Z)==1){Z=rep(Z,3)}

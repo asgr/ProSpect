@@ -78,7 +78,7 @@ photom=function(wave, lum, filters='all', z = 0.1, H0 = 100, OmegaM = 0.3, Omega
     }
   }
   observedspec=Lum2Flux(wave=wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
-
+  data('cenwave')
   if(filters[1]=='all'){filters=cenwave$filter}
 
   mag={}

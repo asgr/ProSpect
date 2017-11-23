@@ -1,1 +1,5 @@
 exportPattern("^[[:alpha:]]+")
+
+importFrom("stats", "approxfun")
+importFrom("utils", "data")
+importFrom("celestial", "cosdistTravelTime", "cosdistLumDist")
