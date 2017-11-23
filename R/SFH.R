@@ -55,6 +55,9 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
   flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
 
+  cenwave=NULL
+  data('cenwave')
+    
   if(filters[1]=='all'){filters=cenwave$filter}
 
   out={}
