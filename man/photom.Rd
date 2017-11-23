@@ -1,5 +1,7 @@
 \name{photom}
 \alias{photom}
+\alias{Lum2Flux}
+\alias{Lum2FluxFactor}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Spectral Processing for Photometry
