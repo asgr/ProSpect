@@ -6,7 +6,7 @@
 Four Phase Star Formation History
 }
 \description{
-Computes output galaxy spectra using four distinct phases of constant star formation: recent burst, young, old and ancient. Each can have a different metallicity associated with it (default solar).
+Computes output galaxy spectra using four distinct phases of constant star formation: recent burst, young, old and ancient. Uses either BC03 or EMILES libraries. Each star formation phase can have a different metallicity associated with it (default solar).
 }
 \usage{
 SFHp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
@@ -18,9 +18,9 @@ outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
 
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
-ancientage = c(9e+09, 1.3e+10), Z = c(5, 5, 5, 5), z = 0, H0 = 100, OmegaM = 0.3,
-OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref = 'planck',
-cossplit = c(9e9, 1.3e10), dosplit = FALSE)
+ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', Z = c(5, 5, 5, 5), z = 0, H0 = 100,
+OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0,
+ref = 'planck', cossplit = c(9e9, 1.3e10), dosplit = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -47,6 +47,9 @@ Numeric vector; the age limits in years for the old phase.
 }
   \item{ancientage}{
 Numeric vector; the age limits in years for the ancient phase.
+}
+  \item{stellpop}{
+Character scalar; which stellar population library to use, one of BC03lr (default) BC03hr or EMILES.
 }
   \item{tau_birth}{
 Numeric scalar; dust tau for birth clouds. Associated with sub 100 Myr star formation.
