@@ -20,7 +20,7 @@ SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', Z = c(5, 5, 5, 5), z = 0, H0 = 100,
 OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0,
-ref = 'planck', cossplit = c(9e9, 1.3e10), dosplit = FALSE)
+ref = 'planck', cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -49,7 +49,7 @@ Numeric vector; the age limits in years for the old phase.
 Numeric vector; the age limits in years for the ancient phase.
 }
   \item{stellpop}{
-Character scalar; which stellar population library to use, one of BC03lr (default) BC03hr or EMILES.
+Character scalar; which stellar population library to use, one of \code{\link{BC03lr}} (default), \code{\link{BC03hr}}, \code{\link{EMILES}}.
 }
   \item{tau_birth}{
 Numeric scalar; dust tau for birth clouds. Associated with sub 100 Myr star formation.
@@ -99,143 +99,61 @@ Boolean scalar; should the \option{cossplit} ancient star formation limits be us
 }
 \details{
 Optionally the definition of old and ancient can be associated with a fixed time the history of the Universe (e.g. the peak of starformation). This means the exact lookback period adapts as a function of the redshift provided. This often makes more sense then simply fixing the age of the ancient population since it precents the stellar populations becoming older than the Universe.
+
+We use the simple dust models for birth clouds and dust screens as given by Charlot and Fall (2000):
+
+\deqn{A=\exp(-\tau*(\lambda/\lambda_{piv})^n)}{A=exp(-tau*(wave/pivot)^pow)}
+
+The defaults should be reasonable in the regime they are used over, where birth cloud dust should only be applied to stellar populations younger than 10 Myrs. Note that BC03 has 70 stellar population spectra which are younger than this, whilst EMILES has none. This means that EMILES cannot realistically capture the birth dust attenuation phase, so for highly star bursting populations BC03 should probably be preferred.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
+SFHp4 returns a list containing:
+
+\item{flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
+\item{lum}{Numeric vector; intrinsic luminosity in the standard BC03 units of Lsun/Angstrom.}
+\item{out}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the requested output (e.g. AB mag).}
+\item{masstot}{Numeric scalar; total mass formed in solar masses.}
+\item{lumtot}{Numeric scalar; total luminosity in solar luminosities.}
+\item{M2L}{Numeric scalar; total mass to light ratio.}
+\item{call}{The original function call made.}
+\item{ages}{Numeric Matrix; age info where rows are the four phases of star formation, columns are the start [1], end [2], duration [3] and mean time [4] of the phases in years.}
+\item{masses}{Numeric Matrix; mass info where rows are the four phases of star formation, columns are the total formed in that phase [1] and the total formed over all time [2].}
+\item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase.}
+\item{sSFR}{Numeric vector; the speicifc star formation rate averaged out over each star formation phase.}
+
+SMstarp4 is a 5 element vector containing the stellar mass observed as produced by each phase of star formation, and thte total stellar mass formed.
 }
 \author{
 Aaron Robotham
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+SFHdemo_dust=SFHp4()
+plot(SFHdemo_dust$out[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
+ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
 
-## The function is currently defined as
-function (burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, 
-    ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 
-        1e+09), oldage = c(1e+09, 9e+09), ancientage = c(9e+09, 
-        1.3e+10), tau_birth = 1, tau_screen = 0.3, filters = "all", 
-    Z = c(5, 5, 5, 5), z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - 
-        OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref = "planck", 
-    outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE) 
-{
-    if (length(Z) == 1) {
-        Z = rep(Z, 4)
-    }
-    if (dosplit) {
-        TravelTime = cosdistTravelTime(z = z, ref = "planck") * 
-            1e+09
-        Tsplit = cossplit[1] - TravelTime
-        Tstart = cossplit[2] - TravelTime
-        oldage[2] = Tsplit
-        ancientage[1] = Tsplit
-        ancientage[2] = Tstart
-    }
-    speclib_burst = BC03lr$Zspec[[Z[1]]]
-    speclib_young = BC03lr$Zspec[[Z[2]]]
-    speclib_old = BC03lr$Zspec[[Z[3]]]
-    speclib_ancient = BC03lr$Zspec[[Z[4]]]
-    if (tau_birth != 0) {
-        speclib_burst[1:70, ] = t(t(speclib_burst[1:70, ]) * 
-            CF_birth(BC03lr$Wave, tau = tau_birth))
-        speclib_young[1:70, ] = t(t(speclib_young[1:70, ]) * 
-            CF_birth(BC03lr$Wave, tau = tau_birth))
-        speclib_old[1:70, ] = t(t(speclib_old[1:70, ]) * CF_birth(BC03lr$Wave, 
-            tau = tau_birth))
-        speclib_ancient[1:70, ] = t(t(speclib_ancient[1:70, ]) * 
-            CF_birth(BC03lr$Wave, tau = tau_birth))
-    }
-    if (tau_screen != 0) {
-        speclib_burst = t(t(speclib_burst) * CF_screen(BC03lr$Wave, 
-            tau = tau_screen))
-        speclib_young = t(t(speclib_young) * CF_screen(BC03lr$Wave, 
-            tau = tau_screen))
-        speclib_old = t(t(speclib_old) * CF_screen(BC03lr$Wave, 
-            tau = tau_screen))
-        speclib_ancient = t(t(speclib_ancient) * CF_screen(BC03lr$Wave, 
-            tau = tau_screen))
-    }
-    burstageloc = c(which.min(abs(BC03lr$Age - burstage[1])), 
-        which.min(abs(BC03lr$Age - burstage[2])))
-    youngageloc = c(which.min(abs(BC03lr$Age - youngage[1])), 
-        which.min(abs(BC03lr$Age - youngage[2])))
-    oldageloc = c(which.min(abs(BC03lr$Age - oldage[1])), which.min(abs(BC03lr$Age - 
-        oldage[2])))
-    ancientageloc = c(which.min(abs(BC03lr$Age - ancientage[1])), 
-        which.min(abs(BC03lr$Age - ancientage[2])))
-    burstlum = colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2], 
-        ]) * BC03lr$AgeWeights[burstageloc[1]:burstageloc[2]]) * 
-        burstmass/sum(BC03lr$AgeWeights[burstageloc[1]:burstageloc[2]])
-    younglum = colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2], 
-        ]) * BC03lr$AgeWeights[youngageloc[1]:youngageloc[2]]) * 
-        youngmass/sum(BC03lr$AgeWeights[youngageloc[1]:youngageloc[2]])
-    oldlum = colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2], 
-        ]) * BC03lr$AgeWeights[oldageloc[1]:oldageloc[2]]) * 
-        oldmass/sum(BC03lr$AgeWeights[oldageloc[1]:oldageloc[2]])
-    ancientlum = colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2], 
-        ]) * BC03lr$AgeWeights[ancientageloc[1]:ancientageloc[2]]) * 
-        ancientmass/sum(BC03lr$AgeWeights[ancientageloc[1]:ancientageloc[2]])
-    lum = burstlum + younglum + oldlum + ancientlum
-    lumtot = sum(c(0, diff(BC03lr$Wave)) * lum)
-    flux = Lum2Flux(wave = BC03lr$Wave, lum = lum, z = z, H0 = H0, 
-        OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, 
-        wprime = wprime, ref = ref)
-    if (filters[1] == "all") {
-        filters = cenwave$filter
-    }
-    out = {
-    }
-    if (outtype == "mag") {
-        for (i in filters) {
-            out = c(out, magABcalc(flux, filter = i))
-        }
-    }
-    if (outtype == "cgs" | outtype == "CGS") {
-        for (i in filters) {
-            out = c(out, CGScalc(flux, filter = i))
-        }
-    }
-    if (outtype == "jansky" | outtype == "Jansky") {
-        for (i in filters) {
-            out = c(out, Janskycalc(flux, filter = i))
-        }
-    }
-    out = cbind(cenwave[match(filters, cenwave$filter), ], out = out)
-    masstot = burstmass + youngmass + oldmass + ancientmass
-    ages = rbind(c(burstage, diff(burstage), mean(burstage)), 
-        c(youngage, diff(youngage), mean(youngage)), c(oldage, 
-            diff(oldage), mean(oldage)), c(ancientage, diff(ancientage), 
-            mean(ancientage)))
-    colnames(ages) = c("lo", "hi", "duration", "mean")
-    masses = cbind(c(burstmass, youngmass, oldmass, ancientmass), 
-        c(burstmass + youngmass + oldmass + ancientmass, youngmass + 
-            oldmass + ancientmass, oldmass + ancientmass, ancientmass))
-    colnames(masses) = c("Forming", "Formed")
-    SFR = masses[, "Forming"]/ages[, "duration"]
-    sSFR = SFR/masses[, "Formed"]
-    return = list(flux = flux, lum = lum, out = out, masstot = masstot, 
-        lumtot = lumtot, M2L = masstot/lumtot, call = match.call(), 
-        ages = ages, masses = masses, SFR = SFR, sSFR = sSFR)
-  }
+SMdemo=SMstarp4()
+SMdemo
+
+SFHdemo_nodust=SFHp4(tau_birth=0, tau_screen=0)
+total_atten=sum(c(0,diff(BC03lr$Wave))*(SFHdemo_nodust$flux-SFHdemo_dust$flux))
+
+plot(SFHdemo_nodust$flux, log='xy', ylim=c(1e-20,1e-15), type='l',
+xlab=BC03lr$Labels$Wavelab, ylab='Flux (erg/s/cm^2/Ang)')
+lines(SFHdemo_dust$flux, col='grey')
+lines(10^seq(5,7,by=0.01), greybody_norm(10^seq(5,7,by=0.01), z=0.1, norm=total_atten),
+col='brown')
+Dale_temp=Dale_interp(type='NormSFR')*total_atten
+lines(Dale_Msol$Wave, Dale_temp*total_atten, col='red')
+
+wave=sort(c(SFHdemo_dust$flux[,'wave'], Dale_Msol$Wave))
+SpecAtten=approxfun(SFHdemo_dust$flux, rule=2)(wave)+
+          approxfun(Dale_Msol$Wave,Dale_temp, rule=2)(wave)
+lines(wave, SpecAtten, col='darkgreen')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

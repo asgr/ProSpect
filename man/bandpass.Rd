@@ -8,15 +8,15 @@ Filter Band Pass
 Put a spectrum through a filter response, returning either the modified spectrum or the integrated flux.
 }
 \usage{
-bandpass(wave, flux, filter, lum = T)
+bandpass(wave, flux, filter, lum = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{wave}{
-Observed wavelength in Angstroms by default (see \option{wavefac}).
+Observed wavelength in Angstroms by default (see \option{wavefac}). For convenience, if a two column matrix or data frame is supplied then the first column is taken to be \option{wave} and the second is taken to be \option{flux}.
 }
   \item{flux}{
-Flux in usual erg/s / cm^2 / Angstrom specral units.
+Flux in erg/s / cm^2 / Hz specral units (see conversion in the Example).
 }
   \item{filter}{
 Two column matrix; column one must be flux in Angstroms, column two must be a filter response. These are the type returned by 
@@ -27,46 +27,27 @@ Boolean scalar; should the integrated flux be returned (TRUE) or the spectral fl
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+This is a lower level function that might be useful to use directly. For most use cases a direct conversion using e.g. \code{\link{magABcalc}} is probably more useful.
 }
 \value{
 Either returns the filtered spectrum (\option{lum}=FALSE) or the integrated flux (\option{lum}=TRUE).
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
 Aaron Robotham
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{photom}}, \code{\link{magABcalc}}, \code{\link{getfilt}}, \code{\link{SFHp4}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+fluxBC03=Lum2Flux(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
 
-## The function is currently defined as
-function (wave, flux, filter, lum = T) 
-{
-    tempfunc = approxfun(x = filter[, 1], y = abs(filter[, 2]))
-    tempremap = tempfunc(wave)
-    tempremap[is.na(tempremap)] = 0
-    if (lum) {
-        return(sum(tempremap * wave * flux, na.rm = TRUE)/sum(tempremap * 
-            wave, na.rm = TRUE))
-    }
-    else {
-        return(tempremap * wave * flux/sum(tempremap * wave, 
-            na.rm = TRUE))
-    }
-  }
+#The below should give the same answers:
+
+CGScalc(fluxBC03)
+bandpass(fluxBC03[,1], (1e-10*fluxBC03[,2]*fluxBC03[,1]^2)/299792458,
+filter=getfilt('r_VST'))
+bandpass(fluxBC03[,1], convert_wave2freq(fluxBC03[,2], fluxBC03[,1]),
+filter=getfilt('r_VST'))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

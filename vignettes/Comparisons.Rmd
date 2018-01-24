@@ -1,0 +1,77 @@
+---
+title: "ProSpect: BC03 versus EMILES"
+author: "Aaron Robotham"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ProSpect: BC03 versus EMILES}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Load our usual libraries.
+
+```{r}
+library(ProSpect)
+library(magicaxis)
+```
+
+Comparison of spectral libraries:
+
+```{r, fig.width=8, fig.height=6}
+magplot(EMILES$Wave,EMILES$Zspec[[9]][8,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[5]][116,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.02 (~Sun)'))
+legend('bottomright', legend='0.1 Gyrs')
+
+
+magplot(EMILES$Wave,EMILES$Zspec[[9]][21,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[5]][136,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.02 (~Sun)'))
+legend('bottomright', legend='1 Gyrs')
+
+
+magplot(EMILES$Wave,EMILES$Zspec[[9]][35,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[5]][161,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.02 (~Sun)'))
+legend('bottomright', legend='5 Gyrs')
+
+
+magplot(EMILES$Wave,EMILES$Zspec[[9]][45,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[5]][181,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.02 (~Sun)'))
+legend('bottomright', legend='10 Gyrs')
+```
+
+```{r, fig.width=8, fig.height=6}
+magplot(EMILES$Wave,EMILES$Zspec[[1]][8,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[1]][116,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.0001'))
+legend('bottomright', legend='0.1 Gyrs')
+
+
+magplot(EMILES$Wave,EMILES$Zspec[[1]][21,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[1]][136,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.0001'))
+legend('bottomright', legend='1 Gyrs')
+
+
+magplot(EMILES$Wave,EMILES$Zspec[[1]][35,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[1]][161,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.0001'))
+legend('bottomright', legend='5 Gyrs')
+
+
+magplot(EMILES$Wave,EMILES$Zspec[[1]][45,],type='l',log='xy',xlim=c(1e3,5e4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab, ylim=c(1e-8,1e-2), grid=T)
+lines(BC03hr$Wave, BC03hr$Zspec[[1]][181,], col='red')
+legend('top', legend=c('EMILES', 'BC03-HR'), lty=1, col=c('black', 'red'))
+legend('topright', legend=c('Z=0.0001'))
+legend('bottomright', legend='10 Gyrs')
+```

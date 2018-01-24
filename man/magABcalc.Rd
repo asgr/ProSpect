@@ -10,71 +10,40 @@ Filter Flux and Magnitude
 Converts spectrum to a flux measurement in a filter (CGS or Jansky) or AB magnitude.
 }
 \usage{
-magABcalc(wave, flux, filter = "r_VST", wavefac = 1e-10)
-CGScalc(wave, flux, filter='r_VST', wavefac=1e-10)
-Janskycalc(wave, flux, filter='r_VST', wavefac=1e-10)
+magABcalc(wave, flux, filter = "r_VST")
+CGScalc(wave, flux, filter='r_VST')
+Janskycalc(wave, flux, filter='r_VST')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{wave}{
-Observed wavelength in Angstroms by default (see \option{wavefac}).
+Numeric vector; observed wavelength in Angstroms. For convenience, if a two column matrix or data frame is supplied then the first column is taken to be \option{wave} and the second is taken to be \option{flux}.
 }
   \item{flux}{
-Flux in usual erg/s / cm^2 / Angstrom specral units.
+Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
 }
   \item{filter}{
 Name of filter to use.
 }
-  \item{wavefac}{
-Specified unit type converting 1m to chosen unit. Default of 1e-10 means Angstrom, whilst 1e-9 would be nm etc.
-}
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Depending on the format of the target photometry it may be more appropriate to work in AB mag, CGS or Jansky. As a reminder, Jansky is simply CGS*1e23, which scales things to nearer unity for typical astrophysical sources.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
+Numeric scalar; flux in target units (i.e. AB mag, CGS or Jansky).
 }
 \author{
 Aaron Robotham
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{photom}}, \code{\link{bandpass}}, \code{\link{getfilt}}, \code{\link{SFHp4}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+fluxBC03=Lum2Flux(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
 
-## The function is currently defined as
-function (wave, flux, filter = "r_VST", wavefac = 1e-10)
-{
-    c = 299792458
-    if (!is.vector(wave)) {
-        if (dim(wave)[2] == 2) {
-            flux = wave[, 2]
-            wave = wave[, 1]
-        }
-    }
-    filter = getfilt(filter)
-    fluxnu = (wavefac * flux * wave^2)/c
-    totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter,
-        lum = T)
-    return(-2.5 * log10(totlumnu) - 48.6)
-  }
+magABcalc(fluxBC03)
+CGScalc(fluxBC03)
+Janskycalc(fluxBC03)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
