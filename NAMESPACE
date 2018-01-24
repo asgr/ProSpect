@@ -2,4 +2,6 @@ exportPattern("^[[:alpha:]]+")
 
 importFrom("stats", "approxfun")
 importFrom("utils", "data")
-importFrom("celestial", "cosdistTravelTime", "cosdistLumDist")
+importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWave", "cosplanckLawRadWave")
+importFrom("stats", "integrate")
+importFrom("NISTunits", "kNIST2010PlanckConstant", "kNIST2010speedOfLightInVacuum", "kNIST2010BoltzmannConstant")

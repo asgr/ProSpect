@@ -20,7 +20,7 @@ OmegaR = 0, w0 = -1, wprime = 0, ref='planck')
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{wave}{
-Numeric vector; the spectral wavelength in Angstroms.
+Numeric vector; the spectral wavelength in Angstroms. For convenience, if a two column matrix or data frame is supplied then the first column is taken to be \option{wave} and the second is taken to be \option{lum}.
 }
   \item{lum}{
 Numeric vector; the spectral luminosity in Lsun / Angstrom (BC03lr / BC03hr and EMILES format).
@@ -54,61 +54,46 @@ The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 /
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+\code{photom} is a useful utility function since it fully converts between an intrinsic spectrum (e.g. of the type created when integrating a star formation history over differ stellar population models) all the way to a band-pass magnitude in AB mags. The latter is how many surveys represent their photometry, so this is usually a sensible unit space to use for feature fitting etc. In some circumstances fluxes (CGS or Jansky type) might be more appropriate, espeically when signal to noise is low a meaurements might be negative.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+\item{photom}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the AB mag.}
+\item{Lum2Flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
+\item{Lum2FluxFactor}{Numeric scalar; the scaling factor to convert between intrinsic Lsun/Angstrom and erg/s/cm^2/Angstrom.}
 }
 \references{
-%% ~put references to the literature/web site here ~
+Bruzual and Charlot, 2003, MNRAS, 344, 1000
 }
 \author{
 Aaron Robotham
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{SFHp4}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+#Make a 10^10 solar mass SSP that is 5 Grys old and solar metallicity:
 
-## The function is currently defined as
-function (wave, lum, filters = "all", z = 0.1, H0 = 100, OmegaM = 0.3, 
-    OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, 
-    ref = "planck") 
-{
-    if (!is.vector(wave)) {
-        if (dim(wave)[2] == 2) {
-            lum = wave[, 2]
-            wave = wave[, 1]
-        }
-    }
-    observedspec = Lum2Flux(wave = wave, lum = lum, z = z, H0 = H0, 
-        OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, 
-        wprime = wprime, ref = ref)
-    if (filters[1] == "all") {
-        filters = cenwave$filter
-    }
-    mag = {
-    }
-    for (i in filters) {
-        mag = c(mag, magABcalc(observedspec, filter = i))
-    }
-    return(cbind(cenwave[match(filters, cenwave$filter), ], mag = mag))
-  }
+#First with BC03lr:
+BC03lr$Age[161]
+
+photoBC03=photom(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
+plot(photoBC03[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
+ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
+
+#Next with EMILES
+EMILES$Age[35]
+
+photoEMILES=photom(EMILES$Wave, EMILES$Zspec[[9]][35,]*1e10)
+plot(photoEMILES[,2:3], log='x', ylim=c(26,17), xlab=EMILES$Labels$Wavelab,
+ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
+
+#We can show the flux directly too:
+
+fluxBC03=Lum2Flux(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
+plot(fluxBC03, log='xy', xlab=BC03lr$Labels$Wavelab, ylab='Flux / erg/s/cm^2/Angstrom',
+type='l')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ magnitude }% use one of  RShowDoc("KEYWORDS")
+\keyword{ photometry }% __ONLY ONE__ keyword per line

@@ -30,7 +30,13 @@ getfilt=function(filter){
   return(out)
 }
 
-bandpass=function(wave, flux, filter, lum = T){
+bandpass=function(wave, flux, filter, lum = TRUE){
+  if(!is.vector(wave)){
+    if(dim(wave)[2]==2){
+      flux=wave[,2]
+      wave=wave[,1]
+    }
+  }
   tempfunc = approxfun(x = filter[, 1], y = abs(filter[, 2]))
   tempremap = tempfunc(wave)
   tempremap[is.na(tempremap)] = 0
@@ -44,7 +50,17 @@ bandpass=function(wave, flux, filter, lum = T){
 
 cenwavefunc=function(filter){
   wave=filter[,1]
-  flux=filter[,2]
-  Ptot=sum(flux)
-  return((1/Ptot)*sum(flux*wave))
+  response=filter[,2]
+  Ptot=sum(response)
+  return((1/Ptot)*sum(response*wave))
+}
+
+convert_wave2freq=function(flux_wave, wave, wavefac=1e-10, freqfac=1){
+  c=299792458
+  return=(wavefac*flux_wave*wave^2)/c
+}
+
+convert_freq2wave=function(flux_freq, wave, wavefac=1e-10, freqfac=1){
+  c=299792458
+  return=flux_freq*c/(wavefac*wave^2)
 }

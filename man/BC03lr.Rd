@@ -34,8 +34,8 @@ List of 8\cr
   ..$ Zlab      : chr "Metallicity"\cr
   ..$ Agelab    : chr "Time since ZAM / Yrs"\cr
   ..$ Wavelab   : chr "Wavelength / Ang"\cr
-  ..$ Fluxlab   : chr "Lsun / Ang (for 1 Msun SF)"\cr
-  ..$ FluxAgelab: chr "Lsun / Ang (for 1 Msun/Yr SFR)"\cr
+  ..$ Fluxlab   : chr "Lsol / Ang (for 1 Msol SF)"\cr
+  ..$ FluxAgelab: chr "Lsol / Ang (for 1 Msol/Yr SFR)"\cr
  $ Zspec     :List of 6\cr
   ..$ : num [1:221, 1:1221] 9.09e-08 9.09e-08 9.09e-08 9.09e-08 9.09e-08 ...\cr
   ..$ : num [1:221, 1:1221] 2.11e-08 2.11e-08 2.11e-08 2.11e-08 2.11e-08 ...\cr

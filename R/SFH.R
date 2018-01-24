@@ -15,7 +15,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     EMILES=NULL
     data('EMILES', envir = environment())
     speclib=EMILES
-    birthcloud=8
+    birthcloud=1
   }
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
@@ -35,6 +35,8 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
     speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
     speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
+    
+    #sum(diff(speclib$Wave)*t(speclib_burst[1:birthcloud,2:length(speclib$Wave)])*(1-CF_birth(speclib$Wave[2:length(speclib$Wave)], tau=tau_birth)))
   }
   if(tau_screen!=0){
     speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen))
@@ -56,7 +58,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
 
   cenwave=NULL
-  data('cenwave')
+  data('cenwave', envir = environment())
     
   if(filters[1]=='all'){filters=cenwave$filter}
 
