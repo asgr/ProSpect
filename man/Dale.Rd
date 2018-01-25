@@ -14,7 +14,13 @@ The full compendium of Dale et al (2014) dust templates scaled for different use
 
 Dale 2014 provides templates that include star formation (SFR) and AGN components. Care needs to be taken when applying them for this reason.
 }
-\usage{data("Dale_Orig")}
+\usage{
+data("Dale_Orig")
+data("Dale_Msol")
+data("Dale_NormTot")
+data("Dale_NormAGN")
+data("Dale_NormSFR")
+}
 \format{
 The two parameter model marginalises over AGN fraction and the alpha slope of the star forming population. To be consistent with how the data is provided the different AGN fractions are put into different list elements, and the alpha values are stored in different rows. The columns represent fluxes in
 

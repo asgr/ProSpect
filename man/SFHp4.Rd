@@ -139,7 +139,9 @@ SMdemo=SMstarp4()
 SMdemo
 
 SFHdemo_nodust=SFHp4(tau_birth=0, tau_screen=0)
-total_atten=sum(c(0,diff(BC03lr$Wave))*(SFHdemo_nodust$flux-SFHdemo_dust$flux))
+wave_star=SFHdemo_nodust$flux[,1]
+
+total_atten=sum(c(0,diff(wave_star))*(SFHdemo_nodust$flux[,2]-SFHdemo_dust$flux[,2]))
 
 plot(SFHdemo_nodust$flux, log='xy', ylim=c(1e-20,1e-15), type='l',
 xlab=BC03lr$Labels$Wavelab, ylab='Flux (erg/s/cm^2/Ang)')
@@ -151,7 +153,7 @@ lines(Dale_Msol$Wave, Dale_temp*total_atten, col='red')
 
 wave=sort(c(SFHdemo_dust$flux[,'wave'], Dale_Msol$Wave))
 SpecAtten=approxfun(SFHdemo_dust$flux, rule=2)(wave)+
-          approxfun(Dale_Msol$Wave,Dale_temp, rule=2)(wave)
+          approxfun(Dale_Msol$Wave,Dale_temp, rule=2)(wave/1.1)
 lines(wave, SpecAtten, col='darkgreen')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

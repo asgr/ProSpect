@@ -22,19 +22,19 @@ CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{wave}{
-Observed wavelength in Angstroms.
+Numeric vector; wavelength in Angstroms.
 }
   \item{flux}{
 Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
 }
   \item{tau}{
-The exponential tau of the dust, where larger means more reddening. Charlot and Fall suggested defaults.
+Numeric scalar; the exponential tau of the dust, where larger means more reddening. Charlot and Fall suggested defaults are used here.
 }
   \item{pow}{
-Power to further raise the attenuation. Charlot and Fall suggest this should be close to -0.7 based on observations.
+Numeric scalar; power to further raise the attenuation. Charlot and Fall suggest this should be close to -0.7 based on observations.
 }
   \item{pivot}{
-The pivot wavelength in Angstroms. Charlot and Fall suggested default.
+Numeric scalar; the pivot wavelength in Angstroms. Charlot and Fall suggested default.
 }
 }
 \details{
@@ -47,7 +47,7 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \value{
 For CF_birth and CF_screen, a numeric vector; the attenuation curve that fluxes should be multiplied by.
 
-For CF_birth_atten and CF_screen_atten, a list where the first element is the attenuated flux [flux], and the second is the total energy of the flux attenuated (i.e. this is the amount that should be re-radiated elsewhere) [total_atten].
+For CF_birth_atten and CF_screen_atten, a list where the first element is the attenuated flux [flux], the second is the total energy of the flux attenuated (i.e. this is the amount that should be re-radiated elsewhere) [total_atten], and the third is the ratio of attenuated to unattenuated stellar light (i.e. 1 would mean no flux has been attenuated by dust, and 0 would mean 100\% attenuation).
 }
 \references{
 Charlot & Fall, 2000, ApJ, 539, 718

@@ -56,11 +56,9 @@ cenwavefunc=function(filter){
 }
 
 convert_wave2freq=function(flux_wave, wave, wavefac=1e-10, freqfac=1){
-  c=299792458
-  return=(wavefac*flux_wave*wave^2)/c
+  return=(wavefac*flux_wave*wave^2)/.c_to_mps
 }
 
 convert_freq2wave=function(flux_freq, wave, wavefac=1e-10, freqfac=1){
-  c=299792458
-  return=flux_freq*c/(wavefac*wave^2)
+  return=flux_freq*.c_to_mps/(wavefac*wave^2)
 }
