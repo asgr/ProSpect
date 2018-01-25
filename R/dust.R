@@ -8,14 +8,18 @@ CF_screen=function(wave, tau=0.3, pow=-0.7, pivot=5500){
 
 CF_birth_atten=function(wave, flux, tau=1.0, pow=-0.7, pivot=5500){
   flux_atten=CF_birth(wave, tau=tau, pow=pow, pivot=pivot)*flux
-  total_atten=sum((flux-flux_atten)*c(0,diff(wave)))
-  return=list(flux=flux_atten, total_atten=total_atten)
+  unatten=sum(flux*c(0,diff(wave)))
+  atten=sum(flux_atten*c(0,diff(wave)))
+  total_atten=unatten-atten
+  return=list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten)
 }
 
 CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
   flux_atten=CF_screen(wave, tau=tau, pow=pow, pivot=pivot)*flux
-  total_atten=sum((flux-flux_atten)*c(0,diff(wave)))
-  return=list(flux=flux_atten, total_atten=total_atten)
+  unatten=sum(flux*c(0,diff(wave)))
+  atten=sum(flux_atten*c(0,diff(wave)))
+  total_atten=unatten-atten
+  return=list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten)
 }
 
 .k_lambda=function(wave, beta=1.5){
@@ -23,7 +27,7 @@ CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
 }
 
 blackbody=function(wave, Temp = 50, k850=0.077){
-  A = 4*pi*1.989e30*k850/3.828e26/1e10
+  A = 4*pi*.Msol_to_kg*k850/.Lsol_to_W/1e10
   return=A*cosplanckLawRadWave(wave/1e10, Temp=Temp)
 }
 
@@ -113,4 +117,12 @@ Dale_interp=function(AGNfrac=0, alpha_SF=1.5, type='Msol'){
   output=output+temp$Aspec[[AGNfracloc+1]][alpha_SFloc,]*AGNfrachiw*alpha_SFlow
   output=output+temp$Aspec[[AGNfracloc+1]][alpha_SFloc+1,]*AGNfrachiw*alpha_SFhiw
   return=output
+}
+
+dustmass=function(wave_star, flux_star_nodust, flux_star_dust, wave_dust, lum_dust, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
+  total_atten=sum(c(0,diff(wave_star))*(flux_star_nodust-flux_star_dust))
+  LtoM=sum(c(0,diff(wave_dust))*lum_dust, na.rm=TRUE)
+  DustLum=total_atten/Lum2FluxFactor(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, OmegaR=OmegaR, w0=w0, wprime=wprime, ref=ref)
+  DustMass=DustLum/LtoM
+  return=c(DustMass=DustMass, DustLum=DustLum, M2L=1/LtoM)
 }

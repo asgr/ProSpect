@@ -35,8 +35,8 @@ List of 8\cr
   ..$ Zlab      : chr "Metallicity"\cr
   ..$ Agelab    : chr "Time since ZAM / Yrs"\cr
   ..$ Wavelab   : chr "Wavelength / Ang"\cr
-  ..$ Fluxlab   : chr "Lsol / Ang (for 1 Msol SF)"\cr
-  ..$ FluxAgelab: chr "Lsol / Ang (for 1 Msol/Yr SFR)"\cr
+  ..$ Lumlab   : chr "Lsol / Ang (for 1 Msol SF)"\cr
+  ..$ LumAgelab: chr "Lsol / Ang (for 1 Msol/Yr SFR)"\cr
  $ Zspec     :List of 12\cr
   ..$ : num [1:53, 1:53689] 0.0265 0.0193 0.0151 0.0127 0.0111 ...\cr
   ..$ : num [1:53, 1:53689] 0.0259 0.0184 0.0144 0.0122 0.0107 ...\cr
@@ -136,6 +136,6 @@ Vazekis et al, 2016, MNRAS, 463, 3409
 \examples{
 #The spectrum of our Sun today (Z=0.02, Age=4.6 Gyrs):
 plot(EMILES$Wave, EMILES$Zspec[[9]][34,], log='xy', type='l', xlim=c(2e3,4e4),
-ylim=c(1e-8,1e-4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Fluxlab)
+ylim=c(1e-8,1e-4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Lumlab)
 }
 \keyword{datasets}
