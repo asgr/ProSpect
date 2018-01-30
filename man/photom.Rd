@@ -1,5 +1,7 @@
 \name{photom}
 \alias{photom}
+\alias{photom_flux}
+\alias{photom_lum}
 \alias{Lum2Flux}
 \alias{Lum2FluxFactor}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -10,7 +12,8 @@ Spectral Processing for Photometry
 These functions can manipulate restframe spectra in useful ways, e.g. placing it at a target redshift with the correct observed luminosity and band stretching.
 }
 \usage{
-photom(wave, lum, filters = "all", z = 0.1, H0 = 100, OmegaM = 0.3,
+photom_flux(wave, flux, outtype = 'mag', filters = "all")
+photom_lum(wave, lum, outtype = 'mag', filters = "all", z = 0.1, H0 = 100, OmegaM = 0.3,
 OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref = "planck")
 Lum2Flux(wave, lum, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR,
 OmegaR = 0, w0 = -1, wprime = 0, ref='planck')
@@ -22,8 +25,14 @@ OmegaR = 0, w0 = -1, wprime = 0, ref='planck')
   \item{wave}{
 Numeric vector; the spectral wavelength in Angstroms. For convenience, if a two column matrix or data frame is supplied then the first column is taken to be \option{wave} and the second is taken to be \option{lum}.
 }
+  \item{flux}{
+Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
+}
   \item{lum}{
 Numeric vector; the spectral luminosity in Lsun / Angstrom (BC03lr / BC03hr and EMILES format).
+}
+  \item{outtype}{
+Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
 }
   \item{filters}{
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters.
@@ -54,10 +63,11 @@ The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 /
 }
 }
 \details{
-\code{photom} is a useful utility function since it fully converts between an intrinsic spectrum (e.g. of the type created when integrating a star formation history over differ stellar population models) all the way to a band-pass magnitude in AB mags. The latter is how many surveys represent their photometry, so this is usually a sensible unit space to use for feature fitting etc. In some circumstances fluxes (CGS or Jansky type) might be more appropriate, espeically when signal to noise is low a meaurements might be negative.
+\code{photom_lum} is a useful utility function since it fully converts between an intrinsic spectrum (e.g. of the type created when integrating a star formation history over differ stellar population models) all the way to a band-pass magnitude in AB mags (or Jy or CGS). The latter is how many surveys represent their photometry, so this is usually a sensible unit space to use for feature fitting etc. In some circumstances fluxes (CGS or Jansky type) might be more appropriate, espeically when signal to noise is low a meaurements might be negative.
 }
 \value{
-\item{photom}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the AB mag.}
+\item{photom_flux}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the output flux (AB mag by default).}
+\item{photom_lum}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the output flux (AB mag by default).}
 \item{Lum2Flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
 \item{Lum2FluxFactor}{Numeric scalar; the scaling factor to convert between intrinsic Lsun/Angstrom and erg/s/cm^2/Angstrom.}
 }
@@ -76,14 +86,14 @@ Aaron Robotham
 #First with BC03lr:
 BC03lr$Age[161]
 
-photoBC03=photom(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
+photoBC03=photom_lum(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
 plot(photoBC03[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
 ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
 
 #Next with EMILES
 EMILES$Age[35]
 
-photoEMILES=photom(EMILES$Wave, EMILES$Zspec[[9]][35,]*1e10)
+photoEMILES=photom_lum(EMILES$Wave, EMILES$Zspec[[9]][35,]*1e10)
 plot(photoEMILES[,2:3], log='x', ylim=c(26,17), xlab=EMILES$Labels$Wavelab,
 ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
 

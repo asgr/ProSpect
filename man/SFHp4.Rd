@@ -88,7 +88,7 @@ The evolution term that governs how the dark energy equation of state evolves wi
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck=Planck15 and WMAP=WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
 }
   \item{outtype}{
-Character scalar; the type of output to generate. Options are mag, cgs and janksky. See \code{\link{magABcalc}} for details.
+Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
 }
   \item{cossplit}{
 Numeric vector; the cosmological age at which the ancient star formation event begins and ends (only used if \option{dosplit=TRUE}).

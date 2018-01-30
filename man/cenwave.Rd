@@ -5,7 +5,7 @@
 Filter Central Wavelengths
 }
 \description{
-Table of central wavelengths of all provided filters.
+Table of central wavelengths of all provided filters. Here we use the most common names for the respective filters (e.g. K_VISTA for Ks_VISTA and S500 for 500 micron Spire) and remove duplicates, so be careful when using this table using string logic etc.
 }
 \usage{data("cenwave")}
 \format{

@@ -64,13 +64,13 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
 
   out={}
 
-  if(outtype=='mag'){
+  if(outtype=='mag' | outtype=='magAB'){
     for(i in filters){out=c(out, magABcalc(flux, filter=i))}
   }
   if(outtype=='cgs' | outtype=='CGS'){
     for(i in filters){out=c(out, CGScalc(flux, filter=i))}
   }
-  if(outtype=='jansky' | outtype=='Jansky'){
+  if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
     for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
   }
 
