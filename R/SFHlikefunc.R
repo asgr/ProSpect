@@ -42,6 +42,15 @@ SFHlikefunc=function(parm=c(8,9,9,9,1,0.3,1.5,0), Data, massfit=c('burstmass', '
     AGNfrac = 0
   }
   
+  if(burstmass<0){return(Inf)}
+  if(youngmass<0){return(Inf)}
+  if(oldmass<0){return(Inf)}
+  if(ancientmass<0){return(Inf)}
+  if(tau_birth < 0 | tau_birth>3){return(Inf)}
+  if(tau_screen < 0 | tau_screen>3){return(Inf)}
+  if(alpha_SF<0.1 | alpha_SF>4){return(Inf)}
+  if(AGNfrac<0 | AGNfrac>0.95){return(Inf)}
+  
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
