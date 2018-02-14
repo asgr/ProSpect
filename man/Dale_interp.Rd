@@ -8,15 +8,15 @@ Interpolate the Dale 2014 Templates
 Interpolates between non-computed values of \option{AGNfrac} and \option{alpha_SF}. This is useful when creating a generic generative model of a galaxy SED, where it can harm the sampling to have strictly discretised values for variables we wish to sample over.
 }
 \usage{
-Dale_interp(AGNfrac = 0, alpha_SF = 1.5, type = "Msol")
+Dale_interp(alpha_SF = 1.5, AGNfrac = 0, type = "Msol")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{AGNfrac}{
-Numeric scalar; desired interpolated AGN fraction.
-}
   \item{alpha_SF}{
 Numeric scalar; desired interpolated alpha slope of the star forming population.
+}
+  \item{AGNfrac}{
+Numeric scalar; desired interpolated AGN fraction.
 }
   \item{type}{
 Character scalar; type of Dale template to interpolate. One of: Orig, Msol, NormTot, NormAGN, NormSFR.
@@ -39,7 +39,7 @@ Aaron Robotham
 }
 \examples{
 #Example output showing also the 4 surrounding interpolation points used.
-temp=Dale_interp(0.025, 1.53125)
+temp=Dale_interp(1.53125, 0.025)
 
 plot(Dale_Orig$Wave, temp, log='x', type='l', col='red')
 lines(Dale_Orig$Wave, Dale_Msol$Aspec[[1]][24,])
