@@ -62,31 +62,39 @@ greybody_norm=function(wave, Temp = 50, beta=1.5, z=0, norm=1){
   return=output
 }
 
-Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol'){
+Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
   if(type=='Orig'){
-    Dale_Orig=NULL
-    data('Dale_Orig', envir = environment())
-    temp=Dale_Orig
+    if(is.null(Dale)){
+      Dale_Orig=NULL
+      data('Dale_Orig', envir = environment())
+      Dale=Dale_Orig
+    }
   }
   if(type=='Msol'){
-    Dale_Msol=NULL
-    data('Dale_Msol', envir = environment())
-    temp=Dale_Msol
+    if(is.null(Dale)){
+      Dale_Msol=NULL
+      data('Dale_Msol', envir = environment())
+      Dale=Dale_Msol
+    }
   }
   if(type=='NormTot'){
-    Dale_NormTot=NULL
-    data('Dale_NormTot', envir = environment())
-    temp=Dale_NormTot
+    if(is.null(Dale)){
+      Dale_NormTot=NULL
+      data('Dale_NormTot', envir = environment())
+      Dale=Dale_NormTot
+    }
   }
   if(type=='NormAGN'){
     Dale_NormAGN=NULL
     data('Dale_NormAGN', envir = environment())
-    temp=Dale_NormAGN
+    Dale=Dale_NormAGN
   }
   if(type=='NormSFR'){
-    Dale_NormSFR=NULL
-    data('Dale_NormSFR', envir = environment())
-    temp=Dale_NormSFR
+    if(is.null(Dale)){
+      Dale_NormSFR=NULL
+      data('Dale_NormSFR', envir = environment())
+      Dale=Dale_NormSFR
+    }
   }
   
   if(AGNfrac<0){AGNfrac=0}
@@ -94,16 +102,16 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol'){
   if(alpha_SF<0.0625){alpha_SF=0.0625}
   if(alpha_SF>4.0000){alpha_SF=4.0000}
   
-  AGNfracloc=max(which(temp$AGNfrac<=AGNfrac))
-  alpha_SFloc=max(which(temp$alpha_SF<=alpha_SF))
+  AGNfracloc=max(which(Dale$AGNfrac<=AGNfrac))
+  alpha_SFloc=max(which(Dale$alpha_SF<=alpha_SF))
   
   if(AGNfracloc==21){AGNfracloc=20}
   if(alpha_SFloc==64){alpha_SFloc=63}
   
-  AGNfraclo=temp$AGNfrac[AGNfracloc]
-  AGNfrachi=temp$AGNfrac[AGNfracloc+1]
-  alpha_SFlo=temp$alpha_SF[alpha_SFloc]
-  alpha_SFhi=temp$alpha_SF[alpha_SFloc+1]
+  AGNfraclo=Dale$AGNfrac[AGNfracloc]
+  AGNfrachi=Dale$AGNfrac[AGNfracloc+1]
+  alpha_SFlo=Dale$alpha_SF[alpha_SFloc]
+  alpha_SFhi=Dale$alpha_SF[alpha_SFloc+1]
   
   AGNfraclow=(AGNfrachi-AGNfrac)/(AGNfrachi-AGNfraclo)
   AGNfrachiw=1-AGNfraclow
@@ -112,10 +120,10 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol'){
   
   output=rep(0,1496)
   
-  output=output+temp$Aspec[[AGNfracloc]][alpha_SFloc,]*AGNfraclow*alpha_SFlow
-  output=output+temp$Aspec[[AGNfracloc]][alpha_SFloc+1,]*AGNfraclow*alpha_SFhiw
-  output=output+temp$Aspec[[AGNfracloc+1]][alpha_SFloc,]*AGNfrachiw*alpha_SFlow
-  output=output+temp$Aspec[[AGNfracloc+1]][alpha_SFloc+1,]*AGNfrachiw*alpha_SFhiw
+  output=output+Dale$Aspec[[AGNfracloc]][alpha_SFloc,]*AGNfraclow*alpha_SFlow
+  output=output+Dale$Aspec[[AGNfracloc]][alpha_SFloc+1,]*AGNfraclow*alpha_SFhiw
+  output=output+Dale$Aspec[[AGNfracloc+1]][alpha_SFloc,]*AGNfrachiw*alpha_SFlow
+  output=output+Dale$Aspec[[AGNfracloc+1]][alpha_SFloc+1,]*AGNfrachiw*alpha_SFhiw
   return=output
 }
 
