@@ -12,7 +12,8 @@ SFHlikefunc(parm = c(8, 9, 9, 9, 1, 0.3, 1.5, 0), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
 dustfit = c("alpha_SF", "AGNfrac"), filters = c("FUV", "NUV", "u_SDSS", "g_SDSS",
 "r_SDSS", "i_SDSS", "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "W1", "W2",
-"W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, like = TRUE)
+"W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, like = TRUE,
+speclib = NULL, Dale = NULL, filtout = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -40,6 +41,15 @@ Logical; should verbose output be printed?
   \item{like}{
 Logical; should only the likelihood be output (TRUE, useful when optimising), or should all useful output be produced in a list (FALSE). See Details for full information on what is output in each case.
 }
+  \item{speclib}{
+Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
+}
+  \item{Dale}{
+Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, \code{\link{Dale_Msol}}, \code{\link{Dale_NormTot}}, \code{\link{Dale_NormAGN}}, \code{\link{Dale_NormSFR}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
+}
+  \item{filtout}{
+Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
+}
 }
 \details{
 This function is mostly used for its side effect of producing a likelihood that we can then optimise our model using \code{\link{optim}}. It handles a lot of the awkward data manipulation side which is present when we are using an odd subset of all possible filters etc.
@@ -51,7 +61,7 @@ If \option{like}=FALSE then lots of things are returned (TBD exactly what). Curr
 
   \item{like}{log-likelihood}
   \item{FinalSpec}{Numeric matrix; the combined observed flux spectrum (column 1 is wavelength; column 2 is the observed flux in erg/s / cm^2 / Ang.}
-  \item{FinalPhotom}{Numeric matrix; observed photometry in AB mag, as given by \code{\link{magABcalc}}}.
+  \item{FinalPhotom}{Numeric vector; observed photometry in Jansky, as given by \code{\link{Janskycalc}}} in the \code{out} column.
   \item{SFH_dust}{List; output of \code{\link{SFHp4}} using the current parameter values including dust attenuation.}
   \item{SFH_nodust}{List; output of \code{\link{SFHp4}} using the current parameter values but ignoring dust attenuation (effectively \option{tau_birth}=0 and \option{tau_screen}=0.}
   \item{Dust}{Numeric vector; dust properties as determined by \code{\link{dustmass}}.}

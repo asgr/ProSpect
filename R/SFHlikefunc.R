@@ -1,4 +1,4 @@
-SFHlikefunc=function(parm=c(8,9,9,9,1,0.3,1.5,0), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE){
+SFHlikefunc=function(parm=c(8,9,9,9,1,0.3,1.5,0), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL, Dale=NULL, filtout=NULL){
   names(parm)=c(massfit, taufit, dustfit)
   if(verbose){print(parm)}
   if('burstmass' %in% names(parm)){
@@ -52,19 +52,35 @@ SFHlikefunc=function(parm=c(8,9,9,9,1,0.3,1.5,0), Data, massfit=c('burstmass', '
   if(alpha_SF<0.1 | alpha_SF>4){if(verbose){print(-bad)}; return(bad)}
   if(AGNfrac<0 | AGNfrac>0.95){if(verbose){print(-bad)}; return(bad)}
   
+  if(is.null(Dale)){
+    Dale_Msol=NULL
+    data('Dale_Msol', envir = environment())
+    Dale=Dale_Msol
+  }
+    
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
-  SFH_dust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=Data$z, outtype='Jansky')
-  SFH_nodust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=Data$z, outtype='Jansky')
-  SMtot=SMstarp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass)
-  Dale_interp=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac)
+  SFH_dust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=Data$z, outtype=NULL, speclib=speclib)
+  SFH_nodust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=Data$z, outtype=NULL, speclib=speclib)
+  SMtot=SMstarp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, speclib=speclib)
+  Dale_interp=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale=Dale)
   dustout=dustmass(SFH_dust$flux[,1], SFH_nodust$flux[,2], SFH_dust$flux[,2], Dale_Msol$Wave, Dale_interp, z=Data$z)
-  dustflux=Lum2Flux(Dale_Msol$Wave, Dale_interp*dustout[1], z=Data$z)
+  dustflux=Lum2Flux(Dale$Wave, Dale_interp*dustout[1], z=Data$z)
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
-  photom_out=photom_flux(finalspec[,1], finalspec[,2], out='Jy', filters = filters)
+  #Might want to speed this next part up- spends much of the time loading the different filters!
   
-  likeout=sum(dnorm(x=(Data$flux$flux-photom_out$out)/Data$flux$fluxerr, log=TRUE), na.rm = TRUE)
+  if(is.null(filtout)){
+    photom_out=photom_flux(finalspec[,1], finalspec[,2], outtype='Jy', filters = filters)$out
+  }else{
+    photom_out={}
+    fluxnu=convert_wave2freq(finalspec[,2], finalspec[,1])
+    for(i in 1:length(filtout)){
+      photom_out = c(photom_out, bandpass(flux = fluxnu, wave = finalspec[,1], filter = filtout[[i]], lum = T)*1e23)
+    }
+  }
+  
+  likeout=sum(dnorm(x=(Data$flux$flux-photom_out)/Data$flux$fluxerr, log=TRUE), na.rm = TRUE)
   if(verbose){print(likeout)}
   if(like){
     return(-likeout)

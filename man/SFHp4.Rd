@@ -11,16 +11,15 @@ Computes output galaxy spectra using four distinct phases of constant star forma
 \usage{
 SFHp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
-ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", tau_birth = 1, tau_screen = 0.3,
-filters = "all", Z = c(5, 5, 5, 5), z = 0.1, H0 = 100, OmegaM = 0.3,
-OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref = "planck",
-outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth = 1,
+tau_screen = 0.3, filters = "all", Z = c(5, 5, 5, 5), z = 0.1, H0 = 67.8, OmegaM = 0.308,
+OmegaL = 1 - OmegaM, outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
 
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
-ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', Z = c(5, 5, 5, 5), z = 0, H0 = 100,
-OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0,
-ref = 'planck', cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', speclib = NULL, Z = c(5, 5, 5, 5),
+z = 0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, cossplit = c(9e+09, 1.3e+10),
+dosplit = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -51,6 +50,9 @@ Numeric vector; the age limits in years for the ancient phase.
   \item{stellpop}{
 Character scalar; which stellar population library to use, one of \code{\link{BC03lr}} (default), \code{\link{BC03hr}}, \code{\link{EMILES}}.
 }
+  \item{speclib}{
+Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
+}
   \item{tau_birth}{
 Numeric scalar; dust tau for birth clouds. Associated with sub 100 Myr star formation.
 }
@@ -67,25 +69,13 @@ Integer vector of length 4; specifies which metallicity to use for each star for
 Numeric scalar; cosmological redshift, where z must be > -1.
 }
   \item{H0}{
-Numeric scalar; Hubble constant as defined at z=0 (default is H0=100 (km/s)/Mpc).
+Numeric scalar; Hubble constant as defined at z=0 (default is H0=67.8 (km/s)/Mpc).
 }
   \item{OmegaM}{
-Numeric scalar; Omega Matter today (default is 0.3).
+Numeric scalar; Omega Matter today (default is 0.308).
 }
   \item{OmegaL}{
-Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1-OmegaM-OmegaR = 0.7).
-}
-  \item{OmegaR}{
-Numeric scalar; Omega Radiation today (default is 0, but OmegaM/3400 is typical).
-}
-  \item{w0}{
-The value of dark energy equation of state at z=0. See \code{\link{cosgrow}} for more details.
-}
-  \item{wprime}{
-The evolution term that governs how the dark energy equation of state evolves with redshift. See \code{\link{cosgrow}} for more details.
-}
-  \item{ref}{
-The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck=Planck15 and WMAP=WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
+Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1 - OmegaM = 0.692).
 }
   \item{outtype}{
 Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
