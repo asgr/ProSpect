@@ -1,12 +1,18 @@
-\name{SFHp4}
+\name{Star Formation}
+\alias{SFH}
 \alias{SFHp4}
+\alias{SFHp5}
+\alias{SFHfunc}
+\alias{SM}
 \alias{SMstarp4}
+\alias{SMstarp5}
+\alias{SMstarfunc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Four Phase Star Formation History
 }
 \description{
-Computes output galaxy spectra using four distinct phases of constant star formation: recent burst, young, old and ancient. Uses either BC03 or EMILES libraries. Each star formation phase can have a different metallicity associated with it (default solar).
+Computes output galaxy spectra  and stellar masses using variable star formation histories. This can be either distinct phases with \code{SFHp4} and \code{SFHp5}, or a functional form with \code{SFHfunc}. Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar).
 }
 \usage{
 SFHp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
@@ -15,11 +21,33 @@ ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth =
 tau_screen = 0.3, filters = "all", Z = c(5, 5, 5, 5), z = 0.1, H0 = 67.8, OmegaM = 0.308,
 OmegaL = 1 - OmegaM, outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
 
+SFHp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
+ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
+midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
+stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3, filters = "all",
+Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+
+SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
+forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
+tau_birth = 1, tau_screen = 0.3, filters = "all", Z = 5, z = 0.1, H0 = 67.8,
+OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag", ...) 
+
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', speclib = NULL, Z = c(5, 5, 5, 5),
 z = 0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, cossplit = c(9e+09, 1.3e+10),
 dosplit = FALSE)
+
+SMstarp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
+ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
+midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
+stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
+OmegaM = 0.308, OmegaL = 1 - OmegaM, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+
+SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
+forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
+Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,6 +56,9 @@ Numeric scalar; the total stellar mass formed in a recent burst.
 }
   \item{youngmass}{
 Numeric scalar; the total stellar mass formed in young stars.
+}
+  \item{midmass}{
+Numeric scalar; the total stellar mass formed in mid stars.
 }
   \item{oldmass}{
 Numeric scalar; the total stellar mass formed in old stars.
@@ -38,14 +69,29 @@ Numeric scalar; the total stellar mass formed in ancient stars.
   \item{burstage}{
 Numeric vector; the age limits in years for the burst phase.
 }
+  \item{massfunc}{
+Function; a function which will take \code{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
+}
   \item{youngage}{
 Numeric vector; the age limits in years for the young phase.
+}
+  \item{midage}{
+Numeric vector; the age limits in years for the mid phase.
 }
   \item{oldage}{
 Numeric vector; the age limits in years for the old phase.
 }
   \item{ancientage}{
 Numeric vector; the age limits in years for the ancient phase.
+}
+  \item{forcemass}{
+Logical or numeric scalar; if FALSE then the stellar mass is directly computed from the \option{massfunc} function, i.e. the output of this must be a true star formation rate in Msun per year. If \option{forcemass} is a number then this specifies the required integrated stellar mass that must be formed over all time, and the output of \option{massfunc} will linearly scaled as required to achieve this.
+}
+  \item{unimax}{
+Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation implied by \option{massfunc} that is older than this will be set to 0.
+}
+  \item{agescale}{
+Numeric scalar; scaling to apply to the ages (which will passed in years) to \option{massfunc}. E.g. if left at \option{agescale}=1 then \option{massfunc} is expecting the age in years, but if set to 1e-6/1e-9 then \option{massfunc} is expecting the age in Myrs/Gyrs.
 }
   \item{stellpop}{
 Character scalar; which stellar population library to use, one of \code{\link{BC03lr}} (default), \code{\link{BC03hr}}, \code{\link{EMILES}}.
@@ -86,6 +132,9 @@ Numeric vector; the cosmological age at which the ancient star formation event b
   \item{dosplit}{
 Boolean scalar; should the \option{cossplit} ancient star formation limits be used?
 }
+  \item{\dots}{
+Further arguments to be passed to \code{massfunc} function.
+}
 }
 \details{
 Optionally the definition of old and ancient can be associated with a fixed time the history of the Universe (e.g. the peak of starformation). This means the exact lookback period adapts as a function of the redshift provided. This often makes more sense then simply fixing the age of the ancient population since it precents the stellar populations becoming older than the Universe.
@@ -97,11 +146,12 @@ We use the simple dust models for birth clouds and dust screens as given by Char
 The defaults should be reasonable in the regime they are used over, where birth cloud dust should only be applied to stellar populations younger than 10 Myrs. Note that BC03 has 70 stellar population spectra which are younger than this, whilst EMILES has none. This means that EMILES cannot realistically capture the birth dust attenuation phase, so for highly star bursting populations BC03 should probably be preferred.
 }
 \value{
-SFHp4 returns a list containing:
+\code{SFHp4} / \code{SFHp5} / \code{SFHfunc} returns a list containing:
 
 \item{flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
 \item{lum}{Numeric vector; intrinsic luminosity in the standard BC03 units of Lsun/Angstrom.}
 \item{out}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the requested output (e.g. AB mag).}
+\item{massvec}{Numeric vector; the star formation rate (Msun/year) at each age sampled.}
 \item{masstot}{Numeric scalar; total mass formed in solar masses.}
 \item{lumtot}{Numeric scalar; total luminosity in solar luminosities.}
 \item{M2L}{Numeric scalar; total mass to light ratio.}
@@ -111,7 +161,7 @@ SFHp4 returns a list containing:
 \item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase.}
 \item{sSFR}{Numeric vector; the speicifc star formation rate averaged out over each star formation phase.}
 
-SMstarp4 is a 5 element vector containing the stellar mass observed as produced by each phase of star formation, and thte total stellar mass formed.
+\code{SMstarp4} / \code{SMstarp5} / \code{SMfunc} is a 5/6/1 element vector containing the stellar mass observed as produced by each phase of star formation (for \code{SMstarp4} and \code{SMstarp5}), and the total stellar mass formed (\code{SMstarp4} / \code{SMstarp5} / \code{SMfunc}, this is the last element listed).
 }
 \author{
 Aaron Robotham
