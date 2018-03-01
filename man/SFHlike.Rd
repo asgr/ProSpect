@@ -1,5 +1,8 @@
-\name{SFHlikefunc}
-\alias{SFHlikefunc}
+\name{SFHlike}
+\alias{SFHlike}
+\alias{SFHp4like}
+\alias{SFHp5like}
+\alias{SFHfunclike}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Star Formation History Likelihood
@@ -8,12 +11,27 @@ Star Formation History Likelihood
 In basic usage, computes the likelihood for a given set of data versus a specified model for the star formation history (SFH), including dust and attentuation. Can also return all of the \code{ProSpect} outputs for a given SFH model produced by \code{\link{SFHp4}} and \code{\link{Dale_interp}}.
 }
 \usage{
-SFHlikefunc(parm = c(8, 9, 9, 9, 1, 0.3, 1.5, 0), Data, massfit = c("burstmass",
+SFHp4like(parm = c(8, 9, 10, 10, 1, 0.3, 1.5, 0), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
 dustfit = c("alpha_SF", "AGNfrac"), filters = c("FUV", "NUV", "u_SDSS", "g_SDSS",
 "r_SDSS", "i_SDSS", "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "W1", "W2",
 "W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, like = TRUE,
 speclib = NULL, Dale = NULL, filtout = NULL)
+
+SFHp5like(parm = c(8, 9, 10, 10, 10, 1, 0.3, 1.5, 0), Data, massfit = c('burstmass',
+'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
+dustfit = c('alpha_SF', 'AGNfrac'), filters = c('FUV', 'NUV', 'u_SDSS', 'g_SDSS',
+'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2',
+'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose = TRUE, like = TRUE,
+speclib = NULL, Dale = NULL, filtout = NULL)
+
+SFHfunclike(parm = c(1, 1, 0.3, 1.5, 0), Data, massfunc = function(age, SFR = 1)
+{ ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
+massfuncfit = c('SFR'), massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
+dustfit = c('alpha_SF', 'AGNfrac'), filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS',
+'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4',
+'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL,
+Dale=NULL, filtout=NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,8 +41,26 @@ Numeric vector; the current values of the parameters being tested.
   \item{Data}{
 Object; a data object containing the observed data to compare the current ProSpect model against.
 }
+  \item{massfunc}{
+Function; a function which will take \code{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
+}
+  \item{forcemass}{
+Logical; if FALSE then the stellar mass is directly computed from the \option{massfunc} function, i.e. the output of this must be a true star formation rate in Msun per year. If TRUE then the first argument of \option{parm} is interpretted to be the target stellar mass in log10 units, and the output of \option{massfunc} will linearly scaled as required to achieve this.
+}
+  \item{unimax}{
+Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation implied by \option{massfunc} that is older than this will be set to 0.
+}
+  \item{agescale}{
+Numeric scalar; scaling to apply to the ages (which will passed in years) to \option{massfunc}. E.g. if left at \option{agescale}=1 then \option{massfunc} is expecting the age in years, but if set to 1e-6/1e-9 then \option{massfunc} is expecting the age in Myrs/Gyrs.
+}
   \item{massfit}{
 Character vector; the names of the mass variables to be used (a mixture of burstmass, youngmass, oldmass, ancientmass).
+}
+  \item{massfuncfit}{
+Character vector; the names of the mass function parameters in \option{massfunc} that exist at the front of \option{parm}.
+}
+\item{massfuncpos}{
+Logical vector; flags whether certain \option{massfuncfit} parameters provided by \option{parm} should be positive only in \option{massfunc}. This is a simple way to stop certain functions from failing during sampling where it might go negative incorrectly (e.g. standard deviation). For more sophisticated behaviour the keen user will need to write their own likelihood function.
 }
   \item{taufit}{
 Character vector; the names of the tau dust attenuation variables to be used (a mixture of tau_birth, tau_screen).
