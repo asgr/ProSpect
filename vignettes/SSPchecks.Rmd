@@ -16,7 +16,7 @@ library(ProSpect)
 library(magicaxis)
 ```
 
-** BC03 SSPs **
+## BC03 SSPs
 
 Make a colour vector.
 
