@@ -4,10 +4,10 @@
 \alias{BC03hr}
 \docType{data}
 \title{
-GALAXEV Bruzual & Charlot 2003 Models
+GALAXEV Bruzual & Charlot 2003 Models (GALEXev)
 }
 \description{
-This is a reformatted collection of all the key informtion for the low/high resolution BC03 models. This gives enough information to generate generic spectra for a target metallicity and star formation history.
+This is a reformatted collection of all the key informtion for the low/high resolution BC03 models (technically named GALEXev). This gives enough information to generate generic spectra for a target metallicity and star formation history.
 }
 \usage{
 data("BC03lr")
@@ -152,7 +152,9 @@ There are 6 metallicities (as given in \option{Z}), 221 age steps per population
 http://www.bruzual.org/bc03
 }
 \references{
-Bruzual and Charlot, 2003, MNRAS, 344, 1000
+BC03/GALEXev: Bruzual and Charlot, 2003, MNRAS, 344, 1000
+Padova 1994 isochrones: Bertelli et al., 1994, A\&AS, 106, 275
+Chabrier IMF: Chabrier, 2003, PASP, 115, 763
 }
 \examples{
 #The low resolution spectrum of our Sun today (Z=0.02, Age=4.6s Gyrs):
