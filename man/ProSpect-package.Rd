@@ -25,7 +25,11 @@ Depends: \tab R (>= 2.13), celestial, NISTunits\cr
 Maintainer: \packageMaintainer{ProSpect}
 }
 \references{
-Bruzual and Charlot, 2003, MNRAS, 344, 1000; Vazekis et al, 2016, MNRAS, 463, 3409; Dale et al, 2014, ApJ, 784, 11
+Bertelli et al., 1994, A\&AS, 106, 275
+Bruzual and Charlot, 2003, MNRAS, 344, 1000
+Chabrier, 2003, PASP, 115, 763
+Dale et al, 2014, ApJ, 784, 11
+Vazekis et al, 2016, MNRAS, 463, 3409
 }
 \keyword{SED}
 

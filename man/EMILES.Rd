@@ -131,7 +131,9 @@ There are 12 metallicities (as given in \option{Z}), 53 age steps per population
 http://miles.iac.es/
 }
 \references{
-Vazekis et al, 2016, MNRAS, 463, 3409
+EMILES: Vazdekis et al, 2016, MNRAS, 463, 3409
+Padova 1994 isochrones: Bertelli et al., 1994, A\&AS, 106, 275
+Chabrier IMF: Chabrier, 2003, PASP, 115, 763
 }
 \examples{
 #The spectrum of our Sun today (Z=0.02, Age=4.6 Gyrs):
