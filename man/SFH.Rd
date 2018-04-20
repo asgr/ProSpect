@@ -188,7 +188,7 @@ xlab=BC03lr$Labels$Wavelab, ylab='Flux (erg/s/cm^2/Ang)')
 lines(SFHdemo_dust$flux, col='grey')
 lines(10^seq(5,7,by=0.01), greybody_norm(10^seq(5,7,by=0.01), z=0.1, norm=total_atten),
 col='brown')
-Dale_temp=Dale_interp(type='NormSFR')*total_atten
+Dale_temp=Dale_interp(type='NormSFR')
 lines(Dale_Msol$Wave, Dale_temp*total_atten, col='red')
 
 wave=sort(c(SFHdemo_dust$flux[,'wave'], Dale_Msol$Wave))

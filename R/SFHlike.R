@@ -1,6 +1,15 @@
-SFHp4like=function(parm=c(8,9,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL, Dale=NULL, filtout=NULL){
-  names(parm)=c(massfit, taufit, dustfit)
+SFHp4like=function(parm=c(8,9,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL, Dale=NULL, filtout=NULL){
+  if(zfit){
+    names(parm)=c('z', massfit, taufit, dustfit)
+  }else{
+    names(parm)=c(massfit, taufit, dustfit)
+  }
   if(verbose){print(parm)}
+  if('z' %in% names(parm)){
+    redshift=10^parm[names(parm)=='z']
+  }else{
+    redshift=Data$z
+  }
   if('burstmass' %in% names(parm)){
     burstmass=10^parm[names(parm)=='burstmass']
   }else{
@@ -61,11 +70,11 @@ SFHp4like=function(parm=c(8,9,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass', '
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
-  SFH_dust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=Data$z, outtype=NULL, speclib=speclib)
-  SFH_nodust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=Data$z, outtype=NULL, speclib=speclib)
+  SFH_dust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=redshift, outtype=NULL, speclib=speclib)
+  SFH_nodust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=redshift, outtype=NULL, speclib=speclib)
   Dale_interp=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale=Dale)
-  dustout=dustmass(SFH_dust$flux[,1], SFH_nodust$flux[,2], SFH_dust$flux[,2], Dale_Msol$Wave, Dale_interp, z=Data$z)
-  dustflux=Lum2Flux(Dale$Wave, Dale_interp*dustout[1], z=Data$z)
+  dustout=dustmass(SFH_dust$flux[,1], SFH_nodust$flux[,2], SFH_dust$flux[,2], Dale_Msol$Wave, Dale_interp, z=redshift)
+  dustflux=Lum2Flux(Dale$Wave, Dale_interp*dustout[1], z=redshift)
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
   #Might want to speed this next part up- spends much of the time loading the different filters!
   
@@ -89,9 +98,18 @@ SFHp4like=function(parm=c(8,9,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass', '
   }
 }
 
-SFHp5like=function(parm=c(8,9,10,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass', 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL, Dale=NULL, filtout=NULL){
-  names(parm)=c(massfit, taufit, dustfit)
+SFHp5like=function(parm=c(8,9,10,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass', 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL, Dale=NULL, filtout=NULL){
+  if(zfit){
+    names(parm)=c('z', massfit, taufit, dustfit)
+  }else{
+    names(parm)=c(massfit, taufit, dustfit)
+  }
   if(verbose){print(parm)}
+  if('z' %in% names(parm)){
+    redshift=10^parm[names(parm)=='z']
+  }else{
+    redshift=Data$z
+  }
   if('burstmass' %in% names(parm)){
     burstmass=10^parm[names(parm)=='burstmass']
   }else{
@@ -158,11 +176,11 @@ SFHp5like=function(parm=c(8,9,10,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass'
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
-  SFH_dust=SFHp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=Data$z, outtype=NULL, speclib=speclib)
-  SFH_nodust=SFHp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=Data$z, outtype=NULL, speclib=speclib)
+  SFH_dust=SFHp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=redshift, outtype=NULL, speclib=speclib)
+  SFH_nodust=SFHp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=redshift, outtype=NULL, speclib=speclib)
   Dale_interp=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale=Dale)
-  dustout=dustmass(SFH_dust$flux[,1], SFH_nodust$flux[,2], SFH_dust$flux[,2], Dale_Msol$Wave, Dale_interp, z=Data$z)
-  dustflux=Lum2Flux(Dale$Wave, Dale_interp*dustout[1], z=Data$z)
+  dustout=dustmass(SFH_dust$flux[,1], SFH_nodust$flux[,2], SFH_dust$flux[,2], Dale_Msol$Wave, Dale_interp, z=redshift)
+  dustflux=Lum2Flux(Dale$Wave, Dale_interp*dustout[1], z=redshift)
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
   #Might want to speed this next part up- spends much of the time loading the different filters!
   
@@ -186,16 +204,22 @@ SFHp5like=function(parm=c(8,9,10,10,10,1,0.3,1.5,0), Data, massfit=c('burstmass'
   }
 }
 
-SFHfunclike=function(parm=c(1,1,0.3,1.5,0), Data, massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit=c('SFR'), massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL, Dale=NULL, filtout=NULL){
+SFHfunclike=function(parm=c(1,1,0.3,1.5,0), Data, massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit=c('SFR'), massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL, Dale=NULL, filtout=NULL){
   
   if(forcemass){
-    names(parm)=c('SM', massfuncfit, taufit, dustfit)
-    if(verbose){print(parm)}
-    forcemass=10^parm[1]
-    parm=parm[2:length(parm)]
+    if(zfit){
+      names(parm)=c('z','SM', massfit, taufit, dustfit)
+    }else{
+      names(parm)=c('SM',massfit, taufit, dustfit)
+    }
+    forcemass=parm[names(parm)=='SM']
+    parm=parm[names(parm)!='SM']
   }else{
-    names(parm)=c(massfuncfit, taufit, dustfit)
-    if(verbose){print(parm)}
+    if(zfit){
+      names(parm)=c('z', massfit, taufit, dustfit)
+    }else{
+      names(parm)=c(massfit, taufit, dustfit)
+    }
   }
   
   massfuncfit=massfuncfit[massfuncfit %in% names(formals(massfunc))]
@@ -203,7 +227,13 @@ SFHfunclike=function(parm=c(1,1,0.3,1.5,0), Data, massfunc=function(age, SFR=1){
     stop('massfunc inputs do not match correctly with parm!')
   }
   massfunclist=as.list(parm[1:length(massfuncfit)])
-
+  
+  if(verbose){print(parm)}
+  if('z' %in% names(parm)){
+    redshift=10^parm[names(parm)=='z']
+  }else{
+    redshift=Data$z
+  }
   if('tau_birth' %in% names(parm)){
     tau_birth = parm[names(parm)=='tau_birth']
   }else{
@@ -241,13 +271,13 @@ SFHfunclike=function(parm=c(1,1,0.3,1.5,0), Data, massfunc=function(age, SFR=1){
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
-  #SFH_dust=SFHfunc(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=Data$z, outtype=NULL, speclib=speclib)
-  SFH_dust=do.call('SFHfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, tau_birth=tau_birth, tau_screen=tau_screen, z=Data$z, outtype=NULL, speclib=speclib), massfunclist))
+  #SFH_dust=SFHfunc(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, z=redshift, outtype=NULL, speclib=speclib)
+  SFH_dust=do.call('SFHfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, tau_birth=tau_birth, tau_screen=tau_screen, z=redshift, outtype=NULL, speclib=speclib), massfunclist))
   if(sum(SFH_dust$massvec,na.rm=TRUE)==0){if(verbose){print(-bad)}; return(bad)}
-  SFH_nodust=do.call('SFHfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, tau_birth=0, tau_screen=0, z=Data$z, outtype=NULL, speclib=speclib), massfunclist))
+  SFH_nodust=do.call('SFHfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, tau_birth=0, tau_screen=0, z=redshift, outtype=NULL, speclib=speclib), massfunclist))
   Dale_interp=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale=Dale)
-  dustout=dustmass(SFH_dust$flux[,1], SFH_nodust$flux[,2], SFH_dust$flux[,2], Dale_Msol$Wave, Dale_interp, z=Data$z)
-  dustflux=Lum2Flux(Dale$Wave, Dale_interp*dustout[1], z=Data$z)
+  dustout=dustmass(SFH_dust$flux[,1], SFH_nodust$flux[,2], SFH_dust$flux[,2], Dale_Msol$Wave, Dale_interp, z=redshift)
+  dustflux=Lum2Flux(Dale$Wave, Dale_interp*dustout[1], z=redshift)
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
   #Might want to speed this next part up- spends much of the time loading the different filters!
   
@@ -266,7 +296,7 @@ SFHfunclike=function(parm=c(1,1,0.3,1.5,0), Data, massfunc=function(age, SFR=1){
   if(like){
     return(-likeout)
   }else{
-    SMtot=do.call('SMstarfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, z=Data$z), massfunclist))
+    SMtot=do.call('SMstarfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, z=redshift), massfunclist))
     return(list(like=likeout, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot))
   }
 }

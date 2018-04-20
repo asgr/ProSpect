@@ -1,3 +1,12 @@
+magAB2Jansky=function(x){10^(-0.4*(x-8.9))}
+Jansky2magAB=function(x){-2.5*log10(x)+8.9}
+
+magAB2CGS=function(x){10^(-0.4*(x+48.6))}
+CGS2magAB=function(x){-2.5*log10(x)-48.6}
+
+Jansky2CGS=function(x){x*1e-23}
+CGS2Jansky=function(x){x*1e23}
+
 magABcalc=function(wave, flux, filter='r_VST'){
   #Data should be in erg/s / cm^2 / Angstrom
   if(!is.vector(wave)){
