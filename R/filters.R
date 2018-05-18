@@ -31,6 +31,7 @@ getfilt=function(filter){
 }
 
 bandpass=function(wave, flux, filter, lum = TRUE){
+  # flux must be flux_nu, i.e. erg/s / cm^2 / Hz, not erg/s / cm^2 / Ang!
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       flux=wave[,2]

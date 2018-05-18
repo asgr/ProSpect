@@ -7,6 +7,9 @@ CGS2magAB=function(x){-2.5*log10(x)-48.6}
 Jansky2CGS=function(x){x*1e-23}
 CGS2Jansky=function(x){x*1e23}
 
+AbsoluteToWHz=function(x){4*pi*((10*.pc_to_m)^2)*.jansky_to_si*magAB2Jansky(x)}
+WHzToAbsolute=function(x){Jansky2magAB(x/(4*pi*((10*.pc_to_m)^2)*.jansky_to_si))}
+
 magABcalc=function(wave, flux, filter='r_VST'){
   #Data should be in erg/s / cm^2 / Angstrom
   if(!is.vector(wave)){
@@ -50,25 +53,25 @@ Janskycalc=function(wave, flux, filter='r_VST'){
 }
 
 
-Lum2FluxFactor=function(z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
-  #Assuming lum to be converted is in the BC03 Lsun / Angstrom format
+Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM){
+  # Assuming lum to be converted is in the BC03 Lsun / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Angstrom flux
-  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)*.Mpc_to_cm
-  factor=.Lsun2erg/(4*pi*Dl_cm^2)/(1+z)
+  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*.mpc_to_cm
+  factor=.lsun_to_erg/(4*pi*Dl_cm^2)/(1+z)
   return(factor)
 }
 
-Lum2Flux=function(wave, lum, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
+Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM){
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       lum=wave[,2]
       wave=wave[,1]
     }
   }
-  #lum needs to be in the BC03 Lsun / Angstrom format
+  # Assuming lum to be converted is in the BC03 Lsun / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Hz flux
-  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)*.Mpc_to_cm
-  flux=lum*.Lsun2erg/(4*pi*Dl_cm^2)/(1+z)
+  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*.mpc_to_cm
+  flux=lum*.lsun_to_erg/(4*pi*Dl_cm^2)/(1+z)
   wave=wave*(1+z)
   #output is erg/s/cm^2/Angstrom (not per Hz! Need to make this final conversion to get to AB mag, but this is the standard way of viewing spectra).
   return(cbind(wave=wave, flux=flux))
@@ -112,14 +115,14 @@ photom_flux=function(wave, flux, outtype='mag', filters='all'){
   return(cbind(cenwave[match(filters, cenwave$filter),], out=outdata))
 }
 
-photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
+photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM){
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       lum=wave[,2]
       wave=wave[,1]
     }
   }
-  flux=Lum2Flux(wave=wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, OmegaR = OmegaR, w0 = w0, wprime = wprime, ref = ref)
+  flux=Lum2Flux(wave=wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
 
   cenwave=NULL
   data('cenwave', envir = environment())
@@ -152,5 +155,5 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 100, 
 
 addspec=function(wave1, flux1, wave2, flux2){
   wave=sort(c(wave1, wave2))
-  return=cbind(wave=wave, flux=approxfun(wave1, flux1, rule=2)(wave)+approxfun(wave2, flux2, rule=2)(wave))
+  return=cbind(wave=wave, flux=approxfun(wave1, flux1, rule=2, yleft=0, yright=0)(wave)+approxfun(wave2, flux2, rule=2, ,yleft=0, yright=0)(wave))
 }

@@ -5,6 +5,8 @@
 \alias{CGS2magAB}
 \alias{Jansky2CGS}
 \alias{CGS2Jansky}
+\alias{AbsoluteToWHz}
+\alias{WHzToAbsolute}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Convert between AB mag, Jansky and CGS
@@ -19,27 +21,39 @@ magAB2CGS(x)
 CGS2magAB(x)
 Jansky2CGS(x)
 CGS2Jansky(x)
+AbsoluteToWHz(x)
+WHzToAbsolute(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-Numeric vector; the value to be converted (LHS of the function name).
+Numeric vector; the value to be converted (in units of the LHS of the function name).
 }
 }
 \details{
 For clarity the conversion used are provided below:
 
-magAB2Jansky=function(x){10^(-0.4*(x-8.9))}
-Jansky2magAB=function(x){-2.5*log10(x)+8.9}
+magAB2Jansky = 10^(-0.4*(magAB-8.9))
 
-magAB2CGS=function(x){10^(-0.4*(x+48.6))}
-CGS2magAB=function(x){-2.5*log10(x)-48.6}
+Jansky2magAB = -2.5*log10(Jansky)+8.9
 
-Jansky2CGS=function(x){x*1e-23}
-CGS2Jansky=function(x){x*1e23}
+magAB2CGS = 10^(-0.4*(magAB+48.6))
+
+CGS2magAB = -2.5*log10(CGS)-48.6
+
+Jansky2CGS = Jansky*1e-23
+
+CGS2Jansky = CGS*1e23
+
+Explictly for absolute magnitudes we can convert to the W/Hz convention. This cannot be used for general magnitudes (or at least, the outputs will not make much sense).
+
+AbsoluteToWHz = 4*pi*((3.086e+17)^2)*1e-26*magAB2Jansky(Absolute)
+
+WHzToAbsolute = Jansky2magAB(WHz/(4*pi*((3.086e+17)^2)*1e-26))
+
 }
 \value{
-Numeric vector; the converted value (RHS of the function name).
+Numeric vector; the converted value (in units of the RHS of the function name).
 }
 \author{
 Aaron Robotham
@@ -55,6 +69,9 @@ Jansky2CGS(magAB2Jansky(20))
 magAB2CGS(20)
 CGS2magAB(magAB2CGS(20))
 CGS2Jansky(magAB2CGS(20))
+
+AbsoluteToWHz(-22)
+WHzToAbsolute(AbsoluteToWHz(-22))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

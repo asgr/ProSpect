@@ -13,25 +13,25 @@ In basic usage, computes the likelihood for a given set of data versus a specifi
 \usage{
 SFHp4like(parm = c(8, 9, 10, 10, 1, 0.3, 1.5, 0), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
-dustfit = c("alpha_SF", "AGNfrac"), filters = c("FUV", "NUV", "u_SDSS", "g_SDSS",
+dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = c("FUV", "NUV", "u_SDSS", "g_SDSS",
 "r_SDSS", "i_SDSS", "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "W1", "W2",
 "W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, like = TRUE,
-speclib = NULL, Dale = NULL, filtout = NULL)
+speclib = NULL, Dale = NULL, filtout = NULL, sparse = 1)
 
 SFHp5like(parm = c(8, 9, 10, 10, 10, 1, 0.3, 1.5, 0), Data, massfit = c('burstmass',
 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
-dustfit = c('alpha_SF', 'AGNfrac'), filters = c('FUV', 'NUV', 'u_SDSS', 'g_SDSS',
-'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2',
-'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose = TRUE, like = TRUE,
-speclib = NULL, Dale = NULL, filtout = NULL)
+dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters = c('FUV', 'NUV', 'u_SDSS',
+'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1',
+'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose = TRUE,
+like = TRUE, speclib = NULL, Dale = NULL, filtout = NULL, sparse = 1)
 
 SFHfunclike(parm = c(1, 1, 0.3, 1.5, 0), Data, massfunc = function(age, SFR = 1)
 { ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
 massfuncfit = c('SFR'), massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
-dustfit = c('alpha_SF', 'AGNfrac'), filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS',
-'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4',
-'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE, speclib=NULL,
-Dale=NULL, filtout=NULL)
+dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters=c('FUV', 'NUV', 'u_SDSS',
+'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1',
+'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE,
+speclib=NULL, Dale=NULL, filtout=NULL, sparse = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -45,7 +45,7 @@ Object; a data object containing the observed data to compare the current ProSpe
 Function; a function which will take \code{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
 }
   \item{forcemass}{
-Logical; if FALSE then the stellar mass is directly computed from the \option{massfunc} function, i.e. the output of this must be a true star formation rate in Msun per year. If TRUE then the first argument of \option{parm} is interpretted to be the target stellar mass in log10 units, and the output of \option{massfunc} will linearly scaled as required to achieve this.
+Logical; if FALSE then the stellar mass is directly computed from the \option{massfunc} function, i.e. the output of this must be a true star formation rate in Msun per year. If TRUE then the first argument of \option{parm} (or second if \option{zfit}=TRUE) is interpretted to be the target stellar mass in log10 units, and the output of \option{massfunc} will linearly scaled as required to achieve this.
 }
   \item{unimax}{
 Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation implied by \option{massfunc} that is older than this will be set to 0.
@@ -68,6 +68,9 @@ Character vector; the names of the tau dust attenuation variables to be used (a 
   \item{dustfit}{
 Character vector; the names of the dust template variables to be used (a mixture of alpha_SF, AGNfrac).
 }
+  \item{zfit}{c(21)
+Logical; whether redshift fitting is being done. If so the first argument of \option{parm} is interpretted to be the redshift, making the stellar mass the second argument if \option{forcemass}=TRUE.
+}
   \item{filters}{
 Character vector; names fo the filters to use for comparison.
 }
@@ -85,6 +88,9 @@ Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, 
 }
   \item{filtout}{
 Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
+}
+  \item{sparse}{
+Numeric scalar; amount of sparse sampling of the spectra to make. Higher values mean coarser spectra is processed, which means less accurate photometry, but faster processing. Generally done when computing higher resolution libraries for AB mags.
 }
 }
 \details{

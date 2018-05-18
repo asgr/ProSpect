@@ -27,7 +27,7 @@ CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
 }
 
 blackbody=function(wave, Temp = 50, k850=0.077){
-  A = 4*pi*.Msol_to_kg*k850/.Lsol_to_W/1e10
+  A = 4*pi*.msol_to_kg*k850/.lsol_to_w/1e10
   return=A*cosplanckLawRadWave(wave/1e10, Temp=Temp)
 }
 
@@ -127,10 +127,11 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
   return=output
 }
 
-dustmass=function(wave_star, flux_star_nodust, flux_star_dust, wave_dust, lum_dust, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref='planck'){
-  total_atten=sum(c(0,diff(wave_star))*(flux_star_nodust-flux_star_dust))
+dustmass=function(wave_star, lum_star_nodust, lum_star_dust, wave_dust, lum_dust){
+  DustLum=sum(c(0,diff(wave_star))*(lum_star_nodust-lum_star_dust))
+  #total_atten=sum(c(0,diff(wave_star))*(flux_star_nodust-flux_star_dust))
+  #DustLum=total_atten/Lum2FluxFactor(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL)
   LtoM=sum(c(0,diff(wave_dust))*lum_dust, na.rm=TRUE)
-  DustLum=total_atten/Lum2FluxFactor(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, OmegaR=OmegaR, w0=w0, wprime=wprime, ref=ref)
   DustMass=DustLum/LtoM
   return=c(DustMass=DustMass, DustLum=DustLum, M2L=1/LtoM)
 }
