@@ -8,50 +8,24 @@ Calculate Dust Mass
 Given an input attenuated and unattenuated galaxy spectra and a dust spectrum, calculates the amount of mass in dust.
 }
 \usage{
-dustmass(wave_star, flux_star_nodust, flux_star_dust, wave_dust, lum_dust, z = 0.1,
-H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0,
-ref = "planck")
+dustmass(wave_star, lum_star_nodust, lum_star_dust, wave_dust, lum_dust)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{wave_star}{
 Numeric vector; observed stellar wavelength in Angstroms (same number of elements as \option{flux_star_nodust} and \option{flux_star_dust}.
 }
-  \item{flux_star_nodust}{
-Numeric vector; predicted unattenuated stellar flux (erg/s/cm^2/Angstrom).
+  \item{lum_star_nodust}{
+Numeric vector; predicted unattenuated stellar luminosity in units Lsol / Ang (for 1 Msol).
 }
-  \item{flux_star_dust}{
-Numeric vector; predicted attenuated stellar flux (erg/s/cm^2/Angstrom).
+  \item{lum_star_dust}{
+Numeric vector; predicted attenuated stellar luminosity in units Lsol / Ang (for 1 Msol).
 }
   \item{wave_dust}{
 Numeric vector; observed dust wavelength in Angstroms (same number of elements as \option{lum_dust}).
 }
   \item{lum_dust}{
 Numeric vector; observed luminosity in units Lsol / Ang (for 1 Msol of dust), as per \code{\link{blackbody}}, \code{\link{greybody}} and \code{\link{Dale_Msol}}.
-}
-  \item{z}{
-Numeric scalar; cosmological redshift, where z must be > -1.
-}
-  \item{H0}{
-Numeric scalar; Hubble constant as defined at z=0 (default is H0=100 (km/s)/Mpc).
-}
-  \item{OmegaM}{
-Numeric scalar; Omega Matter today (default is 0.3).
-}
-  \item{OmegaL}{
-Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1-OmegaM-OmegaR = 0.7).
-}
-  \item{OmegaR}{
-Numeric scalar; Omega Radiation today (default is 0, but OmegaM/3400 is typical).
-}
-  \item{w0}{
-The value of dark energy equation of state at z=0. See \code{\link{cosgrow}} for more details.
-}
-  \item{wprime}{
-The evolution term that governs how the dark energy equation of state evolves with redshift. See \code{\link{cosgrow}} for more details.
-}
-  \item{ref}{
-The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck=Planck15 and WMAP=WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
 }
 }
 \details{
@@ -76,7 +50,7 @@ SFHdemo_dust=SFHp4(burstmass=burstmass)
 SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
 SMdemo=SMstarp4(burstmass=burstmass)
 SMdemo
-dustout=dustmass(SFHdemo_dust$flux[,1], SFHdemo_nodust$flux[,2], SFHdemo_dust$flux[,2],
+dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
 dustout[1]/SMdemo[5]
@@ -93,7 +67,7 @@ SFHdemo_dust=SFHp4(burstmass=burstmass)
 SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
 SMdemo=SMstarp4(burstmass=burstmass)
 SMdemo
-dustout=dustmass(SFHdemo_dust$flux[,1], SFHdemo_nodust$flux[,2], SFHdemo_dust$flux[,2],
+dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
 dustout[1]/SMdemo[5]
@@ -110,7 +84,7 @@ SFHdemo_dust=SFHp4(burstmass=burstmass)
 SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
 SMdemo=SMstarp4(burstmass=burstmass)
 SMdemo
-dustout=dustmass(SFHdemo_dust$flux[,1], SFHdemo_nodust$flux[,2], SFHdemo_dust$flux[,2],
+dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
 dustout[1]/SMdemo[5]
@@ -127,7 +101,7 @@ SFHdemo_dust=SFHp4(burstmass=burstmass)
 SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
 SMdemo=SMstarp4(burstmass=burstmass)
 SMdemo
-dustout=dustmass(SFHdemo_dust$flux[,1], SFHdemo_nodust$flux[,2], SFHdemo_dust$flux[,2],
+dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
 dustout[1]/SMdemo[5]

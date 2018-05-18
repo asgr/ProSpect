@@ -1,6 +1,5 @@
-SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE){
+SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=1){
   if(stellpop=='BC03lr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03lr=NULL
       data('BC03lr', envir = environment())
@@ -8,7 +7,6 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     }
   }
   if(stellpop=='BC03hr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03hr=NULL
       data('BC03hr', envir = environment())
@@ -16,13 +14,27 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     }
   }
   if(stellpop=='EMILES'){
-    birthcloud=1
     if(is.null(speclib)){
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
     }
   }
+  
+  if(any(speclib$Age<1e7)){
+    birthcloud=max(which(speclib$Age<=1e7))
+  }else{
+    birthcloud=1
+  }
+  
+  if(sparse>1){
+    sparse=seq(1,dim(speclib$Zspec[[1]])[2],by=sparse)
+    for(i in unique(Z)){
+      speclib$Zspec[[i]]=speclib$Zspec[[i]][,sparse]
+    }
+    speclib$Wave=speclib$Wave[sparse]
+  }
+  
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
     TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*1e9
@@ -61,30 +73,36 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
   lum=burstlum+younglum+oldlum+ancientlum
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
-  flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
-
-  cenwave=NULL
-  data('cenwave', envir = environment())
+  
+  if(z>0){
+    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
     
-  if(filters[1]=='all'){filters=cenwave$filter}
-  
-  if(!is.null(outtype)){
-  
-    out={}
-  
-    if(outtype=='mag' | outtype=='magAB'){
-      for(i in filters){out=c(out, magABcalc(flux, filter=i))}
-    }
-    if(outtype=='cgs' | outtype=='CGS'){
-      for(i in filters){out=c(out, CGScalc(flux, filter=i))}
-    }
-    if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-      for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
-    }
-  
-    out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+    if(!is.null(outtype)){
+      
+      if(filters[1]=='all'){filters=cenwave$filter}
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      if(filters[1]=='all'){filters=cenwave$filter}
+      
+      out={}
     
+      if(outtype=='mag' | outtype=='magAB'){
+        for(i in filters){out=c(out, magABcalc(flux, filter=i))}
+      }
+      if(outtype=='cgs' | outtype=='CGS'){
+        for(i in filters){out=c(out, CGScalc(flux, filter=i))}
+      }
+      if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
+        for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
+      }
+    
+      out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+      
+    }else{
+      out=NULL
+    }
   }else{
+    flux=NULL
     out=NULL
   }
 
@@ -102,7 +120,6 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
 
 SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, cossplit=c(9e9,1.3e10), dosplit=FALSE){
   if(stellpop=='BC03lr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03lr=NULL
       data('BC03lr', envir = environment())
@@ -110,7 +127,6 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
     }
   }
   if(stellpop=='BC03hr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03hr=NULL
       data('BC03hr', envir = environment())
@@ -118,13 +134,19 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
     }
   }
   if(stellpop=='EMILES'){
-    birthcloud=1
     if(is.null(speclib)){
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
     }
   }
+  
+  if(any(speclib$Age<1e7)){
+    birthcloud=max(which(speclib$Age<=1e7))
+  }else{
+    birthcloud=1
+  }
+  
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
     TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*1e9
@@ -148,9 +170,8 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
-SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE){
+SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=1){
   if(stellpop=='BC03lr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03lr=NULL
       data('BC03lr', envir = environment())
@@ -158,7 +179,6 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     }
   }
   if(stellpop=='BC03hr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03hr=NULL
       data('BC03hr', envir = environment())
@@ -166,13 +186,27 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     }
   }
   if(stellpop=='EMILES'){
-    birthcloud=1
     if(is.null(speclib)){
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
     }
   }
+  
+  if(any(speclib$Age<1e7)){
+    birthcloud=max(which(speclib$Age<=1e7))
+  }else{
+    birthcloud=1
+  }
+  
+  if(sparse>1){
+    sparse=seq(1,dim(speclib$Zspec[[1]])[2],by=sparse)
+    for(i in unique(Z)){
+      speclib$Zspec[[i]]=speclib$Zspec[[i]][,sparse]
+    }
+    speclib$Wave=speclib$Wave[sparse]
+  }
+  
   if(length(Z)==1){Z=rep(Z,5)}
   if(dosplit){
     TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*1e9
@@ -216,30 +250,36 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
   lum=burstlum+younglum+midlum+oldlum+ancientlum
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
-  flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
-
-  cenwave=NULL
-  data('cenwave', envir = environment())
+  
+  if(z>0){
+    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
     
-  if(filters[1]=='all'){filters=cenwave$filter}
-  
-  if(!is.null(outtype)){
-  
-    out={}
-  
-    if(outtype=='mag' | outtype=='magAB'){
-      for(i in filters){out=c(out, magABcalc(flux, filter=i))}
-    }
-    if(outtype=='cgs' | outtype=='CGS'){
-      for(i in filters){out=c(out, CGScalc(flux, filter=i))}
-    }
-    if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-      for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
-    }
-  
-    out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+    if(!is.null(outtype)){
+      
+      if(filters[1]=='all'){filters=cenwave$filter}
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      if(filters[1]=='all'){filters=cenwave$filter}
     
+      out={}
+    
+      if(outtype=='mag' | outtype=='magAB'){
+        for(i in filters){out=c(out, magABcalc(flux, filter=i))}
+      }
+      if(outtype=='cgs' | outtype=='CGS'){
+        for(i in filters){out=c(out, CGScalc(flux, filter=i))}
+      }
+      if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
+        for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
+      }
+    
+      out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+      
+    }else{
+      out=NULL
+    }
   }else{
+    flux=NULL
     out=NULL
   }
 
@@ -257,7 +297,6 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
 
 SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, cossplit=c(9e9,1.3e10), dosplit=FALSE){
   if(stellpop=='BC03lr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03lr=NULL
       data('BC03lr', envir = environment())
@@ -265,7 +304,6 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
     }
   }
   if(stellpop=='BC03hr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03hr=NULL
       data('BC03hr', envir = environment())
@@ -273,13 +311,19 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
     }
   }
   if(stellpop=='EMILES'){
-    birthcloud=1
     if(is.null(speclib)){
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
     }
   }
+  
+  if(any(speclib$Age<1e7)){
+    birthcloud=max(which(speclib$Age<=1e7))
+  }else{
+    birthcloud=1
+  }
+  
   if(length(Z)==1){Z=rep(Z,5)}
   if(dosplit){
     TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*1e9
@@ -305,9 +349,8 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
-SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', ...){
+SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', sparse=1, ...){
   if(stellpop=='BC03lr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03lr=NULL
       data('BC03lr', envir = environment())
@@ -315,7 +358,6 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     }
   }
   if(stellpop=='BC03hr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03hr=NULL
       data('BC03hr', envir = environment())
@@ -323,14 +365,29 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     }
   }
   if(stellpop=='EMILES'){
-    birthcloud=1
     if(is.null(speclib)){
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
     }
   }
+  
+  if(any(speclib$Age<1e7)){
+    birthcloud=max(which(speclib$Age<=1e7))
+  }else{
+    birthcloud=1
+  }
+  
+  if(sparse>1){
+    sparse=seq(1,dim(speclib$Zspec[[1]])[2],by=sparse)
+    for(i in unique(Z)){
+      speclib$Zspec[[i]]=speclib$Zspec[[i]][,sparse]
+    }
+    speclib$Wave=speclib$Wave[sparse]
+  }
+  
   speclib_all=speclib$Zspec[[Z]]
+  
   if(tau_birth!=0){
     speclib_all[1:birthcloud,]=t(t(speclib_all[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
   }
@@ -353,41 +410,43 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   
   lum=colSums(speclib_all*speclib$AgeWeights*massvec)
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
-  flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
-
-  if(filters[1]=='all'){filters=cenwave$filter}
-
-  cenwave=NULL
-  data('cenwave', envir = environment())
+  
+  if(z>0){
+    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
     
-  if(filters[1]=='all'){filters=cenwave$filter}
-  
-  if(!is.null(outtype)){
-  
-    out={}
-  
-    if(outtype=='mag' | outtype=='magAB'){
-      for(i in filters){out=c(out, magABcalc(flux, filter=i))}
-    }
-    if(outtype=='cgs' | outtype=='CGS'){
-      for(i in filters){out=c(out, CGScalc(flux, filter=i))}
-    }
-    if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-      for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
-    }
-  
-    out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+    if(!is.null(outtype)){
+      
+      if(filters[1]=='all'){filters=cenwave$filter}
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      if(filters[1]=='all'){filters=cenwave$filter}
     
+      out={}
+    
+      if(outtype=='mag' | outtype=='magAB'){
+        for(i in filters){out=c(out, magABcalc(flux, filter=i))}
+      }
+      if(outtype=='cgs' | outtype=='CGS'){
+        for(i in filters){out=c(out, CGScalc(flux, filter=i))}
+      }
+      if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
+        for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
+      }
+    
+      out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+      
+    }else{
+      out=NULL
+    }
   }else{
+    flux=NULL
     out=NULL
   }
-
   return=list(flux=flux, lum=lum, out=out, massvec=massvec, masstot=masstot, lumtot=lumtot, M2L=masstot/lumtot, call=match.call())
 }
 
 SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, Z=5, z=0.1, H0=67.8, OmegaM=0.308, OmegaL=1-OmegaM, ...){
   if(stellpop=='BC03lr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03lr=NULL
       data('BC03lr', envir = environment())
@@ -395,7 +454,6 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forc
     }
   }
   if(stellpop=='BC03hr'){
-    birthcloud=70
     if(is.null(speclib)){
       BC03hr=NULL
       data('BC03hr', envir = environment())
@@ -403,12 +461,17 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forc
     }
   }
   if(stellpop=='EMILES'){
-    birthcloud=1
     if(is.null(speclib)){
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
     }
+  }
+  
+  if(any(speclib$Age<1e7)){
+    birthcloud=max(which(speclib$Age<=1e7))
+  }else{
+    birthcloud=1
   }
   
   massvec=massfunc(speclib$Age*agescale, ...)

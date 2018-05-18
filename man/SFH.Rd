@@ -19,19 +19,20 @@ SFHp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth = 1,
 tau_screen = 0.3, filters = "all", Z = c(5, 5, 5, 5), z = 0.1, H0 = 67.8, OmegaM = 0.308,
-OmegaL = 1 - OmegaM, outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+OmegaL = 1 - OmegaM, outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE,
+sparse = 1)
 
 SFHp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
 ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
 midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
 stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3, filters = "all",
 Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
-outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 1)
 
 SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
 tau_birth = 1, tau_screen = 0.3, filters = "all", Z = 5, z = 0.1, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag", ...) 
+OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag", sparse = 1, ...) 
 
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
@@ -131,6 +132,9 @@ Numeric vector; the cosmological age at which the ancient star formation event b
 }
   \item{dosplit}{
 Boolean scalar; should the \option{cossplit} ancient star formation limits be used?
+}
+  \item{sparse}{
+Numeric scalar; amount of sparse sampling of the spectra to make. Higher values mean coarser spectra is processed, which means less accurate photometry, but faster processing. Generally done when computing higher resolution libraries for AB mags.
 }
   \item{\dots}{
 Further arguments to be passed to \code{massfunc} function.

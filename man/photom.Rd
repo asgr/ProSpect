@@ -13,12 +13,10 @@ These functions can manipulate restframe spectra in useful ways, e.g. placing it
 }
 \usage{
 photom_flux(wave, flux, outtype = 'mag', filters = "all")
-photom_lum(wave, lum, outtype = 'mag', filters = "all", z = 0.1, H0 = 100, OmegaM = 0.3,
-OmegaL = 1 - OmegaM - OmegaR, OmegaR = 0, w0 = -1, wprime = 0, ref = "planck")
-Lum2Flux(wave, lum, z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR,
-OmegaR = 0, w0 = -1, wprime = 0, ref='planck')
-Lum2FluxFactor(z = 0.1, H0 = 100, OmegaM = 0.3, OmegaL = 1 - OmegaM - OmegaR,
-OmegaR = 0, w0 = -1, wprime = 0, ref='planck')
+photom_lum(wave, lum, outtype = 'mag', filters = "all", z = 0.1, H0 = 67.8,
+OmegaM = 0.308, OmegaL = 1 - OmegaM)
+Lum2Flux(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM)
+Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -48,18 +46,6 @@ Numeric scalar; Omega Matter today (default is 0.3).
 }
   \item{OmegaL}{
 Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1-OmegaM-OmegaR = 0.7).
-}
-  \item{OmegaR}{
-Numeric scalar; Omega Radiation today (default is 0, but OmegaM/3400 is typical).
-}
-  \item{w0}{
-The value of dark energy equation of state at z=0. See \code{\link{cosgrow}} for more details.
-}
-  \item{wprime}{
-The evolution term that governs how the dark energy equation of state evolves with redshift. See \code{\link{cosgrow}} for more details.
-}
-  \item{ref}{
-The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck=Planck15 and WMAP=WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
 }
 }
 \details{
