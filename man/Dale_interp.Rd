@@ -38,7 +38,7 @@ Dale et al, 2014, ApJ, 784, 11
 Aaron Robotham
 }
 \seealso{
-\code{\link{Dale}}
+\code{\link{Dale}}, \code{\link{interp_param}}
 }
 \examples{
 #Example output showing also the 4 surrounding interpolation points used.
