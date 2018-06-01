@@ -386,15 +386,18 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     speclib$Wave=speclib$Wave[sparse]
   }
   
-  speclib_all=speclib$Zspec[[Z]]
+  if(is.function(Z)){
+    Zlist=interp_param(Z(speclib$Age*agescale), speclib$Z, log=TRUE)
+    Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
+    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
+    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
+    Zuse=which(colSums(Zwmat)>0)
+    Zdoweight=TRUE
+  }else{
+    Zuse=Z
+    Zdoweight=FALSE
+  }
   
-  if(tau_birth!=0){
-    speclib_all[1:birthcloud,]=t(t(speclib_all[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-  }
-  if(tau_screen!=0){
-    speclib_all=t(t(speclib_all)*CF_screen(speclib$Wave, tau=tau_screen))
-  }
-
   massvec=massfunc(speclib$Age*agescale, ...)
   if(unimax!=FALSE){
     agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*1e9
@@ -408,7 +411,25 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     masstot=forcemass
   }
   
-  lum=colSums(speclib_all*speclib$AgeWeights*massvec)
+  lum=rep(0,length(speclib$Wave))
+  
+  for(Zid in Zuse){
+    speclib_all=speclib$Zspec[[Zid]]
+    
+    if(tau_birth!=0){
+      speclib_all[1:birthcloud,]=t(t(speclib_all[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
+    }
+    if(tau_screen!=0){
+      speclib_all=t(t(speclib_all)*CF_screen(speclib$Wave, tau=tau_screen))
+    }
+    
+    if(Zdoweight){
+      lum=lum+colSums(speclib_all*speclib$AgeWeights*massvec*Zwmat[,Zid])
+    }else{
+      lum=colSums(speclib_all*speclib$AgeWeights*massvec)
+    }
+  }
+  
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
   
   if(z>0){
@@ -474,6 +495,18 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forc
     birthcloud=1
   }
   
+  if(is.function(Z)){
+    Zlist=interp_param(Z(speclib$Age*agescale), speclib$Z, log=TRUE)
+    Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
+    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
+    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
+    Zuse=which(colSums(Zwmat)>0)
+    Zdoweight=TRUE
+  }else{
+    Zuse=Z
+    Zdoweight=FALSE
+  }
+  
   massvec=massfunc(speclib$Age*agescale, ...)
   if(unimax!=FALSE){
     agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*1e9
@@ -484,6 +517,15 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forc
     massvec=massvec*forcemass/masstot
   }
   
-  totstar=sum(speclib$Zevo[[Z]][,'SMstar']*speclib$AgeWeights*massvec, na.rm=TRUE)
-  return(TotSMstar=totstar)
+  totstar=rep(0,length(massvec))
+  
+  for(Zid in Zuse){
+    if(Zdoweight){
+      totstar=totstar+speclib$Zevo[[Zid]][,'SMstar']*speclib$AgeWeights*massvec*Zwmat[,Zid]
+    }else{
+      totstar=speclib$Zevo[[Zid]][,'SMstar']*speclib$AgeWeights*massvec
+    }
+  }
+  
+  return(TotSMstar=sum(totstar))
 }

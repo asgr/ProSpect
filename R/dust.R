@@ -97,33 +97,36 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
     }
   }
   
-  if(AGNfrac<0){AGNfrac=0}
-  if(AGNfrac>1){AGNfrac=1}
-  if(alpha_SF<0.0625){alpha_SF=0.0625}
-  if(alpha_SF>4.0000){alpha_SF=4.0000}
+  AGNinterp=interp_param(x=AGNfrac, Dale$AGNfrac)
+  SFinterp=interp_param(x=alpha_SF, Dale$alpha_SF)
   
-  AGNfracloc=max(which(Dale$AGNfrac<=AGNfrac))
-  alpha_SFloc=max(which(Dale$alpha_SF<=alpha_SF))
-  
-  if(AGNfracloc==21){AGNfracloc=20}
-  if(alpha_SFloc==64){alpha_SFloc=63}
-  
-  AGNfraclo=Dale$AGNfrac[AGNfracloc]
-  AGNfrachi=Dale$AGNfrac[AGNfracloc+1]
-  alpha_SFlo=Dale$alpha_SF[alpha_SFloc]
-  alpha_SFhi=Dale$alpha_SF[alpha_SFloc+1]
-  
-  AGNfraclow=(AGNfrachi-AGNfrac)/(AGNfrachi-AGNfraclo)
-  AGNfrachiw=1-AGNfraclow
-  alpha_SFlow=(alpha_SFhi-alpha_SF)/(alpha_SFhi-alpha_SFlo)
-  alpha_SFhiw=1-alpha_SFlow
+  # if(AGNfrac<0){AGNfrac=0}
+  # if(AGNfrac>1){AGNfrac=1}
+  # if(alpha_SF<0.0625){alpha_SF=0.0625}
+  # if(alpha_SF>4.0000){alpha_SF=4.0000}
+  # 
+  # AGNfracloc=max(which(Dale$AGNfrac<=AGNfrac))
+  # alpha_SFloc=max(which(Dale$alpha_SF<=alpha_SF))
+  # 
+  # if(AGNfracloc==21){AGNfracloc=20}
+  # if(alpha_SFloc==64){alpha_SFloc=63}
+  # 
+  # AGNfraclo=Dale$AGNfrac[AGNfracloc]
+  # AGNfrachi=Dale$AGNfrac[AGNfracloc+1]
+  # alpha_SFlo=Dale$alpha_SF[alpha_SFloc]
+  # alpha_SFhi=Dale$alpha_SF[alpha_SFloc+1]
+  # 
+  # AGNfraclow=(AGNfrachi-AGNfrac)/(AGNfrachi-AGNfraclo)
+  # AGNfrachiw=1-AGNfraclow
+  # alpha_SFlow=(alpha_SFhi-alpha_SF)/(alpha_SFhi-alpha_SFlo)
+  # alpha_SFhiw=1-alpha_SFlow
   
   output=rep(0,1496)
   
-  output=output+Dale$Aspec[[AGNfracloc]][alpha_SFloc,]*AGNfraclow*alpha_SFlow
-  output=output+Dale$Aspec[[AGNfracloc]][alpha_SFloc+1,]*AGNfraclow*alpha_SFhiw
-  output=output+Dale$Aspec[[AGNfracloc+1]][alpha_SFloc,]*AGNfrachiw*alpha_SFlow
-  output=output+Dale$Aspec[[AGNfracloc+1]][alpha_SFloc+1,]*AGNfrachiw*alpha_SFhiw
+  output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_lo,]*AGNinterp$weight_lo*SFinterp$weight_lo
+  output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_hi,]*AGNinterp$weight_lo*SFinterp$weight_hi
+  output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_lo,]*AGNinterp$weight_hi*SFinterp$weight_lo
+  output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_hi,]*AGNinterp$weight_hi*SFinterp$weight_hi
   return=output
 }
 
