@@ -9,7 +9,7 @@
 \alias{SMstarfunc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Four Phase Star Formation History
+Various Star Formation History Functions
 }
 \description{
 Computes output galaxy spectra  and stellar masses using variable star formation histories. This can be either distinct phases with \code{SFHp4} and \code{SFHp5}, or a functional form with \code{SFHfunc}. Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar).
@@ -71,7 +71,7 @@ Numeric scalar; the total stellar mass formed in ancient stars.
 Numeric vector; the age limits in years for the burst phase.
 }
   \item{massfunc}{
-Function; a function which will take \code{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
+Function; a function which will take \option{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
 }
   \item{youngage}{
 Numeric vector; the age limits in years for the young phase.

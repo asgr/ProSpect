@@ -6,7 +6,7 @@ Date: 2018-06-01
 Author: Aaron Robotham
 Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>
 Description: A basic interface to the BC03 (low and high resolution) and EMILES libraries as well as the Dale 2014 dust emission templates.
-License: GPL-3
+License: LGPL-3
 Depends: R (>= 2.13), celestial, NISTunits, pracma
 Encoding: UTF-8
 LazyData: true
