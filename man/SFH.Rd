@@ -32,7 +32,7 @@ outtype = "mag", cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 1)
 SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
 tau_birth = 1, tau_screen = 0.3, filters = "all", Z = 5, z = 0.1, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag", sparse = 1, ...) 
+OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag", sparse = 1, intSFR=FALSE, ...) 
 
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
@@ -135,6 +135,9 @@ Boolean scalar; should the \option{cossplit} ancient star formation limits be us
 }
   \item{sparse}{
 Numeric scalar; amount of sparse sampling of the spectra to make. Higher values mean coarser spectra is processed, which means less accurate photometry, but faster processing. Generally done when computing higher resolution libraries for AB mags.
+}
+  \item{intSFR}{
+Boolean scalar; should the \option{massfunc} be intergrated between ages? This might be necessary if the SFH is quite bursty, but it is more expensive to compute and not required if the SFH is quite smooth.  
 }
   \item{\dots}{
 Further arguments to be passed to \code{massfunc} function.

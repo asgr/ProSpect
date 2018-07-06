@@ -349,7 +349,7 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
-SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', sparse=1, ...){
+SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', sparse=1, intSFR=FALSE, ...){
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
       BC03lr=NULL
@@ -398,7 +398,16 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     Zdoweight=FALSE
   }
   
-  massvec=massfunc(speclib$Age*agescale, ...)
+  if(intSFR){
+    massvec={}
+    for(i in 1:length(speclib$Age)){
+      massvec=c(massvec,integrate(massfunc, lower = speclib$AgeBins[i]*agescale, upper=speclib$AgeBins[i+1]*agescale)$value)
+    }
+    massvec=massvec/speclib$AgeWeights
+  }else{
+    massvec=massfunc(speclib$Age*agescale, ...)
+  }
+  
   if(unimax!=FALSE){
     agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*1e9
     massvec[speclib$Age>agemax]=0
