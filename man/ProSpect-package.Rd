@@ -12,10 +12,11 @@
 \tabular{ll}{
 Package: \tab ProSpect\cr
 Type: \tab Package\cr
-Version: \tab 0.2.2\cr
-Date: \tab 2018-06-01\cr
+Version: \tab 0.2.3\cr
+Date: \tab 2018-07-06\cr
 License: \tab LGPL-3\cr
-Depends: \tab R (>= 2.13), celestial, NISTunits\cr
+Depends: \tab R (>= 2.13)\cr
+Imports:  \tab celestial, NISTunits, pracma\cr
 }
 }
 
