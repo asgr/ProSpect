@@ -401,7 +401,12 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   if(intSFR){
     massvec={}
     for(i in 1:length(speclib$Age)){
-      massvec=c(massvec,integrate(massfunc, lower = speclib$AgeBins[i]*agescale, upper=speclib$AgeBins[i+1]*agescale)$value)
+      tempint=try(integrate(massfunc, lower = speclib$AgeBins[i]*agescale, upper=speclib$AgeBins[i+1]*agescale)$value, silent=TRUE)
+      if(class(tempint)=="try-error"){
+        massvec=c(massvec,0)
+      }else{
+        massvec=c(massvec,tempint)
+      }
     }
     massvec=massvec/speclib$AgeWeights
   }else{
