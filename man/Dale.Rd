@@ -6,6 +6,7 @@
 \alias{Dale_NormAGN}
 \alias{Dale_NormSFR}
 \alias{Dale_MsolM2L}
+\alias{Dale_scale}
 \docType{data}
 \title{
 Dale 2014 Infrared Dust Templates
@@ -22,9 +23,10 @@ data("Dale_NormTot")
 data("Dale_NormAGN")
 data("Dale_NormSFR")
 data("Dale_MsolM2L")
+Dale_scale(alpha_SF = 1.5, AGNfrac = 0.5)
 }
 \format{
-The two parameter model marginalises over AGN fraction and the alpha slope of the star forming population. To be consistent with how the data is provided the different AGN fractions are put into different list elements, and the alpha values are stored in different rows. The columns represent fluxes in
+The two parameter model marginalises over AGN fraction and the alpha slope of the star forming population. To be consistent with how the data is provided the different AGN fractions are put into different list elements, and the alpha values are stored in different rows. The columns represent fluxes in various units, as per the Dale type used and can be matched against the corresponding length Wave list element.
 
 The wavelength (Wave) is in angstroms.
 
@@ -59,6 +61,14 @@ List of 4\cr
   ..$ : num [1:64, 1:1496] 8.72e-05 8.71e-05 8.71e-05 8.71e-05 8.70e-05 ...\cr
   ..$ : num [1:64, 1:1496] 0.000105 0.000105 0.000105 0.000105 0.000105 ...\cr
 }
+\arguments{
+  \item{alpha_SF}{
+Numeric scalar; desired interpolated alpha slope of the star forming population.  
+}
+  \item{AGNfrac}{
+Numeric scalar; AGN fraction linearly mixed in energy over the range 5-20 microns (see Dale 2014).
+}
+}
 \details{
 A simplified form of the Dale 2014 templates which varies the dust emission by the star formation radiation field (alpha_SF) and AGN intensity (Aspec).
 
@@ -76,6 +86,10 @@ Dale_SFRTot: Dale_Msol SFR contributing flux is scaled so it integrates to 1 (so
 
 Dale_MsolM2L: a special output for Dale_Msol. It is a 21 (row) x 64 (column) matrix containing the total dust mass to luminosity ratios for all 21 variants of AGNfrac and 64 variants of alpha_SF respectively. It can be used to infer dust masses for different fitted templates if the known intergral of luminosity is know from the optical dust attenuation. Notice all values are below 1, since dust is much more luminous per unit mass than stars etc (or put a different way, not much dust can attenuate a lot of star light quite effectively, and this energy must be re-radiated).
 
+Something to be aware of is how Dale 2014 does the mixing. It is actually defined as the energy intergral between 5 and 20 microns. This means the "AGNfrac" as computed is not representative of the total energy in AGN compared to attenuated star formation. If you compare our pure SF normalised to 1 versus pure AGN normalised to 1 over this regime (i.e. Dale_NormTot$Aspec[[1]] versus Dale_NormTot$Aspec[[21]]) these actually need to be further scaled by 0.7545396 (for SF) and 0.2454604 (for AGN) to bring them into full alignment. \code{Dale_scale} does this energy scaling for the user, also see examples.
+}
+\value{
+\code{Dale_scale} returns the two component vector energy scaling for AGN and SF component of the dust.
 }
 \source{
 Downloaded the file spectra.SFAGN.tar.gz from http://physics.uwyo.edu/~ddale/research/seds/seds.html.
@@ -125,5 +139,19 @@ norm=birthBC03_atten$total_atten), col='brown')
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[1]][24,]*totalatten, col='purple')
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[11]][24,]*totalatten, col='orange')
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[20]][24,]*totalatten, col='green')
+
+#Check our Dale_scale function:
+
+alpha_SF=Dale_NormTot$alpha_SF[24]
+AGNfrac=Dale_NormTot$AGNfrac[12]
+tempscale=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac)
+
+plot(Dale_NormTot$Wave, Dale_NormTot$Aspec[[12]][24,], type='l', log='xy', lwd=2)
+lines(Dale_NormTot$Wave, Dale_NormTot$Aspec[[21]][24,]*tempscale[1], col='red')
+lines(Dale_NormTot$Wave, Dale_NormTot$Aspec[[1]][24,]*tempscale[1], col='brown')
+lines(Dale_NormTot$Wave,
+Dale_NormTot$Aspec[[21]][24,]*tempscale[1]+Dale_NormTot$Aspec[[1]][24,]*tempscale[2],
+col='green', lty=2, lwd=2)
+
 }
 \keyword{datasets}

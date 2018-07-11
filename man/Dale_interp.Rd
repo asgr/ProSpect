@@ -16,7 +16,7 @@ Dale_interp(alpha_SF = 1.5, AGNfrac = 0, type = "Msol", Dale = NULL)
 Numeric scalar; desired interpolated alpha slope of the star forming population.
 }
   \item{AGNfrac}{
-Numeric scalar; desired interpolated AGN fraction.
+Numeric scalar; desired interpolated AGN fraction linearly mixed in energy over the range 5-20 microns (see Dale 2014).
 }
   \item{type}{
 Character scalar; type of Dale template to interpolate. One of: Orig, Msol, NormTot, NormAGN, NormSFR (see \code{\link{Dale}}).
