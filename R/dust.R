@@ -130,6 +130,23 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
   return=output
 }
 
+Dale_scale=function(alpha_SF=1.5, AGNfrac=0.5){
+  Dale_NormTot=NULL
+  data('Dale_NormTot', envir = environment())
+  tempSF=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, Dale=Dale_NormTot)
+  tempapproxSF=approxfun(Dale_NormTot$Wave/1e4, tempSF)
+  tempSFint=integrate(tempapproxSF, lower=5, upper=20)$value
+  
+  tempAGNint=3.39296e-05 #This is always the same, by definition
+  
+  AGNscale=tempSFint/(tempAGNint+tempSFint)
+  
+  NormScale=(AGNfrac*AGNscale+(1-AGNfrac)*(1-AGNscale))
+  AGNfrac_en=(AGNfrac*AGNscale)/NormScale
+  SFRfrac_en=1-AGNfrac_en
+  return(c(AGNfrac_en=AGNfrac_en, SFfrac_en=SFRfrac_en))
+}
+
 dustmass=function(wave_star, lum_star_nodust, lum_star_dust, wave_dust, lum_dust){
   DustLum=sum(c(0,diff(wave_star))*(lum_star_nodust-lum_star_dust))
   #total_atten=sum(c(0,diff(wave_star))*(flux_star_nodust-flux_star_dust))
