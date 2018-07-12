@@ -345,7 +345,7 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
   midstar=midmass*sum(speclib$Zevo[[Z[3]]][midageloc[1]:midageloc[2],'SMstar']*speclib$AgeWeights[midageloc[1]:midageloc[2]])/sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
   oldstar=oldmass*sum(speclib$Zevo[[Z[4]]][oldageloc[1]:oldageloc[2],'SMstar']*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
   ancientstar=ancientmass*sum(speclib$Zevo[[Z[5]]][ancientageloc[1]:ancientageloc[2],'SMstar']*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
-  totstar=burststar+youngstar+oldstar+ancientstar
+  totstar=burststar+youngstar+midstar+oldstar+ancientstar
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
