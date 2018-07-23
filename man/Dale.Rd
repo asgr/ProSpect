@@ -140,18 +140,28 @@ lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[1]][24,]*totalatten, col='purple')
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[11]][24,]*totalatten, col='orange')
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[20]][24,]*totalatten, col='green')
 
-#Check our Dale_scale function:
+#Check our Dale_scale function for an interpolated AGNfrac and alpha_SF:
 
-alpha_SF=Dale_NormTot$alpha_SF[24]
-AGNfrac=Dale_NormTot$AGNfrac[12]
+alpha_SF=1.53
+AGNfrac=0.57
+
+Dale_mix=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, type='NormTot')
+Dale_AGN=Dale_interp(alpha_SF=alpha_SF, AGNfrac=1, type='NormTot')
+Dale_SFR=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, type='NormTot')
+
 tempscale=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac)
 
-plot(Dale_NormTot$Wave, Dale_NormTot$Aspec[[12]][24,], type='l', log='xy', lwd=2)
-lines(Dale_NormTot$Wave, Dale_NormTot$Aspec[[21]][24,]*tempscale[1], col='red')
-lines(Dale_NormTot$Wave, Dale_NormTot$Aspec[[1]][24,]*tempscale[1], col='brown')
+Dale_sum=Dale_interp()
+
+plot(Dale_NormTot$Wave, Dale_mix, type='l', log='xy', lwd=2)
+lines(Dale_NormTot$Wave, Dale_AGN*tempscale[1], col='brown')
+lines(Dale_NormTot$Wave, Dale_SFR*tempscale[2], col='red')
 lines(Dale_NormTot$Wave,
-Dale_NormTot$Aspec[[21]][24,]*tempscale[1]+Dale_NormTot$Aspec[[1]][24,]*tempscale[2],
+Dale_AGN*tempscale[1]+Dale_SFR*tempscale[2],
 col='green', lty=2, lwd=2)
+
+#The above is how you would reconstruct a generic fit, where you need to scale these
+#numbers by the total attenuated flux/luminosity (since above is normalised to 1).
 
 }
 \keyword{datasets}
