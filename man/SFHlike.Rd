@@ -11,35 +11,32 @@ Star Formation History Likelihood
 In basic usage, computes the likelihood for a given set of data versus a specified model for the star formation history (SFH), including dust and attentuation. Can also return all of the \code{ProSpect} outputs for a given SFH model produced by \code{\link{SFHp4}} and \code{\link{Dale_interp}}.
 }
 \usage{
-SFHp4like(parm = c(8, 9, 10, 10, 1, 0.3, 1.5, 0), Data, massfit = c("burstmass",
+SFHp4like(parm = c(8, 9, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
 dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = c("FUV", "NUV", "u_SDSS", "g_SDSS",
 "r_SDSS", "i_SDSS", "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "W1", "W2",
-"W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, like = TRUE,
-speclib = NULL, Dale = NULL, filtout = NULL, sparse = 1)
+"W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, sparse = 1)
 
-SFHp5like(parm = c(8, 9, 10, 10, 10, 1, 0.3, 1.5, 0), Data, massfit = c('burstmass',
+SFHp5like(parm = c(8, 9, 10, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c('burstmass',
 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
 dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters = c('FUV', 'NUV', 'u_SDSS',
 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1',
-'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose = TRUE,
-like = TRUE, speclib = NULL, Dale = NULL, filtout = NULL, sparse = 1)
+'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose = TRUE, sparse = 1)
 
-SFHfunclike(parm = c(1, 1, 0.3, 1.5, 0), Data, massfunc = function(age, SFR = 1)
+SFHfunclike(parm = c(1, 0, 0.5, 0.2, -2), Data, massfunc = function(age, SFR = 1)
 { ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
 massfuncfit = c('SFR'), massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
 dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters=c('FUV', 'NUV', 'u_SDSS',
 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1',
-'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, like=TRUE,
-speclib=NULL, Dale=NULL, filtout=NULL, sparse = 1)
+'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, sparse = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{parm}{
-Numeric vector; the current values of the parameters being tested.
+Numeric vector; the current values of the parameters being tested. All standard \code{ProSpect} parameters should be entered as log10, so \option{AGNfrac}=-1 rather than 0.1. This encourages better behaviour in all optimisers, since these are all scale not location parameters.
 }
   \item{Data}{
-Object; a data object containing the observed data to compare the current ProSpect model against.
+Object; a data object containing the observed data to compare the current ProSpect model against. This has to be a list containing a number of vital parts: flux (4 columns, filter name, central wave, flux (Jy), fluxerr (Jy)); z (redshift); mon.names; parm.names; N; speclib; Dale; filtout; fit (optim or LD); like (norm or st). mon.names should be c('DustMass', 'DustLum'). parm.names should be a vector of parameter names. N is the number of bands being fitted. speclib is the library to use for fitting. Dale is the dust library to use (should be Dale_Msol almost always). filtout is a list of filters to use.
 }
   \item{massfunc}{
 Function; a function which will take \code{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
@@ -68,7 +65,7 @@ Character vector; the names of the tau dust attenuation variables to be used (a 
   \item{dustfit}{
 Character vector; the names of the dust template variables to be used (a mixture of alpha_SF, AGNfrac).
 }
-  \item{zfit}{c(21)
+  \item{zfit}{
 Logical; whether redshift fitting is being done. If so the first argument of \option{parm} is interpretted to be the redshift, making the stellar mass the second argument if \option{forcemass}=TRUE.
 }
   \item{filters}{
@@ -77,29 +74,39 @@ Character vector; names fo the filters to use for comparison.
   \item{verbose}{
 Logical; should verbose output be printed?
 }
-  \item{like}{
-Logical; should only the likelihood be output (TRUE, useful when optimising), or should all useful output be produced in a list (FALSE). See Details for full information on what is output in each case.
-}
-  \item{speclib}{
-Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
-}
-  \item{Dale}{
-Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, \code{\link{Dale_Msol}}, \code{\link{Dale_NormTot}}, \code{\link{Dale_NormAGN}}, \code{\link{Dale_NormSFR}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
-}
-  \item{filtout}{
-Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
-}
   \item{sparse}{
 Numeric scalar; amount of sparse sampling of the spectra to make. Higher values mean coarser spectra is processed, which means less accurate photometry, but faster processing. Generally done when computing higher resolution libraries for AB mags.
 }
 }
 \details{
 This function is mostly used for its side effect of producing a likelihood that we can then optimise our model using \code{\link{optim}}. It handles a lot of the awkward data manipulation side which is present when we are using an odd subset of all possible filters etc.
+
+Some more info on the \option{Data} structure:
+
+\describe{
+  \item{Data$fit}{
+Character scalar; one of 'optim' or 'LD'. If not one of these then all useful output is returned in a list. See Details for full information on what is output in each case.
+}
+  \item{Data$like}{
+Character scalar; one of 'norm' or 'st'. If not one of these then all useful output is returned in a list. See Details for full information on what is output in each case.
+}
+  \item{Data$speclib}{
+Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
+}
+  \item{Data$Dale}{
+Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, \code{\link{Dale_Msol}}, \code{\link{Dale_NormTot}}, \code{\link{Dale_NormAGN}}, \code{\link{Dale_NormSFR}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
+}
+  \item{Data$filtout}{
+Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
+}
+}
 }
 \value{
-If \option{like}=TRUE (the default) then the only thing returned is the log-likelihood as a numeric scalar. Using this output we can optimise our model using \code{\link{optim}}.
+If Data$fit='optim' then the only thing returned is the negative of the log-likelihood as a numeric scalar. Using this output we can minimise our model using \code{\link{optim}}.
 
-If \option{like}=FALSE then lots of things are returned (TBD exactly what). Currently includes:
+If Data$fit='LD' then a list is returned containing LP, Dev, Monitor, yhat, parm. Using this output we can optimise our model using \code{LaplacesDemon}.
+
+If Data$fit='check' then lots of things are returned for checking purposes (TBD exactly what). Currently includes:
 
   \item{like}{log-likelihood}
   \item{FinalSpec}{Numeric matrix; the combined observed flux spectrum (column 1 is wavelength; column 2 is the observed flux in erg/s / cm^2 / Ang.}

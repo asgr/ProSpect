@@ -1,6 +1,6 @@
 exportPattern("^[[:alpha:]]+")
 
-importFrom("stats", "approxfun")
+importFrom("stats", "dt", "approxfun")
 importFrom("utils", "data")
 importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWave", "cosplanckLawRadWave")
 importFrom("stats", "integrate", "dnorm")

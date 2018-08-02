@@ -1,0 +1,9 @@
+v0.3
+
+WARNING: There are now some breaking changes, in particular it is required that *all* ProSpect parameters being passed to the likelihood function will be log10 values. This is to encourage better behaviour in the optimisers.
+
+FEATURE: Added LD legal outputs from the likelihood functions!
+
+v0.2.4
+
+Version mostly used to date by Jess and Luke for fitting. (just uses optim interface).
