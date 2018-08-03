@@ -85,10 +85,10 @@ Some more info on the \option{Data} structure:
 
 \describe{
   \item{Data$fit}{
-Character scalar; one of 'optim' or 'LD'. If not one of these then all useful output is returned in a list. See Details for full information on what is output in each case.
+Character scalar; one of 'optim' or 'LD'. If not one of these then all useful output is returned in a list. See Value for full information on what is output in each case.
 }
   \item{Data$like}{
-Character scalar; one of 'norm' or 'st'. If not one of these then all useful output is returned in a list. See Details for full information on what is output in each case.
+Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. 
 }
   \item{Data$speclib}{
 Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.

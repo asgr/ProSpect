@@ -101,11 +101,18 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     photom_out = c(photom_out, bandpass(flux = fluxnu, wave = finalspec[,1], filter = Data$filtout[[i]], lum = T)*1e23)
   }
   
+  cutsig=(Data$flux$flux-photom_out)/Data$flux$fluxerr
   if(Data$like=='norm'){
-    likeout=sum(dnorm(x=(Data$flux$flux-photom_out)/Data$flux$fluxerr, log=TRUE), na.rm = TRUE)
+    likeout=sum(dnorm(x=cutsig, log=TRUE), na.rm = TRUE)
+  }else if(Data$like=='chisq'){
+    likeout=dchisq(sum(cutsig^2), df=Data$N-length(parm), log=TRUE)
   }else if(Data$like=='st'){
-    likeout=dt(sum(((Data$flux$flux-photom_out)/Data$flux$fluxerr)^2),df = Data$N-length(parm), log=TRUE)
-  }else{
+    vardata = var(cutsig,na.rm = TRUE)
+    dof=2*vardata/(vardata-1)
+    #dof=interval(dof,0,Inf)
+    dof=max(1, min(Inf, dof, na.rm = TRUE), na.rm = TRUE)
+    likeout=sum(dt(cutsig, df=dof, log=TRUE), na.rm = TRUE)
+    }else{
     stop('Bad like option!')
   }
   if(verbose){print(likeout)}
@@ -229,11 +236,18 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     photom_out = c(photom_out, bandpass(flux = fluxnu, wave = finalspec[,1], filter = Data$filtout[[i]], lum = T)*1e23)
   }
   
+  cutsig=(Data$flux$flux-photom_out)/Data$flux$fluxerr
   if(Data$like=='norm'){
-    likeout=sum(dnorm(x=(Data$flux$flux-photom_out)/Data$flux$fluxerr, log=TRUE), na.rm = TRUE)
+    likeout=sum(dnorm(x=cutsig, log=TRUE), na.rm = TRUE)
+  }else if(Data$like=='chisq'){
+    likeout=dchisq(sum(cutsig^2), df=Data$N-length(parm), log=TRUE)
   }else if(Data$like=='st'){
-    likeout=dt(sum(((Data$flux$flux-photom_out)/Data$flux$fluxerr)^2),df = Data$N-length(parm), log=TRUE)
-  }else{
+    vardata = var(cutsig,na.rm = TRUE)
+    dof=2*vardata/(vardata-1)
+    #dof=interval(dof,0,Inf)
+    dof=max(1, min(Inf, dof, na.rm = TRUE), na.rm = TRUE)
+    likeout=sum(dt(cutsig, df=dof, log=TRUE), na.rm = TRUE)
+    }else{
     stop('Bad like option!')
   }
   if(verbose){print(likeout)}
@@ -343,11 +357,18 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     photom_out = c(photom_out, bandpass(flux = fluxnu, wave = finalspec[,1], filter = Data$filtout[[i]], lum = T)*1e23)
   }
   
+  cutsig=(Data$flux$flux-photom_out)/Data$flux$fluxerr
   if(Data$like=='norm'){
-    likeout=sum(dnorm(x=(Data$flux$flux-photom_out)/Data$flux$fluxerr, log=TRUE), na.rm = TRUE)
+    likeout=sum(dnorm(x=cutsig, log=TRUE), na.rm = TRUE)
+  }else if(Data$like=='chisq'){
+    likeout=dchisq(sum(cutsig^2), df=Data$N-length(parm), log=TRUE)
   }else if(Data$like=='st'){
-    likeout=dt(sum(((Data$flux$flux-photom_out)/Data$flux$fluxerr)^2),df = Data$N-length(parm), log=TRUE)
-  }else{
+    vardata = var(cutsig,na.rm = TRUE)
+    dof=2*vardata/(vardata-1)
+    #dof=interval(dof,0,Inf)
+    dof=max(1, min(Inf, dof, na.rm = TRUE), na.rm = TRUE)
+    likeout=sum(dt(cutsig, df=dof, log=TRUE), na.rm = TRUE)
+    }else{
     stop('Bad like option!')
   }
   if(verbose){print(likeout)}
