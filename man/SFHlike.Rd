@@ -13,9 +13,9 @@ In basic usage, computes the likelihood for a given set of data versus a specifi
 \usage{
 SFHp4like(parm = c(8, 9, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
-dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = c("FUV", "NUV", "u_SDSS", "g_SDSS",
-"r_SDSS", "i_SDSS", "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "W1", "W2",
-"W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, sparse = 1)
+dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = c("FUV", "NUV", "u_SDSS",
+"g_SDSS", "r_SDSS", "i_SDSS", "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "W1",
+"W2", "W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, sparse = 1)
 
 SFHp5like(parm = c(8, 9, 10, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c('burstmass',
 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
@@ -25,7 +25,7 @@ dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters = c('FUV', 'NUV', 'u_S
 
 SFHfunclike(parm = c(1, 0, 0.5, 0.2, -2), Data, massfunc = function(age, SFR = 1)
 { ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
-massfuncfit = c('SFR'), massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
+massfuncfit = 'SFR', massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
 dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters=c('FUV', 'NUV', 'u_SDSS',
 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1',
 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, sparse = 1)
@@ -36,7 +36,7 @@ dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters=c('FUV', 'NUV', 'u_SDS
 Numeric vector; the current values of the parameters being tested. All standard \code{ProSpect} parameters should be entered as log10, so \option{AGNfrac}=-1 rather than 0.1. This encourages better behaviour in all optimisers, since these are all scale not location parameters.
 }
   \item{Data}{
-Object; a data object containing the observed data to compare the current ProSpect model against. This has to be a list containing a number of vital parts: flux (4 columns, filter name, central wave, flux (Jy), fluxerr (Jy)); z (redshift); mon.names; parm.names; N; speclib; Dale; filtout; fit (optim or LD); like (norm or st). mon.names should be c('DustMass', 'DustLum'). parm.names should be a vector of parameter names. N is the number of bands being fitted. speclib is the library to use for fitting. Dale is the dust library to use (should be Dale_Msol almost always). filtout is a list of filters to use.
+Object; a data object containing the observed data to compare the current ProSpect model against. This has to be a list containing a number of vital parts: flux; z; mon.names; parm.names; N; speclib; Dale; filtout; fit; like. See Details.
 }
   \item{massfunc}{
 Function; a function which will take \code{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
@@ -81,14 +81,23 @@ Numeric scalar; amount of sparse sampling of the spectra to make. Higher values 
 \details{
 This function is mostly used for its side effect of producing a likelihood that we can then optimise our model using \code{\link{optim}}. It handles a lot of the awkward data manipulation side which is present when we are using an odd subset of all possible filters etc.
 
-Some more info on the \option{Data} structure:
+Some more info on the required \option{Data} structure:
 
 \describe{
-  \item{Data$fit}{
-Character scalar; one of 'optim' or 'LD'. If not one of these then all useful output is returned in a list. See Value for full information on what is output in each case.
+  \item{Data$flux}{
+Data.frame(4 columns, filter name, central wave, flux (Jy), fluxerr (Jy))
 }
-  \item{Data$like}{
-Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. 
+  \item{Data$z}{
+Redshift of the galaxy. Not required if fitting for redshift since this will be picked up by the \option{parm} input.
+}
+  \item{Data$mon.names}{
+Should be a vector containing: 'DustMass', 'DustLum', 'M2L', 'AGNfrac', 'SFfrac'. 
+}
+  \item{Data$parm.names}{
+Should be a vector containing the parameters that are being fit, e.g. for \code{SFHp5like} teh default would be: "burstmass", "youngmass", "midmass", "oldmass", "ancientmass", "tau_birth",  "tau_screen", "alpha_SF", "AGNfrac".
+}
+  \item{Data$N}{
+The number of bands being fitted.
 }
   \item{Data$speclib}{
 Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
@@ -99,7 +108,15 @@ Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, 
   \item{Data$filtout}{
 Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
 }
+  \item{Data$fit}{
+Character scalar; one of 'optim' or 'LD'. If not one of these then all useful output is returned in a list. See Value for full information on what is output in each case.
 }
+  \item{Data$like}{
+Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. 
+}
+}
+
+Outside of the above, any argument that is not \option{parm} and \option{Data} can be passed as part of the named list \option{Data}, rather than having to set it via the individual arguments. This is for two reasons: firstly it means all the user options can be specified in an object that can be saved (to improve reproduceability), but secondly LaplacesDemon can only accept likelihood functions that take exactly two arguments (\option{parm} and \option{Data}), so all options that the user wants to chance have to input as parts of the \option{Data} list structure.
 }
 \value{
 If Data$fit='optim' then the only thing returned is the negative of the log-likelihood as a numeric scalar. Using this output we can minimise our model using \code{\link{optim}}.
