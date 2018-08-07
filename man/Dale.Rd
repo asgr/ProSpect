@@ -23,7 +23,7 @@ data("Dale_NormTot")
 data("Dale_NormAGN")
 data("Dale_NormSFR")
 data("Dale_MsolM2L")
-Dale_scale(alpha_SF = 1.5, AGNfrac = 0.5)
+Dale_scale(alpha_SF = 1.5, AGNfrac = 0.5, Dale_in)
 }
 \format{
 The two parameter model marginalises over AGN fraction and the alpha slope of the star forming population. To be consistent with how the data is provided the different AGN fractions are put into different list elements, and the alpha values are stored in different rows. The columns represent fluxes in various units, as per the Dale type used and can be matched against the corresponding length Wave list element.
@@ -68,6 +68,9 @@ Numeric scalar; desired interpolated alpha slope of the star forming population.
   \item{AGNfrac}{
 Numeric scalar; AGN fraction linearly mixed in energy over the range 5-20 microns (see Dale 2014).
 }
+  \item{Dale_in}{
+Two column matrix; the wavelength and flux of the dust model to be computed. \option{alpha_SF} and \option{AGNfrac} should still be provided correctly, but passing in \option{Dale_in} will often be faster because there will be less data loading required.  
+}
 }
 \details{
 A simplified form of the Dale 2014 templates which varies the dust emission by the star formation radiation field (alpha_SF) and AGN intensity (Aspec).
@@ -89,7 +92,7 @@ Dale_MsolM2L: a special output for Dale_Msol. It is a 21 (row) x 64 (column) mat
 Something to be aware of is how Dale 2014 does the mixing. It is actually defined as the energy intergral between 5 and 20 microns. This means the "AGNfrac" as computed is not representative of the total energy in AGN compared to attenuated star formation. If you compare our pure SF normalised to 1 versus pure AGN normalised to 1 over this regime (i.e. Dale_NormTot$Aspec[[1]] versus Dale_NormTot$Aspec[[21]]) these actually need to be further scaled by 0.7545396 (for SF) and 0.2454604 (for AGN) to bring them into full alignment. \code{Dale_scale} does this energy scaling for the user, also see examples.
 }
 \value{
-\code{Dale_scale} returns the two component vector energy scaling for AGN and SF component of the dust.
+\code{Dale_scale} returns the two component vector energy scaling for AGN (AGNfrac) and SF (SFRfrac) component of the dust.
 }
 \source{
 Downloaded the file spectra.SFAGN.tar.gz from http://physics.uwyo.edu/~ddale/research/seds/seds.html.
@@ -151,13 +154,11 @@ Dale_SFR=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, type='NormTot')
 
 tempscale=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac)
 
-Dale_sum=Dale_interp()
-
-plot(Dale_NormTot$Wave, Dale_mix, type='l', log='xy', lwd=2)
-lines(Dale_NormTot$Wave, Dale_AGN*tempscale[1], col='brown')
-lines(Dale_NormTot$Wave, Dale_SFR*tempscale[2], col='red')
+plot(Dale_NormTot$Wave, Dale_mix$Aspec, type='l', log='xy', lwd=2)
+lines(Dale_NormTot$Wave, Dale_AGN$Aspec*tempscale[1], col='brown')
+lines(Dale_NormTot$Wave, Dale_SFR$Aspec*tempscale[2], col='red')
 lines(Dale_NormTot$Wave,
-Dale_AGN*tempscale[1]+Dale_SFR*tempscale[2],
+Dale_AGN$Aspec*tempscale[1]+Dale_SFR$Aspec*tempscale[2],
 col='green', lty=2, lwd=2)
 
 #The above is how you would reconstruct a generic fit, where you need to scale these

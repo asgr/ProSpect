@@ -127,14 +127,16 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
   output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_hi,]*AGNinterp$weight_lo*SFinterp$weight_hi
   output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_lo,]*AGNinterp$weight_hi*SFinterp$weight_lo
   output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_hi,]*AGNinterp$weight_hi*SFinterp$weight_hi
-  return=output
+  return=data.frame(Wave=Dale$Wave, Aspec=output)
 }
 
-Dale_scale=function(alpha_SF=1.5, AGNfrac=0.5){
-  Dale_NormTot=NULL
-  data('Dale_NormTot', envir = environment())
-  tempSF=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, Dale=Dale_NormTot)
-  tempapproxSF=approxfun(Dale_NormTot$Wave/1e4, tempSF)
+Dale_scale=function(alpha_SF=1.5, AGNfrac=0.5, Dale_in){
+  if(missing(Dale_in)){
+    Dale_NormTot=NULL
+    data('Dale_NormTot', envir = environment())
+    Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, Dale=Dale_NormTot)
+  }
+  tempapproxSF=approxfun(Dale_in$Wave/1e4, Dale_in$Aspec)
   tempSFint=integrate(tempapproxSF, lower=5, upper=20)$value
   
   tempAGNint=3.39296e-05 #This is always the same, by definition
@@ -142,9 +144,9 @@ Dale_scale=function(alpha_SF=1.5, AGNfrac=0.5){
   AGNscale=tempSFint/(tempAGNint+tempSFint)
   
   NormScale=(AGNfrac*AGNscale+(1-AGNfrac)*(1-AGNscale))
-  AGNfrac_en=(AGNfrac*AGNscale)/NormScale
-  SFRfrac_en=1-AGNfrac_en
-  return(c(AGNfrac_en=AGNfrac_en, SFfrac_en=SFRfrac_en))
+  AGNfrac=(AGNfrac*AGNscale)/NormScale
+  SFRfrac=1-AGNfrac
+  return(c(AGNfrac=AGNfrac, SFRfrac=SFRfrac))
 }
 
 dustmass=function(wave_star, lum_star_nodust, lum_star_dust, wave_dust, lum_dust){

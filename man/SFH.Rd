@@ -196,11 +196,11 @@ lines(SFHdemo_dust$flux, col='grey')
 lines(10^seq(5,7,by=0.01), greybody_norm(10^seq(5,7,by=0.01), z=0.1, norm=total_atten),
 col='brown')
 Dale_temp=Dale_interp(type='NormSFR')
-lines(Dale_Msol$Wave, Dale_temp*total_atten, col='red')
+lines(Dale_Msol$Wave, Dale_temp$Aspec*total_atten, col='red')
 
 wave=sort(c(SFHdemo_dust$flux[,'wave'], Dale_Msol$Wave))
 SpecAtten=approxfun(SFHdemo_dust$flux, rule=2)(wave)+
-          approxfun(Dale_Msol$Wave,Dale_temp, rule=2)(wave/1.1)
+          approxfun(Dale_Msol$Wave, Dale_temp$Aspec, rule=2)(wave/1.1)
 lines(wave, SpecAtten, col='darkgreen')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

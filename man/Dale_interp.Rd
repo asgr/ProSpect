@@ -29,7 +29,7 @@ Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, 
 This function does a simple 2D bilinear interpolation to create templates for values of \option{AGNfrac} and \option{alpha_SF} that are not precisely provided by \code{\link{Dale}}.
 }
 \value{
-Vector of interpolated luminosity values.
+Two column data.frame containing the wavelength (Wave) and the interpolated luminosity values (Aspec) in the same units as the input Dale dust library (from argument \option{Dale}).
 }
 \references{
 Dale et al, 2014, ApJ, 784, 11
@@ -44,7 +44,7 @@ Aaron Robotham
 #Example output showing also the 4 surrounding interpolation points used.
 temp=Dale_interp(1.53125, 0.025)
 
-plot(Dale_Orig$Wave, temp, log='x', type='l', col='red')
+plot(temp, log='x', type='l', col='red')
 lines(Dale_Orig$Wave, Dale_Msol$Aspec[[1]][24,])
 lines(Dale_Orig$Wave, Dale_Msol$Aspec[[1]][25,])
 lines(Dale_Orig$Wave, Dale_Msol$Aspec[[2]][24,])
