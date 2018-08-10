@@ -145,8 +145,7 @@ Dale_scale=function(alpha_SF=1.5, AGNfrac=0.5, Dale_in){
   
   NormScale=(AGNfrac*AGNscale+(1-AGNfrac)*(1-AGNscale))
   AGNfrac=(AGNfrac*AGNscale)/NormScale
-  SFRfrac=1-AGNfrac
-  return(c(AGNfrac=AGNfrac, SFRfrac=SFRfrac))
+  return(c(Dustfrac_bol=1-AGNfrac, AGNfrac_bol=AGNfrac))
 }
 
 dustmass=function(wave_star, lum_star_nodust, lum_star_dust, wave_dust, lum_dust){
