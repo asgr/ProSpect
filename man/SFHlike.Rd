@@ -91,10 +91,10 @@ Data.frame(4 columns, filter name, central wave, flux (Jy), fluxerr (Jy))
 Redshift of the galaxy. Not required if fitting for redshift since this will be picked up by the \option{parm} input.
 }
   \item{Data$mon.names}{
-Should be a vector containing: 'DustMass', 'DustLum', 'M2L', 'AGNfrac', 'SFfrac'. 
+Should be a vector containing: 'DustMass', 'DustLum', 'AGNLum', 'Dustfrac_bol', 'AGNfrac_bol'. 
 }
   \item{Data$parm.names}{
-Should be a vector containing the parameters that are being fit, e.g. for \code{SFHp5like} teh default would be: "burstmass", "youngmass", "midmass", "oldmass", "ancientmass", "tau_birth",  "tau_screen", "alpha_SF", "AGNfrac".
+Should be a vector containing the parameters that are being fit, e.g. for \code{SFHp5like} the default would be: "burstmass", "youngmass", "midmass", "oldmass", "ancientmass", "tau_birth",  "tau_screen", "alpha_SF", "AGNfrac".
 }
   \item{Data$N}{
 The number of bands being fitted.
@@ -109,7 +109,7 @@ Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, 
 Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
 }
   \item{Data$fit}{
-Character scalar; one of 'optim' or 'LD'. If not one of these then all useful output is returned in a list. See Value for full information on what is output in each case.
+Character scalar; one of 'optim', 'LD' or 'check'. See Value for full information on what is output in each case.
 }
   \item{Data$like}{
 Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. 
@@ -123,13 +123,13 @@ If Data$fit='optim' then the only thing returned is the negative of the log-like
 
 If Data$fit='LD' then a list is returned containing LP, Dev, Monitor, yhat, parm. Using this output we can optimise our model using \code{LaplacesDemon}.
 
-If Data$fit='check' then lots of things are returned for checking purposes (TBD exactly what). Currently includes:
+If Data$fit='check' then lots of things are returned for checking purposes (TBD exactly what). Currently (not exhaustively) includes:
 
   \item{like}{log-likelihood}
   \item{FinalSpec}{Numeric matrix; the combined observed flux spectrum (column 1 is wavelength; column 2 is the observed flux in erg/s / cm^2 / Ang.}
-  \item{FinalPhotom}{Numeric vector; observed photometry in Jansky, as given by \code{\link{Janskycalc}}} in the \code{out} column.
-  \item{SFH_dust}{List; output of \code{\link{SFHp4}} using the current parameter values including dust attenuation.}
-  \item{SFH_nodust}{List; output of \code{\link{SFHp4}} using the current parameter values but ignoring dust attenuation (effectively \option{tau_birth}=0 and \option{tau_screen}=0.}
+  \item{FinalPhotom}{Numeric vector; observed photometry in Jansky, as given by \code{\link{Janskycalc}}} in the 'out' column.
+  \item{SFH_dust}{List; output of relevant \code{\link{SFH}} function using the current parameter values including dust attenuation.}
+  \item{SFH_nodust}{List; output of relevant \code{\link{SFH}} function using the current parameter values but ignoring dust attenuation (effectively \option{tau_birth}=0 and \option{tau_screen}=0.}
   \item{Dust}{Numeric vector; dust properties as determined by \code{\link{dustmass}}.}
 }
 \author{

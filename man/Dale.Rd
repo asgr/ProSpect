@@ -92,7 +92,7 @@ Dale_MsolM2L: a special output for Dale_Msol. It is a 21 (row) x 64 (column) mat
 Something to be aware of is how Dale 2014 does the mixing. It is actually defined as the energy intergral between 5 and 20 microns. This means the "AGNfrac" as computed is not representative of the total energy in AGN compared to attenuated star formation. If you compare our pure SF normalised to 1 versus pure AGN normalised to 1 over this regime (i.e. Dale_NormTot$Aspec[[1]] versus Dale_NormTot$Aspec[[21]]) these actually need to be further scaled by 0.7545396 (for SF) and 0.2454604 (for AGN) to bring them into full alignment. \code{Dale_scale} does this energy scaling for the user, also see examples.
 }
 \value{
-\code{Dale_scale} returns the two component vector energy scaling for AGN (AGNfrac) and SF (SFRfrac) component of the dust.
+\code{Dale_scale} returns the two component vector bolometric luminosity scaling for dust (element 1, Dustfrac_bol) and AGN (element 2, AGNfrac_bol) components of the FIR emission.
 }
 \source{
 Downloaded the file spectra.SFAGN.tar.gz from http://physics.uwyo.edu/~ddale/research/seds/seds.html.
