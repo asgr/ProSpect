@@ -53,7 +53,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='tau_screen']=.interval(parm[names(parm)=='tau_screen'], -2, 2, reflect=FALSE)
     tau_screen = 10^parm[names(parm)=='tau_screen']
   }else{
-    tau_screen = 0.2
+    tau_screen = 0.3
   }
   if('alpha_SF' %in% names(parm)){
     parm[names(parm)=='alpha_SF']=.interval(parm[names(parm)=='alpha_SF'], -1, 0.6, reflect=FALSE)
@@ -187,7 +187,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='tau_screen']=.interval(parm[names(parm)=='tau_screen'], -2, 2, reflect=FALSE)
     tau_screen = 10^parm[names(parm)=='tau_screen']
   }else{
-    tau_screen = 0.2
+    tau_screen = 0.3
   }
   if('alpha_SF' %in% names(parm)){
     parm[names(parm)=='alpha_SF']=.interval(parm[names(parm)=='alpha_SF'], -1, 0.6, reflect=FALSE)
@@ -331,7 +331,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     parm[names(parm)=='tau_screen']=.interval(parm[names(parm)=='tau_screen'], -2, 2, reflect=FALSE)
     tau_screen = 10^parm[names(parm)=='tau_screen']
   }else{
-    tau_screen = 0.2
+    tau_screen = 0.3
   }
   if('alpha_SF' %in% names(parm)){
     parm[names(parm)=='alpha_SF']=.interval(parm[names(parm)=='alpha_SF'], -1, 0.6, reflect=FALSE)
