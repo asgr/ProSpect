@@ -62,7 +62,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     alpha_SF = 1.5
   }
   if('AGNfrac' %in% names(parm)){
-    parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.23, reflect=FALSE)
+    parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.023, reflect=FALSE)
     AGNfrac = 10^parm[names(parm)=='AGNfrac']
   }else{
     AGNfrac = 0
@@ -196,7 +196,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     alpha_SF = 1.5
   }
   if('AGNfrac' %in% names(parm)){
-    parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.23, reflect=FALSE)
+    parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.023, reflect=FALSE)
     AGNfrac = 10^parm[names(parm)=='AGNfrac']
   }else{
     AGNfrac = 0
@@ -340,7 +340,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     alpha_SF = 1.5
   }
   if('AGNfrac' %in% names(parm)){
-    parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.23, reflect=FALSE)
+    parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.023, reflect=FALSE)
     AGNfrac = 10^parm[names(parm)=='AGNfrac']
   }else{
     AGNfrac = 0
