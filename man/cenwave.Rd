@@ -9,7 +9,7 @@ Table of central wavelengths of all provided filters. Here we use the most commo
 }
 \usage{data("cenwave")}
 \format{
-  A data frame with 26 observations on the following 2 variables.
+  A data frame with 34 observations on the following 2 variables.
   \describe{
     \item{\code{filter}}{A character vector}
     \item{\code{cenwave}}{A numeric vector}

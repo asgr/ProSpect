@@ -37,11 +37,18 @@ getfilt(filter)
   W2      \tab  Wise W2 band  \cr
   W3      \tab  Wise W3 band  \cr
   W4      \tab  Wise W4 band  \cr
+  I1 or 36      \tab  Spitzer I1 band  \cr
+  I2 or 45      \tab  Spitzer I2 band  \cr
+  I3 or 58      \tab  Spitzer I3 band  \cr
+  I4 or 80      \tab  Spitzer I4 band  \cr
+  P70 or 70   \tab  Herschel PACS 70 band  \cr
   P100 or 100   \tab  Herschel PACS 100 band  \cr
   P160 or 160   \tab  Herschel PACS 160 band  \cr
   S250 or 250   \tab  Herschel Spire 250 band  \cr
   S350 or 350   \tab  Herschel Spire 350 band  \cr
-  S450 or 450 or S500 or 500  \tab  Herschel Spire 450 band  \cr
+  S500 or 500   \tab  Herschel Spire 500 band  \cr
+  S450 or 450   \tab  JCMT SCUBA-2 450 band  \cr
+  S850 or 850   \tab  JCMT SCUBA-2 850 band  \cr
 }
 }
 }
