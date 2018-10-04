@@ -25,6 +25,9 @@
 \alias{filt_I2_Spitzer}
 \alias{filt_I3_Spitzer}
 \alias{filt_I4_Spitzer}
+\alias{filt_M24_Spitzer}
+\alias{filt_M70_Spitzer}
+\alias{filt_M160_Spitzer}
 \alias{filt_P70_Herschel}
 \alias{filt_P100_Herschel}
 \alias{filt_P160_Herschel}
@@ -73,6 +76,9 @@ data("filt_I1_Spitzer")
 data("filt_I2_Spitzer")
 data("filt_I3_Spitzer")
 data("filt_I4_Spitzer")
+data("filt_M24_Spitzer")
+data("filt_M70_Spitzer")
+data("filt_M160_Spitzer")
 data("filt_P70_Herschel")
 data("filt_P100_Herschel")
 data("filt_P160_Herschel")
