@@ -22,18 +22,21 @@ getfilt=function(filter){
   if(filter=='W2_WISE' | filter=='W2'){filt_W2_WISE=NULL; data('filt_W2_WISE', envir = environment()); out=filt_W2_WISE}
   if(filter=='W3_WISE' | filter=='W3'){filt_W3_WISE=NULL; data('filt_W3_WISE', envir = environment()); out=filt_W3_WISE}
   if(filter=='W4_WISE' | filter=='W4'){filt_W4_WISE=NULL; data('filt_W4_WISE', envir = environment()); out=filt_W4_WISE}
-  if(filter=='I1_Spitzer' | filter==36 | filter=='I1'){filt_I1_Spitzer=NULL; data('filt_I1_Spitzer', envir = environment()); out=filt_I1_Spitzer}
-  if(filter=='I2_Spitzer' | filter==45 | filter=='I2'){filt_I2_Spitzer=NULL; data('filt_I2_Spitzer', envir = environment()); out=filt_I2_Spitzer}
-  if(filter=='I3_Spitzer' | filter==58 | filter=='I3'){filt_I3_Spitzer=NULL; data('filt_I3_Spitzer', envir = environment()); out=filt_I3_Spitzer}
-  if(filter=='I4_Spitzer' | filter==80 | filter=='I4'){filt_I4_Spitzer=NULL; data('filt_I4_Spitzer', envir = environment()); out=filt_I4_Spitzer}
-  if(filter=='P70_Herschel' | filter==70 | filter=='P70'){filt_P70_Herschel=NULL; data('filt_P70_Herschel', envir = environment()); out=filt_P70_Herschel}
-  if(filter=='P100_Herschel' | filter==100 | filter=='P100'){filt_P100_Herschel=NULL; data('filt_P100_Herschel', envir = environment()); out=filt_P100_Herschel}
-  if(filter=='P160_Herschel' | filter==160 | filter=='P160'){filt_P160_Herschel=NULL; data('filt_P160_Herschel', envir = environment()); out=filt_P160_Herschel}
-  if(filter=='S250_Herschel' | filter==250 | filter=='S250'){filt_S250_Herschel=NULL; data('filt_S250_Herschel', envir = environment()); out=filt_S250_Herschel}
-  if(filter=='S350_Herschel' | filter==350 | filter=='S350'){filt_S350_Herschel=NULL; data('filt_S350_Herschel', envir = environment()); out=filt_S350_Herschel}
-  if(filter=='S500_Herschel' | filter==500 | filter=='S500'){filt_S500_Herschel=NULL; data('filt_S500_Herschel', envir = environment()); out=filt_S500_Herschel}
-  if(filter=='S450_JCMT' | filter==450 | filter=='S450'){filt_S450_JCMT=NULL; data('filt_S450_JCMT', envir = environment()); out=filt_S450_JCMT}
-  if(filter=='S850_JCMT' | filter==850 | filter=='S850'){filt_S850_JCMT=NULL; data('filt_S850_JCMT', envir = environment()); out=filt_S850_JCMT}
+  if(filter=='I1_Spitzer' | filter=='I1'){filt_I1_Spitzer=NULL; data('filt_I1_Spitzer', envir = environment()); out=filt_I1_Spitzer}
+  if(filter=='I2_Spitzer' | filter=='I2'){filt_I2_Spitzer=NULL; data('filt_I2_Spitzer', envir = environment()); out=filt_I2_Spitzer}
+  if(filter=='I3_Spitzer' | filter=='I3'){filt_I3_Spitzer=NULL; data('filt_I3_Spitzer', envir = environment()); out=filt_I3_Spitzer}
+  if(filter=='I4_Spitzer' | filter=='I4'){filt_I4_Spitzer=NULL; data('filt_I4_Spitzer', envir = environment()); out=filt_I4_Spitzer}
+  if(filter=='M24_Spitzer' | filter=='M24'){filt_M24_Spitzer=NULL; data('filt_M24_Spitzer', envir = environment()); out=filt_M24_Spitzer}
+  if(filter=='M70_Spitzer' | filter=='M70'){filt_M70_Spitzer=NULL; data('filt_M70_Spitzer', envir = environment()); out=filt_M70_Spitzer}
+  if(filter=='M160_Spitzer' | filter=='M160'){filt_M160_Spitzer=NULL; data('filt_M160_Spitzer', envir = environment()); out=filt_M160_Spitzer}
+  if(filter=='P70_Herschel' | filter=='P70'){filt_P70_Herschel=NULL; data('filt_P70_Herschel', envir = environment()); out=filt_P70_Herschel}
+  if(filter=='P100_Herschel' | filter=='P100'){filt_P100_Herschel=NULL; data('filt_P100_Herschel', envir = environment()); out=filt_P100_Herschel}
+  if(filter=='P160_Herschel' | filter=='P160'){filt_P160_Herschel=NULL; data('filt_P160_Herschel', envir = environment()); out=filt_P160_Herschel}
+  if(filter=='S250_Herschel' | filter=='S250'){filt_S250_Herschel=NULL; data('filt_S250_Herschel', envir = environment()); out=filt_S250_Herschel}
+  if(filter=='S350_Herschel' | filter=='S350'){filt_S350_Herschel=NULL; data('filt_S350_Herschel', envir = environment()); out=filt_S350_Herschel}
+  if(filter=='S500_Herschel' | filter=='S500'){filt_S500_Herschel=NULL; data('filt_S500_Herschel', envir = environment()); out=filt_S500_Herschel}
+  if(filter=='S450_JCMT' | filter=='S450'){filt_S450_JCMT=NULL; data('filt_S450_JCMT', envir = environment()); out=filt_S450_JCMT}
+  if(filter=='S850_JCMT' | filter=='S850'){filt_S850_JCMT=NULL; data('filt_S850_JCMT', envir = environment()); out=filt_S850_JCMT}
   return(out)
 }
 
