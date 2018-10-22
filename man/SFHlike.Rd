@@ -13,22 +13,18 @@ In basic usage, computes the likelihood for a given set of data versus a specifi
 \usage{
 SFHp4like(parm = c(8, 9, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
-dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = c("FUV", "NUV", "u_SDSS",
-"g_SDSS", "r_SDSS", "i_SDSS", "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "W1",
-"W2", "W3", "W4", "P100", "P160", "S250", "S350", "S500"), verbose = TRUE, sparse = 1)
+dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = 'all', verbose = TRUE,
+sparse = 1)
 
 SFHp5like(parm = c(8, 9, 10, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c('burstmass',
 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
-dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters = c('FUV', 'NUV', 'u_SDSS',
-'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1',
-'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose = TRUE, sparse = 1)
+dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters = 'all', verbose = TRUE,
+sparse = 1)
 
 SFHfunclike(parm = c(1, 0, 0.5, 0.2, -2), Data, massfunc = function(age, SFR = 1)
 { ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
 massfuncfit = 'SFR', massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
-dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters=c('FUV', 'NUV', 'u_SDSS',
-'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1',
-'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, sparse = 1)
+dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters='all', verbose=TRUE, sparse = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -69,7 +65,7 @@ Character vector; the names of the dust template variables to be used (a mixture
 Logical; whether redshift fitting is being done. If so the first argument of \option{parm} is interpretted to be the redshift, making the stellar mass the second argument if \option{forcemass}=TRUE.
 }
   \item{filters}{
-Character vector; names fo the filters to use for comparison.
+Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters.
 }
   \item{verbose}{
 Logical; should verbose output be printed?

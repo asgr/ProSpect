@@ -1,4 +1,4 @@
-SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, sparse=1){
+SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters='all', verbose=TRUE, sparse=1){
   
   if('massfit' %in% names(Data)){massfit = Data$massfit}
   if('taufit' %in% names(Data)){taufit = Data$taufit}
@@ -67,7 +67,10 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
   }else{
     AGNfrac = 0
   }
-    
+  
+  cenwave=NULL
+  data('cenwave', envir = environment())
+  if(filters[1]=='all'){filters=cenwave$filter}
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
@@ -129,7 +132,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
   }
 }
 
-SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, sparse=1){
+SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters='all', verbose=TRUE, sparse=1){
   if('massfit' %in% names(Data)){massfit = Data$massfit}
   if('taufit' %in% names(Data)){taufit = Data$taufit}
   if('dustfit' %in% names(Data)){dustfit = Data$dustfit}
@@ -220,7 +223,10 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
   #   data('Dale_Msol', envir = environment())
   #   Dale=Dale_Msol
   # }
-    
+  
+  cenwave=NULL
+  data('cenwave', envir = environment())
+  if(filters[1]=='all'){filters=cenwave$filter}
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
@@ -282,7 +288,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
   }
 }
 
-SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit='SFR', massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters=c('FUV', 'NUV', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1' , 'W2', 'W3', 'W4', 'P100', 'P160', 'S250' , 'S350', 'S500'), verbose=TRUE, sparse=1){
+SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit='SFR', massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, filters='all', verbose=TRUE, sparse=1){
   
   if('massfunc' %in% names(Data)){massfunc = Data$massfunc}
   if('forcemass' %in% names(Data)){forcemass = Data$forcemass}
@@ -362,7 +368,10 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
   #   data('Dale_Msol', envir = environment())
   #   Dale=Dale_Msol
   # }
-    
+  
+  cenwave=NULL
+  data('cenwave', envir = environment())
+  if(filters[1]=='all'){filters=cenwave$filter} 
   filters=filters[filters %in% Data$flux$filter]
   Data$flux=Data$flux[Data$flux$filter %in% filters,]
   
