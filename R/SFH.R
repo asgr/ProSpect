@@ -79,7 +79,6 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     
     if(!is.null(outtype)){
       
-      if(filters[1]=='all'){filters=cenwave$filter}
       cenwave=NULL
       data('cenwave', envir = environment())
       if(filters[1]=='all'){filters=cenwave$filter}
@@ -256,7 +255,6 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     
     if(!is.null(outtype)){
       
-      if(filters[1]=='all'){filters=cenwave$filter}
       cenwave=NULL
       data('cenwave', envir = environment())
       if(filters[1]=='all'){filters=cenwave$filter}
@@ -451,7 +449,6 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     
     if(!is.null(outtype)){
       
-      if(filters[1]=='all'){filters=cenwave$filter}
       cenwave=NULL
       data('cenwave', envir = environment())
       if(filters[1]=='all'){filters=cenwave$filter}
