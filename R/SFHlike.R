@@ -120,7 +120,9 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     Dustfrac_bol=log10(Fractions[1])
     AGNfrac_bol=log10(Fractions[2])
     AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
-    return(list(LP=likeout,Dev=-2*likeout,Monitor=c(DustMass, DustLum, AGNLum, Dustfrac_bol, AGNfrac_bol),yhat=1,parm=parm))
+    Monitor=c(DustMass, DustLum, AGNLum, Dustfrac_bol, AGNfrac_bol)
+    Monitor[!is.finite(Monitor)]=1e10
+    return(list(LP=likeout,Dev=-2*likeout,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
     SMtot=SMstarp5(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, speclib=Data$speclib)
     return(list(like=likeout, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot))
@@ -271,7 +273,9 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     Dustfrac_bol=log10(Fractions[1])
     AGNfrac_bol=log10(Fractions[2])
     AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
-    return(list(LP=likeout,Dev=-2*likeout,Monitor=c(DustMass, DustLum, AGNLum, Dustfrac_bol, AGNfrac_bol),yhat=1,parm=parm))
+    Monitor=c(DustMass, DustLum, AGNLum, Dustfrac_bol, AGNfrac_bol)
+    Monitor[!is.finite(Monitor)]=1e10
+    return(list(LP=likeout,Dev=-2*likeout,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
     SMtot=SMstarp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, speclib=Data$speclib)
     return(list(like=likeout, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot))
@@ -413,7 +417,9 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     Dustfrac_bol=log10(Fractions[1])
     AGNfrac_bol=log10(Fractions[2])
     AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
-    return(list(LP=likeout,Dev=-2*likeout,Monitor=c(DustMass, DustLum, AGNLum, Dustfrac_bol, AGNfrac_bol),yhat=1,parm=parm))
+    Monitor=c(DustMass, DustLum, AGNLum, Dustfrac_bol, AGNfrac_bol)
+    Monitor[!is.finite(Monitor)]=1e10
+    return(list(LP=likeout,Dev=-2*likeout,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
     SMtot=do.call('SMstarfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, z=redshift), massfunclist))
     return(list(like=likeout, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot))
