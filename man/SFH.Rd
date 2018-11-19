@@ -183,7 +183,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}
+\code{\link{SFHlike}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}
 }
 \examples{
 SFHdemo_dust=SFHp4()
