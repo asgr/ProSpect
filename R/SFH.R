@@ -1,4 +1,4 @@
-SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=1){
+SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=1){
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
       BC03lr=NULL
@@ -49,18 +49,16 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   speclib_old=speclib$Zspec[[Z[3]]]
   speclib_ancient=speclib$Zspec[[Z[4]]]
   if(tau_birth!=0){
-    speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    
-    #sum(diff(speclib$Wave)*t(speclib_burst[1:birthcloud,2:length(speclib$Wave)])*(1-CF_birth(speclib$Wave[2:length(speclib$Wave)], tau=tau_birth)))
+    speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
   }
   if(tau_screen!=0){
-    speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen))
-    speclib_young=t(t(speclib_young)*CF_screen(speclib$Wave, tau=tau_screen))
-    speclib_old=t(t(speclib_old)*CF_screen(speclib$Wave, tau=tau_screen))
-    speclib_ancient=t(t(speclib_ancient)*CF_screen(speclib$Wave, tau=tau_screen))
+    speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+    speclib_young=t(t(speclib_young)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+    speclib_old=t(t(speclib_old)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+    speclib_ancient=t(t(speclib_ancient)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
   }
   burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
   youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
@@ -169,7 +167,7 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
-SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=1){
+SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=1){
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
       BC03lr=NULL
@@ -221,20 +219,18 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   speclib_old=speclib$Zspec[[Z[4]]]
   speclib_ancient=speclib$Zspec[[Z[5]]]
   if(tau_birth!=0){
-    speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    speclib_mid[1:birthcloud,]=t(t(speclib_mid[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
-    
-    #sum(diff(speclib$Wave)*t(speclib_burst[1:birthcloud,2:length(speclib$Wave)])*(1-CF_birth(speclib$Wave[2:length(speclib$Wave)], tau=tau_birth)))
+    speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    speclib_mid[1:birthcloud,]=t(t(speclib_mid[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
   }
   if(tau_screen!=0){
-    speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen))
-    speclib_young=t(t(speclib_young)*CF_screen(speclib$Wave, tau=tau_screen))
-    speclib_mid=t(t(speclib_mid)*CF_screen(speclib$Wave, tau=tau_screen))
-    speclib_old=t(t(speclib_old)*CF_screen(speclib$Wave, tau=tau_screen))
-    speclib_ancient=t(t(speclib_ancient)*CF_screen(speclib$Wave, tau=tau_screen))
+    speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+    speclib_young=t(t(speclib_young)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+    speclib_mid=t(t(speclib_mid)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+    speclib_old=t(t(speclib_old)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+    speclib_ancient=t(t(speclib_ancient)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
   }
   burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
   youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
@@ -347,7 +343,7 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
-SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', sparse=1, intSFR=FALSE, ...){
+SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype='mag', sparse=1, intSFR=FALSE, ...){
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
       BC03lr=NULL
@@ -429,10 +425,10 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     speclib_all=speclib$Zspec[[Zid]]
     
     if(tau_birth!=0){
-      speclib_all[1:birthcloud,]=t(t(speclib_all[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth))
+      speclib_all[1:birthcloud,]=t(t(speclib_all[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
     }
     if(tau_screen!=0){
-      speclib_all=t(t(speclib_all)*CF_screen(speclib$Wave, tau=tau_screen))
+      speclib_all=t(t(speclib_all)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
     }
     
     if(Zdoweight){
