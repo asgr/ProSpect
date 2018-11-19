@@ -13,18 +13,19 @@ In basic usage, computes the likelihood for a given set of data versus a specifi
 \usage{
 SFHp4like(parm = c(8, 9, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
-dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = 'all', verbose = TRUE,
-sparse = 1)
+powfit = "", dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, filters = 'all',
+verbose = TRUE, sparse = 1)
 
 SFHp5like(parm = c(8, 9, 10, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c('burstmass',
 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
-dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters = 'all', verbose = TRUE,
-sparse = 1)
+powfit = "", dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters = 'all',
+verbose = TRUE, sparse = 1)
 
 SFHfunclike(parm = c(1, 0, 0.5, 0.2, -2), Data, massfunc = function(age, SFR = 1)
 { ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
 massfuncfit = 'SFR', massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
-dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters='all', verbose=TRUE, sparse = 1)
+powfit = "", dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, filters='all',
+verbose=TRUE, sparse = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -56,7 +57,10 @@ Character vector; the names of the mass function parameters in \option{massfunc}
 Logical vector; flags whether certain \option{massfuncfit} parameters provided by \option{parm} should be positive only in \option{massfunc}. This is a simple way to stop certain functions from failing during sampling where it might go negative incorrectly (e.g. standard deviation). For more sophisticated behaviour the keen user will need to write their own likelihood function.
 }
   \item{taufit}{
-Character vector; the names of the tau dust attenuation variables to be used (a mixture of tau_birth, tau_screen).
+Character vector; the names of the Charlot and Fall tau dust attenuation variables to be used (a mixture of tau_birth, tau_screen). See \code{\link{CF_screen}}.
+}
+  \item{powfit}{
+Character vector; the names of the Charlot and Fall power-law dust attenuation variables to be used (a mixture of pow_birth, pow_screen). See \code{\link{CF_screen}}. By default this is not applied, so fitting will not be done to the value of the attenuation power-law.
 }
   \item{dustfit}{
 Character vector; the names of the dust template variables to be used (a mixture of alpha_SF, AGNfrac).
