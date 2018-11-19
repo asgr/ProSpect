@@ -137,7 +137,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{SFHp4}}, \code{\link{magABcalc}}, \code{\link{dustmass}}, \code{\link{optim}}
+\code{\link{SFH}}, \code{\link{magABcalc}}, \code{\link{dustmass}}, \code{\link{optim}}
 }
 
 \examples{
