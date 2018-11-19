@@ -103,7 +103,7 @@ Character scalar; which stellar population library to use, one of \code{\link{BC
 Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
 }
   \item{tau_birth}{
-Numeric scalar; dust tau of birth clouds. Associated with sub 100 Myr star formation. See \code{\link{CF_birth}}.
+Numeric scalar; dust tau of birth clouds. Associated with sub 10 Myr star formation. See \code{\link{CF_birth}}.
 }
   \item{tau_screen}{
 Numeric scalar; dust tau of the dust screen. See \code{\link{CF_screen}}.
