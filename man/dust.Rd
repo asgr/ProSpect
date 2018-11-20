@@ -56,7 +56,7 @@ Charlot & Fall, 2000, ApJ, 539, 718
 Aaron Robotham
 }
 \seealso{
-\code{\link{SFHp4}}, \code{\link{greybody}}
+\code{\link{SFH}}, \code{\link{greybody}}
 }
 \examples{
 fluxBC03=Lum2Flux(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
