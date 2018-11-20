@@ -19,7 +19,7 @@ SFHp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth = 1,
 tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5),
-z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag",
+z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag",
 cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 1)
 
 SFHp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
@@ -27,30 +27,30 @@ ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
 midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
 stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7,
 pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
+OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
 dosplit = FALSE, sparse = 1)
 
 SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
 tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, filters = "all",
-Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, outtype = "mag",
+Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag",
 sparse = 1, intSFR=FALSE, ...) 
 
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', speclib = NULL, Z = c(5, 5, 5, 5),
-z = 0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, cossplit = c(9e+09, 1.3e+10),
+z = 0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10),
 dosplit = FALSE)
 
 SMstarp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
 ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
 midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
 stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
 
 SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
-Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ...)
+Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -132,6 +132,9 @@ Numeric scalar; Omega Matter today (default is 0.308).
   \item{OmegaL}{
 Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1 - OmegaM = 0.692).
 }
+  \item{ref}{
+The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
+  }
   \item{outtype}{
 Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
 }

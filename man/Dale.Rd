@@ -130,15 +130,19 @@ birthBC03_atten=CF_birth_atten(fluxBC03[,1],fluxBC03[,2])
 screenBC03_atten=CF_screen_atten(fluxBC03[,1],fluxBC03[,2])
 totalatten=birthBC03_atten$total_atten+screenBC03_atten$total_atten
 
-# Here we show a pure greybody, and then 3 Dale templates normalised by SFR with
+# Here we show 3 pure greybodies, and then 3 Dale templates normalised by SFR with
 # differing amounts of AGN contribution. Note even the pure SFR template is not quite
 # greybody (there is an excess in the MIR and very-FIR).
 
 plot(fluxBC03, log='xy', xlab=BC03lr$Labels$Wavelab, ylab='Flux / erg/s/cm^2/Angstrom',
 type='l', col='red', xlim=c(1e2,1e7))
-lines(fluxBC03[,1], birthBC03_atten$flux, col='black')
-lines(10^seq(5,7,by=0.01), greybody_norm(10^seq(5,7,by=0.01),
-norm=birthBC03_atten$total_atten), col='brown')
+lines(fluxBC03[,1], (birthBC03_atten$flux+screenBC03_atten$flux)/2, col='black')
+lines(10^seq(5,7,by=0.01), greybody_norm(10^seq(5,7,by=0.01), beta=1, norm=totalatten),
+col='brown', lty=1)
+lines(10^seq(5,7,by=0.01), greybody_norm(10^seq(5,7,by=0.01), beta=1.5, norm=totalatten),
+col='brown', lty=2)
+lines(10^seq(5,7,by=0.01), greybody_norm(10^seq(5,7,by=0.01), beta=2, norm=totalatten),
+col='brown', lty=3)
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[1]][24,]*totalatten, col='purple')
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[11]][24,]*totalatten, col='orange')
 lines(Dale_NormSFR$Wave, Dale_NormSFR$Aspec[[20]][24,]*totalatten, col='green')
