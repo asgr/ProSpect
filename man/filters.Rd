@@ -91,8 +91,8 @@ data("filt_S850_JCMT")
 \format{
   A number of data frames with the following 2 variables.
   \describe{
-    \item{\code{wave}}{A numeric vector}
-    \item{\code{response}}{A numeric vector}
+    \item{\code{wave}}{A numeric vector, wavelength in Angstroms}
+    \item{\code{response}}{A numeric vector, the relative response}
   }
 }
 \details{
@@ -103,7 +103,8 @@ Mostly the relevant websites for various facilities.
 }
 \examples{
 colvec=rev(rainbow(9, end=2/3))
-plot(filt_u_VST, type='l', col=colvec[1], xlim=c(3e3,2.5e4), ylim=c(0,1))
+plot(filt_u_VST, type='l', col=colvec[1], xlim=c(3e3,2.5e4), ylim=c(0,1),
+xlab = 'Wave / Ang', ylab = 'Response')
 lines(filt_g_VST, type='l', col=colvec[2])
 lines(filt_r_VST, type='l', col=colvec[3])
 lines(filt_i_VST, type='l', col=colvec[4])

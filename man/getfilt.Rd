@@ -69,7 +69,8 @@ Aaron Robotham
 }
 \examples{
 colvec=rev(rainbow(9, end=2/3))
-plot(getfilt('u_VST'), type='l', col=colvec[1], xlim=c(3e3,2.5e4), ylim=c(0,1))
+plot(getfilt('u_VST'), type='l', col=colvec[1], xlim=c(3e3,2.5e4), ylim=c(0,1),
+xlab = 'Wave / Ang', ylab = 'Response')
 lines(getfilt('g_VST'), type='l', col=colvec[2])
 lines(getfilt('r_VST'), type='l', col=colvec[3])
 lines(getfilt('i_VST'), type='l', col=colvec[4])

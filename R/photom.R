@@ -18,7 +18,9 @@ magABcalc=function(wave, flux, filter='r_VST'){
       wave=wave[,1]
     }
   }
-  filter=getfilt(filter)
+  if(is.character(filter[1])){
+    filter=getfilt(filter)
+  }
   fluxnu=convert_wave2freq(flux, wave)
   totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter, lum = T)
   return(-2.5 * log10(totlumnu) - 48.6)
@@ -32,7 +34,9 @@ CGScalc=function(wave, flux, filter='r_VST'){
       wave=wave[,1]
     }
   }
-  filter=getfilt(filter)
+  if(is.character(filter[1])){
+    filter=getfilt(filter)
+  }
   fluxnu=convert_wave2freq(flux, wave)
   totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter, lum = T)
   return(totlumnu)
@@ -46,7 +50,9 @@ Janskycalc=function(wave, flux, filter='r_VST'){
       wave=wave[,1]
     }
   }
-  filter=getfilt(filter)
+  if(is.character(filter[1])){
+    filter=getfilt(filter)
+  }
   fluxnu=convert_wave2freq(flux, wave)
   totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter, lum = T)
   return(totlumnu*1e23)

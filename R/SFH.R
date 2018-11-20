@@ -37,7 +37,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)*1e9
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -73,7 +73,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
   
   if(z>0){
-    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)
+    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
     
     if(!is.null(outtype)){
       
@@ -93,7 +93,15 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
         for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
       }
     
-      out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        out=data.frame(filter=NA, cenwave=cenout, out=out)
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
       
     }else{
       out=NULL
@@ -146,7 +154,7 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
   
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)*1e9
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -206,7 +214,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   
   if(length(Z)==1){Z=rep(Z,5)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)*1e9
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -247,7 +255,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
   
   if(z>0){
-    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)
+    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
     
     if(!is.null(outtype)){
       
@@ -267,7 +275,15 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
         for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
       }
     
-      out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        out=data.frame(filter=NA, cenwave=cenout, out=out)
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
       
     }else{
       out=NULL
@@ -320,7 +336,7 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
   
   if(length(Z)==1){Z=rep(Z,5)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)*1e9
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -408,7 +424,7 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   }
   
   if(unimax!=FALSE){
-    agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)*1e9
+    agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     massvec[speclib$Age>agemax]=0
   }
   if(forcemass==FALSE){
@@ -441,7 +457,7 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   lumtot=sum(c(0,diff(speclib$Wave))*lum)
   
   if(z>0){
-    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)
+    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
     
     if(!is.null(outtype)){
       
@@ -461,7 +477,15 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
         for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
       }
     
-      out=cbind(cenwave[match(filters, cenwave$filter),], out=out)
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        out=data.frame(filter=NA, cenwave=cenout, out=out)
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
       
     }else{
       out=NULL
@@ -516,7 +540,7 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forc
   
   massvec=massfunc(speclib$Age*agescale, ...)
   if(unimax!=FALSE){
-    agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref)*1e9
+    agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     massvec[speclib$Age>agemax]=0
   }
   if(forcemass!=FALSE){
