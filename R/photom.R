@@ -53,15 +53,15 @@ Janskycalc=function(wave, flux, filter='r_VST'){
 }
 
 
-Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM){
+Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref){
   # Assuming lum to be converted is in the BC03 Lsun / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Angstrom flux
-  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*.mpc_to_cm
+  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
   factor=.lsun_to_erg/(4*pi*Dl_cm^2)/(1+z)
   return(factor)
 }
 
-Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM){
+Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref){
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       lum=wave[,2]
@@ -70,7 +70,7 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
   }
   # Assuming lum to be converted is in the BC03 Lsun / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Hz flux
-  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)*.mpc_to_cm
+  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
   flux=lum*.lsun_to_erg/(4*pi*Dl_cm^2)/(1+z)
   wave=wave*(1+z)
   #output is erg/s/cm^2/Angstrom (not per Hz! Need to make this final conversion to get to AB mag, but this is the standard way of viewing spectra).
@@ -115,14 +115,14 @@ photom_flux=function(wave, flux, outtype='mag', filters='all'){
   return(cbind(cenwave[match(filters, cenwave$filter),], out=outdata))
 }
 
-photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM){
+photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref){
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       lum=wave[,2]
       wave=wave[,1]
     }
   }
-  flux=Lum2Flux(wave=wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL)
+  flux=Lum2Flux(wave=wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)
 
   cenwave=NULL
   data('cenwave', envir = environment())
