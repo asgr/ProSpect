@@ -62,5 +62,14 @@ Brammer, van Dokkum & Coppi, 2008, ApJ, 686, 1503
 \examples{
 data(paranal_transmission)
 plot(paranal_transmission, type = 'l', xlab = 'Wave / Ang', ylab = 'Transmission')
+
+# Use on a filter:
+paranal_func=approxfun(paranal_transmission)
+
+SDSS_u=EAZY_filters$filters[[73]]
+plot(SDSS_u, type='l')
+
+SDSS_u_sky=cbind(wave=SDSS_u[,1],response=SDSS_u[,2]*paranal_func(SDSS_u[,1]))
+lines(SDSS_u_sky, lty=2)
 }
 \keyword{datasets}

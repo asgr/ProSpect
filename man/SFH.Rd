@@ -121,7 +121,7 @@ Character vector; names of filters to use. See \code{\link{filters}} for options
 Integer vector of length 4; specifies which metallicity to use for each star formation phase.
 }
   \item{z}{
-Numeric scalar; cosmological redshift, where z must be > -1.
+Numeric scalar; cosmological redshift. If the provided \option{z}<=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'.
 }
   \item{H0}{
 Numeric scalar; Hubble constant as defined at z=0 (default is H0=67.8 (km/s)/Mpc).

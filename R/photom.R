@@ -84,79 +84,83 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
 }
 
 photom_flux=function(wave, flux, outtype='mag', filters='all'){
+  
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       flux=wave[,2]
       wave=wave[,1]
     }
   }
-  flux=cbind(wave,flux)
-
-  cenwave=NULL
-  data('cenwave', envir = environment())
   
-  if(filters[1]=='all'){filters=cenwave$filter}
+  if(filters[1]=='all'){
+    cenwave=NULL
+    data('cenwave', envir = environment())
+    filters=cenwave$filter
+  }
   
   if(outtype=='mag' | outtype=='magAB'){
-    outdata={}
+    photom={}
     for(i in filters){
-      outdata=c(outdata, magABcalc(flux, filter=i))
+      photom=c(photom, magABcalc(wave=wave, flux=flux, filter=i))
     }
   }
   
   if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-    outdata={}
+    photom={}
     for(i in filters){
-      outdata=c(outdata, Janskycalc(flux, filter=i))
+      photom=c(photom, Janskycalc(wave=wave, flux=flux, filter=i))
     }
   }
   
   if(outtype=='cgs' | outtype=='CGS'){
-    outdata={}
+    photom={}
     for(i in filters){
-      outdata=c(outdata, CGScalc(flux, filter=i))
+      photom=c(photom, CGScalc(wave=wave, flux=flux, filter=i))
     }
   }
   
-  return(cbind(cenwave[match(filters, cenwave$filter),], out=outdata))
+  return(photom)
 }
 
 photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref){
+  
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       lum=wave[,2]
       wave=wave[,1]
     }
   }
-  flux=Lum2Flux(wave=wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)
-
-  cenwave=NULL
-  data('cenwave', envir = environment())
   
-  if(filters[1]=='all'){filters=cenwave$filter}
+  flux=Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+
+  if(filters[1]=='all'){
+    cenwave=NULL
+    data('cenwave', envir = environment())
+    filters=cenwave$filter
+  }
   
   if(outtype=='mag' | outtype=='magAB'){
-    outdata={}
+    photom={}
     for(i in filters){
-      outdata=c(outdata, magABcalc(flux, filter=i))
+      photom=c(photom, magABcalc(flux, filter=i))
     }
   }
   
   if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-    outdata={}
+    photom={}
     for(i in filters){
-      outdata=c(outdata, Janskycalc(flux, filter=i))
+      photom=c(photom, Janskycalc(flux, filter=i))
     }
   }
   
   if(outtype=='cgs' | outtype=='CGS'){
-    outdata={}
+    photom={}
     for(i in filters){
-      outdata=c(outdata, CGScalc(flux, filter=i))
+      photom=c(photom, CGScalc(flux, filter=i))
     }
   }
   
-  return(cbind(cenwave[match(filters, cenwave$filter),], out=outdata))
+  return(photom)
 }
 
 addspec=function(wave1, flux1, wave2, flux2){
