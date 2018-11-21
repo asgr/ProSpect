@@ -70,21 +70,23 @@ Aaron Robotham
 \code{\link{SFHp4}}
 }
 \examples{
+data('cenwave')
+
 #Make a 10^10 solar mass SSP that is 5 Grys old and solar metallicity:
 
 #First with BC03lr:
 BC03lr$Age[161]
 
 photoBC03=photom_lum(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
-plot(photoBC03[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
-ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
+plot(cenwave[,2], photoBC03, log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
+ylab='Mag', col=rev(rainbow(34, end=2/3)), pch=16)
 
 #Next with EMILES
 EMILES$Age[35]
 
 photoEMILES=photom_lum(EMILES$Wave, EMILES$Zspec[[9]][35,]*1e10)
-plot(photoEMILES[,2:3], log='x', ylim=c(26,17), xlab=EMILES$Labels$Wavelab,
-ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
+plot(cenwave[,2], photoEMILES, log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
+ylab='Mag', col=rev(rainbow(34, end=2/3)), pch=16)
 
 #We can show the flux directly too:
 

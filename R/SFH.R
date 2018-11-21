@@ -35,6 +35,12 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     speclib$Wave=speclib$Wave[sparse]
   }
   
+  if(filters[1]=='all'){
+    cenwave=NULL
+    data('cenwave', envir = environment())
+    filters=cenwave$filter
+  }
+  
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
     TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
@@ -50,9 +56,9 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   speclib_ancient=speclib$Zspec[[Z[4]]]
   if(tau_birth!=0){
     speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    # speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    # speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    # speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
   }
   if(tau_screen!=0){
     speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
@@ -74,25 +80,8 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-    
+    out=photom_flux(flux, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
-      
-      cenwave=NULL
-      data('cenwave', envir = environment())
-      if(filters[1]=='all'){filters=cenwave$filter}
-      
-      out={}
-    
-      if(outtype=='mag' | outtype=='magAB'){
-        for(i in filters){out=c(out, magABcalc(flux, filter=i))}
-      }
-      if(outtype=='cgs' | outtype=='CGS'){
-        for(i in filters){out=c(out, CGScalc(flux, filter=i))}
-      }
-      if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-        for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
-      }
-    
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -102,13 +91,25 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
-      
     }else{
       out=NULL
     }
   }else{
     flux=NULL
-    out=NULL
+    out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
+    if(!is.null(outtype)){
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        out=data.frame(filter=NA, cenwave=cenout, out=out)
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
+    }else{
+      out=NULL
+    }
   }
 
   masstot=burstmass+youngmass+oldmass+ancientmass
@@ -212,6 +213,12 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     speclib$Wave=speclib$Wave[sparse]
   }
   
+  if(filters[1]=='all'){
+    cenwave=NULL
+    data('cenwave', envir = environment())
+    filters=cenwave$filter
+  }
+  
   if(length(Z)==1){Z=rep(Z,5)}
   if(dosplit){
     TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
@@ -228,10 +235,10 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   speclib_ancient=speclib$Zspec[[Z[5]]]
   if(tau_birth!=0){
     speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    speclib_mid[1:birthcloud,]=t(t(speclib_mid[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    # speclib_young[1:birthcloud,]=t(t(speclib_young[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    # speclib_mid[1:birthcloud,]=t(t(speclib_mid[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    # speclib_old[1:birthcloud,]=t(t(speclib_old[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+    # speclib_ancient[1:birthcloud,]=t(t(speclib_ancient[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
   }
   if(tau_screen!=0){
     speclib_burst=t(t(speclib_burst)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
@@ -256,25 +263,8 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-    
+    out=photom_flux(flux, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
-      
-      cenwave=NULL
-      data('cenwave', envir = environment())
-      if(filters[1]=='all'){filters=cenwave$filter}
-    
-      out={}
-    
-      if(outtype=='mag' | outtype=='magAB'){
-        for(i in filters){out=c(out, magABcalc(flux, filter=i))}
-      }
-      if(outtype=='cgs' | outtype=='CGS'){
-        for(i in filters){out=c(out, CGScalc(flux, filter=i))}
-      }
-      if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-        for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
-      }
-    
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -284,13 +274,25 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
-      
     }else{
       out=NULL
     }
   }else{
     flux=NULL
-    out=NULL
+    out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
+    if(!is.null(outtype)){
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        out=data.frame(filter=NA, cenwave=cenout, out=out)
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
+    }else{
+      out=NULL
+    }
   }
 
   masstot=burstmass+youngmass+midmass+oldmass+ancientmass
@@ -396,6 +398,12 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     speclib$Wave=speclib$Wave[sparse]
   }
   
+  if(filters[1]=='all'){
+    cenwave=NULL
+    data('cenwave', envir = environment())
+    filters=cenwave$filter
+  }
+  
   if(is.function(Z)){
     Zlist=interp_param(Z(speclib$Age*agescale), speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
@@ -458,25 +466,8 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-    
+    out=photom_flux(flux, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
-      
-      cenwave=NULL
-      data('cenwave', envir = environment())
-      if(filters[1]=='all'){filters=cenwave$filter}
-    
-      out={}
-    
-      if(outtype=='mag' | outtype=='magAB'){
-        for(i in filters){out=c(out, magABcalc(flux, filter=i))}
-      }
-      if(outtype=='cgs' | outtype=='CGS'){
-        for(i in filters){out=c(out, CGScalc(flux, filter=i))}
-      }
-      if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
-        for(i in filters){out=c(out, Janskycalc(flux, filter=i))}
-      }
-    
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -486,14 +477,27 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
-      
     }else{
       out=NULL
     }
   }else{
     flux=NULL
-    out=NULL
+    out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
+    if(!is.null(outtype)){
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        out=data.frame(filter=NA, cenwave=cenout, out=out)
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
+    }else{
+      out=NULL
+    }
   }
+  
   return=list(flux=flux, lum=lum, out=out, massvec=massvec, masstot=masstot, lumtot=lumtot, M2L=masstot/lumtot, call=match.call())
 }
 
