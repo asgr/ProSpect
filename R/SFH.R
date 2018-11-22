@@ -80,8 +80,8 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-    out=photom_flux(flux, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
+      out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -96,8 +96,8 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     }
   }else{
     flux=NULL
-    out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
+      out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -263,8 +263,8 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-    out=photom_flux(flux, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
+      out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -279,8 +279,8 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     }
   }else{
     flux=NULL
-    out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
+      out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -466,8 +466,8 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-    out=photom_flux(flux, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
+      out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -482,8 +482,8 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
     }
   }else{
     flux=NULL
-    out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
     if(!is.null(outtype)){
+      out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){

@@ -13,16 +13,16 @@ In basic usage, computes the likelihood for a given set of data versus a specifi
 \usage{
 SFHp4like(parm = c(8, 9, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
-powfit = "", dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, verbose = TRUE, sparse = 5)
+powfit = NULL, dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, verbose = TRUE, sparse = 5)
 
 SFHp5like(parm = c(8, 9, 10, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c('burstmass',
 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
-powfit = "", dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose = TRUE, sparse = 5)
+powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose = TRUE, sparse = 5)
 
 SFHfunclike(parm = c(1, 0, 0.5, 0.2, -2), Data, massfunc = function(age, SFR = 1)
 { ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
 massfuncfit = 'SFR', massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
-powfit = "", dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose=TRUE, sparse = 5)
+powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose=TRUE, sparse = 5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

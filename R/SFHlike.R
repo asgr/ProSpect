@@ -1,4 +1,4 @@
-SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), powfit='', dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
+SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), powfit=NULL, dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
   
   if('massfit' %in% names(Data)){massfit = Data$massfit}
   if('taufit' %in% names(Data)){taufit = Data$taufit}
@@ -92,7 +92,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
   SFH_dust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, pow_birth=pow_birth, pow_screen=pow_screen, z=redshift, outtype=NULL, speclib=Data$speclib, sparse=sparse)
   SFH_nodust=SFHp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=redshift, outtype=NULL, speclib=Data$speclib, sparse=sparse)
   Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale=Data$Dale)
-  dustout=dustmass(Data$speclib$Wave, SFH_nodust$lum, SFH_dust$lum, Dale_in$Wave, Dale_in$Aspec)
+  dustout=dustmass(Data$speclib$Wave[seq(1,dim(Data$speclib$Zspec[[1]])[2],by=sparse)], SFH_nodust$lum, SFH_dust$lum, Dale_in$Wave, Dale_in$Aspec)
   dustflux=Lum2Flux(Dale_in$Wave, Dale_in$Aspec*dustout[1], z=redshift)
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
   Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, Dale=Data$Dale)
@@ -147,7 +147,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
   }
 }
 
-SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), powfit='', dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
+SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit=c('tau_birth', 'tau_screen'), powfit=NULL, dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
   if('massfit' %in% names(Data)){massfit = Data$massfit}
   if('taufit' %in% names(Data)){taufit = Data$taufit}
   if('powfit' %in% names(Data)){powfit = Data$powfit}
@@ -263,7 +263,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
   SFH_dust=SFHp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=tau_birth, tau_screen=tau_screen, pow_birth=pow_birth, pow_screen=pow_screen, z=redshift, outtype=NULL, speclib=Data$speclib, sparse=sparse)
   SFH_nodust=SFHp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, tau_birth=0, tau_screen=0, z=redshift, outtype=NULL, speclib=Data$speclib, sparse=sparse)
   Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale=Data$Dale)
-  dustout=dustmass(Data$speclib$Wave, SFH_nodust$lum, SFH_dust$lum, Dale_in$Wave, Dale_in$Aspec)
+  dustout=dustmass(Data$speclib$Wave[seq(1,dim(Data$speclib$Zspec[[1]])[2],by=sparse)], SFH_nodust$lum, SFH_dust$lum, Dale_in$Wave, Dale_in$Aspec)
   dustflux=Lum2Flux(Dale_in$Wave, Dale_in$Aspec*dustout[1], z=redshift)
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
   Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, Dale=Data$Dale)
@@ -318,7 +318,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
   }
 }
 
-SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit='SFR', massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), powfit='', dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
+SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit='SFR', massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), powfit=NULL, dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
   
   if('massfunc' %in% names(Data)){massfunc = Data$massfunc}
   if('forcemass' %in% names(Data)){forcemass = Data$forcemass}
@@ -425,7 +425,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
   #if(sum(SFH_dust$massvec,na.rm=TRUE)==0){if(verbose){print(-bad)}; return(bad)}
   SFH_nodust=do.call('SFHfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, tau_birth=0, tau_screen=0, z=redshift, outtype=NULL, speclib=Data$speclib, sparse=sparse), massfunclist))
   Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale=Data$Dale)
-  dustout=dustmass(Data$speclib$Wave, SFH_nodust$lum, SFH_dust$lum, Dale_in$Wave, Dale_in$Aspec)
+  dustout=dustmass(Data$speclib$Wave[seq(1,dim(Data$speclib$Zspec[[1]])[2],by=sparse)], SFH_nodust$lum, SFH_dust$lum, Dale_in$Wave, Dale_in$Aspec)
   dustflux=Lum2Flux(Dale_in$Wave, Dale_in$Aspec*dustout[1], z=redshift)
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
   Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, Dale=Data$Dale)
