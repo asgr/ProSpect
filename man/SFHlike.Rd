@@ -109,7 +109,7 @@ Character scalar; one of 'optim', 'LD' or 'check'. See Value for full informatio
 Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. 
 }
   \item{Data$fixed}{
-List; list of named parameters and values that are being fixed during fitting (i.e. the \code{\link{SFH}} functions will use the fixed values during the fitting process). This includes the redshift z, which will usually be fixed during fitting, i.e. typically Data$fixed$z will need to be specified even if other parameters are not fixed.
+List; list of named parameters and values that are being fixed during fitting (i.e. the \code{\link{SFH}} functions will use the fixed values during the fitting process). This includes the redshift z, which will usually be fixed during fitting, i.e. typically Data$fixed$z will need to be specified even if other parameters are not fixed. If this is not specified then vaguely sensible defaults are assumed for the non-fitting arguments (z = 0, burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10, ancientmass = 1e+10, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, alpha_SF = 1.5 and AGNfrac = 0), but the user should really set the fixed values.
 }
 }
 
