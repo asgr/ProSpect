@@ -30,7 +30,7 @@ powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose=TRUE, s
 Numeric vector; the current values of the parameters being tested. All standard \code{ProSpect} parameters should be entered as log10, so \option{AGNfrac}=-1 rather than 0.1. This encourages better behaviour in all optimisers, since these are all scale not location parameters.
 }
   \item{Data}{
-Object; a data object containing the observed data to compare the current ProSpect model against. This has to be a list containing a number of vital parts: flux; z; mon.names; parm.names; N; speclib; Dale; filtout; fit; like. See Details.
+Object; a data object containing the observed data to compare the current ProSpect model against. This has to be a list containing a number of vital parts: flux; z; mon.names; parm.names; N; speclib; Dale; filtout; fit; like. Also has optional elements Z; fixed. See Details.
 }
   \item{massfunc}{
 Function; a function which will take \code{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
@@ -108,8 +108,11 @@ Character scalar; one of 'optim', 'LD' or 'check'. See Value for full informatio
   \item{Data$like}{
 Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. 
 }
+  \item{Data$Z}{
+Integer vector (optional) of length 4 (\code{SFHp4}), 5 (\code{SFHp5}) or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar).
+}
   \item{Data$fixed}{
-List; list of named parameters and values that are being fixed during fitting (i.e. the \code{\link{SFH}} functions will use the fixed values during the fitting process). This includes the redshift z, which will usually be fixed during fitting, i.e. typically Data$fixed$z will need to be specified even if other parameters are not fixed. If this is not specified then vaguely sensible defaults are assumed for the non-fitting arguments (z = 0, burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10, ancientmass = 1e+10, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, alpha_SF = 1.5 and AGNfrac = 0), but the user should really set the fixed values.
+List; optional list of named parameters and values that are being fixed during fitting (i.e. the \code{\link{SFH}} functions will use the fixed values during the fitting process). This includes the redshift z, which will usually be fixed during fitting, i.e. typically Data$fixed$z will need to be specified even if other parameters are not fixed. If this is not specified then vaguely sensible defaults are assumed for the non-fitting arguments (z = 0, burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10, ancientmass = 1e+10, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, alpha_SF = 1.5 and AGNfrac = 0), but the user should really set the fixed values.
 }
 }
 

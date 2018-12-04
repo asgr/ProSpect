@@ -95,9 +95,9 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
       out=NULL
     }
   }else{
-    flux=NULL
+    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
     if(!is.null(outtype)){
-      out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
+      out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -278,9 +278,9 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
       out=NULL
     }
   }else{
-    flux=NULL
+    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
     if(!is.null(outtype)){
-      out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
+      out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){
@@ -392,7 +392,7 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   
   if(sparse>1){
     sparse=seq(1,dim(speclib$Zspec[[1]])[2],by=sparse)
-    for(i in unique(Z)){
+    for(i in length(speclib$Zspec)){
       speclib$Zspec[[i]]=speclib$Zspec[[i]][,sparse]
     }
     speclib$Wave=speclib$Wave[sparse]
@@ -481,9 +481,9 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
       out=NULL
     }
   }else{
-    flux=NULL
+    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
     if(!is.null(outtype)){
-      out=photom_flux(wave = speclib$Wave, flux = lum*3e-07, outtype = outtype, filters = filters)
+      out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
         cenout={}
         for(i in filters){

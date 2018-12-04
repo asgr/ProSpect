@@ -118,7 +118,7 @@ Numeric scalar; power to further raise the dust attenuation of the dust screen. 
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters.
 }
   \item{Z}{
-Integer vector of length 4; specifies which metallicity to use for each star formation phase.
+Integer vector of length 4 (\code{SFHp4}), 5 (\code{SFHp5}) or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar).
 }
   \item{z}{
 Numeric scalar; cosmological redshift. If the provided \option{z}<=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'.
