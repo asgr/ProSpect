@@ -50,7 +50,7 @@ Character vector; the names of the mass variables to be used (a mixture of burst
   \item{massfuncfit}{
 Character vector; the names of the mass function parameters in \option{massfunc} that exist at the front of \option{parm}.
 }
-\item{massfuncpos}{
+  \item{massfuncpos}{
 Logical vector; flags whether certain \option{massfuncfit} parameters provided by \option{parm} should be positive only in \option{massfunc}. This is a simple way to stop certain functions from failing during sampling where it might go negative incorrectly (e.g. standard deviation). For more sophisticated behaviour the keen user will need to write their own likelihood function.
 }
   \item{taufit}{
