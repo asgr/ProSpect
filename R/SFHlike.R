@@ -18,7 +18,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
   if('z' %in% names(parm)){
     redshift=10^parm[names(parm)=='z']
   }else{
-    if(exists("Data$fixed$z")){
+    if(!is.null(Data$fixed$z)){
       redshift=Data$fixed$z
     }else{
       redshift=0
@@ -28,7 +28,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='burstmass']=.interval(parm[names(parm)=='burstmass'], 0, 100, reflect=FALSE)
     burstmass=10^parm[names(parm)=='burstmass']
   }else{
-    if(exists("Data$fixed$burstmass")){
+    if(!is.null(Data$fixed$burstmass)){
       burstmass = Data$fixed$burstmass
     }else{
       burstmass = 0
@@ -38,7 +38,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='youngmass']=.interval(parm[names(parm)=='youngmass'], 0, 100, reflect=FALSE)
     youngmass=10^parm[names(parm)=='youngmass']
   }else{
-    if(exists("Data$fixed$youngmass")){
+    if(!is.null(Data$fixed$youngmass)){
       youngmass = Data$fixed$youngmass
     }else{
       youngmass = 0
@@ -48,7 +48,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='oldmass']=.interval(parm[names(parm)=='oldmass'], 0, 100, reflect=FALSE)
     oldmass=10^parm[names(parm)=='oldmass']
   }else{
-    if(exists("Data$fixed$oldmass")){
+    if(!is.null(Data$fixed$oldmass)){
       oldmass = Data$fixed$oldmass
     }else{
       oldmass = 0
@@ -58,7 +58,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='ancientmass']=.interval(parm[names(parm)=='ancientmass'], 0, 100, reflect=FALSE)
     ancientmass=10^parm[names(parm)=='ancientmass']
   }else{
-    if(exists("Data$fixed$ancientmass")){
+    if(!is.null(Data$fixed$ancientmass)){
       ancientmass = Data$fixed$ancientmass
     }else{
       ancientmass = 0
@@ -68,7 +68,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='tau_birth']=.interval(parm[names(parm)=='tau_birth'], -2, 2, reflect=FALSE)
     tau_birth = 10^parm[names(parm)=='tau_birth']
   }else{
-    if(exists("Data$fixed$tau_birth")){
+    if(!is.null(Data$fixed$tau_birth)){
       tau_birth = Data$fixed$tau_birth
     }else{
       tau_birth = 1
@@ -78,7 +78,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='tau_screen']=.interval(parm[names(parm)=='tau_screen'], -2, 2, reflect=FALSE)
     tau_screen = 10^parm[names(parm)=='tau_screen']
   }else{
-    if(exists("Data$fixed$tau_screen")){
+    if(!is.null(Data$fixed$tau_screen)){
       tau_screen = Data$fixed$tau_screen
     }else{
       tau_screen = 0.3
@@ -88,7 +88,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='pow_birth']=.interval(parm[names(parm)=='pow_birth'], -1, 0, reflect=FALSE)
     pow_birth = 10^parm[names(parm)=='pow_birth']
   }else{
-    if(exists("Data$fixed$pow_birth")){
+    if(!is.null(Data$fixed$pow_birth)){
       pow_birth = Data$fixed$pow_birth
     }else{
       pow_birth = -0.7
@@ -98,7 +98,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='pow_screen']=.interval(parm[names(parm)=='pow_screen'], -1, 0, reflect=FALSE)
     pow_screen = 10^parm[names(parm)=='pow_screen']
   }else{
-    if(exists("Data$fixed$pow_screen")){
+    if(!is.null(Data$fixed$pow_screen)){
       pow_screen = Data$fixed$pow_screen
     }else{
       pow_screen = -0.7
@@ -108,7 +108,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='alpha_SF']=.interval(parm[names(parm)=='alpha_SF'], -1, 0.6, reflect=FALSE)
     alpha_SF = 10^parm[names(parm)=='alpha_SF']
   }else{
-    if(exists("Data$fixed$alpha_SF")){
+    if(!is.null(Data$fixed$alpha_SF)){
       alpha_SF = Data$fixed$alpha_SF
     }else{
       alpha_SF = 1.5
@@ -118,14 +118,14 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
     parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.023, reflect=FALSE)
     AGNfrac = 10^parm[names(parm)=='AGNfrac']
   }else{
-    if(exists("Data$fixed$AGNfrac")){
+    if(!is.null(Data$fixed$AGNfrac)){
       AGNfrac = Data$fixed$AGNfrac
     }else{
       AGNfrac = 0
     }
   }
   
-  if(exists("Data$Z")){
+  if(!is.null(Data$Z)){
     Z=Data$Z
   }else{
     Z=5
@@ -216,7 +216,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
   if('z' %in% names(parm)){
     redshift=10^parm[names(parm)=='z']
   }else{
-    if(exists("Data$fixed$z")){
+    if(!is.null(Data$fixed$z)){
       redshift=Data$fixed$z
     }else{
       redshift=0
@@ -226,7 +226,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='burstmass']=.interval(parm[names(parm)=='burstmass'], 0, 100, reflect=FALSE)
     burstmass=10^parm[names(parm)=='burstmass']
   }else{
-    if(exists("Data$fixed$burstmass")){
+    if(!is.null(Data$fixed$burstmass)){
       burstmass = Data$fixed$burstmass
     }else{
       burstmass = 0
@@ -236,7 +236,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='youngmass']=.interval(parm[names(parm)=='youngmass'], 0, 100, reflect=FALSE)
     youngmass=10^parm[names(parm)=='youngmass']
   }else{
-    if(exists("Data$fixed$youngmass")){
+    if(!is.null(Data$fixed$youngmass)){
       youngmass = Data$fixed$youngmass
     }else{
       youngmass = 0
@@ -246,7 +246,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='midmass']=.interval(parm[names(parm)=='midmass'], 0, 100, reflect=FALSE)
     midmass=10^parm[names(parm)=='midmass']
   }else{
-    if(exists("Data$fixed$midmass")){
+    if(!is.null(Data$fixed$midmass)){
       midmass = Data$fixed$midmass
     }else{
       midmass = 0
@@ -256,7 +256,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='oldmass']=.interval(parm[names(parm)=='oldmass'], 0, 100, reflect=FALSE)
     oldmass=10^parm[names(parm)=='oldmass']
   }else{
-    if(exists("Data$fixed$oldmass")){
+    if(!is.null(Data$fixed$oldmass)){
       oldmass = Data$fixed$oldmass
     }else{
       oldmass = 0
@@ -266,7 +266,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='ancientmass']=.interval(parm[names(parm)=='ancientmass'], 0, 100, reflect=FALSE)
     ancientmass=10^parm[names(parm)=='ancientmass']
   }else{
-    if(exists("Data$fixed$ancientmass")){
+    if(!is.null(Data$fixed$ancientmass)){
       ancientmass = Data$fixed$ancientmass
     }else{
       ancientmass = 0
@@ -276,7 +276,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='tau_birth']=.interval(parm[names(parm)=='tau_birth'], -2, 2, reflect=FALSE)
     tau_birth = 10^parm[names(parm)=='tau_birth']
   }else{
-    if(exists("Data$fixed$tau_birth")){
+    if(!is.null(Data$fixed$tau_birth)){
       tau_birth = Data$fixed$tau_birth
     }else{
       tau_birth = 1
@@ -286,7 +286,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='tau_screen']=.interval(parm[names(parm)=='tau_screen'], -2, 2, reflect=FALSE)
     tau_screen = 10^parm[names(parm)=='tau_screen']
   }else{
-    if(exists("Data$fixed$tau_screen")){
+    if(!is.null(Data$fixed$tau_screen)){
       tau_screen = Data$fixed$tau_screen
     }else{
       tau_screen = 0.3
@@ -296,7 +296,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='pow_birth']=.interval(parm[names(parm)=='pow_birth'], -1, 0, reflect=FALSE)
     pow_birth = 10^parm[names(parm)=='pow_birth']
   }else{
-    if(exists("Data$fixed$pow_birth")){
+    if(!is.null(Data$fixed$pow_birth)){
       pow_birth = Data$fixed$pow_birth
     }else{
       pow_birth = -0.7
@@ -306,7 +306,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='pow_screen']=.interval(parm[names(parm)=='pow_screen'], -1, 0, reflect=FALSE)
     pow_screen = 10^parm[names(parm)=='pow_screen']
   }else{
-    if(exists("Data$fixed$pow_screen")){
+    if(!is.null(Data$fixed$pow_screen)){
       pow_screen = Data$fixed$pow_screen
     }else{
       pow_screen = -0.7
@@ -316,7 +316,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='alpha_SF']=.interval(parm[names(parm)=='alpha_SF'], -1, 0.6, reflect=FALSE)
     alpha_SF = 10^parm[names(parm)=='alpha_SF']
   }else{
-    if(exists("Data$fixed$alpha_SF")){
+    if(!is.null(Data$fixed$alpha_SF)){
       alpha_SF = Data$fixed$alpha_SF
     }else{
       alpha_SF = 1.5
@@ -326,14 +326,14 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
     parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.023, reflect=FALSE)
     AGNfrac = 10^parm[names(parm)=='AGNfrac']
   }else{
-    if(exists("Data$fixed$AGNfrac")){
+    if(!is.null(Data$fixed$AGNfrac)){
       AGNfrac = Data$fixed$AGNfrac
     }else{
       AGNfrac = 0
     }
   }
   
-  if(exists("Data$Z")){
+  if(!is.null(Data$Z)){
     Z=Data$Z
   }else{
     Z=5
@@ -464,7 +464,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
   if('z' %in% names(parm)){
     redshift=10^parm[names(parm)=='z']
   }else{
-    if(exists("Data$fixed$z")){
+    if(!is.null(Data$fixed$z)){
       redshift=Data$fixed$z
     }else{
       redshift=0
@@ -474,7 +474,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     parm[names(parm)=='tau_birth']=.interval(parm[names(parm)=='tau_birth'], -2, 2, reflect=FALSE)
     tau_birth = 10^parm[names(parm)=='tau_birth']
   }else{
-    if(exists("Data$fixed$tau_birth")){
+    if(!is.null(Data$fixed$tau_birth)){
       tau_birth = Data$fixed$tau_birth
     }else{
       tau_birth = 1
@@ -484,7 +484,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     parm[names(parm)=='tau_screen']=.interval(parm[names(parm)=='tau_screen'], -2, 2, reflect=FALSE)
     tau_screen = 10^parm[names(parm)=='tau_screen']
   }else{
-    if(exists("Data$fixed$tau_screen")){
+    if(!is.null(Data$fixed$tau_screen)){
       tau_screen = Data$fixed$tau_screen
     }else{
       tau_screen = 0.3
@@ -494,7 +494,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     parm[names(parm)=='pow_birth']=.interval(parm[names(parm)=='pow_birth'], -1, 0, reflect=FALSE)
     pow_birth = 10^parm[names(parm)=='pow_birth']
   }else{
-    if(exists("Data$fixed$pow_birth")){
+    if(!is.null(Data$fixed$pow_birth)){
       pow_birth = Data$fixed$pow_birth
     }else{
       pow_birth = -0.7
@@ -504,7 +504,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     parm[names(parm)=='pow_screen']=.interval(parm[names(parm)=='pow_screen'], -1, 0, reflect=FALSE)
     pow_screen = 10^parm[names(parm)=='pow_screen']
   }else{
-    if(exists("Data$fixed$pow_screen")){
+    if(!is.null(Data$fixed$pow_screen)){
       pow_screen = Data$fixed$pow_screen
     }else{
       pow_screen = -0.7
@@ -514,7 +514,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     parm[names(parm)=='alpha_SF']=.interval(parm[names(parm)=='alpha_SF'], -1, 0.6, reflect=FALSE)
     alpha_SF = 10^parm[names(parm)=='alpha_SF']
   }else{
-    if(exists("Data$fixed$alpha_SF")){
+    if(!is.null(Data$fixed$alpha_SF)){
       alpha_SF = Data$fixed$alpha_SF
     }else{
       alpha_SF = 1.5
@@ -524,7 +524,7 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
     parm[names(parm)=='AGNfrac']=.interval(parm[names(parm)=='AGNfrac'], -2, -0.023, reflect=FALSE)
     AGNfrac = 10^parm[names(parm)=='AGNfrac']
   }else{
-    if(exists("Data$fixed$AGNfrac")){
+    if(!is.null(Data$fixed$AGNfrac)){
       AGNfrac = Data$fixed$AGNfrac
     }else{
       AGNfrac = 0
