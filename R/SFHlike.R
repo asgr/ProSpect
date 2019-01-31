@@ -86,7 +86,6 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
   }
   if('pow_birth' %in% names(parm)){
     parm[names(parm)=='pow_birth']=.interval(parm[names(parm)=='pow_birth'], -1, 0, reflect=FALSE)
-    pow_birth = 10^parm[names(parm)=='pow_birth']
   }else{
     if(!is.null(Data$fixed$pow_birth)){
       pow_birth = Data$fixed$pow_birth
@@ -96,7 +95,6 @@ SFHp4like=function(parm=c(8,9,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass', 
   }
   if('pow_screen' %in% names(parm)){
     parm[names(parm)=='pow_screen']=.interval(parm[names(parm)=='pow_screen'], -1, 0, reflect=FALSE)
-    pow_screen = 10^parm[names(parm)=='pow_screen']
   }else{
     if(!is.null(Data$fixed$pow_screen)){
       pow_screen = Data$fixed$pow_screen
@@ -294,7 +292,6 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
   }
   if('pow_birth' %in% names(parm)){
     parm[names(parm)=='pow_birth']=.interval(parm[names(parm)=='pow_birth'], -1, 0, reflect=FALSE)
-    pow_birth = 10^parm[names(parm)=='pow_birth']
   }else{
     if(!is.null(Data$fixed$pow_birth)){
       pow_birth = Data$fixed$pow_birth
@@ -304,7 +301,6 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,0.5,0.2,-2), Data, massfit=c('burstmass
   }
   if('pow_screen' %in% names(parm)){
     parm[names(parm)=='pow_screen']=.interval(parm[names(parm)=='pow_screen'], -1, 0, reflect=FALSE)
-    pow_screen = 10^parm[names(parm)=='pow_screen']
   }else{
     if(!is.null(Data$fixed$pow_screen)){
       pow_screen = Data$fixed$pow_screen
@@ -492,7 +488,6 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
   }
   if('pow_birth' %in% names(parm)){
     parm[names(parm)=='pow_birth']=.interval(parm[names(parm)=='pow_birth'], -1, 0, reflect=FALSE)
-    pow_birth = 10^parm[names(parm)=='pow_birth']
   }else{
     if(!is.null(Data$fixed$pow_birth)){
       pow_birth = Data$fixed$pow_birth
@@ -502,7 +497,6 @@ SFHfunclike=function(parm=c(1,0,0.5,0.2,-2), Data, massfunc=function(age, SFR=1)
   }
   if('pow_screen' %in% names(parm)){
     parm[names(parm)=='pow_screen']=.interval(parm[names(parm)=='pow_screen'], -1, 0, reflect=FALSE)
-    pow_screen = 10^parm[names(parm)=='pow_screen']
   }else{
     if(!is.null(Data$fixed$pow_screen)){
       pow_screen = Data$fixed$pow_screen
