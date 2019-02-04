@@ -8,21 +8,24 @@
 Star Formation History Likelihood
 }
 \description{
-In basic usage, computes the likelihood for a given set of data versus a specified model for the star formation history (SFH), including dust and attentuation. Can also return all of the \code{ProSpect} outputs for a given SFH model produced by \code{\link{SFHp4}} and \code{\link{Dale_interp}}.
+In basic usage, computes the likelihood for a given set of data versus a specified model for the star formation history (SFH), including dust and attentuation. Can also return all of the \code{ProSpect} outputs for a given SFH model produced by \code{SFHp4like}, \code{SFHp5like}, \code{SFHfunclike} and \code{\link{Dale_interp}}.
 }
 \usage{
-SFHp4like(parm = c(8, 9, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c("burstmass",
+SFHp4like(parm = c(8, 9, 10, 10, 0, -0.5, 0.2, -2), Data, massfit = c("burstmass",
 "youngmass", "oldmass", "ancientmass"), taufit = c("tau_birth", "tau_screen"),
-powfit = NULL, dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, verbose = TRUE, sparse = 5)
+powfit = NULL, dustfit = c("alpha_SF", "AGNfrac"), zfit = FALSE, verbose = TRUE,
+sparse = 5)
 
-SFHp5like(parm = c(8, 9, 10, 10, 10, 0, 0.5, 0.2, -2), Data, massfit = c('burstmass',
+SFHp5like(parm = c(8, 9, 10, 10, 10, 0, -0.5, 0.2, -2), Data, massfit = c('burstmass',
 'youngmass', 'midmass', 'oldmass', 'ancientmass'), taufit = c('tau_birth', 'tau_screen'),
-powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose = TRUE, sparse = 5)
+powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose = TRUE,
+sparse = 5)
 
-SFHfunclike(parm = c(1, 0, 0.5, 0.2, -2), Data, massfunc = function(age, SFR = 1)
-{ ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE, unimax = 13.8e9, agescale = 1,
-massfuncfit = 'SFR', massfuncpos = TRUE, taufit = c('tau_birth', 'tau_screen'),
-powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose=TRUE, sparse = 5)
+SFHfunclike(parm = c(1, 0, -0.5, 0.2, -2), Data,
+massfunc = function(age, SFR = 1){ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE,
+unimax = 13.8e9, agescale = 1, massfuncfit = 'SFR', massfuncpos = TRUE,
+taufit = c('tau_birth', 'tau_screen'), powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'),
+zfit = FALSE, verbose = TRUE, sparse = 5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -75,23 +78,19 @@ Numeric scalar; amount of sparse sampling of the spectra to make. Higher values 
 \details{
 This function is mostly used for its side effect of producing a likelihood that we can then optimise our model using \code{\link{optim}}. It handles a lot of the awkward data manipulation side which is present when we are using an odd subset of all possible filters etc.
 
-Some more info on the required \option{Data} structure:
+\option{Data} can take most of the options of \code{SFHp4like}, \code{SFHp5like} and \code{SFHfunclike} as inputs to change the defaults, e.g. \option{massfit}, \option{taufit}, \option{powfit}, \option{dustfit}, \option{zfit}, \option{verbose}, \option{sparse}, \option{massfunc}, \option{forcemass}, \option{unimax}, \option{agescale}, \option{massfuncfit}, \option{massfuncpos}.
+
+Some more info on the required \option{Data} list inputs:
 
 \describe{
   \item{Data$flux}{
 Data.frame(4 columns, filter name, central wave, flux (Jy), fluxerr (Jy))
 }
+  \item{Data$prior}{
+A prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally.
+}
   \item{Data$z}{
 Redshift of the galaxy. Not required if fitting for redshift since this will be picked up by the \option{parm} input.
-}
-  \item{Data$mon.names}{
-Should be a vector containing: 'DustMass', 'DustLum', 'AGNLum', 'Dustfrac_bol', 'AGNfrac_bol'. 
-}
-  \item{Data$parm.names}{
-Should be a vector containing the parameters that are being fit, e.g. for \code{SFHp5like} the default would be: "burstmass", "youngmass", "midmass", "oldmass", "ancientmass", "tau_birth",  "tau_screen", "alpha_SF", "AGNfrac".
-}
-  \item{Data$N}{
-The number of bands being fitted.
 }
   \item{Data$speclib}{
 Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
@@ -125,7 +124,9 @@ If Data$fit='LD' then a list is returned containing LP, Dev, Monitor, yhat, parm
 
 If Data$fit='check' then lots of things are returned for checking purposes (TBD exactly what). Currently (not exhaustively) includes:
 
-  \item{like}{log-likelihood}
+  \item{LP}{Posterior log-likelihood (Data-Model and Prior)}
+  \item{LL}{Data-Model log-likelihood}
+  \item{Dev}{Deviance: -2.LL}
   \item{FinalSpec}{Numeric matrix; the combined observed flux spectrum (column 1 is wavelength; column 2 is the observed flux in erg/s / cm^2 / Ang.}
   \item{FinalPhotom}{Numeric vector; observed photometry in Jansky, as given by \code{\link{Janskycalc}}} in the 'out' column.
   \item{SFH_dust}{List; output of relevant \code{\link{SFH}} function using the current parameter values including dust attenuation.}

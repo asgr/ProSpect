@@ -164,6 +164,10 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
 }
 
 addspec=function(wave1, flux1, wave2, flux2){
+  wave1=log10(wave1)
+  wave2=log10(wave2)
+  flux1=log10(flux1)
+  flux2=log10(flux2)
   wave=sort(c(wave1, wave2))
-  return=cbind(wave=wave, flux=approxfun(wave1, flux1, rule=2, yleft=0, yright=0)(wave)+approxfun(wave2, flux2, rule=2, ,yleft=0, yright=0)(wave))
+  return=cbind(wave=10^wave, flux=10^approxfun(wave1, flux1, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])(wave)+10^approxfun(wave2, flux2, rule=2, , yleft=flux2[1], yright=flux2[length(flux2)])(wave))
 }
