@@ -49,8 +49,10 @@ stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
 
 SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
-forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
-Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, ...)
+forcemass = FALSE, unimax = 1.38e+10, agescale = 1, burstage = c(0, 1e+08),
+youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09),
+ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, Z = 5, z = 0.1,
+H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -179,7 +181,9 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase.}
 \item{sSFR}{Numeric vector; the speicifc star formation rate averaged out over each star formation phase.}
 
-\code{SMstarp4} / \code{SMstarp5} / \code{SMfunc} is a 5/6/1 element vector containing the stellar mass observed as produced by each phase of star formation (for \code{SMstarp4} and \code{SMstarp5}), and the total stellar mass formed (\code{SMstarp4} / \code{SMstarp5} / \code{SMfunc}, this is the last element listed).
+\code{SMstarp4} / \code{SMstarp5} is a 5/6 element vector containing the stellar mass remaining (not formed) as produced by each phase of star formation, and the total stellar mass remaining (not formed- this is the last element listed).
+
+\code{SMstarfunc} produces both the stellar mass formed (5 elements) and the stellar mass remaining (a further 5 elements) for the 5 different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
 }
 \author{
 Aaron Robotham
