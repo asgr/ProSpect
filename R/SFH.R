@@ -446,19 +446,17 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcema
   lum=rep(0,length(speclib$Wave))
   
   for(Zid in Zuse){
-    speclib_all=speclib$Zspec[[Zid]]
-    
     if(tau_birth!=0){
-      speclib_all[1:birthcloud,]=t(t(speclib_all[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+      speclib$Zspec[[Zid]][1:birthcloud,]=t(t(speclib$Zspec[[Zid]][1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
     }
     if(tau_screen!=0){
-      speclib_all=t(t(speclib_all)*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
+      speclib$Zspec[[Zid]]=t(t(speclib$Zspec[[Zid]])*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen))
     }
     
     if(Zdoweight){
-      lum=lum+colSums(speclib_all*speclib$AgeWeights*massvec*Zwmat[,Zid])
+      lum=lum+colSums(speclib$Zspec[[Zid]]*speclib$AgeWeights*massvec*Zwmat[,Zid])
     }else{
-      lum=colSums(speclib_all*speclib$AgeWeights*massvec)
+      lum=colSums(speclib$Zspec[[Zid]]*speclib$AgeWeights*massvec)
     }
   }
   
@@ -545,8 +543,8 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forc
   massvec=massfunc(speclib$Age*agescale, ...)*speclib$AgeWeights
   
   if(unimax!=FALSE){
-    agemax=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
-    massvec[speclib$Age>agemax]=0
+    ancientage[2]=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+    massvec[speclib$Age>ancientage[2]]=0
   }
   if(forcemass!=FALSE){
     masstot=sum(massvec)
@@ -569,16 +567,22 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forc
   oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
   ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
   
-  burstform=sum(massvec[burstageloc])
-  burststar=sum(totstar[burstageloc])
-  youngform=sum(massvec[youngageloc])
-  youngstar=sum(totstar[youngageloc])
-  midform=sum(massvec[midageloc])
-  midstar=sum(totstar[midageloc])
-  oldform=sum(massvec[oldageloc])
-  oldstar=sum(totstar[oldageloc])
-  ancientform=sum(massvec[ancientageloc])
-  ancientstar=sum(totstar[ancientageloc])
+  burstrescale=(burstage[2]-burstage[1])/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+  youngrescale=(youngage[2]-youngage[1])/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+  midrescale=(midage[2]-midage[1])/sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
+  oldrescale=(oldage[2]-oldage[1])/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+  ancientrescale=(ancientage[2]-ancientage[1])/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+  
+  burstform=sum(massvec[burstageloc[1]:burstageloc[2]])*burstrescale
+  burststar=sum(totstar[burstageloc[1]:burstageloc[2]])*burstrescale
+  youngform=sum(massvec[youngageloc[1]:youngageloc[2]])*youngrescale
+  youngstar=sum(totstar[youngageloc[1]:youngageloc[2]])*youngrescale
+  midform=sum(massvec[midageloc[1]:midageloc[2]])*midrescale
+  midstar=sum(totstar[midageloc[1]:midageloc[2]])*midrescale
+  oldform=sum(massvec[oldageloc[1]:oldageloc[2]])*oldrescale
+  oldstar=sum(totstar[oldageloc[1]:oldageloc[2]])*oldrescale
+  ancientform=sum(massvec[ancientageloc[1]:ancientageloc[2]])*ancientrescale
+  ancientstar=sum(totstar[ancientageloc[1]:ancientageloc[2]])*ancientrescale
   
   
   return(c(BurstSMform=burstform, YoungSMform=youngform, MidSMform=midform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=sum(massvec), TotSMstar=sum(totstar)))
