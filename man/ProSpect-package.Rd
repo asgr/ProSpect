@@ -13,7 +13,7 @@
 Package: \tab ProSpect\cr
 Type: \tab Package\cr
 Version: \tab 0.5.1\cr
-Date: \tab 2019-02-06\cr
+Date: \tab 2019-02-11\cr
 License: \tab LGPL-3\cr
 Depends: \tab R (>= 2.13)\cr
 Imports:  \tab celestial, NISTunits, pracma\cr
