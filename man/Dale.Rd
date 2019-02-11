@@ -158,12 +158,12 @@ Dale_SFR=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, type='NormTot')
 
 tempscale=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac)
 
-plot(Dale_NormTot$Wave, Dale_mix$Aspec, type='l', log='xy', lwd=2)
-lines(Dale_NormTot$Wave, Dale_AGN$Aspec*tempscale[1], col='brown')
-lines(Dale_NormTot$Wave, Dale_SFR$Aspec*tempscale[2], col='red')
+plot(Dale_NormTot$Wave, Dale_mix$Aspec, type='l', log='xy', lwd=4)
+lines(Dale_NormTot$Wave, Dale_SFR$Aspec*tempscale[1], col='red')
+lines(Dale_NormTot$Wave, Dale_AGN$Aspec*tempscale[2], col='brown')
 lines(Dale_NormTot$Wave,
-Dale_AGN$Aspec*tempscale[1]+Dale_SFR$Aspec*tempscale[2],
-col='green', lty=2, lwd=2)
+Dale_SFR$Aspec*tempscale[1] + Dale_AGN$Aspec*tempscale[2],
+col='green', lty=3, lwd=2)
 
 #The above is how you would reconstruct a generic fit, where you need to scale these
 #numbers by the total attenuated flux/luminosity (since above is normalised to 1).
