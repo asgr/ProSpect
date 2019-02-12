@@ -185,7 +185,8 @@ SFHp4like=function(parm=c(8,9,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmass',
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
     SMtot=SMstarp5(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, speclib=Data$speclib)
-    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot))
+    dustflux[,2]=convert_wave2freq(dustflux[,2]*1e23,dustflux[,1])
+    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux))
   }
 }
 
@@ -385,7 +386,8 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmas
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
     SMtot=SMstarp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, speclib=Data$speclib)
-    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot))
+    dustflux[,2]=convert_wave2freq(dustflux[,2]*1e23,dustflux[,1])
+    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux))
   }
 }
 
@@ -558,7 +560,8 @@ SFHfunclike=function(parm=c(1,0,-0.5,0.2,-2), Data, massfunc=function(age, SFR=1
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
     SMtot=do.call('SMstarfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, z=redshift), massfunclist))
-    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot))
+    dustflux[,2]=convert_wave2freq(dustflux[,2]*1e23,dustflux[,1])
+    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux))
   }
 }
 
