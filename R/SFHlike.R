@@ -144,7 +144,6 @@ SFHp4like=function(parm=c(8,9,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmass',
   finalspec=addspec(dustflux[,1], dustflux[,2], SFH_dust$flux[,1], SFH_dust$flux[,2])
   Dale_in=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, Dale=Data$Dale)
   Dale_in[,2]=Dale_in[,2]*dustout[3]
-  Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
   
   fluxnu=convert_wave2freq(finalspec[,2], finalspec[,1])
   photom_out={}
@@ -175,18 +174,38 @@ SFHp4like=function(parm=c(8,9,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmass',
   if(Data$fit=='optim'){
     return(-LP)
   }else if(Data$fit=='LD'){
+    Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
+    
     DustMass=log10(dustout[1])
     DustLum=log10(dustout[2])
     Dustfrac_bol=log10(Fractions[1])
     AGNfrac_bol=log10(Fractions[2])
     AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
-    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol)
+    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol, use.names=FALSE)
     Monitor[!is.finite(Monitor)]=1e10
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
-    SMtot=SMstarp5(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, speclib=Data$speclib)
+    Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
+    
+    DustMass=log10(dustout[1])
+    DustLum=log10(dustout[2])
+    Dustfrac_bol=log10(Fractions[1])
+    AGNfrac_bol=log10(Fractions[2])
+    AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
+    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol, use.names=FALSE)
+    Monitor[!is.finite(Monitor)]=1e10
+    
+    SMtot=SMstarp4(burstmass=burstmass, youngmass=youngmass, oldmass=oldmass, ancientmass=ancientmass, speclib=Data$speclib)
+    
     dustflux[,2]=convert_wave2freq(dustflux[,2]*1e23,dustflux[,1])
-    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux))
+    
+    Dale_Dust=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, type='NormTot')
+    DaleSpec_Dust=Lum2Flux(Dale_Dust$Wave, Dale_Dust$Aspec*dustout[2], z=redshift)
+
+    Dale_AGN=Dale_interp(alpha_SF=alpha_SF, AGNfrac=1, type='NormTot')
+    DaleSpec_AGN=Lum2Flux(Dale_AGN$Wave, Dale_AGN$Aspec*dustout[2]*Fractions[2]/Fractions[1], z=redshift)
+
+    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux, DaleSpec_Dust=DaleSpec_Dust, DaleSpec_AGN=DaleSpec_AGN, Monitor=Monitor))
   }
 }
 
@@ -376,18 +395,38 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmas
   if(Data$fit=='optim'){
     return(-LP)
   }else if(Data$fit=='LD'){
+    Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
+    
     DustMass=log10(dustout[1])
     DustLum=log10(dustout[2])
     Dustfrac_bol=log10(Fractions[1])
     AGNfrac_bol=log10(Fractions[2])
     AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
-    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol)
+    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol, use.names=FALSE)
     Monitor[!is.finite(Monitor)]=1e10
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
+    Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
+    
+    DustMass=log10(dustout[1])
+    DustLum=log10(dustout[2])
+    Dustfrac_bol=log10(Fractions[1])
+    AGNfrac_bol=log10(Fractions[2])
+    AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
+    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol, use.names=FALSE)
+    Monitor[!is.finite(Monitor)]=1e10
+    
     SMtot=SMstarp5(burstmass=burstmass, youngmass=youngmass, midmass=midmass, oldmass=oldmass, ancientmass=ancientmass, speclib=Data$speclib)
+    
     dustflux[,2]=convert_wave2freq(dustflux[,2]*1e23,dustflux[,1])
-    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux))
+    
+    Dale_Dust=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, type='NormTot')
+    DaleSpec_Dust=Lum2Flux(Dale_Dust$Wave, Dale_Dust$Aspec*dustout[2], z=redshift)
+    
+    Dale_AGN=Dale_interp(alpha_SF=alpha_SF, AGNfrac=1, type='NormTot')
+    DaleSpec_AGN=Lum2Flux(Dale_AGN$Wave, Dale_AGN$Aspec*dustout[2]*Fractions[2]/Fractions[1], z=redshift)
+
+    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux, DaleSpec_Dust=DaleSpec_Dust, DaleSpec_AGN=DaleSpec_AGN, Monitor=Monitor))
   }
 }
 
@@ -550,18 +589,38 @@ SFHfunclike=function(parm=c(1,0,-0.5,0.2,-2), Data, massfunc=function(age, SFR=1
   if(Data$fit=='optim'){
     return(-LP)
   }else if(Data$fit=='LD'){
+    Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
+    
     DustMass=log10(dustout[1])
     DustLum=log10(dustout[2])
     Dustfrac_bol=log10(Fractions[1])
     AGNfrac_bol=log10(Fractions[2])
     AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
-    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol)
+    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol, use.names=FALSE)
     Monitor[!is.finite(Monitor)]=1e10
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
+    Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
+    
+    DustMass=log10(dustout[1])
+    DustLum=log10(dustout[2])
+    Dustfrac_bol=log10(Fractions[1])
+    AGNfrac_bol=log10(Fractions[2])
+    AGNLum=log10(dustout[2]*Fractions[2]/Fractions[1])
+    Monitor=c(DustMass=DustMass, DustLum=DustLum, AGNLum=AGNLum, Dustfrac_bol=Dustfrac_bol, AGNfrac_bol=AGNfrac_bol, use.names=FALSE)
+    Monitor[!is.finite(Monitor)]=1e10
+    
     SMtot=do.call('SMstarfunc', c(list(massfunc=massfunc, forcemass=forcemass, unimax=unimax, agescale=agescale, z=redshift), massfunclist))
+    
     dustflux[,2]=convert_wave2freq(dustflux[,2]*1e23,dustflux[,1])
-    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux))
+    
+    Dale_Dust=Dale_interp(alpha_SF=alpha_SF, AGNfrac=0, type='NormTot')
+    DaleSpec_Dust=Lum2Flux(Dale_Dust$Wave, Dale_Dust$Aspec*dustout[2], z=redshift)
+
+    Dale_AGN=Dale_interp(alpha_SF=alpha_SF, AGNfrac=1, type='NormTot')
+    DaleSpec_AGN=Lum2Flux(Dale_AGN$Wave, Dale_AGN$Aspec*dustout[2]*Fractions[2]/Fractions[1], z=redshift)
+    
+    return(list(LP=LP, LL=LL, Dev=-2*LL, FinalSpec=finalspec, FinalPhotom=photom_out, SFH_dust=SFH_dust, SFH_nodust=SFH_nodust, Dust=dustout, SMtot=SMtot, DaleSpec=dustflux, DaleSpec_Dust=DaleSpec_Dust, DaleSpec_AGN=DaleSpec_AGN, Monitor=Monitor))
   }
 }
 

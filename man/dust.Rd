@@ -28,10 +28,10 @@ Numeric vector; wavelength in Angstroms.
 Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
 }
   \item{tau}{
-Numeric scalar; the exponential tau of the dust, where larger means more reddening. Charlot and Fall suggested defaults are used here.
+Numeric scalar; the exponential tau of the dust, where larger means more reddening. Charlot and Fall suggested defaults are used here (although tau=0.5 for the screen is also reasonable).
 }
   \item{pow}{
-Numeric scalar; power to further raise the attenuation. Charlot and Fall suggest this should be close to -0.7 based on observations.
+Numeric scalar; power to further raise the attenuation. Charlot and Fall suggest this should be close to -0.7 based on observations (da Cunha et al (2008) use a steeper -1.3 for the birth cloud).
 }
   \item{pivot}{
 Numeric scalar; the pivot wavelength in Angstroms. Charlot and Fall suggested default.
@@ -51,6 +51,7 @@ For CF_birth_atten and CF_screen_atten, a list where the first element is the at
 }
 \references{
 Charlot & Fall, 2000, ApJ, 539, 718
+da Cunha et al, 2008, MNRAS, 388, 1595
 }
 \author{
 Aaron Robotham
