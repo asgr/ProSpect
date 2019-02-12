@@ -120,7 +120,7 @@ Outside of the above, any argument that is not \option{parm} and \option{Data} c
 \value{
 If Data$fit='optim' then the only thing returned is the negative of the log-likelihood as a numeric scalar. Using this output we can minimise our model using \code{\link{optim}}.
 
-If Data$fit='LD' then a list is returned containing LP, Dev, Monitor, yhat, parm. Using this output we can optimise our model using \code{LaplacesDemon}.
+If Data$fit='LD' then a list is returned containing LP, Dev, Monitor (log10 dust mass, log10 dust luminosity, log10 AGN luminosity, bolometric dust fraction, bolometric AGN fraction), yhat, parm. Using this output we can optimise our model using \code{LaplacesDemon}.
 
 If Data$fit='check' then lots of things are returned for checking purposes (TBD exactly what). Currently (not exhaustively) includes:
 
@@ -132,6 +132,11 @@ If Data$fit='check' then lots of things are returned for checking purposes (TBD 
   \item{SFH_dust}{List; output of relevant \code{\link{SFH}} function using the current parameter values including dust attenuation.}
   \item{SFH_nodust}{List; output of relevant \code{\link{SFH}} function using the current parameter values but ignoring dust attenuation (effectively \option{tau_birth}=0 and \option{tau_screen}=0.}
   \item{Dust}{Numeric vector; dust properties as determined by \code{\link{dustmass}}.}
+  \item{SMtot}{Stellar masses as return by \code{\link{SMstarp4}}, \code{\link{SMstarp5}}, \code{\link{SMstarfunc}}.}
+  \item{DaleSpec}{Numeric matrix; the combined observed Dale (dust+AGN) flux spectrum (column 1 is wavelength; column 2 is the observed flux in erg/s / cm^2 / Ang.}
+  \item{DaleSpec_Dust}{Numeric matrix; the observed Dale dust flux spectrum (column 1 is wavelength; column 2 is the observed flux in erg/s / cm^2 / Ang.}
+  \item{DaleSpec_AGN}{Numeric matrix; the observed Dale AGN flux spectrum (column 1 is wavelength; column 2 is the observed flux in erg/s / cm^2 / Ang.}
+  \item{Monitor}{Numeric vector; log10 dust mass, log10 dust luminosity, log10 AGN luminosity, bolometric dust fraction, bolometric AGN fraction.}
 }
 \author{
 Aaron Robotham
