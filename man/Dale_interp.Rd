@@ -13,7 +13,7 @@ Dale_interp(alpha_SF = 1.5, AGNfrac = 0, type = "Msol", Dale = NULL)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{alpha_SF}{
-Numeric scalar; desired interpolated alpha slope of the star forming population.
+Numeric scalar; desired interpolated alpha slope of the star forming population. Lower values mean hotter dust.
 }
   \item{AGNfrac}{
 Numeric scalar; desired interpolated AGN fraction linearly mixed in energy over the range 5-20 microns (see Dale 2014).

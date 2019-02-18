@@ -63,7 +63,7 @@ List of 4\cr
 }
 \arguments{
   \item{alpha_SF}{
-Numeric scalar; desired interpolated alpha slope of the star forming population.  
+Numeric scalar; desired interpolated alpha slope of the star forming population. Lower values mean hotter dust.
 }
   \item{AGNfrac}{
 Numeric scalar; AGN fraction linearly mixed in energy over the range 5-20 microns (see Dale 2014).

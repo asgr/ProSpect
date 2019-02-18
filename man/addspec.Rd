@@ -8,7 +8,7 @@ Add Mismatched Spectra Together
 Simple function that interpolates two non wavelength alligned spectra onto a common interpolated scheme,
 }
 \usage{
-addspec(wave1, flux1, wave2, flux2)
+addspec(wave1, flux1, wave2, flux2, extrap = "constant")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,6 +23,9 @@ Numeric vector; wavelength 2 in in any units (but must be the same as \option{wa
 }
   \item{flux2}{
 Numeric vector; flux 2 in any units (but must be the same as \option{flux1}).
+}
+  \item{extrap}{
+If 'constant' then values outside the range inherit the nearest. If a numeric scalar (e.g. 0) then values outside the range inherit this value. 
 }
 }
 \details{
