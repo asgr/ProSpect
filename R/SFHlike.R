@@ -430,7 +430,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmas
   }
 }
 
-SFHfunclike=function(parm=c(1,0,-0.5,0.2,-2), Data, massfunc=function(age, SFR=1){ifelse(age<1e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit='SFR', massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), powfit=NULL, dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
+SFHfunclike=function(parm=c(1,0,-0.5,0.2,-2), Data, massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, massfuncfit='SFR', massfuncpos=TRUE, taufit=c('tau_birth', 'tau_screen'), powfit=NULL, dustfit=c('alpha_SF', 'AGNfrac'), zfit=FALSE, verbose=TRUE, sparse=5){
   
   if('massfunc' %in% names(Data)){massfunc = Data$massfunc}
   if('forcemass' %in% names(Data)){forcemass = Data$forcemass}
@@ -624,7 +624,7 @@ SFHfunclike=function(parm=c(1,0,-0.5,0.2,-2), Data, massfunc=function(age, SFR=1
   }
 }
 
-#This is a direct copy of the interval function from LaplacesDemon. Since I only use this one function I didn't want to
+#This is a direct copy of the interval function from LaplacesDemon. Since I only use this one function I didn't want to add the whole LD dependency
 
 .interval=function (x, a = -Inf, b = Inf, reflect = TRUE) 
 {

@@ -1,3 +1,7 @@
+CF=function(wave, tau=0.3, pow=-0.7, pivot=5500){
+  return=exp(-tau*(wave/pivot)^(pow))
+}
+
 CF_birth=function(wave, tau=1.0, pow=-0.7, pivot=5500){
   return=exp(-tau*(wave/pivot)^(pow))
 }
@@ -15,6 +19,14 @@ CF_birth_atten=function(wave, flux, tau=1.0, pow=-0.7, pivot=5500){
 }
 
 CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
+  flux_atten=CF_screen(wave, tau=tau, pow=pow, pivot=pivot)*flux
+  unatten=sum(flux*c(0,diff(wave)))
+  atten=sum(flux_atten*c(0,diff(wave)))
+  total_atten=unatten-atten
+  return=list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten)
+}
+
+CF_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
   flux_atten=CF_screen(wave, tau=tau, pow=pow, pivot=pivot)*flux
   unatten=sum(flux*c(0,diff(wave)))
   atten=sum(flux_atten*c(0,diff(wave)))
@@ -97,8 +109,12 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
     }
   }
   
-  AGNinterp=interp_param(x=AGNfrac, Dale$AGNfrac)
-  SFinterp=interp_param(x=alpha_SF, Dale$alpha_SF)
+  if(AGNfrac>0 & AGNfrac<1){
+    AGNinterp=interp_param(x=AGNfrac, Dale$AGNfrac)
+  }
+  if(AGNfrac<1){
+    SFinterp=interp_param(x=alpha_SF, Dale$alpha_SF)
+  }
   
   # if(AGNfrac<0){AGNfrac=0}
   # if(AGNfrac>1){AGNfrac=1}
@@ -121,13 +137,23 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
   # alpha_SFlow=(alpha_SFhi-alpha_SF)/(alpha_SFhi-alpha_SFlo)
   # alpha_SFhiw=1-alpha_SFlow
   
-  output=rep(0,1496)
-  
-  output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_lo,]*AGNinterp$weight_lo*SFinterp$weight_lo
-  output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_hi,]*AGNinterp$weight_lo*SFinterp$weight_hi
-  output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_lo,]*AGNinterp$weight_hi*SFinterp$weight_lo
-  output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_hi,]*AGNinterp$weight_hi*SFinterp$weight_hi
-  return=data.frame(Wave=Dale$Wave, Aspec=output)
+  if(AGNfrac==0){
+    output=rep(0,1496)
+    output=output+Dale$Aspec[[1]][SFinterp$ID_lo,]*SFinterp$weight_lo
+    output=output+Dale$Aspec[[1]][SFinterp$ID_hi,]*SFinterp$weight_hi
+    return(invisible(data.frame(Wave=Dale$Wave, Aspec=output)))
+  }
+  if(AGNfrac>0 & AGNfrac<1){
+    output=rep(0,1496)
+    output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_lo,]*AGNinterp$weight_lo*SFinterp$weight_lo
+    output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_hi,]*AGNinterp$weight_lo*SFinterp$weight_hi
+    output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_lo,]*AGNinterp$weight_hi*SFinterp$weight_lo
+    output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_hi,]*AGNinterp$weight_hi*SFinterp$weight_hi
+    return(invisible(data.frame(Wave=Dale$Wave, Aspec=output)))
+  }
+  if(AGNfrac==1){
+    return(invisible(data.frame(Wave=Dale$Wave, Aspec=Dale$Aspec[[21]][1,])))
+  }
 }
 
 Dale_scale=function(alpha_SF=1.5, AGNfrac=0.5, Dale_in){

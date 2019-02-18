@@ -1,10 +1,11 @@
-\name{CF_general}
-\alias{CF_general}
-\alias{CF_birth}
-\alias{CF_screen}
-\alias{CF_birth_atten}
-\alias{CF_screen_atten}
+\name{Attenuate}
 \alias{CF}
+\alias{CF_atten}
+\alias{CF_birth}
+\alias{CF_birth_atten}
+\alias{CF_screen}
+\alias{CF_screen_atten}
+\alias{atten_emit}
 \alias{dust}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -14,10 +15,13 @@ Charlot and Fall Simple Dust Model
 Applies a simple Charlot and Fall dust model, assuming the published defaults for the birth cloud and dust screen exponential taus.
 }
 \usage{
+CF(wave, tau = 0.3, pow = -0.7, pivot = 5500)
+CF_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500)
 CF_birth(wave, tau = 1.0, pow = -0.7, pivot = 5500)
-CF_screen(wave, tau = 0.3, pow = -0.7, pivot = 5500)
 CF_birth_atten(wave, flux, tau = 1.0, pow = -0.7, pivot = 5500)
+CF_screen(wave, tau = 0.3, pow = -0.7, pivot = 5500)
 CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500)
+atten_emit(wave, flux, tau = 0.3, pow = -0.7, alpha_SF = 1.5, Dale = NULL) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -36,6 +40,12 @@ Numeric scalar; power to further raise the attenuation. Charlot and Fall suggest
   \item{pivot}{
 Numeric scalar; the pivot wavelength in Angstroms. Charlot and Fall suggested default.
 }
+  \item{alpha_SF}{
+Numeric scalar; desired interpolated alpha slope of the star forming population. Lower values mean hotter dust.  
+}
+  \item{Dale}{
+Pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR}).
+}
 }
 \details{
 We use the simple dust models for birth clouds and dust screens as given by Charlot and Fall (2000):
@@ -45,9 +55,11 @@ We use the simple dust models for birth clouds and dust screens as given by Char
 The defaults should be reasonable in the regime they are used over, where birth cloud dust should only be applied to stellar populations younger than 10 Myrs. Note that BC03 has 70 stellar population spectra which are younger than this, whilst EMILES has none. This means that EMILES cannot realistically capture the birth dust attenuation phase, so for highly star bursting populations BC03 should probably be preferred.
 }
 \value{
-For CF_birth and CF_screen, a numeric vector; the attenuation curve that fluxes should be multiplied by.
+For \code{CF}, \code{CF_birth} and \code{CF_screen}, a numeric vector; the attenuation curve that fluxes should be multiplied by.
 
-For CF_birth_atten and CF_screen_atten, a list where the first element is the attenuated flux [flux], the second is the total energy of the flux attenuated (i.e. this is the amount that should be re-radiated elsewhere) [total_atten], and the third is the ratio of attenuated to unattenuated stellar light (i.e. 1 would mean no flux has been attenuated by dust, and 0 would mean 100\% attenuation).
+For \code{CF_atten}, \code{CF_birth_atten} and \code{CF_screen_atten}, a list where the first element is the attenuated flux [flux], the second is the total energy of the flux attenuated (i.e. this is the amount that should be re-radiated elsewhere) [total_atten], and the third is the ratio of attenuated to unattenuated stellar light (i.e. 1 would mean no flux has been attenuated by dust, and 0 would mean 100\% attenuation).
+
+For \code{atten_emit} the input spectrum is attenuated by the specified Charlot and Fall mode, and then re-emitted with the specified Dale dust template.
 }
 \references{
 Charlot & Fall, 2000, ApJ, 539, 718

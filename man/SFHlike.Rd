@@ -8,6 +8,8 @@
 Star Formation History Likelihood
 }
 \description{
+DEPRECATED - use \code{\link{ProSpectSEDlike}} instead, which provides a more advanced and generic interface for model fitting.
+
 In basic usage, computes the likelihood for a given set of data versus a specified model for the star formation history (SFH), including dust and attentuation. Can also return all of the \code{ProSpect} outputs for a given SFH model produced by \code{SFHp4like}, \code{SFHp5like}, \code{SFHfunclike} and \code{\link{Dale_interp}}.
 }
 \usage{
@@ -22,7 +24,7 @@ powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'), zfit = FALSE, verbose = TRUE,
 sparse = 5)
 
 SFHfunclike(parm = c(1, 0, -0.5, 0.2, -2), Data,
-massfunc = function(age, SFR = 1){ifelse(age < 1e+10, SFR, 0)}, forcemass = FALSE,
+massfunc = function(age, SFR = 1){ifelse(age < 1.3e+10, SFR, 0)}, forcemass = FALSE,
 unimax = 13.8e9, agescale = 1, massfuncfit = 'SFR', massfuncpos = TRUE,
 taufit = c('tau_birth', 'tau_screen'), powfit = NULL, dustfit = c('alpha_SF', 'AGNfrac'),
 zfit = FALSE, verbose = TRUE, sparse = 5)
@@ -88,9 +90,6 @@ Data.frame(4 columns, filter name, central wave, flux (Jy), fluxerr (Jy))
 }
   \item{Data$prior}{
 A prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally.
-}
-  \item{Data$z}{
-Redshift of the galaxy. Not required if fitting for redshift since this will be picked up by the \option{parm} input.
 }
   \item{Data$speclib}{
 Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.

@@ -80,7 +80,7 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
   flux=lum*.lsun_to_erg/(4*pi*Dl_cm^2)/(1+z)
   wave=wave*(1+z)
   #output is erg/s/cm^2/Angstrom (not per Hz! Need to make this final conversion to get to AB mag, but this is the standard way of viewing spectra).
-  return(cbind(wave=wave, flux=flux))
+  return(data.frame(wave=wave, flux=flux))
 }
 
 photom_flux=function(wave, flux, outtype='mag', filters='all'){
@@ -163,11 +163,28 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
   return(photom)
 }
 
-addspec=function(wave1, flux1, wave2, flux2){
+addspec=function(wave1, flux1, wave2, flux2, extrap='constant'){
   wave1=log10(wave1)
   wave2=log10(wave2)
   flux1=log10(flux1)
   flux2=log10(flux2)
   wave=sort(c(wave1, wave2))
-  return=cbind(wave=10^wave, flux=10^approxfun(wave1, flux1, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])(wave)+10^approxfun(wave2, flux2, rule=2, , yleft=flux2[1], yright=flux2[length(flux2)])(wave))
+  if(extrap=='constant'){
+    flux1=10^approxfun(wave1, flux1, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])(wave)
+    flux2=10^approxfun(wave2, flux2, rule=2, yleft=flux2[1], yright=flux2[length(flux2)])(wave)
+  }else{
+    flux1=10^approxfun(wave1, flux1, rule=2, yleft=log10(extrap), yright=log10(extrap))(wave)
+    flux2=10^approxfun(wave2, flux2, rule=2, yleft=log10(extrap), yright=log10(extrap))(wave)
+  }
+  flux1[is.na(flux1)]=0
+  flux2[is.na(flux2)]=0
+  return(invisible(data.frame(wave=10^wave, flux=flux1+flux2)))
+}
+
+atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL){
+  atten=CF_atten(wave=wave, flux=flux, tau=tau, pow=pow)
+  emit=Dale_interp(alpha_SF=alpha_SF, AGNfrac = 0, Dale=Dale)
+  emit$Aspec=emit$Aspec*atten$total_atten
+  final=addspec(wave1=wave, flux1=atten$flux, wave2=emit$Wave, flux2=emit$Aspec, extrap=0)
+  return(invisible(list(final=final, unatten=data.frame(wave=wave, flux=flux), atten=data.frame(wave=wave, flux=atten$flux), emit=data.frame(wave=emit$Wave, flux=emit$Aspec))))
 }

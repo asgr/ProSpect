@@ -20,7 +20,7 @@ burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth = 1,
 tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5),
 z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag",
-cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 1)
+cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 5)
 
 SFHp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
 ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
@@ -28,13 +28,13 @@ midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+1
 stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7,
 pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
-dosplit = FALSE, sparse = 1)
+dosplit = FALSE, sparse = 5)
 
-SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
+SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
 tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, filters = "all",
 Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag",
-sparse = 1, intSFR=FALSE, ...) 
+sparse = 5, intSFR=FALSE, ...) 
 
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
@@ -48,7 +48,7 @@ midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+1
 stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
 
-SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1e+10, SFR, 0)},
+SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, burstage = c(0, 1e+08),
 youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, Z = 5, z = 0.1,
@@ -123,7 +123,7 @@ Character vector; names of filters to use. See \code{\link{filters}} for options
 Integer vector of length 4 (\code{SFHp4}), 5 (\code{SFHp5}) or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar).
 }
   \item{z}{
-Numeric scalar; cosmological redshift. If the provided \option{z}<=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'.
+Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).
 }
   \item{H0}{
 Numeric scalar; Hubble constant as defined at z=0 (default is H0=67.8 (km/s)/Mpc).
@@ -136,7 +136,7 @@ Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL =
 }
   \item{ref}{
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
-  }
+}
   \item{outtype}{
 Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
 }
