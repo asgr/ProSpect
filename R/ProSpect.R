@@ -106,7 +106,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     parmlist=parm
   }
   
-  names(parmlist)=Data$parmnames
+  names(parmlist)=Data$parm.names
   
   if(Data$verbose){print(parmlist)}
   
