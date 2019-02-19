@@ -112,6 +112,9 @@ Integer vector (optional) of length 4 (\code{SFHp4}), 5 (\code{SFHp5}) or a func
   \item{Data$fixed}{
 List; optional list of named parameters and values that are being fixed during fitting (i.e. the \code{\link{SFH}} functions will use the fixed values during the fitting process). This includes the redshift z, which will usually be fixed during fitting, i.e. typically Data$fixed$z will need to be specified even if other parameters are not fixed. If this is not specified then vaguely sensible defaults are assumed for the non-fitting arguments (z = 0, burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10, ancientmass = 1e+10, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, alpha_SF = 1.5 and AGNfrac = 0), but the user should really set the fixed values. All fixed values should specified in linear units.
 }
+  \item{Data$verbose}{
+Logical; should verbose messages be shown.
+}
 }
 
 Outside of the above, any argument that is not \option{parm} and \option{Data} can be passed as part of the named list \option{Data}, rather than having to set it via the individual arguments. This is for two reasons: firstly it means all the user options can be specified in an object that can be saved (to improve reproduceability), but secondly LaplacesDemon can only accept likelihood functions that take exactly two arguments (\option{parm} and \option{Data}), so all options that the user wants to chance have to input as parts of the \option{Data} list structure.

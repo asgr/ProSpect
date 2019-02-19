@@ -21,7 +21,8 @@ CF_birth(wave, tau = 1.0, pow = -0.7, pivot = 5500)
 CF_birth_atten(wave, flux, tau = 1.0, pow = -0.7, pivot = 5500)
 CF_screen(wave, tau = 0.3, pow = -0.7, pivot = 5500)
 CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500)
-atten_emit(wave, flux, tau = 0.3, pow = -0.7, alpha_SF = 1.5, Dale = NULL) 
+atten_emit(wave, flux, tau = 0.3, pow = -0.7, alpha_SF = 1.5, Dale = NULL,
+Dale_M2L_func = NULL) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,7 +30,7 @@ atten_emit(wave, flux, tau = 0.3, pow = -0.7, alpha_SF = 1.5, Dale = NULL)
 Numeric vector; wavelength in Angstroms.
 }
   \item{flux}{
-Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
+Numeric vector; flux in any units as long as they are per unit wavelength (e.g. Lsol / Ang).
 }
   \item{tau}{
 Numeric scalar; the exponential tau of the dust, where larger means more reddening. Charlot and Fall suggested defaults are used here (although tau=0.5 for the screen is also reasonable).
@@ -46,6 +47,9 @@ Numeric scalar; desired interpolated alpha slope of the star forming population.
   \item{Dale}{
 Pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR}).
 }
+  \item{Dale_M2L_func}{
+Function; if dust masses are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
+}
 }
 \details{
 We use the simple dust models for birth clouds and dust screens as given by Charlot and Fall (2000):
@@ -59,7 +63,16 @@ For \code{CF}, \code{CF_birth} and \code{CF_screen}, a numeric vector; the atten
 
 For \code{CF_atten}, \code{CF_birth_atten} and \code{CF_screen_atten}, a list where the first element is the attenuated flux [flux], the second is the total energy of the flux attenuated (i.e. this is the amount that should be re-radiated elsewhere) [total_atten], and the third is the ratio of attenuated to unattenuated stellar light (i.e. 1 would mean no flux has been attenuated by dust, and 0 would mean 100\% attenuation).
 
-For \code{atten_emit} the input spectrum is attenuated by the specified Charlot and Fall mode, and then re-emitted with the specified Dale dust template.
+For \code{atten_emit} the input spectrum is attenuated by the specified Charlot and Fall mode, and then re-emitted with the specified Dale dust template. Returns a list containing:
+
+\describe{
+  \item{final}{Two column data.frame; Wavelength in Ang, attenuated and re-emitted flux in user units.}
+  \item{unatten}{Two column data.frame; Wavelength in Ang, un-attenuated flux in user units.}
+  \item{atten}{Two column data.frame; Wavelength in Ang, attenuated flux in user units.}
+  \item{emit}{Two column data.frame; Wavelength in Ang, re-emitted flux in user units (i.e. mostly FIR).}
+  \item{totalatten}{Integrated total attenuation user units.}
+  \item{dustmass}{If \option{Dale_M2L_func} is provided then dustmass in solar masses (Msol).}
+}
 }
 \references{
 Charlot & Fall, 2000, ApJ, 539, 718
