@@ -12,8 +12,8 @@ Top Level ProSpect SED Functions
 ProSpectSED(SFH, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
 pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
-Dale = NULL, AGN = NULL, filtout = NULL, returnall = TRUE, H0=67.8, OmegaM=0.308,
-OmegaL=1-OmegaM, ref, ...)
+Dale = NULL, AGN = NULL, filtout = NULL, Dale_M2L_func = NULL, returnall = TRUE, H0=67.8,
+OmegaM=0.308, OmegaL=1-OmegaM, ref, ...)
 ProSpectSEDlike(parm=c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -61,13 +61,16 @@ Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dus
 Object; required. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
 }
   \item{Dale}{
-Object; required. Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, \code{\link{Dale_Msol}}, \code{\link{Dale_NormTot}}, \code{\link{Dale_NormAGN}}, \code{\link{Dale_NormSFR}}.
+Object; required. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly).
 }
   \item{AGN}{
 Object; required. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
 }
   \item{filtout}{
 Object; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
+}
+  \item{Dale_M2L_func}{
+Function; if dust masses are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
 }
   \item{returnall}{
 Logical; if true then returns all the various sub SEDs. See Details. If FALSE then code just returns \option{photom_out} (photometry in Jansky).
@@ -88,7 +91,7 @@ The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 /
 Numeric vector; arguments to be passed to \code{ProSpectSED}.
 }
   \item{Data}{
-Object; data object containing everything else needs. See details.  
+Object; data object containing everything else needs. See Details.  
 }
   \item{\dots}{
 All further arguments are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
@@ -96,6 +99,50 @@ All further arguments are passed directly onto \option{SFH}, so by this mechanis
 }
 \details{
 This function allows full modelling of quite sophisticated star formation histories, dust attentuation and re-emission, as well as correctly attenuated AGN. It is useful directly, but it is also the workhorse function for the \code{\link{ProSpectSEDlike}} function, that allows us to compute likelihoods against target data and fit models in a generic manner.
+
+Some more info on the required \option{Data} list inputs:
+
+\describe{
+  \item{Data$flux}{
+Object; required. Data.frame(4 columns, filter name, central wave, flux (Jy), fluxerr (Jy))
+}
+  \item{Data$SFH}{
+Object; required. The star formation history function to use. Must be one of \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}}.
+}
+  \item{Data$arglist}{
+List; optional list of named parameters and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
+}
+  \item{Data$prior}{
+Function; a prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally.
+}
+  \item{Data$speclib}{
+Object; required. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
+}
+  \item{Data$Dale}{
+Object; required. Pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly).
+}
+  \item{Data$AGN}{
+Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
+}
+  \item{Data$filtout}{
+Object; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
+}
+  \item{Data$fit}{
+Character scalar; one of 'optim', 'LD' or 'check'. See Value for full information on what is output in each case. If missing it is set to 'optim'.
+}
+  \item{Data$like}{
+Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. If missing it is set to 'st'.
+}
+  \item{Data$parmnames}{
+Object; required. Character vector; correctly named and position matched parameters for fitting. Must match length of \option{parm} in \code{ProSpectSEDlike}, and elements should correctly describe the respective values.
+}
+\item{Data$logged}{
+Logical vector; match length of \option{parm} in \code{ProSpectSEDlike}, and elements should say which values should be raised to the power 10 when fitting. This is useful since scale parameters are better fit in log space, so Data$logged=TRUE for those elements.
+}
+  \item{Data$verbose}{
+Logical; should verbose messages be shown. If missing it is set to TRUE.
+}
+}
 }
 \value{
 If \option{returnall}=FALSE then we get a vector containing the photometry in Jansky.
@@ -122,6 +169,7 @@ Aaron Robotham
 data('BC03lr')
 data('Dale_NormTot')
 data('AGN_UnOb_Sparse')
+data('Dale_M2L_func')
 filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA',
 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE', 'W4_WISE',
 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel', 'S500_Herschel')
@@ -130,8 +178,9 @@ for(i in filters){filtout=c(filtout,list(getfilt(i)))}
 
 #Try playing around with the below to see what impact different AGN, dust etc have:
 
-testSED=ProSpectSED(SFH=SFHp4, AGNlum=1e43, tau_birth=1, tau_screen=0.5, speclib=BC03lr,
-Dale=Dale_NormTot, AGN=AGN_UnOb_Sparse, filtout=filtout)
+testSED=ProSpectSED(SFH=SFHp4, AGNlum=1e43, tau_birth=1, tau_screen=0.3, tau_AGN=2,
+alpha_SF_birth=1, alpha_SF_screen=3, alpha_SF_AGN=0, speclib=BC03lr, Dale=Dale_NormTot,
+AGN=AGN_UnOb_Sparse, filtout=filtout, Dale_M2L_func=Dale_M2L_func)
 
 plot(testSED$FinalLum, log='xy', xlim=c(1e2,1e7), ylim=c(1e2,1e7), xlab='Wave / Ang',
 ylab='Lum / Lsol/A', type='l', lwd=5)
