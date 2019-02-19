@@ -136,8 +136,11 @@ Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st'
   \item{Data$parmnames}{
 Object; required. Character vector; correctly named and position matched parameters for fitting. Must match length of \option{parm} in \code{ProSpectSEDlike}, and elements should correctly describe the respective values.
 }
-\item{Data$logged}{
+  \item{Data$logged}{
 Logical vector; match length of \option{parm} in \code{ProSpectSEDlike}, and elements should say which values should be raised to the power 10 when fitting. This is useful since scale parameters are better fit in log space, so Data$logged=TRUE for those elements.
+}
+  \item{Data$intervals}{
+List; has elements \option{lo} and \option{hi} which if provided must be the same length as \option{parm} in \code{ProSpectSEDlike}. These specify the lower and upper limits in the same linear/log space as \option{parm}, i.e. set \option{lo} to -1 if you do not want to logged unit to go below 0.1. 
 }
   \item{Data$verbose}{
 Logical; should verbose messages be shown. If missing it is set to TRUE.

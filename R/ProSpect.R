@@ -85,22 +85,31 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(is.null(Data$fit)){Data$fit='optim'}
   if(is.null(Data$like)){Data$like='st'}
   if(is.null(Data$verbose)){Data$verbose=TRUE}
-  if(Data$verbose){print(parm)}
   
-  if(is.null(Data$logged)){
-    parmlist=parm
-  }else if(length(Data$logged)==1){
-    if(Data$logged){
-      parmlist=as.list(10^parm)
+  if(!is.null(Data$intervals)){
+    parm[parm<Data$intervals$lo]=Data$intervals$lo[parm<Data$intervals$lo]
+    parm[parm>Data$intervals$hi]=Data$intervals$hi[parm>Data$intervals$hi]
+  }
+  
+  if(!is.null(Data$logged)){
+    if(length(Data$logged)==1){
+      if(Data$logged){
+        parmlist=10^parm
+      }else{
+        parmlist=parm
+      }
     }else{
       parmlist=parm
+      parmlist[Data$logged]=10^parm[Data$logged]
     }
   }else{
     parmlist=parm
-    parmlist[Data$logged]=10^parmlist[Data$logged]
   }
   
   names(parmlist)=Data$parmnames
+  
+  if(Data$verbose){print(parmlist)}
+  
   SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), Data$arglist))
   
   cutsig=(Data$flux$flux-SEDout$Photom)/Data$flux$fluxerr
