@@ -136,9 +136,9 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     return(-LP)
   }
   if(Data$fit=='LD'){
-    return(list(LP=LP,Dev=-2*LL,Monitor='',yhat=1,parm=parm))
+    return(list(LP=LP,Dev=-2*LL,Monitor=1,yhat=1,parm=parm))
   }
   if(Data$fit=='check'){
-    return(invisible(list(LP=LP,Dev=-2*LL,Monitor='',yhat=1,parm=parm,SEDout=SEDout)))
+    return(invisible(list(LP=LP,Dev=-2*LL,Monitor=1,yhat=1,parm=parm,SEDout=SEDout)))
   }
 }
