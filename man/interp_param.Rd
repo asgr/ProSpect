@@ -37,6 +37,7 @@ A data.frame with the same number of rows as the length of \option{x}, with colu
 \item{param_hi}{The nearest value of \option{params} higher than \option{x}}
 \item{ID_lo}{The location ID of the nearest value of \option{params} lower than \option{x}}
 \item{ID_hi}{The location ID of the nearest value of \option{params} higher than \option{x}}
+\item{ID_mode}{The ID with the most weight between \option{ID_lo} and \option{ID_hi}}
 \item{weight_lo}{The interpolation weight to be applied to the nearest value of \option{params} lower than \option{x}}
 \item{weight_hi}{The interpolation weight to be applied to the nearest value of \option{params} higher than \option{x}}
 \item{flag}{Interpolation flag: 0 means the input \option{x} is at an exact value of \option{params}, in which case \option{ID_lo}=\option{ID_hi}, \option{weight_lo}=1 and \option{weight_hi}=0; 1 means \option{x} is less than the minimum of \option{params}, so forced to this value; 2 means \option{x} is between two values in \option{params}, so interpolation behaves in a standard sense; 3 means \option{x} is more than the maximum of \option{params}, so forced to this value}

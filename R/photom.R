@@ -163,29 +163,31 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
   return(photom)
 }
 
-addspec=function(wave1, flux1, wave2, flux2, extrap='constant'){
+addspec=function(wave1, flux1, wave2, flux2, extrap='constant', waveout=NULL){
   wave1=log10(wave1)
   wave2=log10(wave2)
   flux1=log10(flux1)
   flux2=log10(flux2)
-  wave=sort(c(wave1, wave2))
+  if(is.null(waveout)){
+    waveout=sort(c(wave1,wave2))
+  }
   if(extrap=='constant'){
-    flux1=10^approxfun(wave1, flux1, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])(wave)
-    flux2=10^approxfun(wave2, flux2, rule=2, yleft=flux2[1], yright=flux2[length(flux2)])(wave)
+    flux1=10^approxfun(wave1, flux1, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])(waveout)
+    flux2=10^approxfun(wave2, flux2, rule=2, yleft=flux2[1], yright=flux2[length(flux2)])(waveout)
   }else{
-    flux1=10^approxfun(wave1, flux1, rule=2, yleft=log10(extrap), yright=log10(extrap))(wave)
-    flux2=10^approxfun(wave2, flux2, rule=2, yleft=log10(extrap), yright=log10(extrap))(wave)
+    flux1=10^approxfun(wave1, flux1, rule=2, yleft=log10(extrap), yright=log10(extrap))(waveout)
+    flux2=10^approxfun(wave2, flux2, rule=2, yleft=log10(extrap), yright=log10(extrap))(waveout)
   }
   flux1[is.na(flux1)]=0
   flux2[is.na(flux2)]=0
-  return(invisible(data.frame(wave=10^wave, flux=flux1+flux2)))
+  return(invisible(data.frame(wave=10^waveout, flux=flux1+flux2)))
 }
 
-atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale_M2L_func=NULL){
+atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale_M2L_func=NULL, waveout=NULL){
   atten=CF_atten(wave=wave, flux=flux, tau=tau, pow=pow)
   emit=Dale_interp(alpha_SF=alpha_SF, AGNfrac = 0, Dale=Dale)
   emit$Aspec=emit$Aspec*atten$total_atten
-  final=addspec(wave1=wave, flux1=atten$flux, wave2=emit$Wave, flux2=emit$Aspec, extrap=0)
+  final=addspec(wave1=wave, flux1=atten$flux, wave2=emit$Wave, flux2=emit$Aspec, extrap=0, waveout=waveout)
   if(!is.null(Dale_M2L_func)){
     dustmass=atten$total_atten/Dale_M2L_func(alpha_SF)
   }else{

@@ -1,4 +1,4 @@
-SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5){
+SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, ...){
   
   burstmass=.interval(burstmass,0,1e13)
   youngmass=.interval(youngmass,0,1e13)
@@ -26,6 +26,12 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
       speclib=EMILES
     }
   }
+  if(is.function(Z)){
+    dots=list(...)
+    Z_args=dots[names(dots) %in% names(formals(Z))]
+    Z=do.call('Z',c(list(c(mean(burstage),mean(youngage),mean(oldage),mean(ancientage))),Z_args))
+    Z=interp_param(Z,speclib$Z)$ID_mode
+  }
   
   if(any(speclib$Age<1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
@@ -46,7 +52,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     data('cenwave', envir = environment())
     filters=cenwave$filter
   }
-  
+
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
     TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
@@ -170,7 +176,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, masstot=masstot, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=ages, masses=masses, SFR=SFR, sSFR=sSFR))
 }
 
-SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE){
+SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, ...){
   
   burstmass=.interval(burstmass,0,1e13)
   youngmass=.interval(youngmass,0,1e13)
@@ -197,6 +203,12 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
       data('EMILES', envir = environment())
       speclib=EMILES
     }
+  }
+  if(is.function(Z)){
+    dots=list(...)
+    Z_args=dots[names(dots) %in% names(formals(Z))]
+    Z=do.call('Z',c(list(c(mean(burstage),mean(youngage),mean(oldage),mean(ancientage))),Z_args))
+    Z=interp_param(Z,speclib$Z)$ID_mode
   }
   
   if(any(speclib$Age<1e7)){
@@ -228,7 +240,7 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
-SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5){
+SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, ...){
   
   burstmass=.interval(burstmass,0,1e13)
   youngmass=.interval(youngmass,0,1e13)
@@ -256,6 +268,12 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
       data('EMILES', envir = environment())
       speclib=EMILES
     }
+  }
+  if(is.function(Z)){
+    dots=list(...)
+    Z_args=dots[names(dots) %in% names(formals(Z))]
+    Z=do.call('Z',c(list(c(mean(burstage),mean(youngage),mean(midage),mean(oldage),mean(ancientage))),Z_args))
+    Z=interp_param(Z,speclib$Z)$ID_mode
   }
   
   if(any(speclib$Age<1e7)){
@@ -411,7 +429,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   return=list(flux=flux, out=out, wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, masstot=masstot, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=ages, masses=masses, SFR=SFR, sSFR=sSFR)
 }
 
-SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE){
+SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, ...){
   
   burstmass=.interval(burstmass,0,1e13)
   youngmass=.interval(youngmass,0,1e13)
@@ -439,6 +457,12 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
       data('EMILES', envir = environment())
       speclib=EMILES
     }
+  }
+  if(is.function(Z)){
+    dots=list(...)
+    Z_args=dots[names(dots) %in% names(formals(Z))]
+    Z=do.call('Z',c(list(c(mean(burstage),mean(youngage),mean(midage),mean(oldage),mean(ancientage))),Z_args))
+    Z=interp_param(Z,speclib$Z)$ID_mode
   }
   
   if(any(speclib$Age<1e7)){
@@ -473,6 +497,10 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
 }
 
 SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', sparse=5, intSFR=FALSE, ...){
+  
+  dots=list(...)
+  massfunc_args=dots[names(dots) %in% names(formals(massfunc))]
+  
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
       BC03lr=NULL
@@ -508,7 +536,10 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
   }
   
   if(is.function(Z)){
-    Zlist=interp_param(Z(speclib$Age*agescale), speclib$Z, log=TRUE)
+    dots=list(...)
+    Z_args=dots[names(dots) %in% names(formals(Z))]
+    Z=do.call('Z',c(list(speclib$Age*agescale),Z_args))
+    Zlist=interp_param(Z, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
@@ -537,9 +568,9 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
         massvec=c(massvec,tempint)
       }
     }
-    massvec=massvec/speclib$AgeWeights
+    massvec=massvec
   }else{
-    massvec=massfunc(speclib$Age*agescale, ...)
+    massvec=do.call('massfunc',c(list(speclib$Age*agescale), massfunc_args))*speclib$AgeWeights
   }
   
   if(unimax!=FALSE & z>=0){
@@ -547,21 +578,23 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
     massvec[speclib$Age>agemax]=0
   }
   if(forcemass==FALSE){
-    masstot=sum(massvec*speclib$AgeWeights)
+    masstot=sum(massvec)
   }else{
-    masstot=sum(massvec*speclib$AgeWeights)
+    masstot=sum(massvec)
     massvec=massvec*forcemass/masstot
     masstot=forcemass
   }
   
-  for(Zid in Zuse){
-    if(Zdoweight){
-      lum=lum+colSums(speclib$Zspec[[Zid]]*speclib$AgeWeights*massvec*Zwmat[,Zid])
-    }else{
-      lum=colSums(speclib$Zspec[[Zid]]*speclib$AgeWeights*massvec)
+  if(length(Zuse)>1){
+    lum=rep(0,length(speclib$Wave))
+    for(Zid in Zuse){
+      lum=lum+colSums(speclib$Zspec[[Zid]]*massvec*Zwmat[,Zid])
     }
+  }else{
+    lum=colSums(speclib$Zspec[[Zuse]]*massvec)
   }
   
+
   lumtot_unatten=sum(c(0,diff(speclib$Wave))*lum)
   lum_unatten=lum
   
@@ -572,9 +605,9 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
         speclib$Zspec[[Zid]][1:birthcloud,]=t(t(speclib$Zspec[[Zid]][1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
       }
       if(Zdoweight){
-        lum=lum+colSums(speclib$Zspec[[Zid]]*speclib$AgeWeights*massvec*Zwmat[,Zid])
+        lum=lum+colSums(speclib$Zspec[[Zid]]*massvec*Zwmat[,Zid])
       }else{
-        lum=colSums(speclib$Zspec[[Zid]]*speclib$AgeWeights*massvec)
+        lum=colSums(speclib$Zspec[[Zid]]*massvec)
       }
     }
     lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
@@ -628,10 +661,14 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
     }
   }
   
-  return=list(flux=flux, out=out, wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, masstot=masstot, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, massvec=massvec, masstot=masstot, M2L=masstot/lumtot_unatten)
+  return=list(flux=flux, out=out, wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, masstot=masstot, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, SFR=massvec/speclib$AgeWeights, masstot=masstot, M2L=masstot/lumtot_unatten)
 }
 
 SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=5, z=0.1, H0=67.8, OmegaM=0.308, OmegaL=1-OmegaM, ref, ...){
+  
+  dots=list(...)
+  massfunc_args=dots[names(dots) %in% names(formals(massfunc))]
+  
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
       BC03lr=NULL
@@ -661,7 +698,10 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, fo
   }
   
   if(is.function(Z)){
-    Zlist=interp_param(Z(speclib$Age*agescale), speclib$Z, log=TRUE)
+    dots=list(...)
+    Z_args=dots[names(dots) %in% names(formals(Z))]
+    Z=do.call('Z',c(list(speclib$Age*agescale),Z_args))
+    Zlist=interp_param(Z, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
@@ -672,7 +712,7 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, fo
     Zdoweight=FALSE
   }
   
-  massvec=massfunc(speclib$Age*agescale, ...)*speclib$AgeWeights
+  massvec=do.call('massfunc',c(list(speclib$Age*agescale), massfunc_args))*speclib$AgeWeights
   
   if(unimax!=FALSE & z>=0){
     ancientage[2]=unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
@@ -685,12 +725,13 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, fo
   
   totstar=rep(0,length(massvec))
   
-  for(Zid in Zuse){
-    if(Zdoweight){
-      totstar=totstar+speclib$Zevo[[Zid]][,'SMstar']*massvec*Zwmat[,Zid]
-    }else{
-      totstar=speclib$Zevo[[Zid]][,'SMstar']*massvec
+  if(length(Zuse)>1){
+    lum=rep(0,length(speclib$Wave))
+    for(Zid in Zuse){
+      lum=lum+colSums(speclib$Zspec[[Zid]]*massvec*Zwmat[,Zid])
     }
+  }else{
+    lum=colSums(speclib$Zspec[[Zuse]]*massvec)
   }
   
   burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))

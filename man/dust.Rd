@@ -22,7 +22,7 @@ CF_birth_atten(wave, flux, tau = 1.0, pow = -0.7, pivot = 5500)
 CF_screen(wave, tau = 0.3, pow = -0.7, pivot = 5500)
 CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500)
 atten_emit(wave, flux, tau = 0.3, pow = -0.7, alpha_SF = 1.5, Dale = NULL,
-Dale_M2L_func = NULL) 
+Dale_M2L_func = NULL, waveout = NULL) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -49,6 +49,9 @@ Pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, 
 }
   \item{Dale_M2L_func}{
 Function; if dust masses are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
+}
+  \item{waveout}{
+Numeric vector; desired output wavelength grid to use for adding together spectra. See \code{\link{addspec}}.
 }
 }
 \details{
