@@ -12,9 +12,9 @@ Top Level ProSpect SED Functions
 ProSpectSED(SFH, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
 pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
-Dale = NULL, AGN = NULL, filtout = NULL, Dale_M2L_func = NULL, returnall = TRUE, H0=67.8,
-OmegaM=0.308, OmegaL=1-OmegaM, ref, ...)
-ProSpectSEDlike(parm=c(8,9,10,10,0,-0.5,0.2), Data)
+Dale = NULL, AGN = NULL, filtout = NULL, Dale_M2L_func = NULL, returnall = TRUE,
+H0 = 67.8, OmegaM = 0.308, OmegaL = 1-OmegaM, waveout = seq(2,7,by=0.01), ref, ...)
+ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -84,6 +84,9 @@ Numeric scalar; Omega Matter today (default is 0.308).
   \item{OmegaL}{
 Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1 - OmegaM = 0.692).
 }
+  \item{waveout}{
+Numeric vector; desired output log10 wavelength grid to use in Ang. Default covers typical range of galaxy SED data.
+}
   \item{ref}{
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
 }
@@ -112,9 +115,6 @@ Object; required. The star formation history function to use. Must be one of \co
   \item{Data$arglist}{
 List; optional list of named parameters and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
 }
-  \item{Data$prior}{
-Function; a prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally.
-}
   \item{Data$speclib}{
 Object; required. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
 }
@@ -133,14 +133,20 @@ Character scalar; one of 'optim', 'LD' or 'check'. See Value for full informatio
   \item{Data$like}{
 Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. If missing it is set to 'st'.
 }
-  \item{Data$parmnames}{
+  \item{Data$parm.names}{
 Object; required. Character vector; correctly named and position matched parameters for fitting. Must match length of \option{parm} in \code{ProSpectSEDlike}, and elements should correctly describe the respective values.
 }
   \item{Data$logged}{
 Logical vector; match length of \option{parm} in \code{ProSpectSEDlike}, and elements should say which values should be raised to the power 10 when fitting. This is useful since scale parameters are better fit in log space, so Data$logged=TRUE for those elements.
 }
+  \item{Data$prior}{
+Function; a prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
+}
   \item{Data$intervals}{
 List; has elements \option{lo} and \option{hi} which if provided must be the same length as \option{parm} in \code{ProSpectSEDlike}. These specify the lower and upper limits in the same linear/log space as \option{parm}, i.e. set \option{lo} to -1 if you do not want to logged unit to go below 0.1. 
+}
+  \item{Data$constraints}{
+Function, a constraints function that takes in the\option{parm} vector and modifies it as required, updating with the new \option{parm} which is passed out. Using this you can control physical relationships between certain parameters if required. \option{Data$intervals} is passed after this, and always over-ride the constraints if there is a conflict. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
 }
   \item{Data$verbose}{
 Logical; should verbose messages be shown. If missing it is set to TRUE.
@@ -183,7 +189,7 @@ for(i in filters){filtout=c(filtout,list(getfilt(i)))}
 
 testSED=ProSpectSED(SFH=SFHp4, AGNlum=1e43, tau_birth=1, tau_screen=0.3, tau_AGN=2,
 alpha_SF_birth=1, alpha_SF_screen=3, alpha_SF_AGN=0, speclib=BC03lr, Dale=Dale_NormTot,
-AGN=AGN_UnOb_Sparse, filtout=filtout, Dale_M2L_func=Dale_M2L_func)
+AGN=AGN_UnOb_Sparse, filtout=filtout, Dale_M2L_func=Dale_M2L_func, returnall=TRUE)
 
 plot(testSED$FinalLum, log='xy', xlim=c(1e2,1e7), ylim=c(1e2,1e7), xlab='Wave / Ang',
 ylab='Lum / Lsol/A', type='l', lwd=5)

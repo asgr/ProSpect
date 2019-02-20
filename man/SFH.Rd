@@ -20,7 +20,7 @@ burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth = 1,
 tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5),
 z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag",
-cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 5)
+cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 5, ...)
 
 SFHp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
 ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
@@ -28,7 +28,7 @@ midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+1
 stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7,
 pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
-dosplit = FALSE, sparse = 5)
+dosplit = FALSE, sparse = 5, ...)
 
 SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
@@ -40,13 +40,14 @@ SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', speclib = NULL, Z = c(5, 5, 5, 5),
 z = 0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10),
-dosplit = FALSE)
+dosplit = FALSE, ...)
 
 SMstarp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
 ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
 midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
 stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE)
+OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE,
+...)
 
 SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, burstage = c(0, 1e+08),
@@ -75,7 +76,7 @@ Numeric scalar; the total stellar mass formed in ancient stars.
 Numeric vector; the age limits in years for the burst phase.
 }
   \item{massfunc}{
-Function; a function which will take \option{age} (in Yrs) as an input and return SFR (in Msun/Yr). Can be passed further arguments via \dots (this is useful if you do not want to hard code values into a function, i.e. for fitting purposes).
+Function; a function which will take \option{age} (in Yrs) as an input and return SFR (in Msun/Yr). Additional \option{massfunc} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}.
 }
   \item{youngage}{
 Numeric vector; the age limits in years for the young phase.
@@ -120,7 +121,7 @@ Numeric scalar; power to further raise the dust attenuation of the dust screen. 
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters.
 }
   \item{Z}{
-Integer vector of length 4 (\code{SFHp4}), 5 (\code{SFHp5}) or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar).
+Integer vector of length 4 (\code{SFHp4}), 5 (\code{SFHp5}) or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar). \code{SFHp4}) and \code{SFHp5} also take functional inputs, in which case the nearest matching discrete metallicity is used for each phase. Additional \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}.
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).
@@ -153,7 +154,7 @@ Numeric scalar; amount of sparse sampling of the spectra to make. Higher values 
 Boolean scalar; should the \option{massfunc} be intergrated between ages? This might be necessary if the SFH is quite bursty, but it is more expensive to compute and not required if the SFH is quite smooth.  
 }
   \item{\dots}{
-Further arguments to be passed to \code{massfunc} function.
+Further arguments to be passed to \code{massfunc} or \code{Z} functions, as appropriate (this is achieved by formals matching, so be careful to used unique names).
 }
 }
 \details{
@@ -179,7 +180,7 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{ages}{Numeric Matrix; age info where rows are the four phases of star formation, columns are the start [1], end [2], duration [3] and mean time [4] of the phases in years.}
 \item{masses}{Numeric Matrix; mass info where rows are the four phases of star formation, columns are the total formed in that phase [1] and the total formed over all time [2].}
 \item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase.}
-\item{sSFR}{Numeric vector; the speicifc star formation rate averaged out over each star formation phase.}
+\item{sSFR}{Numeric vector; the specific star formation rate averaged out over each star formation phase.}
 
 \code{SMstarp4} / \code{SMstarp5} is a 5/6 element vector containing the stellar mass remaining (not formed) as produced by each phase of star formation, and the total stellar mass remaining (not formed- this is the last element listed).
 
