@@ -173,7 +173,7 @@ SFHp4like=function(parm=c(8,9,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmass',
   if(verbose){print(LP)}
   if(Data$fit=='optim'){
     return(-LP)
-  }else if(Data$fit=='LD'){
+  }else if(Data$fit=='LD' | Data$fit=='LA'){
     Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
     
     DustMass=log10(dustout[1])
@@ -394,7 +394,7 @@ SFHp5like=function(parm=c(8,9,10,10,10,0,-0.5,0.2,-2), Data, massfit=c('burstmas
   if(verbose){print(LP)}
   if(Data$fit=='optim'){
     return(-LP)
-  }else if(Data$fit=='LD'){
+  }else if(Data$fit=='LD' | Data$fit=='LA'){
     Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
     
     DustMass=log10(dustout[1])
@@ -588,7 +588,7 @@ SFHfunclike=function(parm=c(1,0,-0.5,0.2,-2), Data, massfunc=function(age, SFR=1
   if(verbose){print(LP)}
   if(Data$fit=='optim'){
     return(-LP)
-  }else if(Data$fit=='LD'){
+  }else if(Data$fit=='LD' | Data$fit=='LA'){
     Fractions=Dale_scale(alpha_SF=alpha_SF, AGNfrac=AGNfrac, Dale_in=Dale_in)
     
     DustMass=log10(dustout[1])

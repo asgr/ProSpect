@@ -22,24 +22,24 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
   SED_Bdust_Sdust=Dust_Birth$Aspec*Stars$lumtot_birth+Dust_Screen$Aspec*Stars$lumtot_screen
   SED_Stars_Bdust_Sdust=addspec(wave1 = Stars$wave_lum, flux1 = Stars$lum_atten, wave2 = Dust_Screen$Wave, flux2 = SED_Bdust_Sdust, extrap = 0, waveout=waveout)
   
-  if(!is.null(Dale_M2L_func)){
+  if(!is.null(Dale_M2L_func) & returnall){
     dustlum_birth=Stars$lumtot_birth
     dustlum_screen=Stars$lumtot_screen
     dustmass_birth=Stars$lumtot_birth/Dale_M2L_func(alpha_SF_birth)
     dustmass_screen=Stars$lumtot_screen/Dale_M2L_func(alpha_SF_screen)
   }else{
-    dustlum_birth=NULL
-    dustlum_screen=NULL
-    dustmass_birth=NULL
-    dustmass_screen=NULL
+    dustlum_birth=NA
+    dustlum_screen=NA
+    dustmass_birth=NA
+    dustmass_screen=NA
   }
   
   
   if(is.null(AGN) | AGNlum==0){
     Final=SED_Stars_Bdust_Sdust
-    AGN=NULL
-    dustlum_AGN=0
-    dustmass_AGN=0
+    AGN=NA
+    dustlum_AGN=NA
+    dustmass_AGN=NA
   }else{
     #First we attenuate by the hot taurus
     AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum/(3.828e33), tau=tau_AGN, pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func, waveout=waveout)
@@ -53,8 +53,8 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
       dustlum_screen=dustlum_screen+AGN$total_atten
       dustmass_screen=dustmass_screen+AGN$dustmass
     }else{
-      dustlum_AGN=0
-      dustmass_AGN=0
+      dustlum_AGN=NA
+      dustmass_AGN=NA
     }
     AGN=AGN$final
     Final=data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
@@ -75,7 +75,7 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
     StarsAtten=data.frame(wave=Stars$wave_lum, lum=Stars$lum_atten)
     StarsUnAtten=data.frame(wave=Stars$wave, lum=Stars$lum_unatten)
     DustEmit=data.frame(wave=Dust_Screen$Wave, lum=SED_Bdust_Sdust)
-    return(invisible(list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, StarsAtten=StarsAtten, StarsUnAtten=StarsUnAtten, DustEmit=DustEmit, AGN=AGN, Stars=Stars, dustmass=c(birth=dustmass_birth, screen=dustmass_screen, AGN=dustmass_AGN, total=dustmass_birth+dustmass_screen+dustmass_AGN), dustlum=c(birth=dustlum_birth, screen=dustlum_screen, AGN=dustlum_AGN, total=dustlum_birth+dustlum_screen+dustlum_AGN))))
+    return(invisible(list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, StarsAtten=StarsAtten, StarsUnAtten=StarsUnAtten, DustEmit=DustEmit, AGN=AGN, Stars=Stars, dustmass=c(birth=dustmass_birth, screen=dustmass_screen, AGN=dustmass_AGN, total=sum(c(dustmass_birth,dustmass_screen,dustmass_AGN),na.rm=TRUE)), dustlum=c(birth=dustlum_birth, screen=dustlum_screen, AGN=dustlum_AGN, total=sum(c(dustlum_birth,dustlum_screen,dustlum_AGN),na.rm=TRUE)))))
   }else{
     return(invisible(photom_out))
   }
@@ -86,7 +86,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(is.null(Data$like)){Data$like='st'}
   if(is.null(Data$verbose)){Data$verbose=TRUE}
   
-  if(Data$fit=='check'){
+  if(Data$fit=='check' | length(Data$mon.names)==8){
     returnall=TRUE
   }else{
     returnall=FALSE
@@ -121,10 +121,17 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(Data$verbose){print(parmlist)}
   
   if(returnall){
-    SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), Data$arglist))
+    SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), list(Dale_M2L_func=Data$Dale_M2L_func), Data$arglist))
+    if(length(Data$mon.names)){
+      Monitor=c(SEDout$dustmass,SEDout$dustlum)
+      names(Monitor)=Data$mon.names
+    }else{
+      Monitor=NA
+    }
     Photom=SEDout$Photom
   }else{
     Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=FALSE), Data$arglist))
+    Monitor=NA
   }
   
   cutsig=(Data$flux$flux-Photom)/Data$flux$fluxerr
@@ -150,10 +157,10 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(Data$fit=='optim'){
     return(-LP)
   }
-  if(Data$fit=='LD'){
-    return(list(LP=LP,Dev=-2*LL,Monitor=1,yhat=1,parm=parm))
+  if(Data$fit=='LD' | Data$fit=='LA'){
+    return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }
   if(Data$fit=='check'){
-    return(invisible(list(LP=LP,Dev=-2*LL,Monitor=1,yhat=1,parm=parm,SEDout=SEDout)))
+    return(invisible(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm,SEDout=SEDout)))
   }
 }
