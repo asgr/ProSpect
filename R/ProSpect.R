@@ -86,7 +86,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(is.null(Data$like)){Data$like='st'}
   if(is.null(Data$verbose)){Data$verbose=TRUE}
   
-  if(Data$fit=='check' | length(Data$mon.names)==8){
+  if(Data$fit=='check' | length(Data$mon.names)>=8){
     returnall=TRUE
   }else{
     returnall=FALSE
@@ -122,9 +122,8 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   
   if(returnall){
     SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), list(Dale_M2L_func=Data$Dale_M2L_func), Data$arglist))
-    if(length(Data$mon.names)){
+    if(length(Data$mon.names)>=8){
       Monitor=c(SEDout$dustmass,SEDout$dustlum)
-      names(Monitor)=Data$mon.names
     }else{
       Monitor=NA
     }
@@ -158,9 +157,17 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     return(-LP)
   }
   if(Data$fit=='LD' | Data$fit=='LA'){
+    if(length(Data$mon.names)==9){
+      Monitor=c(LP=LP,Monitor)
+    }
+    names(Monitor)=Data$mon.names
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }
   if(Data$fit=='check'){
+    if(length(Data$mon.names)==9){
+      Monitor=c(LP=LP,Monitor)
+    }
+    names(Monitor)=Data$mon.names
     return(invisible(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm,SEDout=SEDout)))
   }
 }
