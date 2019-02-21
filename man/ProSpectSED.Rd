@@ -148,6 +148,9 @@ List; has elements \option{lo} and \option{hi} which if provided must be the sam
   \item{Data$constraints}{
 Function, a constraints function that takes in the\option{parm} vector and modifies it as required, updating with the new \option{parm} which is passed out. Using this you can control physical relationships between certain parameters if required. \option{Data$intervals} is passed after this, and always over-ride the constraints if there is a conflict. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
 }
+  \item{Data$mon.names}{
+Character vector; should either be length 1 (basically ignored), length 8 ("dustmass_birth", "dustmass_screen", "dustmass_AGN", "dustmass_total", "dustlum_birth", "dustlum_screen", "dustlum_AGN", "dustlum_total") or length 9 where the first string is 'LP'.
+}
   \item{Data$verbose}{
 Logical; should verbose messages be shown. If missing it is set to TRUE.
 }
