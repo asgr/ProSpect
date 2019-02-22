@@ -4,15 +4,15 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
                      filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
                      OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, ...){
   
-  tau_birth=.interval(tau_birth,0,10)
-  tau_screen=.interval(tau_screen,0,10)
-  tau_AGN=.interval(tau_AGN,0,10)
-  pow_birth=.interval(pow_birth,-2,0)
-  pow_screen=.interval(pow_screen,-2,0)
-  pow_AGN=.interval(pow_AGN,-2,0)
-  alpha_SF_birth=.interval(alpha_SF_birth,0.0625,4)
-  alpha_SF_screen=.interval(alpha_SF_screen,0.0625,4)
-  alpha_SF_AGN=.interval(alpha_SF_AGN,0.0625,4)
+  tau_birth=.interval(tau_birth,0,10,reflect=FALSE)
+  tau_screen=.interval(tau_screen,0,10,reflect=FALSE)
+  tau_AGN=.interval(tau_AGN,0,10,reflect=FALSE)
+  pow_birth=.interval(pow_birth,-2,0,reflect=FALSE)
+  pow_screen=.interval(pow_screen,-2,0,reflect=FALSE)
+  pow_AGN=.interval(pow_AGN,-2,0,reflect=FALSE)
+  alpha_SF_birth=.interval(alpha_SF_birth,0.0625,4,reflect=FALSE)
+  alpha_SF_screen=.interval(alpha_SF_screen,0.0625,4,reflect=FALSE)
+  alpha_SF_AGN=.interval(alpha_SF_AGN,0.0625,4,reflect=FALSE)
 
   Stars=SFH(z=-1, tau_birth=tau_birth, tau_screen=tau_screen, pow_birth=pow_birth, pow_screen=pow_screen, sparse=sparse, speclib=speclib, ...)
   
@@ -28,18 +28,18 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
     dustmass_birth=Stars$lumtot_birth/Dale_M2L_func(alpha_SF_birth)
     dustmass_screen=Stars$lumtot_screen/Dale_M2L_func(alpha_SF_screen)
   }else{
-    dustlum_birth=NA
-    dustlum_screen=NA
-    dustmass_birth=NA
-    dustmass_screen=NA
+    dustlum_birth=0
+    dustlum_screen=0
+    dustmass_birth=0
+    dustmass_screen=0
   }
   
   
   if(is.null(AGN) | AGNlum==0){
     Final=SED_Stars_Bdust_Sdust
-    AGN=NA
-    dustlum_AGN=NA
-    dustmass_AGN=NA
+    AGN=0
+    dustlum_AGN=0
+    dustmass_AGN=0
   }else{
     #First we attenuate by the hot taurus
     AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum/(3.828e33), tau=tau_AGN, pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func, waveout=waveout)
@@ -53,8 +53,8 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
       dustlum_screen=dustlum_screen+AGN$total_atten
       dustmass_screen=dustmass_screen+AGN$dustmass
     }else{
-      dustlum_AGN=NA
-      dustmass_AGN=NA
+      dustlum_AGN=0
+      dustmass_AGN=0
     }
     AGN=AGN$final
     Final=data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
@@ -125,12 +125,12 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     if(length(Data$mon.names)>=8){
       Monitor=c(SEDout$dustmass,SEDout$dustlum)
     }else{
-      Monitor=NA
+      Monitor=0
     }
     Photom=SEDout$Photom
   }else{
     Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=FALSE), Data$arglist))
-    Monitor=NA
+    Monitor=0
   }
   
   cutsig=(Data$flux$flux-Photom)/Data$flux$fluxerr
