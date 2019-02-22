@@ -1,9 +1,9 @@
 SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, ...){
   
-  burstmass=.interval(burstmass,0,1e13)
-  youngmass=.interval(youngmass,0,1e13)
-  oldmass=.interval(oldmass,0,1e13)
-  ancientmass=.interval(ancientmass,0,1e13)
+  burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
+  youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
+  oldmass=.interval(oldmass,0,Inf,reflect=FALSE)
+  ancientmass=.interval(ancientmass,0,Inf,reflect=FALSE)
   
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
@@ -178,10 +178,10 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
 
 SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, ...){
   
-  burstmass=.interval(burstmass,0,1e13)
-  youngmass=.interval(youngmass,0,1e13)
-  oldmass=.interval(oldmass,0,1e13)
-  ancientmass=.interval(ancientmass,0,1e13)
+  burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
+  youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
+  oldmass=.interval(oldmass,0,Inf,reflect=FALSE)
+  ancientmass=.interval(ancientmass,0,Inf,reflect=FALSE)
   
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
@@ -242,11 +242,11 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
 
 SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, ...){
   
-  burstmass=.interval(burstmass,0,1e13)
-  youngmass=.interval(youngmass,0,1e13)
-  midmass=.interval(midmass,0,1e13)
-  oldmass=.interval(oldmass,0,1e13)
-  ancientmass=.interval(ancientmass,0,1e13)
+  burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
+  youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
+  midmass=.interval(midmass,0,Inf,reflect=FALSE)
+  oldmass=.interval(oldmass,0,Inf,reflect=FALSE)
+  ancientmass=.interval(ancientmass,0,Inf,reflect=FALSE)
   
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
@@ -431,11 +431,11 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
 
 SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, ...){
   
-  burstmass=.interval(burstmass,0,1e13)
-  youngmass=.interval(youngmass,0,1e13)
-  midmass=.interval(midmass,0,1e13)
-  oldmass=.interval(oldmass,0,1e13)
-  ancientmass=.interval(ancientmass,0,1e13)
+  burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
+  youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
+  midmass=.interval(midmass,0,Inf,reflect=FALSE)
+  oldmass=.interval(oldmass,0,Inf,reflect=FALSE)
+  ancientmass=.interval(ancientmass,0,Inf,reflect=FALSE)
   
   if(stellpop=='BC03lr'){
     if(is.null(speclib)){
