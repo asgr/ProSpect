@@ -37,12 +37,12 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
   
   if(is.null(AGN) | AGNlum==0){
     Final=SED_Stars_Bdust_Sdust
-    AGN=0
+    AGN=NULL
     dustlum_AGN=0
     dustmass_AGN=0
   }else{
     #First we attenuate by the hot taurus
-    AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum/(3.828e33), tau=tau_AGN, pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func, waveout=waveout)
+    AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum/(.lsun_to_erg), tau=tau_AGN, pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func, waveout=waveout)
     if(!is.null(Dale_M2L_func) & returnall){
       dustlum_AGN=AGN$total_atten
       dustmass_AGN=AGN$dustmass
@@ -63,12 +63,16 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
   
   colnames(Final)[2]='lum'
   
-  Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-  
-  Flux$flux=convert_wave2freq(flux_wave=Flux$flux*1e23, wave=Flux$wave)
-  photom_out={}
-  for(i in 1:length(filtout)){
-    photom_out = c(photom_out, bandpass(flux=Flux$flux, wave=Flux$wave, filter=filtout[[i]], lum=TRUE))
+  if(z>0){
+    Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+    Flux$flux=convert_wave2freq(flux_wave=Flux$flux*.cgs_to_jansky, wave=Flux$wave)
+    photom_out={}
+    for(i in 1:length(filtout)){
+      photom_out = c(photom_out, bandpass(flux=Flux$flux, wave=Flux$wave, filter=filtout[[i]], lum=TRUE))
+    }
+  }else{
+    Flux=NULL
+    photom_out=NULL
   }
   
   if(returnall){

@@ -70,7 +70,7 @@ Object; required. Pass in the AGN template to use. Must be one of \code{\link{AG
 Object; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
 }
   \item{Dale_M2L_func}{
-Function; if dust masses are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
+Function; if dust masses and luminosities are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
 }
   \item{returnall}{
 Logical; if true then returns all the various sub SEDs. See Details. If FALSE then code just returns \option{photom_out} (photometry in Jansky).
@@ -168,6 +168,8 @@ If \option{returnall}=TRUE, then we get a list containing:
 \item{StarsUnAtten}{Two column data.frame; Wavelength in Ang, Unattenuated stellar SED luminosity in Lsol / Ang}
 \item{DustEmit}{Two column data.frame; Wavelength in Ang, Re-emitted stellar dust SED luminosity in Lsol / Ang}
 \item{AGN}{Two column data.frame; Wavelength in Ang, Attenuated and re-emitted AGN SED luminosity in Lsol / Ang}
+\item{dustmass}{Numeric vector; contains dust mass for the birth cloud, screen, AGN and total in Msol (requires \option{Dale_M2L_func})}
+\item{dustlum}{Numeric vector; contains dust luminosities for the birth cloud, screen, AGN and total in Lsol (requires \option{Dale_M2L_func})}
 }
 \author{
 Aaron Robotham
