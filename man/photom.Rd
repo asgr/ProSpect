@@ -3,6 +3,7 @@
 \alias{photom_flux}
 \alias{photom_lum}
 \alias{Lum2Flux}
+\alias{Flux2Lum}
 \alias{Lum2FluxFactor}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -16,6 +17,7 @@ photom_flux(wave, flux, outtype = 'mag', filters = "all")
 photom_lum(wave, lum, outtype = 'mag', filters = "all", z = 0.1, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
 Lum2Flux(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
+Flux2Lum(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
 Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -27,7 +29,7 @@ Numeric vector; the spectral wavelength in Angstroms. For convenience, if a two 
 Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
 }
   \item{lum}{
-Numeric vector; the spectral luminosity in Lsun / Angstrom (BC03lr / BC03hr and EMILES format).
+Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and EMILES format).
 }
   \item{outtype}{
 Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
@@ -58,7 +60,8 @@ The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 /
 \item{photom_flux}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the output flux (AB mag by default).}
 \item{photom_lum}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the output flux (AB mag by default).}
 \item{Lum2Flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
-\item{Lum2FluxFactor}{Numeric scalar; the scaling factor to convert between intrinsic Lsun/Angstrom and erg/s/cm^2/Angstrom.}
+\item{Flux2Lum}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed luminosity (Lsol / Ang).}
+\item{Lum2FluxFactor}{Numeric scalar; the scaling factor to convert between intrinsic Lsol/Angstrom and erg/s/cm^2/Angstrom.}
 }
 \references{
 Bruzual and Charlot, 2003, MNRAS, 344, 1000

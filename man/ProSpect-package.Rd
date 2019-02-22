@@ -17,6 +17,7 @@ Date: \tab 2019-02-20\cr
 License: \tab LGPL-3\cr
 Depends: \tab R (>= 2.13)\cr
 Imports:  \tab celestial, NISTunits, pracma\cr
+Suggests: \tab shiny, magicaxis\cr
 }
 }
 
