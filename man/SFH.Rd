@@ -58,19 +58,19 @@ H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, ...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{burstmass}{
-Numeric scalar; the total stellar mass formed in a recent burst.
+Numeric scalar; the total stellar mass formed in a recent burst in units Msol.
 }
   \item{youngmass}{
-Numeric scalar; the total stellar mass formed in young stars.
+Numeric scalar; the total stellar mass formed in young stars in units Msol.
 }
   \item{midmass}{
-Numeric scalar; the total stellar mass formed in mid stars.
+Numeric scalar; the total stellar mass formed in mid stars in units Msol.
 }
   \item{oldmass}{
-Numeric scalar; the total stellar mass formed in old stars.
+Numeric scalar; the total stellar mass formed in old stars in units Msol.
 }
   \item{ancientmass}{
-Numeric scalar; the total stellar mass formed in ancient stars.
+Numeric scalar; the total stellar mass formed in ancient stars in units Msol.
 }
   \item{burstage}{
 Numeric vector; the age limits in years for the burst phase.
