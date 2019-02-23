@@ -52,10 +52,10 @@ Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. S
 Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dust. See \code{\link{Dale}}.
 }
   \item{AGNlum}{
-%%     ~~Describe \code{AGNlum} here~~
+Numeric scalar; AGN bolometric luminosity in erg.
 }
   \item{sparse}{
-%%     ~~Describe \code{sparse} here~~
+Numeric scalar; amount of sparse sampling of the spectra to make.
 }
   \item{speclib}{
 Object; required. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
@@ -107,7 +107,7 @@ Some more info on the required \option{Data} list inputs:
 
 \describe{
   \item{Data$flux}{
-Object; required. Data.frame(4 columns, filter name, central wave, flux (Jy), fluxerr (Jy))
+Object; required. Data.frame(4 columns, filter name, central wave (Ang), flux (Jy), fluxerr (Jy))
 }
   \item{Data$SFH}{
 Object; required. The star formation history function to use. Must be one of \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}}.
@@ -161,7 +161,7 @@ If \option{returnall}=FALSE then we get a vector containing the photometry in Ja
 
 If \option{returnall}=TRUE, then we get a list containing:
 
-\item{photom_out}{Vector; photometry in Jansky}
+\item{Photom}{Vector; photometry in Jansky}
 \item{FinalFlux}{Two column data.frame; Wavelength in Ang, Flux in Jansky}
 \item{FinalLum}{Two column data.frame; Wavelength in Ang, Total SED luminosity in Lsol / Ang}
 \item{StarsAtten}{Two column data.frame; Wavelength in Ang, Attenuated stellar SED luminosity in Lsol / Ang}
