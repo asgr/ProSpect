@@ -5,19 +5,20 @@
 Runs Shiny SED App
 }
 \description{
-Simple wrapper function to run the Shiny SED App.
+Simple wrapper function to run the Shiny SED App. The app shows model flux and luminosity. In the former case it is possible to overlay user data using the \option{flux} arguement. In the latter case you can see the individual components that add together to make the final SED. Note flux is per unit Hz (as standard for e.g. Jansky etc) and luminosity is per unit Angstrom (as standard for spectral libraries).
 }
 \usage{
 runShinySED(flux = NULL, burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10,
 oldmass = 1e+10, ancientmass = 1e+10, z = 0.1, tau_birth = 1, tau_screen = 0.3,
-tau_AGN = 1, alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 1e+42)
+tau_AGN = 1, alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 1e+42,
+Z = rep(5,5))
 }
 \details{
 Mostly used to run the app, but it can also return the current parameters to help with finding starting parameters for fitting.
 }
 \arguments{
   \item{flux}{
-Data.frame(4 columns, filter name, central wave (Ang), flux (Jy), fluxerr (Jy)). See \code{\link{ProSpectSEDlike}}.
+Data.frame(4 columns, filter name, central wave (Ang), flux (Jy), fluxerr (Jy)). If provided this data will be overlaid in the "Flux" tab to compare against the current model. See \code{\link{ProSpectSEDlike}}.
 }
   \item{burstmass}{
 Numeric scalar; the total stellar mass formed in a recent burst in units Msol. See \code{\link{SFHp5}}.
@@ -57,6 +58,9 @@ Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dus
 }
   \item{AGNlum}{
 Numeric scalar; AGN bolometric luminosity in erg.
+}
+  \item{Z}{
+Integer vector; length 5. Specifies the metallicity to use for each phase (default is 5, so solar metallicity for all phases, which is fairly appropriate at low \option{z}. See \code{\link{SFHp5}}.
 }
 }
 \value{
