@@ -241,7 +241,7 @@ server <- function(input, output) {
   output$SED_lum_plot <- renderPlot({
     
     SED=ProSpectSED(SFH=SFHp5,
-                    z=0,
+                    z=input$z,
                     tau_birth=input$tau_birth,
                     tau_screen=input$tau_screen,
                     tau_AGN=input$tau_AGN,
@@ -252,6 +252,7 @@ server <- function(input, output) {
                     speclib=BC03lr,
                     Dale=Dale_NormTot,
                     AGN=AGN_UnOb_Sparse,
+                    filtout=NULL,
                     burstmass=10^input$burstmass,
                     youngmass=10^input$youngmass,
                     midmass=10^input$midmass,
@@ -280,6 +281,8 @@ server <- function(input, output) {
   
   output$SFH_plot <- renderPlot({
     
+    TravelTime=cosdistTravelTime(z=input$z, H0 = 67.8, OmegaM = 0.308)
+    
     burst_SFR=(10^input$burstmass)/1e8
     young_SFR=(10^input$youngmass)/9e8
     mid_SFR=(10^input$midmass)/4e9
@@ -295,6 +298,8 @@ server <- function(input, output) {
                        xlab='Light Travel Time / Gyr',
                        ylab='SFR / Msol/Yr',
                        type='s')
+    abline(v=13.8-TravelTime, lty=2)
+    rect(13.8-TravelTime, 0, 100, 100, col=hsv(alpha=0.2))
   })
 }
 
