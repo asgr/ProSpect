@@ -1,7 +1,7 @@
 ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_birth = -0.7,
                      pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth=1, alpha_SF_screen=3,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
-                     filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
+                     filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, unimax=13.8e9, H0=67.8,
                      OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, ...){
   
   tau_birth=.interval(tau_birth,0,10,reflect=FALSE)
@@ -14,7 +14,7 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
   alpha_SF_screen=.interval(alpha_SF_screen,0.0625,4,reflect=FALSE)
   alpha_SF_AGN=.interval(alpha_SF_AGN,0.0625,4,reflect=FALSE)
 
-  Stars=SFH(z=-1, tau_birth=tau_birth, tau_screen=tau_screen, pow_birth=pow_birth, pow_screen=pow_screen, sparse=sparse, speclib=speclib, ...)
+  Stars=SFH(z=z, tau_birth=tau_birth, tau_screen=tau_screen, pow_birth=pow_birth, pow_screen=pow_screen, sparse=sparse, speclib=speclib, filters=NULL, unimax=unimax, ...)
   
   Dust_Birth=Dale_interp(alpha_SF=alpha_SF_birth, Dale=Dale)
   Dust_Screen=Dale_interp(alpha_SF=alpha_SF_screen, Dale=Dale)
@@ -63,7 +63,7 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
   
   colnames(Final)[2]='lum'
   
-  if(z>0){
+  if(z>0 & !is.null(filtout)){
     Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
     Flux$flux=convert_wave2freq(flux_wave=Flux$flux*.cgs_to_jansky, wave=Flux$wave)
     photom_out={}

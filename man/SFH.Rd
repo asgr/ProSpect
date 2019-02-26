@@ -20,7 +20,7 @@ burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth = 1,
 tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5),
 z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag",
-cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 5, ...)
+cossplit = c(9e+09, 1.3e+10), dosplit = FALSE, sparse = 5, unimax = 1.38e+10, ...)
 
 SFHp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
 ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
@@ -28,7 +28,7 @@ midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+1
 stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7,
 pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
-dosplit = FALSE, sparse = 5, ...)
+dosplit = FALSE, sparse = 5, unimax = 1.38e+10, ...)
 
 SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, stellpop = "BC03lr", speclib = NULL,
@@ -40,14 +40,14 @@ SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', speclib = NULL, Z = c(5, 5, 5, 5),
 z = 0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10),
-dosplit = FALSE, ...)
+dosplit = FALSE, unimax = 1.38e+10, ...)
 
 SMstarp5(burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10, oldmass = 1e+10,
 ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
 midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
 stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE,
-...)
+unimax = 1.38e+10, ...)
 
 SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
 forcemass = FALSE, unimax = 1.38e+10, agescale = 1, burstage = c(0, 1e+08),
@@ -94,7 +94,7 @@ Numeric vector; the age limits in years for the ancient phase.
 Logical or numeric scalar; if FALSE then the stellar mass is directly computed from the \option{massfunc} function, i.e. the output of this must be a true star formation rate in Msun per year. If \option{forcemass} is a number then this specifies the required integrated stellar mass that must be formed over all time, and the output of \option{massfunc} will linearly scaled as required to achieve this.
 }
   \item{unimax}{
-Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation implied by \option{massfunc} that is older than this will be set to 0.
+Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0.
 }
   \item{agescale}{
 Numeric scalar; scaling to apply to the ages (which will passed in years) to \option{massfunc}. E.g. if left at \option{agescale}=1 then \option{massfunc} is expecting the age in years, but if set to 1e-6/1e-9 then \option{massfunc} is expecting the age in Myrs/Gyrs.

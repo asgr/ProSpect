@@ -13,7 +13,8 @@ ProSpectSED(SFH, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
 pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
 Dale = NULL, AGN = NULL, filtout = NULL, Dale_M2L_func = NULL, returnall = TRUE,
-H0 = 67.8, OmegaM = 0.308, OmegaL = 1-OmegaM, waveout = seq(2,7,by=0.01), ref, ...)
+unimax = 1.38e+10, H0 = 67.8, OmegaM = 0.308, OmegaL = 1-OmegaM,
+waveout = seq(2,7,by=0.01), ref, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -74,6 +75,9 @@ Function; if dust masses and luminosities are desired then the user should suppl
 }
   \item{returnall}{
 Logical; if true then returns all the various sub SEDs. See Details. If FALSE then code just returns \option{photom_out} (photometry in Jansky).
+}
+  \item{unimax}{
+Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0.
 }
   \item{H0}{
 Numeric scalar; Hubble constant as defined at z=0 (default is H0=67.8 (km/s)/Mpc).

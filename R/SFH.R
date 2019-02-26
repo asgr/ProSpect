@@ -1,4 +1,4 @@
-SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, ...){
+SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, unimax=13.8e9, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
   youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
@@ -47,21 +47,28 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     speclib$Wave=speclib$Wave[sparse]
   }
   
-  if(filters[1]=='all'){
-    cenwave=NULL
-    data('cenwave', envir = environment())
-    filters=cenwave$filter
+  if(!is.null(filters)){
+    if(filters[1]=='all'){
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      filters=cenwave$filter
+    }
   }
 
+  if(unimax!=FALSE & z>0){
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+    speclib$AgeWeights[speclib$Age > unimax-TravelTime]=0
+  }
+  
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
     ancientage[1]=Tsplit
     ancientage[2]=Tstart
   }
+  
   speclib_burst=speclib$Zspec[[Z[1]]]
   speclib_young=speclib$Zspec[[Z[2]]]
   speclib_old=speclib$Zspec[[Z[3]]]
@@ -72,6 +79,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     burstage[1]=speclib$Age[burstageloc[1]]
     burstage[2]=speclib$Age[burstageloc[2]]
     burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum[is.nan(burstlum)]=0
   }else{
     burstlum=0
   }
@@ -81,6 +89,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     youngage[1]=speclib$Age[youngageloc[1]]
     youngage[2]=speclib$Age[youngageloc[2]]
     younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+    younglum[is.nan(younglum)]=0
   }else{
     younglum=0
   }
@@ -90,6 +99,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     oldage[1]=speclib$Age[oldageloc[1]]
     oldage[2]=speclib$Age[oldageloc[2]]
     oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+    oldlum[is.nan(oldlum)]=0
   }else{
     oldlum=0
   }
@@ -99,6 +109,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     ancientage[1]=speclib$Age[ancientageloc[1]]
     ancientage[2]=speclib$Age[ancientageloc[2]]
     ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+    ancientlum[is.nan(ancientlum)]=0
   }else{
     ancientlum=0
   }
@@ -127,7 +138,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   
   lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
   
-  if(z<0){
+  if(z<0 | is.null(filters)){
     return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten,lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen))) # returns the minimal luminosity outputs
   }
   if(z>0){
@@ -176,7 +187,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, masstot=masstot, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=ages, masses=masses, SFR=SFR, sSFR=sSFR))
 }
 
-SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, ...){
+SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, unimax=13.8e9, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
   youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
@@ -217,9 +228,13 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
     birthcloud=1
   }
   
+  if(unimax!=FALSE & z>0){
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+    speclib$AgeWeights[speclib$Age > unimax-TravelTime]=0
+  }
+  
   if(length(Z)==1){Z=rep(Z,4)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -240,7 +255,7 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
   return(c(BurstSMstar=burststar, YoungSMstar=youngstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
 }
 
-SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, ...){
+SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, unimax=13.8e9, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
   youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
@@ -290,15 +305,21 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     speclib$Wave=speclib$Wave[sparse]
   }
   
-  if(filters[1]=='all'){
-    cenwave=NULL
-    data('cenwave', envir = environment())
-    filters=cenwave$filter
+  if(!is.null(filters)){
+    if(filters[1]=='all'){
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      filters=cenwave$filter
+    }
+  }
+  
+  if(unimax!=FALSE & z>0){
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+    speclib$AgeWeights[speclib$Age > unimax-TravelTime]=0
   }
   
   if(length(Z)==1){Z=rep(Z,5)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -316,6 +337,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     burstage[1]=speclib$Age[burstageloc[1]]
     burstage[2]=speclib$Age[burstageloc[2]]
     burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum[is.nan(burstlum)]=0
   }else{
     burstlum=0
   }
@@ -325,6 +347,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     youngage[1]=speclib$Age[youngageloc[1]]
     youngage[2]=speclib$Age[youngageloc[2]]
     younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+    younglum[is.nan(younglum)]=0
   }else{
     younglum=0
   }
@@ -334,6 +357,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     midage[1]=speclib$Age[midageloc[1]]
     midage[2]=speclib$Age[midageloc[2]]
     midlum=colSums(rbind(speclib_mid[midageloc[1]:midageloc[2],])*speclib$AgeWeights[midageloc[1]:midageloc[2]])*midmass/sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
+    midlum[is.nan(midlum)]=0
   }else{
     midlum=0
   }
@@ -343,6 +367,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     oldage[1]=speclib$Age[oldageloc[1]]
     oldage[2]=speclib$Age[oldageloc[2]]
     oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+    oldlum[is.nan(oldlum)]=0
   }else{
     oldlum=0
   }
@@ -352,6 +377,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     ancientage[1]=speclib$Age[ancientageloc[1]]
     ancientage[2]=speclib$Age[ancientageloc[2]]
     ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+    ancientlum[is.nan(ancientlum)]=0
   }else{
     ancientlum=0
   }
@@ -380,7 +406,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   
   lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
   
-  if(z<0){
+  if(z<0 | is.null(filters)){
     return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten,lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen))) # returns the minimal luminosity outputs
   }
   if(z>0){
@@ -429,7 +455,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   return=list(flux=flux, out=out, wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, masstot=masstot, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=ages, masses=masses, SFR=SFR, sSFR=sSFR)
 }
 
-SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, ...){
+SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, unimax=13.8e9, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
   youngmass=.interval(youngmass,0,Inf,reflect=FALSE)
@@ -471,9 +497,13 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
     birthcloud=1
   }
   
+  if(unimax!=FALSE & z>0){
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+    speclib$AgeWeights[speclib$Age > unimax-TravelTime]=0
+  }
+  
   if(length(Z)==1){Z=rep(Z,5)}
   if(dosplit){
-    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     Tsplit=cossplit[1]-TravelTime
     Tstart=cossplit[2]-TravelTime
     oldage[2]=Tsplit
@@ -529,10 +559,12 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
     birthcloud=1
   }
   
-  if(filters[1]=='all'){
-    cenwave=NULL
-    data('cenwave', envir = environment())
-    filters=cenwave$filter
+  if(!is.null(filters)){
+    if(filters[1]=='all'){
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      filters=cenwave$filter
+    }
   }
   
   if(is.function(Z)){
@@ -624,7 +656,7 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
   
   lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
   
-  if(z<0){
+  if(z<0 | is.null(filters)){
     return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten,lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen))) # returns the minimal luminosity outputs
   }
   if(z>0){
