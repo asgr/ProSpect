@@ -747,9 +747,9 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, fo
   massvec=do.call('massfunc',c(list(speclib$Age*agescale), massfunc_args))*speclib$AgeWeights
   
   if(unimax!=FALSE & z>=0){
-    ancientage[2]=min(ancientage[2],unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9)
+    TravelTime=min(ancientage[2],unimax-cosdistTravelTime(z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9)
   }
-  massvec[speclib$Age>ancientage[2]]=0
+  massvec[speclib$Age>TravelTime]=0
   if(forcemass!=FALSE){
     masstot=sum(massvec)
     massvec=massvec*forcemass/masstot
