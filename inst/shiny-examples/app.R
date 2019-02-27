@@ -86,7 +86,7 @@ ui <- fluidPage(
          sliderInput("AGNlum",
                      "AGN Luminosity:",
                      min = 30,
-                     max = 47,
+                     max = 50,
                      value = AGNlum, step=0.2),
          selectInput('burstZ',
                      'Burst Z',
