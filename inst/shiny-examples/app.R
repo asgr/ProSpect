@@ -57,7 +57,7 @@ ui <- fluidPage(
                       max = Inf
                       
          ),
-         h4('SFH inputs:'),
+         h4('SFH/AGN:'),
          sliderInput("burstmass",
                      "Burst Mass:",
                      min = 1,
