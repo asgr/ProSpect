@@ -37,6 +37,8 @@ getfilt=function(filter){
   if(filter=='S500_Herschel' | filter=='S500'){filt_S500_Herschel=NULL; data('filt_S500_Herschel', envir = environment()); out=filt_S500_Herschel}
   if(filter=='S450_JCMT' | filter=='S450'){filt_S450_JCMT=NULL; data('filt_S450_JCMT', envir = environment()); out=filt_S450_JCMT}
   if(filter=='S850_JCMT' | filter=='S850'){filt_S850_JCMT=NULL; data('filt_S850_JCMT', envir = environment()); out=filt_S850_JCMT}
+  if(filter=='1mm_Aztec' | filter=='1mm'){filt_1mm_Aztec=NULL; data('filt_1mm_Aztec', envir = environment()); out=filt_1mm_Aztec}
+  if(filter=='2mm_Gizmo' | filter=='2mm'){filt_2mm_Gizmo=NULL; data('filt_2mm_Gizmo', envir = environment()); out=filt_2mm_Gizmo}
   return(out)
 }
 

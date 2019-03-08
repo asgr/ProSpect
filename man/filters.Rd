@@ -36,7 +36,8 @@
 \alias{filt_S500_Herschel}
 \alias{filt_S450_JCMT}
 \alias{filt_S850_JCMT}
-
+\alias{filt_1mm_Aztec}
+\alias{filt_2mm_Gizmo}
 
 
 \alias{filt}
@@ -87,6 +88,8 @@ data("filt_S350_Herschel")
 data("filt_S500_Herschel")
 data("filt_S450_JCMT")
 data("filt_S850_JCMT")
+data("filt_1mm_Aztec")
+data("filt_2mm_Gizmo")
 }
 \format{
   A number of data frames with the following 2 variables.

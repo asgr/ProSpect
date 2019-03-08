@@ -52,6 +52,8 @@ getfilt(filter)
   S500    \tab  Herschel Spire 500 band  \cr
   S450    \tab  JCMT SCUBA-2 450 band  \cr
   S850    \tab  JCMT SCUBA-2 850 band  \cr
+  1mm     \tab  Aztec 1mm band \cr
+  2mm     \tab  Gizmo 2mm band \cr
 }
 }
 }

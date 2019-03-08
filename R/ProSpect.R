@@ -126,15 +126,17 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   
   if(returnall){
     SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), list(Dale_M2L_func=Data$Dale_M2L_func), Data$arglist))
+    Monitor={}
     if(length(Data$mon.names)>=8){
       Monitor=c(SEDout$dustmass,SEDout$dustlum)
-    }else{
-      Monitor=0
+    }
+    if('masstot' %in% Data$mon.names){
+      Monitor=c(SEDout$Stars$masstot,Monitor)
     }
     Photom=SEDout$Photom
   }else{
     Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=FALSE), Data$arglist))
-    Monitor=0
+    Monitor={}
   }
   
   cutsig=(Data$flux$flux-Photom)/Data$flux$fluxerr
@@ -151,27 +153,35 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   }else{
     stop('Bad like option!')
   }
+  
   if(is.null(Data$prior)){
     LP=LL
   }else{
     LP=LL+Data$prior(parm)
   }
-  if(Data$verbose){print(LP)}
+  if(Data$verbose){
+    print(LP)
+  }
+  
+  if(Data$fit=='LD' | Data$fit=='LA' | Data$fit=='check'){
+    if('LP' %in% Data$mon.names){
+      Monitor=c(LP=LP,Monitor)
+    }
+    if(length(Monitor)==0){
+      Monitor=0
+    }
+    names(Monitor)=Data$mon.names
+  }
+  
+  # Various returns:
+  
   if(Data$fit=='optim'){
     return(-LP)
-  }
-  if(Data$fit=='LD' | Data$fit=='LA'){
-    if(length(Data$mon.names)==9){
-      Monitor=c(LP=LP,Monitor)
-    }
-    names(Monitor)=Data$mon.names
+  }else if(Data$fit=='LD' | Data$fit=='LA'){
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
-  }
-  if(Data$fit=='check'){
-    if(length(Data$mon.names)==9){
-      Monitor=c(LP=LP,Monitor)
-    }
-    names(Monitor)=Data$mon.names
+  }else if(Data$fit=='check'){
     return(invisible(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm,SEDout=SEDout)))
+  }else{
+    return('Bad fit type!')
   }
 }

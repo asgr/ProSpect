@@ -170,17 +170,21 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \code{SFHp4} / \code{SFHp5} / \code{SFHfunc} returns a list containing:
 
 \item{flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
-\item{lum}{Numeric vector; intrinsic luminosity in the standard BC03 units of Lsun/Angstrom.}
 \item{out}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the requested output (e.g. AB mag).}
-\item{massvec}{Numeric vector; the star formation rate (Msun/year) at each age sampled.}
-\item{masstot}{Numeric scalar; total mass formed in solar masses.}
-\item{lumtot}{Numeric scalar; total luminosity in solar luminosities.}
+\item{wave_lum}{Numeric vector; luminosity wavelength in Angstroms.}
+\item{lum_atten}{Numeric vector; attenuated stellar luminosity in the standard BC03 units of Lsol / Angstrom.}
+\item{lum_unatten}{Numeric vector; unattenuated stellar luminosity in the standard BC03 units of Lsol / Angstrom.}
+\item{lumtot_unatten}{Numeric scalar, total unattenuated stellar luminosity in Lsol.}
+\item{lumtot_atten}{Numeric scalar, total attenuated stellar luminosity in Lsol.}
+\item{lumtot_birth}{Numeric scalar, total attenuated luminosity in birth cloud in Lsol.}
+\item{lumtot_screen}{Numeric scalar, total attenuated luminosity in screen cloud in Lsol.}
+\item{masstot}{Numeric scalar; total mass formed in Msol.}
+\item{massvec}{Numeric vector; the total mass formed in each age window  (\code{SFHfunc} only).}
+\item{masses}{Numeric Matrix; mass info where rows are the 4/5 phases of star formation, columns are the total formed in that phase [1] and the total formed over all time [2] (\code{SFHp4} / \code{SFHp5} only).}
 \item{M2L}{Numeric scalar; total mass to light ratio.}
-\item{call}{The original function call made.}
-\item{ages}{Numeric Matrix; age info where rows are the four phases of star formation, columns are the start [1], end [2], duration [3] and mean time [4] of the phases in years.}
-\item{masses}{Numeric Matrix; mass info where rows are the four phases of star formation, columns are the total formed in that phase [1] and the total formed over all time [2].}
-\item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase.}
-\item{sSFR}{Numeric vector; the specific star formation rate averaged out over each star formation phase.}
+\item{ages}{Numeric Matrix; age info where rows are the four phases of star formation, columns are the start [1], end [2], duration [3] and mean time [4] of the phases in years (\code{SFHp4} / \code{SFHp5} only).}
+\item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
+\item{sSFR}{Numeric vector; the specific star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 
 \code{SMstarp4} / \code{SMstarp5} is a 5/6 element vector containing the stellar mass remaining (not formed) as produced by each phase of star formation, and the total stellar mass remaining (not formed- this is the last element listed).
 
