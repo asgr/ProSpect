@@ -54,7 +54,8 @@ ui <- fluidPage(
                       "Redshift",
                       value = z,
                       min = 0,
-                      max = Inf
+                      max = Inf,
+                      step = 0.1
                       
          ),
          h4('SFH/AGN:'),
