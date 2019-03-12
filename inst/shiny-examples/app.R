@@ -257,7 +257,8 @@ server <- function(input, output) {
                     youngmass=10^input$youngmass,
                     midmass=10^input$midmass,
                     oldmass=10^input$oldmass,
-                    ancientmass=10^input$ancientmass
+                    ancientmass=10^input$ancientmass,
+                    Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ))
     )
     
     par(mar=c(3.1,3.1,1.1,1.1))
