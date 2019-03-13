@@ -53,7 +53,7 @@ Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. S
 Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dust. See \code{\link{Dale}}.
 }
   \item{AGNlum}{
-Numeric scalar; AGN bolometric luminosity in erg.
+Numeric scalar; AGN bolometric luminosity in erg/s.
 }
   \item{sparse}{
 Numeric scalar; amount of sparse sampling of the spectra to make.
