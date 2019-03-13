@@ -66,7 +66,7 @@ Integer vector; length 5. Specifies the metallicity to use for each phase (defau
 \value{
 Code runs a Shiny app run, which in turn creates an interactive SED plot. The first tab shows the output in flux space for the full SED (all components combined) and the second tab shows the output in luminosity space (split by component also). The luminosity plane also shows the effective star formation history. The redded out region shows the ignored region that is older than the age of the Universe (13.8 Gyrs).
 
-If the user hits \option{Stop!} in the app, then the current parameters are returned out in a list. This is useful for interactively finding good starting arguments for fitting purposes.
+If the user hits \option{Stop!} in the app, then the current parameters are returned out in a list. This is useful for interactively finding good starting arguments for fitting purposes. The logged parameters in the Shiny app (masses and AGN luminosity) are returned in linear units since this means they can be directly used in \code{\link{ProSpectSED}}.
 }
 \author{
 Aaron Robotham

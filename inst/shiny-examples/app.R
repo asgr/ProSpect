@@ -44,9 +44,10 @@ ancientZ=.checkoption('ancientZ',5)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  
   # Application title
-  titlePanel("ProSpect SED"),
+  fluidRow(
+        h1("ProSpect SED")
+    ),
   
   # Sidebar with a slider input for number of bins 
   column(2,
@@ -55,37 +56,37 @@ ui <- fluidPage(
                       value = z,
                       min = 0,
                       max = Inf,
-                      step = 0.1
+                      step=0.1
                       
          ),
          h4('SFH/AGN:'),
          sliderInput("burstmass",
-                     "Burst Mass:",
+                     "Burst Mass (log10):",
                      min = 1,
                      max = 12,
                      value = burstmass, step=0.1),
          sliderInput("youngmass",
-                     "Young Mass:",
+                     "Young Mass (log10):",
                      min = 1,
                      max = 12,
                      value = youngmass, step=0.1),
          sliderInput("midmass",
-                     "Mid Mass:",
+                     "Mid Mass (log10):",
                      min = 1,
                      max = 12,
                      value = midmass, step=0.1),
          sliderInput("oldmass",
-                     "Old Mass:",
+                     "Old Mass (log10):",
                      min = 1,
                      max = 12,
                      value = oldmass, step=0.1),
          sliderInput("ancientmass",
-                     "Ancient Mass:",
+                     "Ancient Mass (log10):",
                      min = 1,
                      max = 12,
                      value = ancientmass, step=0.1),
          sliderInput("AGNlum",
-                     "AGN Luminosity:",
+                     "AGN Luminosity (log10):",
                      min = 30,
                      max = 50,
                      value = AGNlum, step=0.2),
@@ -117,8 +118,7 @@ ui <- fluidPage(
   ),
   column(2,
          h4('Stop and return values:'),
-         actionButton("stop",
-                      "Stop!"),
+         actionButton("stop","Stop!"),
          h4('Dust inputs:'),
          sliderInput("tau_birth",
                      "Tau Birth:",
@@ -165,6 +165,37 @@ ui <- fluidPage(
                                 plotOutput("SED_lum_plot", height="450px"),
                                 plotOutput("SFH_plot", height="250px")
                               )
+                     ),
+                     tabPanel('Info',
+                              mainPanel(
+                                h3("Web Tool Parameter Details"),
+                                p(strong("Burst Mass:"),"Total stellar mass formed in a recent burst (0-100 Myrs) in units Msol"),
+                                p(strong("Young Mass:"),"Total stellar mass formed in young stars (0.1-1 Gyrs) in units Msol"),
+                                p(strong("Mid Mass:"),"Total stellar mass formed in middle aged stars (1-5 Gyrs) in units Msol"),
+                                p(strong("Old Mass:"),"Total stellar mass formed in old stars (5-9 Gyrs) in units Msol"),
+                                p(strong("Ancient Mass:"),"Total stellar mass formed in ancient stars (9-13 Gyrs) in units Msol"),
+                                p(strong("AGN Luminosity:"),"AGN bolometric luminosity in erg/s"),
+                                p(strong("Tau Birth"),"Charlot and Fall dust attenuation tau for birth clouds"),
+                                p(strong("Tau Screen"),"Charlot and Fall dust attenuation tau for dust screen"),
+                                p(strong("Tau AGN"),"Charlot and Fall dust attenuation tau for the AGN torus"),
+                                p(strong('Alpha SF Birth'),"Dale dust radiation power law for the birth cloud (lower values mean hotter)"),
+                                p(strong('Alpha SF Screen'),"Dale dust radiation power law for the dust screen (lower values mean hotter)"),
+                                p(strong('Alpha SF AGN'),"Dale dust radiation power law for the AGN torus (lower values mean hotter)"),
+                                p(strong('Burst Z'),"Metallicity of the burst stars in Fe/H (0.02 is solar)"),
+                                p(strong('Young Z'),"Metallicity of the young stars in Fe/H (0.02 is solar)"),
+                                p(strong('Mid Z'),"Metallicity of the middle aged stars in Fe/H (0.02 is solar)"),
+                                p(strong('Old Z'),"Metallicity of the old stars in Fe/H (0.02 is solar)"),
+                                p(strong('Ancient Z'),"Metallicity of the ancient stars in Fe/H (0.02 is solar)"),
+                                
+                                h3("Getting Started"),
+                                p("New to Synthetic Spectra? Then take a look here: [sedfitting.org](http://www.sedfitting.org/Models.html). There's a bunch of useful stuff there, and a lot of dead links :-(. But it is worth exploring in some detail. In particular for the stellar population models have a look at BASTI, BPASS, Galaxev (which is BC03 to most astronomers), MILES, Pegase, SLUG and Starburst99. For dust stuff have a look at Dale+Helou and Draine+Li, for UV-FIR Da Cunha (which is MagPhys), CIGALE and Grasil. Those are the most popular variants of what they do in their respective fields. Caveats abound about which is better, but these days they are all pretty sophisticated in their own way."),
+                                
+                                h3("A New ProSpect"),
+                                p("ProSpect is a package that aims to help users explore star formation histories (SFH) and spectral energy distributions (SED). Beneath it all it makes use of the BC03 and EMILES sythetic stellar population libraries. On top of this it uses the Charlot and Fall model for birth cloud and screen dust attenuation and re-emits MIR to FIR flux via the incorporation of the most recent Dale dust templates that model the heating of dust by a radiation field and AGN. ProSpect can handle a few different types of SFH, spanning simple multi phase star formation (SFHp4 / SFHp5) to more general SFHs via arbitrary functional forms (SFHfunc)."),
+                                p("Conceptually this probably all sounds a bit similar to MagPhys and Cegale, bar the different dust model (Dale rather than greybody) and some additional SSP libraries. To a degree this is true, but the main reason for putting it all together is to allow proper generative creation of SEDs via the alteration of user accessible parameters and arbitrary SFHs. MagPhys and similar codes do not allow easy access to the under-the-hood generative functionality which might allow this. Doing this is with a longer term aim of incorporating ProSpect into ProFit for multiband morphological decomposition of galaxies, revealing their component-wise SFHs. Before the completion of that component of the project ProSpect offers a readily accessible interface to multiband fitting of SED in order to measure (e.g.) stellar and dust masses, and it can also applied to arbitary SFHs computed by other codes, e.g. create a realistic SED for a semi-analytic (SAM) model SFH."),
+                                p("
+The 5 phase model (SFHp5) covers 5 key phases of star formation and models them as having constant star formation in each of these periods. By default they cover 0 - 100 Myr (burst, generally considered the shortest phase that broad band photometry can be sensitive to); 0.1-1 Gyr (young; dominated by hot young stars and violent phases of stellar evolution); 1-5 Gyr (mid), 5-9 Gyr (old) and 9-13 Gyr (ancient). It is not really possible to break the SFH into any more independent phases than this using broad band photometry alone, but a physically motivated functional model (e.g. an exponentially decling SFR, or constant SFR) can be used using the functional interface in SFHfunc.")
+                              )
                      )
          )
   )
@@ -176,18 +207,18 @@ server <- function(input, output) {
     if(input$stop > 0){
       stopApp(returnValue = list(
         z=input$z,
+        burstmass=10^input$burstmass,
+        youngmass=10^input$youngmass,
+        midmass=10^input$midmass,
+        oldmass=10^input$oldmass,
+        ancientmass=10^input$ancientmass,
+        AGNlum=10^input$AGNlum,
         tau_birth=input$tau_birth,
         tau_screen=input$tau_screen,
         tau_AGN=input$tau_AGN,
         alpha_SF_birth=input$alpha_SF_birth,
         alpha_SF_screen=input$alpha_SF_screen,
         alpha_SF_AGN=input$alpha_SF_AGN,
-        AGNlum=10^input$AGNlum,
-        burstmass=10^input$burstmass,
-        youngmass=10^input$youngmass,
-        midmass=10^input$midmass,
-        oldmass=10^input$oldmass,
-        ancientmass=10^input$ancientmass,
         Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ))
       )
       )
@@ -198,23 +229,23 @@ server <- function(input, output) {
     
     SED=ProSpectSED(SFH=SFHp5,
                     z=input$z,
+                    burstmass=10^input$burstmass,
+                    youngmass=10^input$youngmass,
+                    midmass=10^input$midmass,
+                    oldmass=10^input$oldmass,
+                    ancientmass=10^input$ancientmass,
+                    AGNlum=10^input$AGNlum,
                     tau_birth=input$tau_birth,
                     tau_screen=input$tau_screen,
                     tau_AGN=input$tau_AGN,
                     alpha_SF_birth=input$alpha_SF_birth,
                     alpha_SF_screen=input$alpha_SF_screen,
                     alpha_SF_AGN=input$alpha_SF_AGN,
-                    AGNlum=10^input$AGNlum,
+                    Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ)),
                     speclib=BC03lr,
                     Dale=Dale_NormTot,
                     AGN=AGN_UnOb_Sparse,
-                    filtout=filtout,
-                    burstmass=10^input$burstmass,
-                    youngmass=10^input$youngmass,
-                    midmass=10^input$midmass,
-                    oldmass=10^input$oldmass,
-                    ancientmass=10^input$ancientmass,
-                    Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ))
+                    filtout=filtout
     )
     
     par(mar=c(3.1,3.1,1.1,1.1))
@@ -243,23 +274,23 @@ server <- function(input, output) {
     
     SED=ProSpectSED(SFH=SFHp5,
                     z=input$z,
+                    burstmass=10^input$burstmass,
+                    youngmass=10^input$youngmass,
+                    midmass=10^input$midmass,
+                    oldmass=10^input$oldmass,
+                    ancientmass=10^input$ancientmass,
+                    AGNlum=10^input$AGNlum,
                     tau_birth=input$tau_birth,
                     tau_screen=input$tau_screen,
                     tau_AGN=input$tau_AGN,
                     alpha_SF_birth=input$alpha_SF_birth,
                     alpha_SF_screen=input$alpha_SF_screen,
                     alpha_SF_AGN=input$alpha_SF_AGN,
-                    AGNlum=10^input$AGNlum,
+                    Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ)),
                     speclib=BC03lr,
                     Dale=Dale_NormTot,
                     AGN=AGN_UnOb_Sparse,
-                    filtout=NULL,
-                    burstmass=10^input$burstmass,
-                    youngmass=10^input$youngmass,
-                    midmass=10^input$midmass,
-                    oldmass=10^input$oldmass,
-                    ancientmass=10^input$ancientmass,
-                    Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ))
+                    filtout=filtout
     )
     
     par(mar=c(3.1,3.1,1.1,1.1))
