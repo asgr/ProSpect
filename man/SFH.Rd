@@ -186,9 +186,7 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 \item{sSFR}{Numeric vector; the specific star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 
-\code{SMstarp4} / \code{SMstarp5} is a 5/6 element vector containing the stellar mass remaining (not formed) as produced by each phase of star formation, and the total stellar mass remaining (not formed- this is the last element listed).
-
-\code{SMstarfunc} produces both the stellar mass formed (5 elements) and the stellar mass remaining (a further 5 elements) for the 5 different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
+\code{SMstarp4} / \code{SMstarp5} / \code{SMstarfunc} produces both the stellar mass formed (4/5/5 elements) and the stellar mass remaining (a further 4/5/5 elements) for the 5 different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
 }
 \author{
 Aaron Robotham

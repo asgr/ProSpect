@@ -247,12 +247,24 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
   oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
   ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
 
-  burststar=burstmass*sum(speclib$Zevo[[Z[1]]][burstageloc[1]:burstageloc[2],'SMstar']*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
-  youngstar=youngmass*sum(speclib$Zevo[[Z[2]]][youngageloc[1]:youngageloc[2],'SMstar']*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
-  oldstar=oldmass*sum(speclib$Zevo[[Z[3]]][oldageloc[1]:oldageloc[2],'SMstar']*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
-  ancientstar=ancientmass*sum(speclib$Zevo[[Z[4]]][ancientageloc[1]:ancientageloc[2],'SMstar']*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+  burstform=burstmass*sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]],na.rm=TRUE)/diff(burstage)
+  youngform=youngmass*sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]],na.rm=TRUE)/diff(youngage)
+  oldform=oldmass*sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]],na.rm=TRUE)/diff(oldage)
+  ancientform=ancientmass*sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]],na.rm=TRUE)/diff(ancientage)
+  
+  totform=sum(burstform,youngform,oldform,ancientform,na.rm=TRUE)
+  
+  burststar=burstmass*sum(speclib$Zevo[[Z[1]]][burstageloc[1]:burstageloc[2],'SMstar']*speclib$AgeWeights[burstageloc[1]:burstageloc[2]],na.rm=TRUE)/diff(burstage)
+  youngstar=youngmass*sum(speclib$Zevo[[Z[2]]][youngageloc[1]:youngageloc[2],'SMstar']*speclib$AgeWeights[youngageloc[1]:youngageloc[2]],na.rm=TRUE)/diff(youngage)
+  oldstar=oldmass*sum(speclib$Zevo[[Z[4]]][oldageloc[1]:oldageloc[2],'SMstar']*speclib$AgeWeights[oldageloc[1]:oldageloc[2]],na.rm=TRUE)/diff(oldage)
+  ancientstar=ancientmass*sum(speclib$Zevo[[Z[5]]][ancientageloc[1]:ancientageloc[2],'SMstar']*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]],na.rm=TRUE)/diff(ancientage)
+  
+  if(is.na(burststar) | is.nan(burststar)){burststar=0}
+  if(is.na(youngstar) | is.nan(youngstar)){youngstar=0}
+  if(is.na(oldstar) | is.nan(oldstar)){oldstar=0}
+  if(is.na(ancientstar) | is.nan(ancientstar)){ancientstar=0}
   totstar=burststar+youngstar+oldstar+ancientstar
-  return(c(BurstSMstar=burststar, YoungSMstar=youngstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
+  return(c(BurstSMform=burstform, YoungSMform=youngform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=totform, TotSMstar=totstar))
 }
 
 SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, unimax=13.8e9, ...){
@@ -517,13 +529,28 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
   oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
   ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
 
-  burststar=burstmass*sum(speclib$Zevo[[Z[1]]][burstageloc[1]:burstageloc[2],'SMstar']*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
-  youngstar=youngmass*sum(speclib$Zevo[[Z[2]]][youngageloc[1]:youngageloc[2],'SMstar']*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
-  midstar=midmass*sum(speclib$Zevo[[Z[3]]][midageloc[1]:midageloc[2],'SMstar']*speclib$AgeWeights[midageloc[1]:midageloc[2]])/sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
-  oldstar=oldmass*sum(speclib$Zevo[[Z[4]]][oldageloc[1]:oldageloc[2],'SMstar']*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
-  ancientstar=ancientmass*sum(speclib$Zevo[[Z[5]]][ancientageloc[1]:ancientageloc[2],'SMstar']*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+  burstform=burstmass*sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]],na.rm=TRUE)/diff(burstage)
+  youngform=youngmass*sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]],na.rm=TRUE)/diff(youngage)
+  midform=midmass*sum(speclib$AgeWeights[midageloc[1]:midageloc[2]],na.rm=TRUE)/diff(midage)
+  oldform=oldmass*sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]],na.rm=TRUE)/diff(oldage)
+  ancientform=ancientmass*sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]],na.rm=TRUE)/diff(ancientage)
+  
+  totform=sum(burstform,youngform,midform,oldform,ancientform,na.rm=TRUE)
+  
+  burststar=burstmass*sum(speclib$Zevo[[Z[1]]][burstageloc[1]:burstageloc[2],'SMstar']*speclib$AgeWeights[burstageloc[1]:burstageloc[2]],na.rm=TRUE)/diff(burstage)
+  youngstar=youngmass*sum(speclib$Zevo[[Z[2]]][youngageloc[1]:youngageloc[2],'SMstar']*speclib$AgeWeights[youngageloc[1]:youngageloc[2]],na.rm=TRUE)/diff(youngage)
+  midstar=midmass*sum(speclib$Zevo[[Z[3]]][midageloc[1]:midageloc[2],'SMstar']*speclib$AgeWeights[midageloc[1]:midageloc[2]],na.rm=TRUE)/diff(midage)
+  oldstar=oldmass*sum(speclib$Zevo[[Z[4]]][oldageloc[1]:oldageloc[2],'SMstar']*speclib$AgeWeights[oldageloc[1]:oldageloc[2]],na.rm=TRUE)/diff(oldage)
+  ancientstar=ancientmass*sum(speclib$Zevo[[Z[5]]][ancientageloc[1]:ancientageloc[2],'SMstar']*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]],na.rm=TRUE)/diff(ancientage)
+  
+  if(is.na(burststar) | is.nan(burststar)){burststar=0}
+  if(is.na(youngstar) | is.nan(youngstar)){youngstar=0}
+  if(is.na(midstar) | is.nan(midstar)){midstar=0}
+  if(is.na(oldstar) | is.nan(oldstar)){oldstar=0}
+  if(is.na(ancientstar) | is.nan(ancientstar)){ancientstar=0}
+  
   totstar=burststar+youngstar+midstar+oldstar+ancientstar
-  return(c(BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMstar=totstar))
+  return(c(BurstSMform=burstform, YoungSMform=youngform, MidSMform=midform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=totform, TotSMstar=totstar))
 }
 
 SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, forcemass=FALSE, unimax=13.8e9, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', sparse=5, intSFR=FALSE, ...){
@@ -789,5 +816,5 @@ SMstarfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, fo
   ancientstar=sum(totstar[ancientageloc[1]:ancientageloc[2]])*ancientrescale
   
   
-  return(c(BurstSMform=burstform, YoungSMform=youngform, MidSMform=midform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=sum(massvec), TotSMstar=sum(totstar)))
+  return(c(BurstSMform=burstform, YoungSMform=youngform, MidSMform=midform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=sum(massvec,na.rm = TRUE), TotSMstar=sum(totstar,na.rm = TRUE)))
 }
