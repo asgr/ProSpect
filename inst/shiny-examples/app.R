@@ -261,7 +261,7 @@ server <- function(input, output) {
                        lwd=5,
                        col='grey',
                        grid=TRUE)
-    colvec=rev(rainbow(20,s=c(0.5,1),v=c(0.4,0.6,0.8,1),end=2/3))
+    colvec=rev(rainbow(20,s=c(0.5,1),v=seq(0.5,1,len=4),end=5/6))
     points(cenwave$cenwave, SED$Photom, pch=16, cex=2, col=colvec)
     legend('topleft',legend=filters,col=colvec, pch=16, pt.cex=2)
     if(!is.null(flux)){
