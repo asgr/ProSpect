@@ -163,7 +163,10 @@ ui <- fluidPage(
                      tabPanel('Luminosity',
                               mainPanel(
                                 plotOutput("SED_lum_plot", height="450px"),
+                                br(), 
                                 plotOutput("SFH_plot", height="250px"),
+                                br(),
+                                h4('Log10(Mass/Msol):'),
                                 dataTableOutput('table')
                               )
                      ),
