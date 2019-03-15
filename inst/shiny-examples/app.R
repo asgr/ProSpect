@@ -163,7 +163,8 @@ ui <- fluidPage(
                      tabPanel('Luminosity',
                               mainPanel(
                                 plotOutput("SED_lum_plot", height="450px"),
-                                plotOutput("SFH_plot", height="250px")
+                                plotOutput("SFH_plot", height="250px"),
+                                dataTableOutput('table')
                               )
                      ),
                      tabPanel('Info',
@@ -206,7 +207,7 @@ server <- function(input, output) {
   observe({
     if(input$stop > 0){
       stopApp(returnValue = list(
-        z=input$z,
+        z=max(input$z,2.261565e-09,na.rm=TRUE),
         burstmass=10^input$burstmass,
         youngmass=10^input$youngmass,
         midmass=10^input$midmass,
@@ -228,7 +229,7 @@ server <- function(input, output) {
   output$SED_flux_plot <- renderPlot({
     
     SED=ProSpectSED(SFH=SFHp5,
-                    z=input$z,
+                    z=max(input$z,2.261565e-09,na.rm=TRUE),
                     burstmass=10^input$burstmass,
                     youngmass=10^input$youngmass,
                     midmass=10^input$midmass,
@@ -255,13 +256,14 @@ server <- function(input, output) {
                        xlim=c(5e2,1e7),
                        ylim=c(min(SED$Photom)/3,max(SED$FinalFlux$flux)),
                        xlab='Wave / Ang',
-                       ylab='Flux / Jansky',
+                       ylab='Flux Density / Jansky',
                        type='l',
                        lwd=5,
                        col='grey',
                        grid=TRUE)
-    points(cenwave$cenwave, SED$Photom, pch=16, cex=2, col=rev(rainbow(20,end=2/3)))
-    legend('topleft',legend=filters,col=rev(rainbow(20,end=2/3)), pch=16, pt.cex=2)
+    colvec=rev(rainbow(20,s=c(0.5,1),v=c(0.4,0.6,0.8,1),end=2/3))
+    points(cenwave$cenwave, SED$Photom, pch=16, cex=2, col=colvec)
+    legend('topleft',legend=filters,col=colvec, pch=16, pt.cex=2)
     if(!is.null(flux)){
       points(x=flux$cenwave, y=flux$flux)
       if(!is.null(flux$fluxerr)){
@@ -273,7 +275,7 @@ server <- function(input, output) {
   output$SED_lum_plot <- renderPlot({
     
     SED=ProSpectSED(SFH=SFHp5,
-                    z=input$z,
+                    z=max(input$z,2.261565e-09,na.rm=TRUE),
                     burstmass=10^input$burstmass,
                     youngmass=10^input$youngmass,
                     midmass=10^input$midmass,
@@ -310,11 +312,28 @@ server <- function(input, output) {
     lines(SED$DustEmit, col='darkgreen', lwd=2)
     lines(SED$AGN, col='brown', lwd=2)
     legend('topright', legend=c('Observed Total', 'Unattenuated Stars', 'Attenuated Stars', 'Re-emitted dust', 'AGN'), col=c('grey', 'blue', 'green', 'darkgreen', 'brown'), lty=c(1,2,1,1,1), lwd=c(5,2,2,2,2))
+    
+    SMphases=SMstarp5(z=max(input$z,2.261565e-09,na.rm=TRUE),
+                      burstmass=10^input$burstmass,
+                      youngmass=10^input$youngmass,
+                      midmass=10^input$midmass,
+                      oldmass=10^input$oldmass,
+                      ancientmass=10^input$ancientmass,
+                      Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ))
+    )
+    
+    SMphases=round(log10(SMphases),2)
+    
+    SMphases=cbind(c(SMphases['TotSMform'],SMphases[1:5]),c(SMphases['TotSMstar'],SMphases[1:5+5]))
+    SMphases=cbind(c('Total','Burst','Young','Mid','Old','Ancient'),SMphases)
+    colnames(SMphases)=c('Phase','Formed','Remaining')
+    
+    output$table <- renderDataTable(SMphases)
   })
   
   output$SFH_plot <- renderPlot({
     
-    TravelTime=cosdistTravelTime(z=input$z, H0 = 67.8, OmegaM = 0.308)
+    TravelTime=cosdistTravelTime(z=max(input$z,2.261565e-09,na.rm=TRUE), H0 = 67.8, OmegaM = 0.308)
     
     burst_SFR=(10^input$burstmass)/1e8
     young_SFR=(10^input$youngmass)/9e8
