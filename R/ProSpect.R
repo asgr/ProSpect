@@ -90,7 +90,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(is.null(Data$like)){Data$like='st'}
   if(is.null(Data$verbose)){Data$verbose=TRUE}
   
-  if(Data$fit=='check' | length(Data$mon.names)>=8){
+  if(Data$fit=='check' | length(grep('dustmass',Data$mon.names))>=0 | length(grep('dustlum',Data$mon.names))>=0){
     returnall=TRUE
   }else{
     returnall=FALSE
@@ -127,11 +127,14 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(returnall){
     SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), list(Dale_M2L_func=Data$Dale_M2L_func), Data$arglist))
     Monitor={}
-    if(length(Data$mon.names)>=8){
-      Monitor=c(SEDout$dustmass,SEDout$dustlum)
+    if(length(grep('dustmass',Data$mon.names))>=0){
+      Monitor=c(dustmass=SEDout$dustmass)
+    }
+    if(length(grep('dustlum',Data$mon.names))>=0){
+      Monitor=c(dustlum=SEDout$dustlum,Monitor)
     }
     if('masstot' %in% Data$mon.names){
-      Monitor=c(SEDout$Stars$masstot,Monitor)
+      Monitor=c(masstot=SEDout$Stars$masstot,Monitor)
     }
     Photom=SEDout$Photom
   }else{
@@ -169,8 +172,9 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     }
     if(length(Monitor)==0){
       Monitor=0
+    }else{
+      Monitor=Monitor[match(Data$mon.names, names(Monitor))]
     }
-    names(Monitor)=Data$mon.names
   }
   
   # Various returns:

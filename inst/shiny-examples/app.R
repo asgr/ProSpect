@@ -258,8 +258,8 @@ server <- function(input, output) {
                        log='xy',
                        xlim=c(5e2,1e7),
                        ylim=c(min(SED$Photom)/3,max(SED$FinalFlux$flux)),
-                       xlab='Wave / Ang',
-                       ylab='Flux Density / Jansky',
+                       xlab='Wavelength (Angstrom)',
+                       ylab='Flux Density (Jansky)',
                        type='l',
                        lwd=5,
                        col='grey',
@@ -304,8 +304,8 @@ server <- function(input, output) {
                        log='xy',
                        xlim=c(5e2,1e7),
                        ylim=c(min(SED$FinalLum$lum)*1e3,max(SED$StarsUnAtten$lum, SED$FinalLum$lum)),
-                       xlab='Wave / Ang',
-                       ylab='Lum / Lsol/A',
+                      xlab='Wavelength (Angstrom)',
+                       ylab='Luminosity Density (Lsol/A)',
                        type='l',
                        lwd=5,
                        col='grey',
@@ -350,8 +350,8 @@ server <- function(input, output) {
                        c(0, burst_SFR, burst_SFR, 0, 0, young_SFR, young_SFR, 0, 0, mid_SFR, mid_SFR, 0, 0, old_SFR, old_SFR, 0, 0, ancient_SFR, ancient_SFR, 0),
                        xlim=c(0,13),
                        grid=TRUE,
-                       xlab='Light Travel Time / Gyr',
-                       ylab='SFR / Msol/Yr',
+                       xlab='Light Travel Time (Gyr)',
+                       ylab='SFR (Msol/Yr)',
                        type='s')
     abline(v=13.8-TravelTime, lty=2)
     rect(13.8-TravelTime, 0, 100, 100, col=hsv(alpha=0.2))
