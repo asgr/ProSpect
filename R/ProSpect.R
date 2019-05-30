@@ -160,7 +160,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(is.null(Data$prior)){
     LP=LL
   }else{
-    LP=LL+Data$prior(parm)
+    LP=LL+as.numeric(Data$prior(parm))
   }
   if(Data$verbose){
     print(LP)
