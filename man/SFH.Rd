@@ -1,5 +1,6 @@
 \name{Star Formation}
 \alias{SFH}
+\alias{SFHburst}
 \alias{SFHp4}
 \alias{SFHp5}
 \alias{SFHfunc}
@@ -12,9 +13,14 @@
 Various Star Formation History Functions
 }
 \description{
-Computes output galaxy spectra  and stellar masses using variable star formation histories. This can be either distinct phases with \code{SFHp4} and \code{SFHp5}, or a functional form with \code{SFHfunc}. Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar).
+Computes output galaxy spectra  and stellar masses using variable star formation histories. This can be either a pure burst (\code{SFHburst}), distinct phases (\code{SFHp4} / \code{SFHp5}), or a functional form (\code{SFHfunc}). Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar), whereas \code{SFHfunc} can take a functional form for the metallicity.
 }
 \usage{
+SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
+tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,  filters = 'all',
+Z = 0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = 'mag',
+sparse = 5, unimax=  13.8e9, ...)
+
 SFHp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, tau_birth = 1,
@@ -72,11 +78,11 @@ Numeric scalar; the total stellar mass formed in old stars in units Msol.
   \item{ancientmass}{
 Numeric scalar; the total stellar mass formed in ancient stars in units Msol.
 }
-  \item{burstage}{
-Numeric vector; the age limits in years for the burst phase.
-}
   \item{massfunc}{
-Function; a function which will take \option{age} (in Yrs) as an input and return SFR (in Msun/Yr). Additional \option{massfunc} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}.
+Function; a function which will take \option{age} (in Yrs) as an input and return SFR (in Msun/Yr). Additional \option{massfunc} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}.
+}
+  \item{burstage}{
+Numeric vector; the age limits in years for the burst phase (\code{SFHp4} / \code{SFHp5}). Numeric scalar; the age of the burst in years (\code{SFHburst}).
 }
   \item{youngage}{
 Numeric vector; the age limits in years for the young phase.
@@ -121,7 +127,7 @@ Numeric scalar; power to further raise the dust attenuation of the dust screen. 
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters.
 }
   \item{Z}{
-Integer vector of length 4 (\code{SFHp4}), 5 (\code{SFHp5}) or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar). \code{SFHp4}) and \code{SFHp5} also take functional inputs, in which case the nearest matching discrete metallicity is used for each phase. Additional \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}.
+Numeric scalar (\code{SFHburst}), or integer vector of length 4/5 (\code{SFHp4} / \code{SFHp5}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar). \code{SFHp4}) and \code{SFHp5} also take functional inputs, in which case the nearest matching discrete metallicity is used for each phase. Additional \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}.
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).
@@ -167,7 +173,7 @@ We use the simple dust models for birth clouds and dust screens as given by Char
 The defaults should be reasonable in the regime they are used over, where birth cloud dust should only be applied to stellar populations younger than 10 Myrs. Note that BC03 has 70 stellar population spectra which are younger than this, whilst EMILES has none. This means that EMILES cannot realistically capture the birth dust attenuation phase, so for highly star bursting populations BC03 should probably be preferred.
 }
 \value{
-\code{SFHp4} / \code{SFHp5} / \code{SFHfunc} returns a list containing:
+\code{SFHburst} / \code{SFHp4} / \code{SFHp5} / \code{SFHfunc} returns a list containing:
 
 \item{flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
 \item{out}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the requested output (e.g. AB mag).}
@@ -182,7 +188,7 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{massvec}{Numeric vector; the total mass formed in each age window  (\code{SFHfunc} only).}
 \item{masses}{Numeric Matrix; mass info where rows are the 4/5 phases of star formation, columns are the total formed in that phase [1] and the total formed over all time [2] (\code{SFHp4} / \code{SFHp5} only).}
 \item{M2L}{Numeric scalar; total mass to light ratio.}
-\item{ages}{Numeric Matrix; age info where rows are the four phases of star formation, columns are the start [1], end [2], duration [3] and mean time [4] of the phases in years (\code{SFHp4} / \code{SFHp5} only).}
+\item{ages}{Numeric Matrix; age info where rows are the four phases of star formation, columns are the start [1], end [2], duration [3] and mean time [4] of the phases in years (\code{SFHp4} / \code{SFHp5} only). For \code{SFHburst} it is just the input \option{burstage}.}
 \item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 \item{sSFR}{Numeric vector; the specific star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 

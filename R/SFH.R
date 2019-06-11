@@ -1,3 +1,139 @@
+SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', sparse=5, unimax=13.8e9, ...){
+  
+  burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
+  
+  if(stellpop=='BC03lr'){
+    if(is.null(speclib)){
+      BC03lr=NULL
+      data('BC03lr', envir = environment())
+      speclib=BC03lr
+    }
+  }
+  if(stellpop=='BC03hr'){
+    if(is.null(speclib)){
+      BC03hr=NULL
+      data('BC03hr', envir = environment())
+      speclib=BC03hr
+    }
+  }
+  if(stellpop=='EMILES'){
+    if(is.null(speclib)){
+      EMILES=NULL
+      data('EMILES', envir = environment())
+      speclib=EMILES
+    }
+  }
+  
+  if(any(speclib$Age<1e7)){
+    birthcloud=max(which(speclib$Age<=1e7))
+  }else{
+    birthcloud=1
+  }
+  
+  if(sparse>1){
+    sparse=seq(1,dim(speclib$Zspec[[1]])[2],by=sparse)
+    speclib$Wave=speclib$Wave[sparse]
+  }else{
+    sparse=TRUE
+  }
+  
+  if(!is.null(filters)){
+    if(filters[1]=='all'){
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      filters=cenwave$filter
+    }
+  }
+  
+  if(unimax!=FALSE & z>0){
+    TravelTime=cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+    if(burstage > unimax-TravelTime){
+      burstmass=0
+    }
+  }
+  
+  metal_interp=interp_param(Z,speclib$Z, log=TRUE)
+  age_interp=interp_param(burstage, speclib$Age)
+  if(metal_interp['weight_lo']==1){
+    lum_unatten=speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_lo'],sparse]*age_interp[1,'weight_lo'] +
+      speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_hi'],sparse]*age_interp[1,'weight_hi']
+  }else{
+    lum_unatten=speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_lo'],sparse]*age_interp[1,'weight_lo']*metal_interp[1,'weight_lo'] +
+      speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_hi'],sparse]*age_interp[1,'weight_hi']*metal_interp[1,'weight_lo'] +
+      speclib$Zspec[[metal_interp[1,'ID_hi']]][age_interp[1,'ID_lo'],sparse]*age_interp[1,'weight_lo']*metal_interp[1,'weight_hi'] +
+      speclib$Zspec[[metal_interp[1,'ID_hi']]][age_interp[1,'ID_hi'],sparse]*age_interp[1,'weight_hi']*metal_interp[1,'weight_hi']
+  }
+  
+  lum_unatten=lum_unatten*burstmass
+  lum=lum_unatten
+  lumtot_unatten=sum(c(0,diff(speclib$Wave))*lum)
+  
+  if(tau_birth!=0 & burstage<1e7){
+    lum=lum*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth)
+    lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
+  }else{
+    lumtot_birth=0
+  }
+  
+  if(tau_screen!=0){
+    lum=lum*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen)
+    lumtot_screen=(lumtot_unatten-lumtot_birth)-sum(c(0,diff(speclib$Wave))*lum)
+  }else{
+    lumtot_screen=0
+  }
+  
+  lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
+  
+  masstot=burstmass
+  
+  if(z<0 | is.null(filters)){
+    return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot))) # returns the minimal luminosity outputs
+  }
+  if(z>0){
+    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
+    if(!is.null(outtype)){
+      out=photom_flux(flux, outtype = outtype, filters = filters)
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
+    }else{
+      out=NULL
+    }
+  }else{
+    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
+    if(!is.null(outtype)){
+      out=photom_flux(flux, outtype = outtype, filters = filters)
+      if(is.list(filters)){
+        cenout={}
+        for(i in filters){
+          cenout=c(cenout,cenwavefunc(i))
+        }
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
+      }else{
+        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+      }
+    }else{
+      out=NULL
+    }
+  }
+  
+  return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=burstage, masstot=burstmass)))
+}
+
 SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, unimax=13.8e9, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
@@ -78,7 +214,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
     burstage[1]=speclib$Age[burstageloc[1]]
     burstage[2]=speclib$Age[burstageloc[2]]
-    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
     burstlum[is.nan(burstlum)]=0
   }else{
     burstlum=0
@@ -88,7 +224,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
     youngage[1]=speclib$Age[youngageloc[1]]
     youngage[2]=speclib$Age[youngageloc[2]]
-    younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+    younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
     younglum[is.nan(younglum)]=0
   }else{
     younglum=0
@@ -98,7 +234,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
     oldage[1]=speclib$Age[oldageloc[1]]
     oldage[2]=speclib$Age[oldageloc[2]]
-    oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+    oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
     oldlum[is.nan(oldlum)]=0
   }else{
     oldlum=0
@@ -108,7 +244,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
     ancientage[1]=speclib$Age[ancientageloc[1]]
     ancientage[2]=speclib$Age[ancientageloc[2]]
-    ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+    ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
     ancientlum[is.nan(ancientlum)]=0
   }else{
     ancientlum=0
@@ -152,7 +288,11 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
         for(i in filters){
           cenout=c(cenout,cenwavefunc(i))
         }
-        out=data.frame(filter=NA, cenwave=cenout, out=out)
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
@@ -168,7 +308,11 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
         for(i in filters){
           cenout=c(cenout,cenwavefunc(i))
         }
-        out=data.frame(filter=NA, cenwave=cenout, out=out)
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
@@ -348,7 +492,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
     burstage[1]=speclib$Age[burstageloc[1]]
     burstage[2]=speclib$Age[burstageloc[2]]
-    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
     burstlum[is.nan(burstlum)]=0
   }else{
     burstlum=0
@@ -358,7 +502,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
     youngage[1]=speclib$Age[youngageloc[1]]
     youngage[2]=speclib$Age[youngageloc[2]]
-    younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+    younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
     younglum[is.nan(younglum)]=0
   }else{
     younglum=0
@@ -368,7 +512,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     midageloc=c(which.min(abs(speclib$Age-midage[1])),which.min(abs(speclib$Age-midage[2])))
     midage[1]=speclib$Age[midageloc[1]]
     midage[2]=speclib$Age[midageloc[2]]
-    midlum=colSums(rbind(speclib_mid[midageloc[1]:midageloc[2],])*speclib$AgeWeights[midageloc[1]:midageloc[2]])
+    midlum=colSums(rbind(speclib_mid[midageloc[1]:midageloc[2],])*speclib$AgeWeights[midageloc[1]:midageloc[2]])*midmass/sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
     midlum[is.nan(midlum)]=0
   }else{
     midlum=0
@@ -378,7 +522,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
     oldage[1]=speclib$Age[oldageloc[1]]
     oldage[2]=speclib$Age[oldageloc[2]]
-    oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+    oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
     oldlum[is.nan(oldlum)]=0
   }else{
     oldlum=0
@@ -388,7 +532,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
     ancientage[1]=speclib$Age[ancientageloc[1]]
     ancientage[2]=speclib$Age[ancientageloc[2]]
-    ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+    ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
     ancientlum[is.nan(ancientlum)]=0
   }else{
     ancientlum=0
@@ -432,7 +576,11 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
         for(i in filters){
           cenout=c(cenout,cenwavefunc(i))
         }
-        out=data.frame(filter=NA, cenwave=cenout, out=out)
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
@@ -448,7 +596,11 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
         for(i in filters){
           cenout=c(cenout,cenwavefunc(i))
         }
-        out=data.frame(filter=NA, cenwave=cenout, out=out)
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
@@ -620,14 +772,28 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
   if(intSFR){
     massvec={}
     for(i in 1:length(speclib$Age)){
-      tempint=try(integrate(massfunc, lower = speclib$AgeBins[i]*agescale, upper=speclib$AgeBins[i+1]*agescale)$value, silent=TRUE)
+      tempint=try(
+        do.call('integrate', c(list(f=massfunc, lower=speclib$AgeBins[i]*agescale, upper=speclib$AgeBins[i+1]*agescale), massfunc_args))$value,
+        #integrate(massfunc, lower = speclib$AgeBins[i]*agescale, upper=speclib$AgeBins[i+1]*agescale)$value,
+      silent=TRUE)
       if(class(tempint)=="try-error"){
         massvec=c(massvec,0)
       }else{
         massvec=c(massvec,tempint)
       }
     }
-    massvec=massvec
+    if(sum(massvec,na.rm=TRUE)==0){
+      #pracma integral seems to work for very bursty star formation where integrate fails
+      massvec={}
+      tempint=try(
+        do.call('integral', c(list(f=massfunc, xmin=speclib$AgeBins[i]*agescale, xmax=speclib$AgeBins[i+1]*agescale), massfunc_args)),
+        silent=TRUE)
+      if(class(tempint)=="try-error"){
+        massvec=c(massvec,0)
+      }else{
+        massvec=c(massvec,tempint)
+      }
+    }
   }else{
     massvec=do.call('massfunc',c(list(speclib$Age*agescale), massfunc_args))*speclib$AgeWeights
   }
@@ -695,7 +861,11 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
         for(i in filters){
           cenout=c(cenout,cenwavefunc(i))
         }
-        out=data.frame(filter=NA, cenwave=cenout, out=out)
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
@@ -711,7 +881,11 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
         for(i in filters){
           cenout=c(cenout,cenwavefunc(i))
         }
-        out=data.frame(filter=NA, cenwave=cenout, out=out)
+        if(all(!is.null(names(filters)))){
+          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+        }else{
+          out=data.frame(filter=NA, cenwave=cenout, out=out)
+        }
       }else{
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
