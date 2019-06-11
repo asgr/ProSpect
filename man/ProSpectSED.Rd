@@ -20,7 +20,7 @@ ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{SFH}{
-Function; the star formation history to use. Must be one of \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}}.
+Function; the star formation history to use. Must be one of \code{\link{SFHburst}}, \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}}.
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).
