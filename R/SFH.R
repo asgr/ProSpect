@@ -546,7 +546,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   if(tau_birth!=0 & burstmass>0){
     lum=lum-burstlum
     speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
     lum=lum+burstlum
     lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
   }else{
