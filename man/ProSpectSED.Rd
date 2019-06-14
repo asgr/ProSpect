@@ -68,7 +68,7 @@ Object; required. Pass in the Dale dust library \code{\link{Dale_NormTot}} direc
 Object; required. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
 }
   \item{filtout}{
-Object; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
+Object; required. Pass in the photometric filters directly (either matrices of functins). If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
 }
   \item{Dale_M2L_func}{
 Function; if dust masses and luminosities are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
@@ -129,7 +129,7 @@ Object; required. Pass in the Dale dust library directly (should be one of \opti
 Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
 }
   \item{Data$filtout}{
-Object; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} (see \code{\link{getfilt}}).
+Object; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
 }
   \item{Data$fit}{
 Character scalar; one of 'optim', 'LD' or 'check'. See Value for full information on what is output in each case. If missing it is set to 'optim'.
@@ -192,7 +192,8 @@ filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_V
 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE', 'W4_WISE',
 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel', 'S500_Herschel')
 filtout={}
-for(i in filters){filtout=c(filtout,list(getfilt(i)))}
+for(i in filters){filtout=c(filtout,list(approxfun(getfilt(i))))}
+#for(i in filters){filtout=c(filtout,list(getfilt(i)))} #This works too, but slower!
 
 #Try playing around with the below to see what impact different AGN, dust etc have:
 

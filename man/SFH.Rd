@@ -124,7 +124,7 @@ Numeric scalar; power to further raise the dust attenuation of birth clouds. See
 Numeric scalar; power to further raise the dust attenuation of the dust screen. See \code{\link{CF_screen}}.
 }
   \item{filters}{
-Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters.
+Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. Can also be a list of matrices or functions to pass into \code{\link{bandpass}}. This creates increasingly faster code, but requires more user effort.
 }
   \item{Z}{
 Numeric scalar (\code{SFHburst}), or integer vector of length 4/5 (\code{SFHp4} / \code{SFHp5}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar). \code{SFHp4}) and \code{SFHp5} also take functional inputs, in which case the nearest matching discrete metallicity is used for each phase. Additional \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}.
@@ -199,7 +199,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{SFHlike}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}
+\code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}
 }
 \examples{
 SFHdemo_dust=SFHp4()

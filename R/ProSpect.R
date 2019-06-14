@@ -152,7 +152,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     dof=2*vardata/(vardata-1)
     #dof=interval(dof,0,Inf)
     dof=max(1, min(Inf, dof, na.rm = TRUE), na.rm = TRUE)
-    LL=sum(dt(cutsig, df=dof, log=TRUE), na.rm = TRUE)
+    LL=as.numeric(sum(dt(cutsig, df=dof, log=TRUE), na.rm = TRUE))
   }else{
     stop('Bad like option!')
   }

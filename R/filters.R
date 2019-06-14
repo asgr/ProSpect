@@ -50,8 +50,10 @@ bandpass=function(wave, flux, filter, lum = TRUE){
       wave=wave[,1]
     }
   }
-  tempfunc = approxfun(x = filter[, 1], y = abs(filter[, 2]))
-  tempremap = tempfunc(wave)
+  if(!is.function(filter)){
+    filter = approxfun(x = filter[, 1], y = abs(filter[, 2]))
+  }
+  tempremap = filter(wave)
   tempremap[is.na(tempremap)] = 0
   if (lum) {
     return(sum(tempremap * wave * flux, na.rm = TRUE)/sum(tempremap * wave, na.rm = TRUE))

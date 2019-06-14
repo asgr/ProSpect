@@ -19,8 +19,7 @@ Observed wavelength in Angstroms by default (see \option{wavefac}). For convenie
 Flux in erg/s / cm^2 / Hz specral units (see conversion in the Example).
 }
   \item{filter}{
-Two column matrix; column one must be flux in Angstroms, column two must be a filter response. These are the type returned by 
-\code{\link{getfilt} (see Examples).}
+Two column matrix; column one must be flux in Angstroms, column two must be a filter response. These are the type returned by \code{\link{getfilt}} (see Examples). You can also pass in a function (e.g. the output of \code{\link{approxfun}} run on the filters), which will result in faster processing.
 }
   \item{lum}{
 Boolean scalar; should the integrated flux be returned (TRUE) or the spectral flux (FALSE).

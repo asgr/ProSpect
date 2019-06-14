@@ -20,7 +20,7 @@ install_github('asgr/ProSpect') #This might take a while since there is a lot of
 library(ProSpect)
 ```
 
-Where relevant I give link you can type into the R console with the package loaded to have a look at soemthing in more detail, these start with a '?'.
+Where relevant I give link you can type into the R console with the package loaded to have a look at something in more detail, these start with a '?'.
 
 ## Getting Started
 

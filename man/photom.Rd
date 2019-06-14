@@ -35,7 +35,7 @@ Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and 
 Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
 }
   \item{filters}{
-Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters.
+Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a list of filter responses, or even better (faster) a list of filter functions.
 }
   \item{z}{
 Numeric scalar; cosmological redshift, where z must be > -1.
