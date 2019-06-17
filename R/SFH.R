@@ -785,13 +785,15 @@ SFHfunc=function(massfunc=function(age, SFR=1){ifelse(age<1.3e+10,SFR,0)}, force
     if(sum(massvec,na.rm=TRUE)==0){
       #pracma integral seems to work for very bursty star formation where integrate fails
       massvec={}
-      tempint=try(
-        do.call('integral', c(list(f=massfunc, xmin=speclib$AgeBins[i]*agescale, xmax=speclib$AgeBins[i+1]*agescale), massfunc_args)),
-        silent=TRUE)
-      if(class(tempint)=="try-error"){
-        massvec=c(massvec,0)
-      }else{
-        massvec=c(massvec,tempint)
+        for(i in 1:length(speclib$Age)){
+        tempint=try(
+          do.call('integral', c(list(f=massfunc, xmin=speclib$AgeBins[i]*agescale, xmax=speclib$AgeBins[i+1]*agescale), massfunc_args)),
+          silent=TRUE)
+        if(class(tempint)=="try-error"){
+          massvec=c(massvec,0)
+        }else{
+          massvec=c(massvec,tempint)
+        }
       }
     }
   }else{
