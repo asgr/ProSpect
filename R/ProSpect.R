@@ -126,25 +126,23 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   
   if(Data$verbose){print(parmlist)}
   
+  Monitor={}
+  
   if(returnall){
     SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), list(Dale_M2L_func=Data$Dale_M2L_func), Data$arglist))
-    Monitor={}
+    Photom=SEDout$Photom
+    
     if(length(grep('dustmass',Data$mon.names))>0){
       Monitor=c(dustmass=SEDout$dustmass)
     }
     if(length(grep('dustlum',Data$mon.names))>0){
-      Monitor=c(dustlum=SEDout$dustlum,Monitor)
+      Monitor=c(Monitor,dustlum=SEDout$dustlum)
     }
     if('masstot' %in% Data$mon.names){
-      Monitor=c(masstot=SEDout$Stars$masstot,Monitor)
+      Monitor=c(Monitor,masstot=SEDout$Stars$masstot)
     }
-    if('fluxes' %in% Data$mon.names){
-      Monitor=c(SEDout$Photom,Monitor)
-    }
-    Photom=SEDout$Photom
   }else{
     Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=FALSE), Data$arglist))
-    Monitor=NULL
   }
   
   cutsig=(Data$flux$flux-Photom)/Data$flux$fluxerr
@@ -171,9 +169,14 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     print(LP)
   }
   
+  if(length(grep('flux',Data$mon.names))>0){
+    names(Photom)=Data$flux$filter
+    Monitor=c(Monitor,flux=Photom)
+  }
+  
   if(Data$fit=='ld' | Data$fit=='la' | Data$fit=='check'){
     if('LP' %in% Data$mon.names){
-      Monitor=c(LP=LP,Monitor)
+      Monitor=c(Monitor,LP=LP)
     }
     if(length(Monitor)==0){
       Monitor=NA
