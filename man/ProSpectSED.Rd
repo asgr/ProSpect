@@ -13,8 +13,8 @@ ProSpectSED(SFH, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
 pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
 Dale = NULL, AGN = NULL, filtout = NULL, Dale_M2L_func = NULL, returnall = TRUE,
-unimax = 1.38e+10, H0 = 67.8, OmegaM = 0.308, OmegaL = 1-OmegaM,
-waveout = seq(2,7,by=0.01), ref, ...)
+H0 = 67.8, OmegaM = 0.308, OmegaL = 1-OmegaM, waveout = seq(2,7,by=0.01), ref,
+unimax = 13.8e9, agemax = NULL, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -76,9 +76,6 @@ Function; if dust masses and luminosities are desired then the user should suppl
   \item{returnall}{
 Logical; if true then returns all the various sub SEDs. See Details. If FALSE then code just returns \option{photom_out} (photometry in Jansky).
 }
-  \item{unimax}{
-Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0.
-}
   \item{H0}{
 Numeric scalar; Hubble constant as defined at z=0 (default is H0=67.8 (km/s)/Mpc).
 }
@@ -93,6 +90,12 @@ Numeric vector; desired output log10 wavelength grid to use in Ang. Default cove
 }
   \item{ref}{
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
+}
+  \item{unimax}{
+Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0. Overridden by \option{agemax} if that is provided.
+}
+  \item{agemax}{
+Numeric scalar; maximum allowed age of any stellar population relative to the redshift of the observed galaxy. Any star formation that is older than this will be set to 0. Overridden by \option{unimax} if provided. It is computational a bit faster to provide this since we do not need to compute a lookup time from the redshift.
 }
   \item{parm}{
 Numeric vector; arguments to be passed to \code{ProSpectSED}.
