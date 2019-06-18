@@ -1,8 +1,8 @@
 ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_birth = -0.7,
                      pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth=1, alpha_SF_screen=3,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
-                     filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, unimax=13.8e9, H0=67.8,
-                     OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, ...){
+                     filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
+                     OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, unimax=13.8e9, agemax=NULL, ...){
   
   tau_birth=.interval(tau_birth,0,10,reflect=FALSE)
   tau_screen=.interval(tau_screen,0,10,reflect=FALSE)
@@ -14,7 +14,7 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
   alpha_SF_screen=.interval(alpha_SF_screen,0.0625,4,reflect=FALSE)
   alpha_SF_AGN=.interval(alpha_SF_AGN,0.0625,4,reflect=FALSE)
 
-  Stars=SFH(z=z, tau_birth=tau_birth, tau_screen=tau_screen, pow_birth=pow_birth, pow_screen=pow_screen, sparse=sparse, speclib=speclib, filters=NULL, unimax=unimax, ...)
+  Stars=SFH(z=z, tau_birth=tau_birth, tau_screen=tau_screen, pow_birth=pow_birth, pow_screen=pow_screen, sparse=sparse, speclib=speclib, filters=NULL, unimax=unimax, agemax=agemax, ...)
   
   Dust_Birth=Dale_interp(alpha_SF=alpha_SF_birth, Dale=Dale)
   Dust_Screen=Dale_interp(alpha_SF=alpha_SF_screen, Dale=Dale)
@@ -87,10 +87,12 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
 
 ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(is.null(Data$fit)){Data$fit='optim'}
+  Data$fit=tolower(Data$fit)
   if(is.null(Data$like)){Data$like='st'}
-  if(is.null(Data$verbose)){Data$verbose=TRUE}
+  if(is.null(Data$mon.names)){Data$mon.names='NULL'}
+  if(is.null(Data$verbose)){Data$verbose=FALSE}
   
-  if(Data$fit=='check' | length(grep('dustmass',Data$mon.names))>=0 | length(grep('dustlum',Data$mon.names))>=0){
+  if(Data$fit=='check' | ((length(grep('dustmass',Data$mon.names))>0 | length(grep('dustlum',Data$mon.names))>0) & (Data$fit=='ld' | Data$fit=='la'))){
     returnall=TRUE
   }else{
     returnall=FALSE
@@ -127,19 +129,22 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(returnall){
     SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), list(Dale_M2L_func=Data$Dale_M2L_func), Data$arglist))
     Monitor={}
-    if(length(grep('dustmass',Data$mon.names))>=0){
+    if(length(grep('dustmass',Data$mon.names))>0){
       Monitor=c(dustmass=SEDout$dustmass)
     }
-    if(length(grep('dustlum',Data$mon.names))>=0){
+    if(length(grep('dustlum',Data$mon.names))>0){
       Monitor=c(dustlum=SEDout$dustlum,Monitor)
     }
     if('masstot' %in% Data$mon.names){
       Monitor=c(masstot=SEDout$Stars$masstot,Monitor)
     }
+    if('fluxes' %in% Data$mon.names){
+      Monitor=c(SEDout$Photom,Monitor)
+    }
     Photom=SEDout$Photom
   }else{
     Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=FALSE), Data$arglist))
-    Monitor={}
+    Monitor=NULL
   }
   
   cutsig=(Data$flux$flux-Photom)/Data$flux$fluxerr
@@ -166,12 +171,12 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     print(LP)
   }
   
-  if(Data$fit=='LD' | Data$fit=='LA' | Data$fit=='check'){
+  if(Data$fit=='ld' | Data$fit=='la' | Data$fit=='check'){
     if('LP' %in% Data$mon.names){
       Monitor=c(LP=LP,Monitor)
     }
     if(length(Monitor)==0){
-      Monitor=0
+      Monitor=NA
     }else{
       Monitor=Monitor[match(Data$mon.names, names(Monitor))]
     }
@@ -179,9 +184,9 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   
   # Various returns:
   
-  if(Data$fit=='optim'){
+  if(Data$fit=='optim' | Data$fit=='cma'){
     return(-LP)
-  }else if(Data$fit=='LD' | Data$fit=='LA'){
+  }else if(Data$fit=='ld' | Data$fit=='la'){
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
     return(invisible(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm,SEDout=SEDout)))
