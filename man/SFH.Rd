@@ -196,6 +196,7 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{ages}{Numeric Matrix; age info where rows are the four phases of star formation, columns are the start [1], end [2], duration [3] and mean time [4] of the phases in years (\code{SFHp4} / \code{SFHp5} only). For \code{SFHburst} it is just the input \option{burstage}.}
 \item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 \item{sSFR}{Numeric vector; the specific star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
+\item{SFRburst}{Numeric scalar; the star formation rate over the last 10^8 years.}
 
 \code{SMstarp4} / \code{SMstarp5} / \code{SMstarfunc} produces both the stellar mass formed (4/5/5 elements) and the stellar mass remaining (a further 4/5/5 elements) for the 5 different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
 }

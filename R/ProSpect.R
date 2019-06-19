@@ -92,10 +92,14 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(is.null(Data$mon.names)){Data$mon.names='NULL'}
   if(is.null(Data$verbose)){Data$verbose=FALSE}
   
-  if(Data$fit=='check' | ((length(grep('dustmass',Data$mon.names))>0 | length(grep('dustlum',Data$mon.names))>0) & (Data$fit=='ld' | Data$fit=='la'))){
+  if(Data$fit=='optim' | Data$fit=='cma'){
+    returnall=FALSE #fastest first!
+  }else if(Data$fit=='check'){
+    returnall=TRUE
+  }else if(('masstot' %in% Data$mon.names | 'SFRburst' %in% Data$mon.names | (length(grep('dustmass',Data$mon.names))>0 | length(grep('dustlum',Data$mon.names))>0) & (Data$fit=='ld' | Data$fit=='la'))){
     returnall=TRUE
   }else{
-    returnall=FALSE
+    returnall=FALSE #just to be safe!
   }
   
   names(parm)=Data$parm.names
@@ -140,6 +144,9 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
     }
     if('masstot' %in% Data$mon.names){
       Monitor=c(Monitor,masstot=SEDout$Stars$masstot)
+    }
+    if('SFRburst' %in% Data$mon.names){
+      Monitor=c(Monitor,SFRburst=SEDout$Stars$SFRburst)
     }
   }else{
     Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=FALSE), Data$arglist))
