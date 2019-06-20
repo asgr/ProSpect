@@ -10,7 +10,7 @@
 \alias{SMstarfunc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Various Star Formation History Functions
+Generate SED from SFH
 }
 \description{
 Computes output galaxy spectra  and stellar masses using variable star formation histories. This can be either a pure burst (\code{SFHburst}), distinct phases (\code{SFHp4} / \code{SFHp5}), or a functional form (\code{SFHfunc}). Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar), whereas \code{SFHfunc} can take a functional form for the metallicity.
