@@ -23,7 +23,7 @@ massfunc_CSFH(age, mSFR = 10, mpeak = 1e10, mperiod = 1e9, mskew = 0.5, magemax 
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{age}{
-Numeric vector; age in lookback time (yr).
+Numeric vector; age in lookback time where 0 means now (yr).
 }
   \item{mSFR}{
 Numeric scalar; SFR scaling (Msol/yr). For most functions this ends up being the peak SFR [\code{massfunc_const} / \code{massfunc_exp} / \code{massfunc_CSFH}].  
@@ -86,28 +86,28 @@ Numeric scalar; max age allowed, SFR is set to 0 beyond this value (yr) [all].
 \details{
 Below are the brief functional forms.
 
-\code{massfunc_const}: 
+\code{massfunc_const} produces constant star formation until a certain age: 
 
 SFR = ifelse(age < magemax, mSFR, 0)
 
-\code{massfunc_exp}:
+\code{massfunc_exp} produces exponentially declining star formation from a certain age:
 
 SFR = mSFR*exp(-mtau*((mpivot-age)/mpivot)) [also 0 outside magemax]
 
-\code{massfunc_p2}:
+\code{massfunc_p2} produces linearly varying star formation between 2 age nodes:
 
 SFR = m1 + ((m2-m1)/(m2age-m1age))*(age[sel]-m1age) [also 0 outside of m1age / m2age / magemax]
 
-\code{massfunc_p6}:
+\code{massfunc_p6} produces a smooth spline star formation that passes through 6 age nodes:
 
 SFR = splinefun(log10(c(m1age,m2age,m3age,m4age,m5age,m6age)), c(m1,m2,m3,m4,m5,m6), method='monoH.FC')(log10(age) [also 0 outside magemax]
 
-\code{massfunc_CSFH}:
+\code{massfunc_CSFH} produces a rising and falling star formation that looks a bit like the CSFH (can be perfectly Normal if \option{mskew}=0):
 
 SFR = mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi) [also 0 outside magemax]
 }
 \value{
-In all cases the output is the star formation rate (SFR) at a given age in years.
+In all cases the output is the star formation rate (Msol/yr) at a given age in years.
 }
 \author{
 Aaron Robotham
