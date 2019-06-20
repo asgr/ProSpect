@@ -37,11 +37,10 @@ pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
 dosplit = FALSE, sparse = 5, unimax = 1.38e+10, agemax = NULL, ...)
 
-SFHfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
-forcemass = FALSE, agescale = 1, stellpop = "BC03lr", speclib = NULL,
-tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7, filters = "all",
-Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag",
-sparse = 5, intSFR = FALSE, unimax = 1.38e+10, agemax = NULL, ...) 
+SFHfunc(massfunc = massfunc_p6, forcemass = FALSE, agescale = 1, stellpop = "BC03lr",
+speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
+filters = "all", Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
+outtype = "mag", sparse = 5, intSFR = FALSE, unimax = 1.38e+10, agemax = NULL, ...) 
 
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
@@ -56,12 +55,11 @@ stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE,
 unimax = 1.38e+10, agemax = NULL, ...)
 
-SMstarfunc(massfunc = function(age, SFR = 1) { ifelse(age < 1.3e+10, SFR, 0)},
-forcemass = FALSE, agescale = 1, burstage = c(0, 1e+08),
-youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09),
-ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr", speclib = NULL, Z = 5, z = 0.1,
-H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, unimax = 1.38e+10, agemax = NULL,
-...)
+SMstarfunc(massfunc = massfunc_p6, forcemass = FALSE, agescale = 1,
+burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
+oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr",
+speclib = NULL, Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
+unimax = 1.38e+10, agemax = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -81,7 +79,7 @@ Numeric scalar; the total stellar mass formed in old stars in units Msol.
 Numeric scalar; the total stellar mass formed in ancient stars in units Msol.
 }
   \item{massfunc}{
-Function; a function which will take \option{age} (in Yrs) as an input and return SFR (in Msun/Yr). Additional \option{massfunc} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}.
+Function; a function which will take \option{age} (in years) as an input and return SFR (in Msun/yr). Additional \option{massfunc} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. Various sensible functions are available in \code{ProSpect}, see \code{\link{massfunc}}.
 }
   \item{burstage}{
 Numeric vector; the age limits in years for the burst phase (\code{SFHp4} / \code{SFHp5}). Numeric scalar; the age of the burst in years (\code{SFHburst}).
@@ -205,7 +203,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}
+\code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}, \code{\link{massfunc}}
 }
 \examples{
 SFHdemo_dust=SFHp4()
