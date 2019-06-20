@@ -9,7 +9,7 @@ Top Level ProSpect SED Functions
 \code{ProSpectSED} computes a fully attenuated and re-emitted SED model incompassing star light (for a number of different star formation history models), dust and AGN. \code{ProSpectSEDlike} is an interface for computing likelihoods, and by extension is the workhorse code that allows model fitting using a number of techniques.
 }
 \usage{
-ProSpectSED(SFH, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
+ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
 pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
 Dale = NULL, AGN = NULL, filtout = NULL, Dale_M2L_func = NULL, returnall = TRUE,
@@ -20,7 +20,7 @@ ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{SFH}{
-Function; the star formation history to use. Must be one of \code{\link{SFHburst}}, \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}}.
+Function; the star formation history to use. Must be one of \code{\link{SFHburst}}, \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}} (default).
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).

@@ -1,4 +1,4 @@
-ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_birth = -0.7,
+ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_birth = -0.7,
                      pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth=1, alpha_SF_screen=3,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
                      filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
