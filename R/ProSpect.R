@@ -2,7 +2,8 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
                      pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth=1, alpha_SF_screen=3,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
                      filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
-                     OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, unimax=13.8e9, agemax=NULL, ...){
+                     OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, unimax=13.8e9,
+                     Lya_tran=1, agemax=NULL, ...){
   
   tau_birth=.interval(tau_birth,0,10,reflect=FALSE)
   tau_screen=.interval(tau_screen,0,10,reflect=FALSE)
@@ -62,6 +63,11 @@ ProSpectSED=function(SFH, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_bir
   }
   
   colnames(Final)[2]='lum'
+  
+  if(Lya_tran<1){
+    sel=which(Final$wave<1215.67)
+    Final$lum[sel]=Final$lum[sel]*Lya_tran
+  }
   
   if(z>0 & !is.null(filtout)){
     Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
