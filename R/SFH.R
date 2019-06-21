@@ -854,10 +854,12 @@ SFHfunc=function(massfunc=massfunc_p6, forcemass=FALSE, agescale=1, stellpop='BC
   }
   
   if(forcemass==FALSE){
+    forcescale=1
     masstot=sum(massvec)
   }else{
     masstot=sum(massvec)
-    massvec=massvec*forcemass/masstot
+    forcescale=forcemass/masstot
+    massvec=massvec*forcescale
     masstot=forcemass
   }
   
@@ -900,7 +902,7 @@ SFHfunc=function(massfunc=massfunc_p6, forcemass=FALSE, agescale=1, stellpop='BC
   
   lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
   
-  SFRburst=do.call('integrate', c(list(f=massfunc, lower=0, upper=1e8),massfunc_args))$value/1e8
+  SFRburst=do.call('integrate', c(list(f=massfunc, lower=0, upper=1e8),massfunc_args))$value*forcescale/1e8
   
   if(z<0 | is.null(filters)){
     return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten,lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst))) # returns the minimal luminosity outputs
@@ -1010,9 +1012,12 @@ SMstarfunc=function(massfunc=massfunc_p6, forcemass=FALSE, agescale=1, burstage=
     massvec[speclib$Age>agemax]=0
   }
   
-  if(forcemass!=FALSE){
+  if(forcemass==FALSE){
+    forcescale=1
+  }else{
     masstot=sum(massvec)
-    massvec=massvec*forcemass/masstot
+    forcescale=forcemass/masstot
+    massvec=massvec*forcescale
   }
   
   totstar=rep(0,length(massvec))

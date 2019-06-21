@@ -206,6 +206,8 @@ Aaron Robotham
 \code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}, \code{\link{massfunc}}
 }
 \examples{
+#A pretty full example showing some low level things:
+
 SFHdemo_dust=SFHp4()
 plot(SFHdemo_dust$out[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
 ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
@@ -230,6 +232,34 @@ wave=sort(c(SFHdemo_dust$flux[,'wave'], Dale_Msol$Wave))
 SpecAtten=approxfun(SFHdemo_dust$flux, rule=2)(wave)+
           approxfun(Dale_Msol$Wave, Dale_temp$Aspec, rule=2)(wave/1.1)
 lines(wave, SpecAtten, col='darkgreen')
+
+#Some different SFHs with identical stellar mass formed (10^10 Msol):
+
+bursty=SFHfunc(m1=2, m2=1, m3=0, m4=0, m5=0, m6=0, forcemass=1e10)
+constant=SFHfunc(m1=1, m2=1, m3=1, m4=1, m5=1, m6=1, forcemass=1e10)
+young=SFHfunc(m1=0, m2=0, m3=1, m4=1, m5=0, m6=0, forcemass=1e10)
+dead=SFHfunc(m1=0, m2=0, m3=0, m4=0, m5=1, m6=1, forcemass=1e10)
+
+#SFHs:
+
+plot(BC03lr$Age, bursty$SFR, log='xy', type='l', col='purple', ylim=c(1e-3,1e2), 
+  xlab='Age / Yrs', ylab='SFR / Msol/yr')
+lines(BC03lr$Age, constant$SFR, col='blue')
+lines(BC03lr$Age, young$SFR, col='darkgreen')
+lines(BC03lr$Age, dead$SFR, col='red')
+legend('bottomleft', legend=c('bursty', 'constant', 'young', 'old'), lty=1, 
+  col=c('purple', 'blue', 'darkgreen', 'red'))
+
+#Luminosities with default dust attenuation:
+
+wave=bursty$wave_lum
+plot(wave, bursty$lum_atten, log='xy', type='l', col='purple', ylim=c(1e-1,1e8), 
+  xlab='Wavelength / Ang', ylab='Lsun / Ang')
+lines(wave, constant$lum_atten, col='blue')
+lines(wave, young$lum_atten, col='darkgreen')
+lines(wave, dead$lum_atten, col='red')
+legend('topright', legend=c('bursty', 'constant', 'young', 'old'), lty=1, 
+  col=c('purple', 'blue', 'darkgreen', 'red'))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
