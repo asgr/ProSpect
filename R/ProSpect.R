@@ -139,7 +139,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   Monitor={}
   
   if(returnall){
-    SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=TRUE), list(Dale_M2L_func=Data$Dale_M2L_func), Data$arglist))
+    SEDout=do.call('ProSpectSED', args=c(parmlist, list(SFH=quote(Data$SFH)), list(speclib=quote(Data$speclib)), list(Dale=quote(Data$Dale)), list(AGN=quote(Data$AGN)), list(filtout=quote(Data$filtout)), list(returnall=TRUE), list(Dale_M2L_func=quote(Data$Dale_M2L_func)), Data$arglist))
     Photom=SEDout$Photom
     
     if(length(grep('dustmass',Data$mon.names))>0){
@@ -155,7 +155,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
       Monitor=c(Monitor,SFRburst=SEDout$Stars$SFRburst)
     }
   }else{
-    Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=Data$SFH), list(speclib=Data$speclib), list(Dale=Data$Dale), list(AGN=Data$AGN), list(filtout=Data$filtout), list(returnall=FALSE), Data$arglist))
+    Photom=do.call('ProSpectSED', args=c(parmlist, list(SFH=quote(Data$SFH)), list(speclib=quote(Data$speclib)), list(Dale=quote(Data$Dale)), list(AGN=quote(Data$AGN)), list(filtout=quote(Data$filtout)), list(returnall=FALSE), Data$arglist))
   }
   
   cutsig=(Data$flux$flux-Photom)/Data$flux$fluxerr
