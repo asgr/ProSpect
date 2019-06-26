@@ -6,6 +6,7 @@
 \alias{massfunc_p3_burst}
 \alias{massfunc_p4}
 \alias{massfunc_p6}
+\alias{massfunc_b5}
 \alias{massfunc_exp}
 \alias{massfunc_CSFH}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -17,14 +18,16 @@ These functions can all be passed into \code{\link{SFHfunc}} and \code{\link{Pro
 }
 \usage{
 massfunc_const(age, mSFR = 1, magemax = 13.8e9)
-massfunc_p2(age, m1 = 1, m2 = 1, m1age = 0, m2age = magemax, magemax = 13.8e9)
-massfunc_p3(age, m1 = 1, m2 = 1, m3 = 1, m1age = 1e5, m2age = 7e9, m3age = 13e9,
+massfunc_p2(age, m1 = 1, m2 = m1, m1age = 0, m2age = magemax, magemax = 13.8e9)
+massfunc_p3(age, m1 = 1, m2 = m1, m3 = m2, m1age = 1e5, m2age = 7e9, m3age = 13e9,
   magemax = 13.8e9)
-massfunc_p3_burst(age, mburst = 0, m1 = 1, m2 = 1, m3 = 1, mburstage = 1e8, m1age = 1e5,
+massfunc_p3_burst(age, mburst = 0, m1 = 1, m2 = m1, m3 = m2, mburstage = 1e8, m1age = 1e5,
   m2age = 7e9, m3age = 13e9, magemax = 13.8e9)
-massfunc_p4(age, m1 = 1, m2 = 1, m3 = 1, m4 = 1, m1age = 1e5, m2age = 2e9, m3age = 9e9,
-  m4age = 13e9, magemax = 13.8e9)
-massfunc_p6(age, m1 = 1, m2 = 1, m3 = 1, m4 = 1, m5 = 1, m6 = 1, m1age = 1e5, m2age = 1e8,
+massfunc_p4(age, m1 = 1, m2 = m1, m3 = m2, m4 = m3, m1age = 1e5, m2age = 2e9,
+  m3age = 9e9, m4age = 13e9, magemax = 13.8e9)
+massfunc_p6(age, m1 = 1, m2 = m1, m3 = m2, m4 = m3, m5 = m4, m6 = m5, m1age = 1e5,
+  m2age = 1e8, m3age = 1e9, m4age = 5e9, m5age = 9e9, m6age = 1.3e10, magemax = 13.8e9)
+massfunc_b5(age, m1 = 1, m2 = m1, m3 = m3, m4 = m3, m5 = m4, m1age = 0, m2age = 1e8,
   m3age = 1e9, m4age = 5e9, m5age = 9e9, m6age = 1.3e10, magemax = 13.8e9)
 massfunc_exp(age, mSFR = 10, mtau = 1, mpivot = magemax, magemax = 13.8e9)
 massfunc_CSFH(age, mSFR = 10, mpeak = 1e10, mperiod = 1e9, mskew = 0.5, magemax = 13.8e9)
@@ -111,7 +114,7 @@ SFR = mSFR*exp(-mtau*((mpivot-age)/mpivot)) [also 0 above magemax]
 
 \code{massfunc_p2} produces linearly varying star formation between 2 age nodes:
 
-SFR = m1 + ((m2-m1)/(m2age-m1age))*(age[sel]-m1age) [also 0 outside of m1age / m2age / magemax]
+SFR = m1 + ((m2-m1)/(m2age-m1age))*(age-m1age) [also 0 outside of m1age / m2age / magemax]
 
 \code{massfunc_p3} produces a smooth spline star formation that passes through 3 age nodes:
 
@@ -141,7 +144,7 @@ In all cases the output is the star formation rate (Msol/yr) at a given age in y
 Aaron Robotham
 }
 \seealso{
-\code{\link{SFHfunc}}, \code{\link{ProSpectSED}}
+\code{\link{SFHfunc}}, \code{\link{ProSpectSED}}, \code{\link{Zfunc}}
 }
 \examples{
 curve(massfunc_const, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')

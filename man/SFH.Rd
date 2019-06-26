@@ -13,7 +13,9 @@
 Generate SED from SFH
 }
 \description{
-Computes output galaxy spectra  and stellar masses using variable star formation histories. This can be either a pure burst (\code{SFHburst}), distinct phases (\code{SFHp4} / \code{SFHp5}), or a functional form (\code{SFHfunc}). Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar), whereas \code{SFHfunc} can take a functional form for the metallicity.
+As of v0.8.0 \code{SFHp4} and \code{SFHp5} are deprecated and will be removed entirely in future versions (probably v1.0.0+). Please use \code{\link{massfunc_b5}} in combination with \code{SFHfunc} (this is now default) to create stepped SFHs. The mass formed in bins is now specified as a SFR, not as a total mass formed.
+
+The star formation history functions discussed here compute output galaxy spectra  and stellar masses using variable star formation histories. This can be either a pure burst (\code{SFHburst}), distinct phases (\code{SFHp4} / \code{SFHp5}), or a functional form (\code{SFHfunc}). Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar), whereas \code{SFHfunc} can take a functional form for the metallicity.
 }
 \usage{
 SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
@@ -37,7 +39,7 @@ pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
 dosplit = FALSE, sparse = 5, unimax = 1.38e+10, agemax = NULL, ...)
 
-SFHfunc(massfunc = massfunc_p6, forcemass = FALSE, agescale = 1, stellpop = "BC03lr",
+SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1, stellpop = "BC03lr",
 speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
 filters = "all", Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
 outtype = "mag", sparse = 5, intSFR = FALSE, unimax = 1.38e+10, agemax = NULL, ...) 
@@ -55,7 +57,7 @@ stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE,
 unimax = 1.38e+10, agemax = NULL, ...)
 
-SMstarfunc(massfunc = massfunc_p6, forcemass = FALSE, agescale = 1,
+SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
 oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr",
 speclib = NULL, Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
