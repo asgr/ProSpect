@@ -57,8 +57,8 @@ The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 /
 \code{photom_lum} is a useful utility function since it fully converts between an intrinsic spectrum (e.g. of the type created when integrating a star formation history over differ stellar population models) all the way to a band-pass magnitude in AB mags (or Jy or CGS). The latter is how many surveys represent their photometry, so this is usually a sensible unit space to use for feature fitting etc. In some circumstances fluxes (CGS or Jansky type) might be more appropriate, espeically when signal to noise is low a meaurements might be negative.
 }
 \value{
-\item{photom_flux}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the output flux (AB mag by default).}
-\item{photom_lum}{Data frame; first column is the filter name, second columns is the central wavelength, third column is the output flux (AB mag by default).}
+\item{photom_flux}{Numeric vector; output flux (AB mag by default).}
+\item{photom_lum}{Numeric vector; output flux (AB mag by default).}
 \item{Lum2Flux}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux (erg/s/cm^2/Angstrom).}
 \item{Flux2Lum}{Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed luminosity (Lsol / Ang).}
 \item{Lum2FluxFactor}{Numeric scalar; the scaling factor to convert between intrinsic Lsol/Angstrom and erg/s/cm^2/Angstrom.}

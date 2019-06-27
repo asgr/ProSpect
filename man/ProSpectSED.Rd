@@ -178,6 +178,7 @@ If \option{returnall}=TRUE, then we get a list containing:
 \item{StarsUnAtten}{Two column data.frame; Wavelength in Ang, Unattenuated stellar SED luminosity in Lsol / Ang}
 \item{DustEmit}{Two column data.frame; Wavelength in Ang, Re-emitted stellar dust SED luminosity in Lsol / Ang}
 \item{AGN}{Two column data.frame; Wavelength in Ang, Attenuated and re-emitted AGN SED luminosity in Lsol / Ang}
+\item{Stars}{List; the full output of the relevant SFH function used. See \code{\link{SFHfunc}}}
 \item{dustmass}{Numeric vector; contains dust mass for the birth cloud, screen, AGN and total in Msol (requires \option{Dale_M2L_func})}
 \item{dustlum}{Numeric vector; contains dust luminosities for the birth cloud, screen, AGN and total in Lsol (requires \option{Dale_M2L_func})}
 }

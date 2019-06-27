@@ -1,4 +1,8 @@
-Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8e9){
+Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8){
+  #Scale functions ages to years
+  Z1age=Z1age*1e9
+  Z2age=Z2age*1e9
+  Zagemax=Zagemax*1e9
   
   temp=rep(NA,length(age))
   temp[age<Z1age]=Z1
