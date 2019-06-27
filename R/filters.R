@@ -1,5 +1,5 @@
 getfilt=function(filter){
-  out=NA
+  out=NULL
   if(filter=='FUV_GALEX'){filt_FUV_GALEX=NULL; data('filt_FUV_GALEX', envir = environment()); out=filt_FUV_GALEX}
   if(filter=='NUV_GALEX'){filt_NUV_GALEX=NULL; data('filt_NUV_GALEX', envir = environment()); out=filt_NUV_GALEX}
   if(filter=='u_SDSS'){filt_u_SDSS=NULL; data('filt_u_SDSS', envir = environment()); out=filt_u_SDSS}
@@ -39,41 +39,8 @@ getfilt=function(filter){
   if(filter=='S850_JCMT' | filter=='S850'){filt_S850_JCMT=NULL; data('filt_S850_JCMT', envir = environment()); out=filt_S850_JCMT}
   if(filter=='1mm_Aztec' | filter=='1mm'){filt_1mm_Aztec=NULL; data('filt_1mm_Aztec', envir = environment()); out=filt_1mm_Aztec}
   if(filter=='2mm_Gizmo' | filter=='2mm'){filt_2mm_Gizmo=NULL; data('filt_2mm_Gizmo', envir = environment()); out=filt_2mm_Gizmo}
+  if(is.null(out)){
+    message(paste('Filter name',filter,'not recognised!'))
+  }
   return(out)
-}
-
-bandpass=function(wave, flux, filter, lum = TRUE){
-  # flux must be flux_nu, i.e. erg/s / cm^2 / Hz, not erg/s / cm^2 / Ang!
-  if(!is.vector(wave)){
-    if(dim(wave)[2]==2){
-      flux=wave[,2]
-      wave=wave[,1]
-    }
-  }
-  if(!is.function(filter)){
-    filter = approxfun(x = filter[, 1], y = abs(filter[, 2]))
-  }
-  tempremap = filter(wave)
-  tempremap[is.na(tempremap)] = 0
-  if (lum) {
-    return(sum(tempremap * wave * flux, na.rm = TRUE)/sum(tempremap * wave, na.rm = TRUE))
-  }
-  else {
-    return(tempremap * wave * flux/sum(tempremap * wave, na.rm = TRUE))
-  }
-}
-
-cenwavefunc=function(filter){
-  wave=filter[,1]
-  response=filter[,2]
-  Ptot=sum(response, na.rm=TRUE)
-  return((1/Ptot)*sum(response*wave, na.rm=TRUE))
-}
-
-convert_wave2freq=function(flux_wave, wave, wavefac=1e-10, freqfac=1){
-  return=(wavefac*flux_wave*wave^2)/.c_to_mps
-}
-
-convert_freq2wave=function(flux_freq, wave, wavefac=1e-10, freqfac=1){
-  return=flux_freq*.c_to_mps/(wavefac*wave^2)
 }

@@ -9,7 +9,7 @@ Useful Metallicity Formation Functions
 These functions can all be passed into \code{\link{SFHfunc}} and \code{\link{ProSpectSED}}. They should be a good starting point for people interested in constructing their own.
 }
 \usage{
-Zfunc_p2(age, Z1 = 0.02, Z2 = Z1, Z1age = 0, Z2age = Zagemax, Zagemax = 1.38e+10)
+Zfunc_p2(age, Z1 = 0.02, Z2 = Z1, Z1age = 0, Z2age = Zagemax, Zagemax = 13.8)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,13 +23,13 @@ Numeric scalar; Z at 1st node (Msol/yr) [\code{Zfunc_p2}].
 Numeric scalar; Z at 2nd node (Msol/yr) [\code{Zfunc_p2}].
 }
   \item{Z1age}{
-Numeric scalar; age at 1st node (yr) [\code{Zfunc_p2}].
+Numeric scalar; age at 1st node (Gyr) [\code{Zfunc_p2}].
 }
   \item{Z2age}{
-Numeric scalar; age at 2nd node (yr) [\code{Zfunc_p2}].
+Numeric scalar; age at 2nd node (Gyr) [\code{Zfunc_p2}].
 }
   \item{Zagemax}{
-Numeric scalar; max age allowed, Z is set to 1e-04 beyond this value (yr) [all].
+Numeric scalar; max age allowed, Z is set to 1e-04 beyond this value (Gyr) [all].
 }
 }
 \details{

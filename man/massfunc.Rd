@@ -17,20 +17,20 @@ Useful Star Formation Functions
 These functions can all be passed into \code{\link{SFHfunc}} and \code{\link{ProSpectSED}}. They should be a good starting point for people interested in constructing their own.
 }
 \usage{
-massfunc_const(age, mSFR = 1, magemax = 13.8e9)
-massfunc_p2(age, m1 = 1, m2 = m1, m1age = 0, m2age = magemax, magemax = 13.8e9)
-massfunc_p3(age, m1 = 1, m2 = m1, m3 = m2, m1age = 1e5, m2age = 7e9, m3age = 13e9,
-  magemax = 13.8e9)
-massfunc_p3_burst(age, mburst = 0, m1 = 1, m2 = m1, m3 = m2, mburstage = 1e8, m1age = 1e5,
-  m2age = 7e9, m3age = 13e9, magemax = 13.8e9)
-massfunc_p4(age, m1 = 1, m2 = m1, m3 = m2, m4 = m3, m1age = 1e5, m2age = 2e9,
-  m3age = 9e9, m4age = 13e9, magemax = 13.8e9)
-massfunc_p6(age, m1 = 1, m2 = m1, m3 = m2, m4 = m3, m5 = m4, m6 = m5, m1age = 1e5,
-  m2age = 1e8, m3age = 1e9, m4age = 5e9, m5age = 9e9, m6age = 1.3e10, magemax = 13.8e9)
-massfunc_b5(age, m1 = 1, m2 = m1, m3 = m3, m4 = m3, m5 = m4, m1age = 0, m2age = 1e8,
-  m3age = 1e9, m4age = 5e9, m5age = 9e9, m6age = 1.3e10, magemax = 13.8e9)
-massfunc_exp(age, mSFR = 10, mtau = 1, mpivot = magemax, magemax = 13.8e9)
-massfunc_CSFH(age, mSFR = 10, mpeak = 1e10, mperiod = 1e9, mskew = 0.5, magemax = 13.8e9)
+massfunc_const(age, mSFR = 1, magemax = 13.8)
+massfunc_p2(age, m1 = 1, m2 = m1, m1age = 0, m2age = magemax, magemax = 13.8)
+massfunc_p3(age, m1 = 1, m2 = m1, m3 = m2, m1age = 1e-4, m2age = 7, m3age = 13,
+  magemax = 13.8)
+massfunc_p3_burst(age, mburst = 0, m1 = 1, m2 = m1, m3 = m2, mburstage = 0.1,
+  m1age = 1e-4, m2age = 7, m3age = 13, magemax = 13.8)
+massfunc_p4(age, m1 = 1, m2 = m1, m3 = m2, m4 = m3, m1age = 1e-4, m2age = 2,
+  m3age = 9, m4age = 13, magemax = 13.8)
+massfunc_p6(age, m1 = 1, m2 = m1, m3 = m2, m4 = m3, m5 = m4, m6 = m5, m1age = 1e-4,
+  m2age = 0.1, m3age = 1, m4age = 5, m5age = 9, m6age = 13, magemax = 13.8)
+massfunc_b5(age, m1 = 1, m2 = m1, m3 = m3, m4 = m3, m5 = m4, m1age = 0, m2age = 0.1,
+  m3age = 1, m4age = 5, m5age = 9, m6age = 13, magemax = 13.8)
+massfunc_exp(age, mSFR = 10, mtau = 1, mpivot = magemax, magemax = 13.8)
+massfunc_CSFH(age, mSFR = 10, mpeak = 10, mperiod = 1, mskew = 0.5, magemax = 13.8)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -65,40 +65,40 @@ Numeric scalar; SFR at 5th node (Msol/yr) [\code{massfunc_p6}].
 Numeric scalar; SFR at 6th node (Msol/yr) [\code{massfunc_p6}].
 }
   \item{m1age}{
-Numeric scalar; age at 1st node (yr) [\code{massfunc_p2} / \code{massfunc_p3} / \code{massfunc_p3_burst} / \code{massfunc_p4} / \code{massfunc_p6}].
+Numeric scalar; age at 1st node (Gyr) [\code{massfunc_p2} / \code{massfunc_p3} / \code{massfunc_p3_burst} / \code{massfunc_p4} / \code{massfunc_p6}].
 }
   \item{m2age}{
-Numeric scalar; age at 2nd node (yr) [\code{massfunc_p2} / \code{massfunc_p3} / \code{massfunc_p3_burst} / \code{massfunc_p4} / \code{massfunc_p6}].
+Numeric scalar; age at 2nd node (Gyr) [\code{massfunc_p2} / \code{massfunc_p3} / \code{massfunc_p3_burst} / \code{massfunc_p4} / \code{massfunc_p6}].
 }
   \item{m3age}{
-Numeric scalar; age at 3rd node (yr) [ \code{massfunc_p3} / \code{massfunc_p3_burst} / \code{massfunc_p6} / \code{massfunc_p4}].
+Numeric scalar; age at 3rd node (Gyr) [ \code{massfunc_p3} / \code{massfunc_p3_burst} / \code{massfunc_p6} / \code{massfunc_p4}].
 }
   \item{m4age}{
-Numeric scalar; age at 4th node (yr) [\code{massfunc_p6} / \code{massfunc_p4}].
+Numeric scalar; age at 4th node (Gyr) [\code{massfunc_p6} / \code{massfunc_p4}].
 }
   \item{m5age}{
-Numeric scalar; age at 5th node (yr) [\code{massfunc_p6}].
+Numeric scalar; age at 5th node (Gyr) [\code{massfunc_p6}].
 }
   \item{m6age}{
-Numeric scalar; age at 6th node (yr) [\code{massfunc_p6}].
+Numeric scalar; age at 6th node (Gyr) [\code{massfunc_p6}].
 }
   \item{mtau}{
 Numeric scalar; exponential decline parameter tau [\code{massfunc_exp}].
 }
   \item{mpivot}{
-Numeric scalar; exponential pivot age where SFR passes though \option{mSFR} (yr) [\code{massfunc_exp}].
+Numeric scalar; exponential pivot age where SFR passes though \option{mSFR} (Gyr) [\code{massfunc_exp}].
 }
   \item{mpeak}{
-Numeric scalar; location of peak SFR (yr) [\code{massfunc_CSFH}].
+Numeric scalar; location of peak SFR (Gyr) [\code{massfunc_CSFH}].
 }
   \item{mperiod}{
-Numeric scalar; time period of the star formation, the standard deviation of the Normal when \option{mskew}=0 (yr) [\code{massfunc_CSFH}].
+Numeric scalar; time period of the star formation, the standard deviation of the Normal when \option{mskew}=0 (Gyr) [\code{massfunc_CSFH}].
 }
   \item{mskew}{
 Numeric scalar; the skew of the star formation history, 0 means perfectly Normal, -ve means long tail to old ages, +ve means long tail to young ages [\code{massfunc_CSFH}].
 }
   \item{magemax}{
-Numeric scalar; max age allowed, SFR is set to 0 beyond this value (yr) [all].
+Numeric scalar; max age allowed, SFR is set to 0 beyond this value (Gyr) [all].
 }
 }
 \details{
