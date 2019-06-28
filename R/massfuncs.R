@@ -1,8 +1,7 @@
 massfunc_const = function(age, mSFR=1, magemax=13.8){
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   
-  ifelse(age < magemax, mSFR, 0)
-
+  invisible(ifelse(age < magemax, mSFR, 0))
 }
 
 massfunc_p2=function(age, m1=1, m2=m1, m1age=0, m2age=magemax, magemax=13.8){
@@ -55,9 +54,6 @@ massfunc_p3_burst=function(age, mburst=0, m1=1, m2=m1, m3=m2, mburstage=0.1, m1a
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  
-  temp[age<mburstage]=temp[age<mburstage]+mburst
-  
   invisible(temp)
 }
 
