@@ -11,9 +11,9 @@ Blackbody and Greybody Spectra
 Produces diferent types of blackbody and greybody spectra.
 }
 \usage{
-blackbody(wave, Temp=50, k850=0.077)
-blackbody_norm(wave, Temp=50, z = 0, norm = 1)
-greybody(wave, Temp=50, beta=1.5, k850=0.077)
+blackbody(wave, Temp = 50, k850 = 0.077)
+blackbody_norm(wave, Temp = 50, z = 0, norm = 1)
+greybody(wave, Temp = 50, beta = 1.5, k850 = 0.077)
 greybody_norm(wave, Temp = 50, beta = 1.5, z = 0, norm = 1)
 }
 %- maybe also 'usage' for other objects documented here.
