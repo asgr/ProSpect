@@ -8,6 +8,7 @@
 \alias{massfunc_p6}
 \alias{massfunc_b5}
 \alias{massfunc_exp}
+\alias{massfunc_exp_burst}
 \alias{massfunc_CSFH}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -30,6 +31,8 @@ massfunc_p6(age, m1 = 1, m2 = m1, m3 = m2, m4 = m3, m5 = m4, m6 = m5, m1age = 1e
 massfunc_b5(age, m1 = 1, m2 = m1, m3 = m3, m4 = m3, m5 = m4, m1age = 0, m2age = 0.1,
   m3age = 1, m4age = 5, m5age = 9, m6age = 13, magemax = 13.8)
 massfunc_exp(age, mSFR = 10, mtau = 1, mpivot = magemax, magemax = 13.8)
+massfunc_exp_burst(age, mburst = 0, mSFR = 10, mburstage = 0.1, mtau = 1,
+  mpivot = magemax, magemax = 13.8)
 massfunc_CSFH(age, mSFR = 10, mpeak = 10, mperiod = 1, mskew = 0.5, magemax = 13.8)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -38,13 +41,13 @@ massfunc_CSFH(age, mSFR = 10, mpeak = 10, mperiod = 1, mskew = 0.5, magemax = 13
 Numeric vector; age in lookback time where 0 means now (yr).
 }
   \item{mSFR}{
-Numeric scalar; SFR scaling (Msol/yr). For most functions this ends up being the peak SFR [\code{massfunc_const} / \code{massfunc_exp} / \code{massfunc_CSFH}].  
+Numeric scalar; SFR scaling (Msol/yr). For most functions this ends up being the peak SFR [\code{massfunc_const} / \code{massfunc_exp} / \code{massfunc_exp_burst} / \code{massfunc_CSFH}].  
 }
   \item{mburst}{
-Numeric scalar; SFR of a recent Age < \option{mburstage} yr burst (Msol/yr) [\code{massfunc_p3_burst}].
+Numeric scalar; SFR of a recent Age < \option{mburstage} yr burst (Msol/yr) [\code{massfunc_p3_burst} / \code{massfunc_exp_burst}].
 }
   \item{mburstage}{
-Numeric scalar; max age of recent SFR burst [\code{massfunc_p3_burst}].
+Numeric scalar; max age of recent SFR burst [\code{massfunc_p3_burst} / \code{massfunc_exp_burst}].
 }
   \item{m1}{
 Numeric scalar; SFR at 1st node (Msol/yr) [\code{massfunc_p2} / \code{massfunc_p3} / \code{massfunc_p3_burst} / \code{massfunc_p4} / \code{massfunc_p6}].
@@ -83,10 +86,10 @@ Numeric scalar; age at 5th node (Gyr) [\code{massfunc_p6}].
 Numeric scalar; age at 6th node (Gyr) [\code{massfunc_p6}].
 }
   \item{mtau}{
-Numeric scalar; exponential decline parameter tau [\code{massfunc_exp}].
+Numeric scalar; exponential decline parameter tau [\code{massfunc_exp} / \code{massfunc_exp_burst}].
 }
   \item{mpivot}{
-Numeric scalar; exponential pivot age where SFR passes though \option{mSFR} (Gyr) [\code{massfunc_exp}].
+Numeric scalar; exponential pivot age where SFR passes though \option{mSFR} (Gyr) [\code{massfunc_exp} / \code{massfunc_exp_burst}].
 }
   \item{mpeak}{
 Numeric scalar; location of peak SFR (Gyr) [\code{massfunc_CSFH}].

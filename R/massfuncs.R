@@ -50,10 +50,15 @@ massfunc_p3_burst=function(age, mburst=0, m1=1, m2=m1, m3=m2, mburstage=0.1, m1a
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   
   temp=splinefun(c(m1age,m2age,m3age),c(m1,m2,m3),method='monoH.FC')(age)
+  
+  temp[temp<0]=0
+  temp[age>magemax]=0
+  
   temp[age<mburstage]=temp[age<mburstage]+mburst
   
   temp[temp<0]=0
   temp[age>magemax]=0
+  
   invisible(temp)
 }
 
@@ -133,6 +138,25 @@ massfunc_exp=function(age, mSFR=10, mtau=1, mpivot=magemax, magemax=13.8){
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   
   temp=mSFR*exp(-mtau*((mpivot-age)/mpivot))
+  
+  temp[temp<0]=0
+  temp[age>magemax]=0
+  invisible(temp)
+}
+
+massfunc_exp_burst=function(age, mburst=0, mSFR=10, mburstage=0.1, mtau=1, mpivot=magemax, magemax=13.8){
+  #Scale functions ages to years
+  mpivot=mpivot*1e9
+  magemax=magemax*1e9
+  
+  age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
+  
+  temp=mSFR*exp(-mtau*((mpivot-age)/mpivot))
+  
+  temp[temp<0]=0
+  temp[age>magemax]=0
+  
+  temp[age<mburstage]=temp[age<mburstage]+mburst
   
   temp[temp<0]=0
   temp[age>magemax]=0
