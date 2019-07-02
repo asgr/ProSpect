@@ -12,9 +12,9 @@ Top Level ProSpect SED Functions
 ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
 pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
-Dale = NULL, AGN = NULL, filtout = NULL, Dale_M2L_func = NULL, returnall = TRUE,
-H0 = 67.8, OmegaM = 0.308, OmegaL = 1-OmegaM, waveout = seq(2,7,by=0.01), ref,
-unimax = 13.8e9, Lya_tran = 1, agemax = NULL, ...)
+Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
+returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, Lya_tran = 1, agemax = NULL, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -69,6 +69,9 @@ Object; required. Pass in the AGN template to use. Must be one of \code{\link{AG
 }
   \item{filtout}{
 Object; required. Pass in the photometric filters directly (either matrices of functins). If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
+}
+  \item{filters}{
+Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. Can also be a list of matrices or functions to pass into \code{\link{bandpass}}. This creates increasingly faster code, but requires more user effort.
 }
   \item{Dale_M2L_func}{
 Function; if dust masses and luminosities are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
