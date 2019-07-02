@@ -1,4 +1,7 @@
 massfunc_const = function(age, mSFR=1, magemax=13.8){
+  #Scale functions ages to years
+  magemax=magemax*1e9
+  
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   
   invisible(ifelse(age < magemax, mSFR, 0))
@@ -39,7 +42,7 @@ massfunc_p3=function(age ,m1=1, m2=m1, m3=m2, m1age=1e-4, m2age=7, m3age=13, mag
   invisible(temp)
 }
 
-massfunc_p3_burst=function(age, mburst=0, m1=1, m2=m1, m3=m2, mburstage=0.1, m1age=1e-4, m2age=7, m3age=13, magemax=13.8){
+massfunc_p3_burst=function(age, mburst=0, m1=1, m2=m1, m3=m2, m1age=1e-4, m2age=7, m3age=13, mburstage=0.1, magemax=13.8){
   #Scale functions ages to years
   mburstage=mburstage*1e9
   m1age=m1age*1e9
@@ -98,7 +101,7 @@ massfunc_p6=function(age, m1=1, m2=m1, m3=m2, m4=m3, m5=m4, m6=m5, m1age=1e-4, m
   invisible(temp)
 }
 
-massfunc_b5=function(age, m1=1, m2=m1, m3=m3, m4=m3, m5=m4, m1age=0, m2age=0.1, m3age=1, m4age=5, m5age=9, m6age=13, magemax=13.8){
+massfunc_b5=function(age, m1=1, m2=m1, m3=m2, m4=m3, m5=m4, m1age=0, m2age=0.1, m3age=1, m4age=5, m5age=9, m6age=13, magemax=13.8){
   #Scale functions ages to years
   m1age=m1age*1e9
   m2age=m2age*1e9
@@ -144,9 +147,10 @@ massfunc_exp=function(age, mSFR=10, mtau=1, mpivot=magemax, magemax=13.8){
   invisible(temp)
 }
 
-massfunc_exp_burst=function(age, mburst=0, mSFR=10, mburstage=0.1, mtau=1, mpivot=magemax, magemax=13.8){
+massfunc_exp_burst=function(age, mburst=0, mSFR=10, mtau=1, mpivot=magemax, mburstage=0.1, magemax=13.8){
   #Scale functions ages to years
   mpivot=mpivot*1e9
+  mburstage=mburstage*1e9
   magemax=magemax*1e9
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
@@ -163,7 +167,7 @@ massfunc_exp_burst=function(age, mburst=0, mSFR=10, mburstage=0.1, mtau=1, mpivo
   invisible(temp)
 }
 
-massfunc_CSFH=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13.8){
+massfunc_snorm=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13.8){
   #Scale functions ages to years
   mpeak=mpeak*1e9
   mperiod=mperiod*1e9
@@ -172,6 +176,23 @@ massfunc_CSFH=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13.
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   
   temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  
+  temp[temp<0]=0
+  temp[age>magemax]=0
+  invisible(temp)
+}
+
+massfunc_snorm_burst=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, mburstage=0.1, magemax=13.8){
+  #Scale functions ages to years
+  mpeak=mpeak*1e9
+  mperiod=mperiod*1e9
+  magemax=magemax*1e9
+  
+  age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
+  
+  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  
+  temp[age<mburstage]=temp[age<mburstage]+mburst
   
   temp[temp<0]=0
   temp[age>magemax]=0

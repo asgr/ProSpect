@@ -1,7 +1,7 @@
 ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1, pow_birth = -0.7,
                      pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth=1, alpha_SF_screen=3,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
-                     filtout=NULL, Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
+                     filtout=NULL, filters='all', Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
                      OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, unimax=13.8e9,
                      Lya_tran=1, agemax=NULL, ...){
   
@@ -67,6 +67,18 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
   if(Lya_tran<1){
     sel=which(Final$wave<1215.67)
     Final$lum[sel]=Final$lum[sel]*Lya_tran
+  }
+  
+  if(is.null(filtout) & !is.null(filters)){
+    if(filters[1]=='all'){
+      cenwave=NULL
+      data('cenwave', envir = environment())
+      filters=cenwave$filter
+    }
+    filtout=list()
+    for(i in filters){
+      filtout=c(filtout,list(getfilt(i)))
+    }
   }
   
   if(z>0 & !is.null(filtout)){
