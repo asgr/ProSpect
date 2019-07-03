@@ -186,6 +186,7 @@ massfunc_snorm_burst=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew
   #Scale functions ages to years
   mpeak=mpeak*1e9
   mperiod=mperiod*1e9
+  mburstage=mburstage*1e9
   magemax=magemax*1e9
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
