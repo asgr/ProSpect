@@ -74,7 +74,7 @@ greybody_norm=function(wave, Temp = 50, beta=1.5, z=0, norm=1){
   return=output
 }
 
-Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='Msol', Dale=NULL){
+Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='NormTot', Dale=NULL){
   if(type=='Orig'){
     if(is.null(Dale)){
       Dale_Orig=NULL
