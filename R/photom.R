@@ -106,7 +106,11 @@ photom_flux=function(wave, flux, outtype='mag', filters='all'){
     }
   }
   
-  if(filters[1]=='all'){
+  if(is.matrix(filters) | is.data.frame(filters)){
+    filters=list(filters)
+  }
+  
+  if((filters=='all')[1]){
     cenwave=NULL
     data('cenwave', envir = environment())
     filters=cenwave$filter
@@ -145,9 +149,13 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
     }
   }
   
+  if(is.matrix(filters) | is.data.frame(filters)){
+    filters=list(filters)
+  }
+  
   flux=Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
 
-  if(filters[1]=='all'){
+  if((filters=='all')[1]){
     cenwave=NULL
     data('cenwave', envir = environment())
     filters=cenwave$filter
