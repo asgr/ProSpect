@@ -91,6 +91,12 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
   
   masstot=burstmass
   
+  if(burstage<=1e8){
+    SFRburst=masstot/1e8
+  }else{
+    SFRburst=0
+  }
+  
   if(z<0 | is.null(filters)){
     return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot, SFRburst=SFRburst))) # returns the minimal luminosity and mass outputs
   }
@@ -134,12 +140,6 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
     }else{
       out=NULL
     }
-  }
-  
-  if(burstage<=1e8){
-    SFRburst=masstot/1e8
-  }else{
-    SFRburst=0
   }
   
   return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=burstage, masstot=burstmass, SFRburst=SFRburst)))
