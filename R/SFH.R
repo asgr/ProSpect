@@ -24,7 +24,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
     }
   }
   
-  if(any(speclib$Age<1e7)){
+  if(any(speclib$Age<=1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
@@ -73,7 +73,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
   lum=lum_unatten
   lumtot_unatten=sum(c(0,diff(speclib$Wave))*lum)
   
-  if(tau_birth!=0 & burstage<1e7){
+  if(tau_birth!=0 & burstage<=1e7){
     lum=lum*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth)
     lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
   }else{
@@ -180,7 +180,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     Z=interp_param(Z,speclib$Z)$ID_mode
   }
   
-  if(any(speclib$Age<1e7)){
+  if(any(speclib$Age<=1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
@@ -384,7 +384,7 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
     Z=interp_param(Z,speclib$Z)$ID_mode
   }
   
-  if(any(speclib$Age<1e7)){
+  if(any(speclib$Age<=1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
@@ -472,7 +472,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     Z=interp_param(Z,speclib$Z)$ID_mode
   }
   
-  if(any(speclib$Age<1e7)){
+  if(any(speclib$Age<=1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
@@ -687,7 +687,7 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
     Z=interp_param(Z,speclib$Z)$ID_mode
   }
   
-  if(any(speclib$Age<1e7)){
+  if(any(speclib$Age<=1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
@@ -771,7 +771,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     }
   }
   
-  if(any(speclib$Age<1e7)){
+  if(any(speclib$Age<=1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
@@ -979,7 +979,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
     }
   }
   
-  if(any(speclib$Age<1e7)){
+  if(any(speclib$Age<=1e7)){
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
