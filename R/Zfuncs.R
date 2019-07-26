@@ -1,4 +1,4 @@
-Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8){
+Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8, massfunc, ...){
   #Scale functions ages to years
   Z1age=Z1age*1e9
   Z2age=Z2age*1e9
@@ -6,10 +6,29 @@ Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8){
   
   temp=rep(NA,length(age))
   temp[age<Z1age]=Z1
-  temp[age>Z2age]=1e-04
+  temp[age>Z2age]=Z2
   sel=which(is.na(temp))
   temp[sel]= Z1 + ((Z2-Z1)/(Z2age-Z1age))*(age[sel]-Z1age)
   
+  temp[temp<1e-04]=1e-04
+  temp[age>Zagemax]=1e-04
+  invisible(temp)
+}
+
+Zfunc_massmap=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc, ...){
+  #Scale functions ages to years
+  Zagemax=Zagemax*1e9
+  if(missing(massfunc)){
+    stop('Need massfunc!')
+  }
+  #mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=Zagemax){
+  masssum=integrate(massfunc, 0, Zagemax, ...)$value
+  massvec=massfunc(seq(0,Zagemax,by=1e8), ...)
+  massCDF=1-cumsum(massvec*1e8)/masssum
+  massCDF[massCDF<0]=0
+  massCDF[massCDF>1]=1
+  tempfunc=approxfun(seq(0,Zagemax,by=1e8),massCDF)
+  temp=tempfunc(age)*(Zfinal-Zstart)+Zstart
   temp[temp<1e-04]=1e-04
   temp[age>Zagemax]=1e-04
   invisible(temp)
