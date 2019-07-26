@@ -788,8 +788,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   if(is.function(Z)){
     dots=list(...)
     Z_args=dots[names(dots) %in% names(formals(Z))]
-    Z=do.call('Z',c(list(speclib$Age*agescale),Z_args))
-    Zlist=interp_param(Z, speclib$Z, log=TRUE)
+    Zvec=do.call('Z',c(list(age=speclib$Age*agescale),list(massfunc=massfunc),Z_args,massfunc_args))
+    Zlist=interp_param(Zvec, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
@@ -797,6 +797,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     Zdoweight=TRUE
   }else{
     Zuse=Z
+    Zvec=rep(speclib$Z[Zuse],length(speclib$Age))
     Zdoweight=FALSE
   }
   
@@ -905,7 +906,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   SFRburst=do.call('integrate', c(list(f=massfunc, lower=0, upper=1e8),massfunc_args))$value*forcescale/1e8
   
   if(z<0 | is.null(filters)){
-    return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten,lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst))) # returns the minimal luminosity outputs
+    return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten,lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst, Zvec=Zvec))) # returns the minimal luminosity outputs
   }
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
@@ -949,7 +950,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     }
   }
   
-  return(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, SFR=massvec/speclib$AgeWeights, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst))
+  return(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, SFR=massvec/speclib$AgeWeights, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst, Zvec=Zvec))
 }
 
 SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=5, z=0.1, H0=67.8, OmegaM=0.308, OmegaL=1-OmegaM, ref, unimax=13.8e9, agemax=NULL, ...){
