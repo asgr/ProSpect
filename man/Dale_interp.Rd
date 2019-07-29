@@ -8,7 +8,7 @@ Interpolate the Dale 2014 Templates
 Interpolates between non-computed values of \option{AGNfrac} and \option{alpha_SF}. This is useful when creating a generic generative model of a galaxy SED, where it can harm the sampling to have strictly discretised values for variables we wish to sample over.
 }
 \usage{
-Dale_interp(alpha_SF = 1.5, AGNfrac = 0, type = "Msol", Dale = NULL)
+Dale_interp(alpha_SF = 1.5, AGNfrac = 0, type = "NormTot", Dale = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
