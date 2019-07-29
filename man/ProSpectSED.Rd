@@ -110,7 +110,7 @@ Numeric vector; arguments to be passed to \code{ProSpectSED}.
 Object; data object containing everything else needs. See Details.  
 }
   \item{\dots}{
-All further arguments are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
+All further arguments are passed directly into \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
 }
 }
 \details{
