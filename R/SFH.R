@@ -989,8 +989,8 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
   if(is.function(Z)){
     dots=list(...)
     Z_args=dots[names(dots) %in% names(formals(Z))]
-    Z=do.call('Z',c(list(speclib$Age*agescale),Z_args))
-    Zlist=interp_param(Z, speclib$Z, log=TRUE)
+    Zvec=do.call('Z',c(list(age=speclib$Age*agescale),list(massfunc=massfunc),Z_args,massfunc_args))
+    Zlist=interp_param(Zvec, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
@@ -998,6 +998,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
     Zdoweight=TRUE
   }else{
     Zuse=Z
+    Zvec=rep(speclib$Z[Zuse],length(speclib$Age))
     Zdoweight=FALSE
   }
   
