@@ -12,8 +12,8 @@
 \tabular{ll}{
 Package: \tab ProSpect\cr
 Type: \tab Package\cr
-Version: \tab 0.7.13\cr
-Date: \tab 2019-07-29\cr
+Version: \tab 0.8.0\cr
+Date: \tab 2019-08-01\cr
 License: \tab LGPL-3\cr
 Depends: \tab R (>= 2.13)\cr
 Imports:  \tab celestial, NISTunits, pracma\cr
@@ -31,6 +31,7 @@ Bertelli et al., 1994, A\&AS, 106, 275
 Bruzual and Charlot, 2003, MNRAS, 344, 1000
 Chabrier, 2003, PASP, 115, 763
 Dale et al, 2014, ApJ, 784, 11
+Kroupa, 2001, MNRAS, 322, 231
 Vazekis et al, 2016, MNRAS, 463, 3409
 }
 \keyword{SED}
