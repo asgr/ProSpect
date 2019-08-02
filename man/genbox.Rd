@@ -129,7 +129,7 @@ The classic Zgas = -yield x ln(gasfrac) only works for this constant yield model
 
 testbox=genbox(yield=0.03)
 
-plot(testbox[,c("gasfrac","Zgas")], type='l', lwd=3, xlab='Gas Fraction', ylab='Zgas')
+plot(testbox[,c('gasfrac','Zgas')], type='l', lwd=3, xlab='Gas Fraction', ylab='Zgas')
 curve(-0.03*log(x), add=TRUE, col='red', lwd=3, lty=3)
 
 #In reality for an even remotely realistic model the yield must vary with Zgas:
@@ -137,7 +137,7 @@ curve(-0.03*log(x), add=TRUE, col='red', lwd=3, lty=3)
 testbox=genbox()
 summary(testbox$yield)
 
-plot(testbox[,c("gasfrac","Zgas")], type='l', lwd=3, xlab='Gas Fraction', ylab='Zgas')
+plot(testbox[,c('gasfrac','Zgas')], type='l', lwd=3, xlab='Gas Fraction', ylab='Zgas')
 curve(-mean(testbox$yield)*log(x), add=TRUE, col='red', lwd=3, lty=3)
 
 #Here we will make a more complex inflow and outflow leaky box model:
@@ -149,13 +149,13 @@ OutflowSN=function(t,total,gas2stars,alpha,argout){gas2stars*(1-alpha)*argout}
 
 testbox=genbox(infunc=InfallTot, argin=2e-10, outfunc=OutflowSN, argout=5)
 
-plot(testbox[,c("gasfrac","Zgas")], type='l', lwd=3, xlab='Gas Fraction', ylab='Zgas')
+plot(testbox[,c('gasfrac','Zgas')], type='l', lwd=3, xlab='Gas Fraction', ylab='Zgas')
 curve(-mean(testbox$yield)*log(x), add=TRUE, col='red', lwd=3, lty=3)
 
-plot(testbox[,c("time","Zgas")], type='l', lwd=3, xlab='Time / Gyr', ylab='Zgas')
-lines(testbox[,c("time","Zstars")], lwd=3, col='red')
+plot(testbox[,c('time','Zgas')], type='l', lwd=3, xlab='Time / Gyr', ylab='Zgas')
+lines(testbox[,c('time','Zstars')], lwd=3, col='red')
 
-plot(testbox[,c("time","total")], type='l', lwd=3, xlab='Time / Gyr',
+plot(testbox[,c('time','total')], type='l', lwd=3, xlab='Time / Gyr',
 ylab='Total Mass / Msol')
 
 #Some other models:
@@ -181,21 +181,27 @@ outfunc=OutflowSN, argout=10)
 testtot=genbox(sfunc=sfuncSSFRtot, argsfr=1e-10, gasfrac=0.5, infunc=InfallConst, argin=1,
 outfunc=OutflowSN, argout=10)
 
-plot(teststar[,c("time","SFR")], type='l', xlab='Time / Gyr', ylab='SFR / Msol/yr',
+plot(teststar[,c('time','SFR')], type='l', xlab='Time / Gyr', ylab='SFR / Msol/yr',
 ylim=c(0,1.5), col='red')
-lines(testgas[,c("time","SFR")], col='blue') #This gives a constant (and lowest) SFR!
-lines(testtot[,c("time","SFR")])
+lines(testgas[,c('time','SFR')], col='blue') #This gives a constant (and lowest) SFR!
+lines(testtot[,c('time','SFR')])
 
-plot(teststar[,c("gasfrac","Zgas")], type='l', xlab='Gas Fraction', ylab='Zgas',
+plot(teststar[,c('gasfrac','Zgas')], type='l', xlab='Gas Fraction', ylab='Zgas',
   xlim=c(0,0.5), ylim=c(0,0.02), col='red')
-lines(testgas[,c("gasfrac","Zgas")], col='blue') #Fastest enrichment despite lowest SFR
-lines(testtot[,c("gasfrac","Zgas")])
+lines(testgas[,c('gasfrac','Zgas')], col='blue') #Fastest enrichment despite lowest SFR
+lines(testtot[,c('gasfrac','Zgas')])
 
 #Compare the stellar mass formed:
 
 max(teststar$sumstars)/1e9
 max(testgas$sumstars)/1e9
 max(testtot$sumstars)/1e9
+
+plot(teststar[c('starfrac','Zgas')], type='l', xlab='Star Fraction', ylab='Zgas',
+xlim=c(0.5,1), ylim=c(0,0.05), col='red')
+lines(testgas[c('starfrac','Zgas')], col='blue')
+lines(testtot[c('starfrac','Zgas')])
+curve(-mean(testtot$yield)*log(1-x), add=TRUE, lty=2) #the classic yield equation
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
