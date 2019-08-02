@@ -15,20 +15,38 @@ Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8, ...
   invisible(temp)
 }
 
-Zfunc_massmap=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc, ...){
+Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc, ...){
   #Scale functions ages to years
   Zagemax=Zagemax*1e9
   if(missing(massfunc)){
     stop('Need massfunc!')
   }
-  #mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=Zagemax){
   masssum=integrate(massfunc, 0, Zagemax, ...)$value
   massvec=massfunc(seq(0,Zagemax,by=1e8), ...)
-  massCDF=1-cumsum(massvec*1e8)/masssum
+  massCDF = 1 - cumsum(massvec*1e8)/masssum
   massCDF[massCDF<0]=0
   massCDF[massCDF>1]=1
   tempfunc=approxfun(seq(0,Zagemax,by=1e8),massCDF)
-  temp=tempfunc(age)*(Zfinal-Zstart)+Zstart
+  temp = Zstart + tempfunc(age)*(Zfinal-Zstart)
+  temp[temp<1e-04]=1e-04
+  temp[age>Zagemax]=1e-04
+  invisible(temp)
+}
+
+Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13.8, massfunc, ...){
+  #Scale functions ages to years
+  mass_scale=1-exp(-(Zfinal-Zstart)/yield)
+  Zagemax=Zagemax*1e9
+  if(missing(massfunc)){
+    stop('Need massfunc!')
+  }
+  masssum=integrate(massfunc, 0, Zagemax, ...)$value
+  massvec=massfunc(seq(0,Zagemax,by=1e8), ...)
+  massCDF=(1-cumsum(massvec*1e8)/masssum)*mass_scale
+  massCDF[massCDF<0]=0
+  massCDF[massCDF>1]=1
+  tempfunc=approxfun(seq(0,Zagemax,by=1e8),massCDF)
+  temp= -yield*log(1-tempfunc(age))+Zstart
   temp[temp<1e-04]=1e-04
   temp[age>Zagemax]=1e-04
   invisible(temp)
