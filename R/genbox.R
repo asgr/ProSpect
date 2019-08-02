@@ -1,7 +1,7 @@
-genbox=function(sfunc = function(t, total, gasfrac, ssfr){1}, time = 10, step = 0.05, ssfr = 0,
+genbox=function(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step = 0.05, argsfr = 0,
                 alpha = 0.93, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac,
-                infunc = function(t,total, sin){0}, sin = 0, outfunc = function(t, total, gas2stars, alpha, sout) {0},
-                sout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16,
+                infunc = function(t,total, argin){0}, argin = 0, outfunc = function(t, total, gas2stars, alpha, argout) {0},
+                argout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16,
                 Chiin = 0,destroy = 0.01, yield){
   # metalicity enrichment model
   # 2011 Aaaron Robotham St Andrews / UWA
@@ -12,9 +12,9 @@ genbox=function(sfunc = function(t, total, gasfrac, ssfr){1}, time = 10, step = 
   
   # run the model
   for(t in timesteps){
-    gas2stars=sfunc(t,total,gasfrac,ssfr)
-    infall=infunc(t,total,sin)*step*1e9
-    outflow=outfunc(t,total,gas2stars,alpha,sout)*step*1e9
+    gas2stars=sfunc(t,total,gasfrac,argsfr)
+    infall=infunc(t,total,argin)*step*1e9
+    outflow=outfunc(t,total,gas2stars,alpha,argout)*step*1e9
     gas2stars=gas2stars*step*1e9
     temp=.genstep(infall=infall, outflow=outflow, gas2stars=gas2stars, alpha=alpha, Zsn=Zsn, total=total, gasfrac=gasfrac, starfrac=starfrac, Zgas=Zgas, Zstars=Zstars, dgas=dgas, Zin=Zin, Chi=Chi, Chiin=Chiin, destroy=destroy, yield=yield)
     total=as.numeric(temp['total'])
