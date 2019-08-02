@@ -35,14 +35,14 @@ Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc
 
 Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13.8, massfunc, ...){
   #Scale functions ages to years
-  mass_scale=1-exp(-(Zfinal-Zstart)/yield)
+  massfrac_final=1-exp(-(Zfinal-Zstart)/yield)
   Zagemax=Zagemax*1e9
   if(missing(massfunc)){
     stop('Need massfunc!')
   }
   masssum=integrate(massfunc, 0, Zagemax, ...)$value
   massvec=massfunc(seq(0,Zagemax,by=1e8), ...)
-  massCDF=(1-cumsum(massvec*1e8)/masssum)*mass_scale
+  massCDF=(1-cumsum(massvec*1e8)/masssum)*massfrac_final
   massCDF[massCDF<0]=0
   massCDF[massCDF>1]=1
   tempfunc=approxfun(seq(0,Zagemax,by=1e8),massCDF)
