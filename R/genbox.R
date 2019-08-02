@@ -33,8 +33,9 @@ genbox=function(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step 
   output=cbind(time=timesteps[1:length(output[,1])], output)
   output=cbind(output, sumstarsform=cumsum(output[,'addstars']))
   rownames(output)=rep('',length(output[,1]))
-  
-  invisible(as.data.frame(output))
+  output=as.data.frame(output)
+  rownames(output)=NULL
+  invisible(output)
 }
 
 

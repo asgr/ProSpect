@@ -172,23 +172,30 @@ sfuncSSFRgas=function(t,total,gasfrac,argsfr){return=total*argsfr*gasfrac}
 #Star formation is in proportion to the total mass of the system:
 sfuncSSFRtot=function(t,total,gasfrac,argsfr){return=total*argsfr}
 
-#This can make quite complex SFHs:
+#This can make quite complex SFHs with different metal enrichment rates:
 
-teststar=genbox(sfunc=sfuncSSFRstar, argsfr=1e-10, infunc=InfallConst, argin=2,
+teststar=genbox(sfunc=sfuncSSFRstar, argsfr=1e-10, gasfrac=0.5, infunc=InfallConst,
+argin=1, outfunc=OutflowSN, argout=10)
+testgas=genbox(sfunc=sfuncSSFRgas, argsfr=1e-10, gasfrac=0.5, infunc=InfallConst, argin=1,
 outfunc=OutflowSN, argout=10)
-testgas=genbox(sfunc=sfuncSSFRgas, argsfr=1e-10, total=0, infunc=InfallConst, argin=2,
-outfunc=OutflowSN, argout=10)
-testtot=genbox(sfunc=sfuncSSFRtot, argsfr=1e-10, total=0, infunc=InfallConst, argin=2,
+testtot=genbox(sfunc=sfuncSSFRtot, argsfr=1e-10, gasfrac=0.5, infunc=InfallConst, argin=1,
 outfunc=OutflowSN, argout=10)
 
-plot(teststar[,c("time","SFR")], type='l', xlab='Time / Gyr',ylab='SFR / Msol/yr',
-ylim=c(0,2), col='red')
-lines(testgas[,c("time","SFR")], col='blue')
+plot(teststar[,c("time","SFR")], type='l', xlab='Time / Gyr', ylab='SFR / Msol/yr',
+ylim=c(0,1.5), col='red')
+lines(testgas[,c("time","SFR")], col='blue') #This gives a constant (and lowest) SFR!
 lines(testtot[,c("time","SFR")])
 
-#This model builds a roughly 0.1 x M* galaxy in 10 Gyrs:
+plot(teststar[,c("gasfrac","Zgas")], type='l', xlab='Gas Fraction', ylab='Zgas',
+  xlim=c(0,0.5), ylim=c(0,0.02), col='red')
+lines(testgas[,c("gasfrac","Zgas")], col='blue') #Fastest enrichment despite lowest SFR
+lines(testtot[,c("gasfrac","Zgas")])
 
-max(testbox$sumstars)/1e9
+#Compare the stellar mass formed:
+
+max(teststar$sumstars)/1e9
+max(testgas$sumstars)/1e9
+max(testtot$sumstars)/1e9
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
