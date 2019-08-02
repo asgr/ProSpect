@@ -1,5 +1,5 @@
 genbox=function(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step = 0.05, argsfr = 0,
-                alpha = 0.93, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac,
+                alpha = 0.8, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac,
                 infunc = function(t,total, argin){0}, argin = 0, outfunc = function(t, total, gas2stars, alpha, argout) {0},
                 argout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16,
                 Chiin = 0,destroy = 0.01, yield){

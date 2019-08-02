@@ -75,7 +75,7 @@ Aaron Robotham
 curve(IMF_Chabrier, 0.01, 150, log='xy', xlab='Mass / Msol', ylab='PDF')
 curve(IMF_Kroupa, 0.01, 150, add=TRUE, col='red')
 
-#Check the fraction of mass that will go SNII (around 0.2):
+#Check the fraction of mass that will go SNII (around 20\%) and rapidly enrich:
 
 integrate(IMF_Chabrier, lower=10, upper=150, massmult=TRUE)$value
 

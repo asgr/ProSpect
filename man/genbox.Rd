@@ -9,7 +9,7 @@ A leaky box star formation model, that allows for farily concept inflow and outf
 }
 \usage{
 genbox(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step = 0.05, argsfr = 0,
-alpha = 0.93, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac, infunc = function(t,
+alpha = 0.8, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac, infunc = function(t,
 total, argin){0}, argin = 0, outfunc = function(t, total, gas2stars, alpha, argout) {0},
 argout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16, Chiin = 0,
 destroy = 0.01, yield)
@@ -29,7 +29,7 @@ Step size to take between periods of discrete star formation (Gyr).
 The desired star formation rate modfying argument to be passed into \option{sfunc} as an argument. Only relevant if this is used in \option{sfunc}.
 }
   \item{alpha}{
-The fraction of mass locked up in a period of star formation.
+The fraction of mass locked up in a period of star formation. The default of 0.8 is close the fraction of mass in stars above 10 Msol for a Chabrier IMF, so is appropriate for use with \code{ProSpect} since the various SSPs use the Chabrier IMF.
 }
   \item{total}{
 Total initial baryonic mass of the system (Msol).
@@ -53,7 +53,7 @@ Outflow function, where the the output has to be the gas mass inflow in Msol/yr.
 The main modifying input to \option{outfunc}.
 }
   \item{Zsn}{
-Metallcity of the gas ejected by a SN event (roughly similar to SN1987a by default).
+Metallcity of the gas ejected by a SN event (a value \option{Zsn}=0.2 will produce a mean yield near 0.03).
 }
   \item{Zgas}{
 Initial metallicity of the gas.
@@ -116,7 +116,7 @@ Largely based on code I wrote for chemical evolution lectures given in St Andrew
 Aaron Robotham
 }
 \note{
-The classic Zgas = -yield x ln(gasfrac) only works for this constant yield model, which does not make physical sense. Basically, do not use the \option{yield} argument except for comparison to other simple closed box models models. It should be obvious why a constant yield breaks- SN produce close to constant Zsn regardless of the metallicity they form with (there is a very weak dependency on this), so as your gas enriches you efficiency of enrichment should drop. The constant yield model can produce Zgas much larger than Zsn, which really cannot make sense! People still insist on using it, but do not be one of them.
+The classic Zgas = -yield x ln(gasfrac) only works for this constant yield model, which does not make physical sense. Basically, do not use the \option{yield} argument except for comparison to other simple closed box models models. It should be obvious why a constant yield breaks- SN produce close to constant Zsn (Zgas = 0.1-0.2 in the recycled gas ejected by a SNII) regardless of the metallicity they form with (there is a very weak dependency on this), so as your gas enriches you efficiency of enrichment should drop. The constant yield model can produce Zgas much larger than Zsn, which really cannot make sense! People still insist on using it, but do not be one of them.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
@@ -189,7 +189,7 @@ lines(testtot[,c('time','SFR')])
 plot(teststar[,c('gasfrac','Zgas')], type='l', xlab='Gas Fraction', ylab='Zgas',
   xlim=c(0,0.5), ylim=c(0,0.02), col='red')
 lines(testgas[,c('gasfrac','Zgas')], col='blue') #Fastest enrichment despite lowest SFR
-lines(testtot[,c('gasfrac','Zgas')])
+lines(testtot[,c('gasfrac','Zgas')]) #Note the linear gasfrac to Zgas relationship
 
 #Compare the stellar mass formed:
 
