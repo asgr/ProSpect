@@ -8,16 +8,16 @@ Leaky Box Star Formation Model
 A leaky box star formation model, that allows for farily concept inflow and outflow models. It tracks metals and dust in a self consistent manner. In the simplest mode it is simply the classic closed box model.
 }
 \usage{
-genbox(sfunc = function(t, total, gasfrac, ssfr){1}, time = 10, step = 0.05, ssfr = 0,
+genbox(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step = 0.05, argsfr = 0,
 alpha = 0.93, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac, infunc = function(t,
-total, sin){0}, sin = 0, outfunc = function(t, total, gas2stars, alpha, sout) {0},
-sout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16, Chiin = 0,
+total, argin){0}, argin = 0, outfunc = function(t, total, gas2stars, alpha, argout) {0},
+argout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16, Chiin = 0,
 destroy = 0.01, yield)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{sfunc}{
-Star formation functions, where the output has to be the star formation rate in Msol/yr. This function has to have arguments \option{t} for time in years, \option{total} (total current baryonic mass of the system in Msol), \option{gasfrac} (the gas fraction), and \option{ssfr} (the specific star formation rate, where what this means depends on the function- see Examples). It is up to the user which of these are used to help produce a SFR, e.g. the default is constant and 1 Msol/yr.
+Star formation functions, where the output has to be the star formation rate in Msol/yr. This function has to have arguments \option{t} for time in years, \option{total} (total current baryonic mass of the system in Msol), \option{gasfrac} (the gas fraction), and \option{argsfr} (the specific star formation rate, where what this means depends on the function- see Examples). It is up to the user which of these are used to help produce a SFR, e.g. the default is constant and 1 Msol/yr.
 }
   \item{time}{
 The time to run the box for (Gyr).
@@ -25,8 +25,8 @@ The time to run the box for (Gyr).
   \item{step}{
 Step size to take between periods of discrete star formation (Gyr).
 }
-  \item{ssfr}{
-The desired specific star formation rate to be passed into \option{sfunc} as an argument. Only relevant if this is used in \option{sfunc}.
+  \item{argsfr}{
+The desired star formation rate modfying argument to be passed into \option{sfunc} as an argument. Only relevant if this is used in \option{sfunc}.
 }
   \item{alpha}{
 The fraction of mass locked up in a period of star formation.
@@ -41,16 +41,16 @@ The gas fraction of the system .
 the stellar fraction of the system .
 }
   \item{infunc}{
-Inflow function, where the the output has to be the gas mass inflow in Msol/yr. This function has to have arguments \option{t} for time in years, \option{total} (total current baryonic mass of the system in Msol), and \option{sin} which can mean whatever you want it to mean. The default is no inflow.
+Inflow function, where the the output has to be the gas mass inflow in Msol/yr. This function has to have arguments \option{t} for time in years, \option{total} (total current baryonic mass of the system in Msol), and \option{argin} which can mean whatever you want it to mean. The default is no inflow.
 }
-  \item{sin}{
-The input to \option{infunc}.
+  \item{argin}{
+The main modifying input to \option{infunc}.
 }
   \item{outfunc}{
-Outflow function, where the the output has to be the gas mass inflow in Msol/yr. This function has to have arguments \option{t} for time in years, \option{total} (total current baryonic mass of the system in Msol),  \option{gas2stars} (the mass of gas just converted to stars), \option{alpha} (the fraction of mass locked up in a period of star formation), \option{sout} which can mean whatever you want it to mean. The default is no outflow.
+Outflow function, where the the output has to be the gas mass inflow in Msol/yr. This function has to have arguments \option{t} for time in years, \option{total} (total current baryonic mass of the system in Msol),  \option{gas2stars} (the mass of gas just converted to stars), \option{alpha} (the fraction of mass locked up in a period of star formation), \option{argout} which can mean whatever you want it to mean. The default is no outflow.
 }
-  \item{sout}{
-The input to \option{outfunc}.
+  \item{argout}{
+The main modifying input to \option{outfunc}.
 }
   \item{Zsn}{
 Metallcity of the gas ejected by a SN event (roughly similar to SN1987a by default).
@@ -143,11 +143,11 @@ curve(-mean(testbox$yield)*log(x), add=TRUE, col='red', lwd=3, lty=3)
 #Here we will make a more complex inflow and outflow leaky box model:
 
 #Infall proportional to the current mass of system:
-InfallTot=function(t,total,sin){return=total*sin}
-#Outflow coupled to SN events, where sout is in effect the mass loading:
-OutflowSN=function(t,total,gas2stars,alpha,sout){gas2stars*(1-alpha)*sout}
+InfallTot=function(t,total,argin){return=total*argin}
+#Outflow coupled to SN events, where argout is in effect the mass loading:
+OutflowSN=function(t,total,gas2stars,alpha,argout){gas2stars*(1-alpha)*argout}
 
-testbox=genbox(infunc=InfallTot, sin=2e-10, outfunc=OutflowSN, sout=5)
+testbox=genbox(infunc=InfallTot, argin=2e-10, outfunc=OutflowSN, argout=5)
 
 plot(testbox[,c("gasfrac","Zgas")], type='l', lwd=3, xlab='Gas Fraction', ylab='Zgas')
 curve(-mean(testbox$yield)*log(x), add=TRUE, col='red', lwd=3, lty=3)
@@ -161,21 +161,30 @@ ylab='Total Mass / Msol')
 #Some other models:
 
 #Constant inflow over time:
-InfallConst=function(t,total,sin){return=sin}
-#Star formation is in proportion to the gas mass:
-sfuncSSFRgas=function(t,total,gasfrac,ssfr){return=total*ssfr*gasfrac}
-#Star formation is in proportion to the total mass of the system:
-sfuncSSFRtot=function(t,total,gasfrac,ssfr){return=total*ssfr}
+InfallConst=function(t,total,argin){return=argin}
+
 #Star formation is in proportion to the stellar mass (traditional definition of sSFR):
-sfuncSSFRstar=function(t,total,gasfrac,ssfr){return=total*ssfr*(1-gasfrac)}
+sfuncSSFRstar=function(t,total,gasfrac,argsfr){return=total*argsfr*(1-gasfrac)}
+
+#Star formation is in proportion to the gas mass:
+sfuncSSFRgas=function(t,total,gasfrac,argsfr){return=total*argsfr*gasfrac}
+
+#Star formation is in proportion to the total mass of the system:
+sfuncSSFRtot=function(t,total,gasfrac,argsfr){return=total*argsfr}
 
 #This can make quite complex SFHs:
 
-testbox=genbox(sfunc=sfuncSSFRgas, ssfr=1e-10, total=0, infunc=InfallConst, sin=2,
-outfunc=OutflowSN, sout=10) #No initial mass, but inflow and outflow
+teststar=genbox(sfunc=sfuncSSFRstar, argsfr=1e-10, infunc=InfallConst, argin=2,
+outfunc=OutflowSN, argout=10)
+testgas=genbox(sfunc=sfuncSSFRgas, argsfr=1e-10, total=0, infunc=InfallConst, argin=2,
+outfunc=OutflowSN, argout=10)
+testtot=genbox(sfunc=sfuncSSFRtot, argsfr=1e-10, total=0, infunc=InfallConst, argin=2,
+outfunc=OutflowSN, argout=10)
 
-plot(testbox[,c("time","SFR")], type='l', lwd=3, xlab='Time / Gyr',
-ylab='SFR / Msol/yr')
+plot(teststar[,c("time","SFR")], type='l', xlab='Time / Gyr',ylab='SFR / Msol/yr',
+ylim=c(0,2), col='red')
+lines(testgas[,c("time","SFR")], col='blue')
+lines(testtot[,c("time","SFR")])
 
 #This model builds a roughly 0.1 x M* galaxy in 10 Gyrs:
 
