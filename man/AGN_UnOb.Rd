@@ -15,14 +15,14 @@ data("AGN_UnOb_Sparse")
 \format{
   AGN_UnOb is a data frame with 6492 observations on the following 2 variables.
   \describe{
-    \item{\code{Wave}}{a numeric vector}
-    \item{\code{Aspec}}{a numeric vector}
+    \item{\code{Wave}}{Numeric; wavelength (Ang).}
+    \item{\code{Aspec}}{Numeric; normalised luminosity (L/Ang).}
   }
   
   AGN_UnOb_Sparse is a data frame with 650 observations on the following 2 variables.
   \describe{
-    \item{\code{Wave}}{a numeric vector}
-    \item{\code{Aspec}}{a numeric vector}
+    \item{\code{Wave}}{Numeric; wavelength (Ang).}
+    \item{\code{Aspec}}{Numeric; normalised luminosity (L/Ang).}
   }
   
   In both cases the spectra are normalised so that they integrate to 1 (see examples).
@@ -39,7 +39,7 @@ Andrews et al, 2018, MNRAS, 474, 898
 \examples{
 data(AGN_UnOb)
 data(AGN_UnOb_Sparse)
-plot(AGN_UnOb, log='xy', type='l')
+plot(AGN_UnOb, log='xy', type='l', xlab='Wave / Ang', ylab='Lum / L/Ang')
 lines(AGN_UnOb_Sparse, col='red')
 
 sum(c(0,diff(AGN_UnOb$Wave))*AGN_UnOb$Aspec)
