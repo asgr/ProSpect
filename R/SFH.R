@@ -45,7 +45,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
     }
   }
   
-  if(unimax!=FALSE & z>0){
+  if(unimax!=FALSE){
     if(is.null(agemax)){
       agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     }
@@ -202,7 +202,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     }
   }
 
-  if(unimax!=FALSE & z>0){
+  if(unimax!=FALSE){
     if(is.null(agemax)){
       agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     }
@@ -390,7 +390,7 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
     birthcloud=1
   }
   
-  if(unimax!=FALSE & z>0){
+  if(unimax!=FALSE){
     if(is.null(agemax)){
       agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     }
@@ -494,7 +494,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     }
   }
   
-  if(unimax!=FALSE & z>0){
+  if(unimax!=FALSE){
     if(is.null(agemax)){
       agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     }
@@ -693,7 +693,7 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
     birthcloud=1
   }
   
-  if(unimax!=FALSE & z>0){
+  if(unimax!=FALSE){
     if(is.null(agemax)){
       agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     }
@@ -840,7 +840,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     massvec=do.call('massfunc',c(list(speclib$Age*agescale), massfunc_args))*speclib$AgeWeights
   }
   
-  if(unimax!=FALSE & z>0){
+  if(unimax!=FALSE){
     if(is.null(agemax)){
       agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     }
@@ -1004,7 +1004,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
   
   massvec=do.call('massfunc',c(list(speclib$Age*agescale), massfunc_args))*speclib$AgeWeights
   
-  if(unimax!=FALSE & z>0){
+  if(unimax!=FALSE){
     if(is.null(agemax)){
       agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
     }

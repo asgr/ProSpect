@@ -1,7 +1,7 @@
 genbox=function(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step = 0.05, argsfr = 0,
                 alpha = 0.8, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac,
                 infunc = function(t,total, argin){0}, argin = 0, outfunc = function(t, total, gas2stars, alpha, argout) {0},
-                argout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16,
+                argout = 0, Zsn = 0.12, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16,
                 Chiin = 0,destroy = 0.01, yield){
   # metalicity enrichment model
   # 2011 Aaaron Robotham St Andrews / UWA
@@ -40,7 +40,7 @@ genbox=function(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step 
 
 
 
-.genstep=function(gas2stars=0.01, alpha=0.93, Zsn=0.13, infall=0, outflow=0, total=1, gasfrac=1, starfrac=0, Zgas=0, Zstars=0, dgas=0, Zin=0, Chi=0.16, Chiin=0, destroy=0.01, yield){
+.genstep=function(gas2stars=0.01, alpha=0.8, Zsn=0.12, infall=0, outflow=0, total=1, gasfrac=1, starfrac=0, Zgas=0, Zstars=0, dgas=0, Zin=0, Chi=0.16, Chiin=0, destroy=0.01, yield){
   # metalicity enrichment model
   # 2012 Aaron Robotham St Andrews / UWA
   # If equal Chi model then Chi=0.16. destroy should be below 1 (0.01 ish)
