@@ -11,7 +11,7 @@ A leaky box star formation model, that allows for farily concept inflow and outf
 genbox(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step = 0.05, argsfr = 0,
 alpha = 0.8, total = 1e+10, gasfrac = 1, starfrac = 1 - gasfrac, infunc = function(t,
 total, argin){0}, argin = 0, outfunc = function(t, total, gas2stars, alpha, argout) {0},
-argout = 0, Zsn = 0.13, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16, Chiin = 0,
+argout = 0, Zsn = 0.12, Zgas = 0, Zstars = 0, dgas = 0, Zin = 0, Chi = 0.16, Chiin = 0,
 destroy = 0.01, yield)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -53,7 +53,7 @@ Outflow function, where the the output has to be the gas mass inflow in Msol/yr.
 The main modifying input to \option{outfunc}.
 }
   \item{Zsn}{
-Metallcity of the gas ejected by a SN event (a value \option{Zsn}=0.2 will produce a mean yield near 0.03).
+Metallcity of the gas ejected by a SN event (a value \option{Zsn}=0.12 will produce a mean yield near 0.03 since \option{yield} = \option{Zsn} x (1 - \option{alpha}) / \option{alpha} for low gas phase metallcities).
 }
   \item{Zgas}{
 Initial metallicity of the gas.
@@ -77,7 +77,7 @@ Fraction of dust in the metals inflowing. Only relevant if \option{infunc} is no
 Dust mass destroyed, where in a given step it is calculated as \option{destroy} x dustmass x recyclemass. Here dustmass is the total mass in the form of dust, and recyclemass is the total gas gas ejected by a SN event. This means more dust gets destroyed if there is more dust present, and also if there are more SN events.
 }
   \item{yield}{
-The yield, this is defined as mass of medals ADDED to ISM (gas2stars-alpha*gas2stars)*(Zsn-Zgas) divided by mass lost from ISM (gas2stars*alpha), i.e. yield = (Zsn - Zgas) * (1 - alpha) / alpha. Strictly it should be derived, not defined. But to be consistent with "classic" closed box star formation, it can be set to constant value using the \option{yield} argument. In this case \option{Zsn} is defined to be consistent with the desired yield.
+The yield, this is defined as mass of medals ADDED to ISM (gas2stars-alpha*gas2stars)*(Zsn-Zgas) divided by mass lost from ISM (gas2stars*alpha), i.e. yield = (Zsn - Zgas) * (1 - alpha) / alpha. Strictly it should be derived, not defined. But to be consistent with "classic" closed box star formation, it can be set to constant value using the \option{yield} argument. In this case \option{Zsn} is defined to be consistent with the desired yield. Since \option{yield} = \option{Zsn} x (1 - \option{alpha}) / \option{alpha} for low gas phase metallcities, the default \code{ProSpect} values will return a mean yield of roughly 0.03.
 }
 }
 \details{
