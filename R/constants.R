@@ -1,8 +1,8 @@
 .c_to_mps = 299792458
 .mps_to_c = 3.335641e-09
 
-.lsun_to_erg= 3.828e33
-.erg_to_lsun = 2.61233e-34
+.lsol_to_erg= 3.828e33
+.erg_to_lsol = 2.61233e-34
 
 .pc_to_m = 3.08568e+16
 .m_to_pc = 3.240777e-17

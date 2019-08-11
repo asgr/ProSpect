@@ -89,7 +89,7 @@ Numeric scalar; Omega Matter today (default is 0.308).
 Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1 - OmegaM = 0.692).
 }
   \item{waveout}{
-Numeric vector; desired output log10 wavelength grid to use in Ang. Default covers typical range of galaxy SED data.
+Numeric vector; desired output log10 wavelength grid to use in Ang. Default covers typical range of galaxy SED data at a resolution good enough for broad band photometry. Spectroscopic work requires the resolution to be increase by a factor ~10.
 }
   \item{ref}{
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
