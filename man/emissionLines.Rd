@@ -1,0 +1,79 @@
+\name{emissionLines}
+\alias{emissionLines}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+Emission Line Generation
+}
+\description{
+Code to generate emission line specra based on Levesue, Kewley & Larson (2010).
+}
+\usage{
+emissionLines(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, SFR=NULL,
+Z = 0.02, q = NULL, veldisp = 50, lumscale = 21612724, log = TRUE, method = "linear",
+range = 5, res = 0.5, LKL10 = NULL)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{Ha_lum}{
+Numeric scalar; scaling to be applied to Halpha line, all other lines are scaled relative to this. Uses/requires \code{\link{LKL10_NormHalpha}} if \option{LKL10}=NULL.
+}
+  \item{Hb_lum}{
+Numeric scalar; scaling to be applied to Hbeta line, all other lines are scaled relative to this. Uses/requires \code{\link{LKL10_NormHbeta}} if \option{LKL10}=NULL.
+}
+  \item{Hlines_lum}{
+Numeric scalar; scaling to be applied all Hydrogen lines, all other lines are scaled relative to this. Uses/requires \code{\link{LKL10_NormHlines}} if \option{LKL10}=NULL.
+}
+  \item{All_lum}{
+Numeric scalar; scaling to be applied all emission lines. Uses/requires \code{\link{LKL10_NormAll}} if \option{LKL10}=NULL.
+}
+  \item{SFR}{
+Numeric scalar; scaling to be applied to Halpha line using \code{\link{SFR2Lum}} function to scale via the star formation rate, all other lines are scaled relative to this. Uses/requires \code{\link{LKL10_NormHalpha}} if \option{LKL10}=NULL.
+}
+  \item{Z}{
+Numeric scalar; metallicity. If \option{log}=TRUE this will be interpolated in log space if it falls between templates.
+}
+  \item{q}{
+Numeric scalar; radiation field. If \option{log}=TRUE this will be interpolated in log space if it falls between templates.
+}
+  \item{veldisp}{
+Numeric scalar; velocity dispersion (km/s).
+}
+  \item{lumscale}{
+Numeric scalar; luminosity scaling to use in \code{\link{SFR2Lum}}. Unless you know what you are doing, leave at the default.
+}
+  \item{log}{
+Logical; determines if the interpolation is done in log space when using \code{\link{interp_param}}.
+}
+  \item{method}{
+Character; method to be passed to \code{\link{interp_param}}.
+}
+  \item{range}{
+Numeric scalar; how many sigma either side of the line should the velocity dispersion spread flux be evaluated (starts to become inaccurate if lower than 5).
+}
+  \item{res}{
+Numeric scalar; the relative resolution of the line evaluation in fractions of \option{sigma}.
+}
+  \item{LKL10}{
+List; LKL template to use. If \option{LKL10}=NULL then the appropriate template is loaded internally (this is the safest option). To speed things up the user can pass in the appropriate \code{\link{LKL10}} template, but care must be taken to ensure the scaling used makes use of the correct dataset.
+}
+}
+\details{
+Can be used by users directly (perhaps to generate your own line features to add onto a target spectrum), or more generally.
+}
+\value{
+Data.frame with two columns:
+\item{wave }{Wavelength (Angstroms).}
+\item{lum }{Emission features scaled as requested (Lum/Ang).}
+}
+\author{
+Aaron Robotham
+}
+\seealso{
+\code{\link{LKL10}}, \code{\link{SFR2Lum}}, \code{\link{Z2q}}, \code{\link{interp_param}}
+}
+\examples{
+plot(emissionLines(Ha_lum=1, veldisp=100), type='l', xlim=c(6400,6800), ylim=c(0,0.2))
+}
+% Add one or more standard keywords, see file 'KEYWORDS' in the
+% R documentation directory.
+\concept{ emission }% use one of  RShowDoc("KEYWORDS")

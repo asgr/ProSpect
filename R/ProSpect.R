@@ -3,7 +3,7 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
                      filtout=NULL, filters='all', Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
                      OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, unimax=13.8e9,
-                     Lya_tran=1, agemax=NULL, ...){
+                     agemax=NULL, ...){
   
   tau_birth=.interval(tau_birth,0,10,reflect=FALSE)
   tau_screen=.interval(tau_screen,0,10,reflect=FALSE)
@@ -43,7 +43,7 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
     dustmass_AGN=0
   }else{
     #First we attenuate by the hot taurus
-    AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum/(.lsun_to_erg), tau=tau_AGN, pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func, waveout=waveout)
+    AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum/(.lsol_to_erg), tau=tau_AGN, pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func, waveout=waveout)
     if(!is.null(Dale_M2L_func) & returnall){
       dustlum_AGN=AGN$total_atten
       dustmass_AGN=AGN$dustmass
@@ -64,10 +64,10 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
   
   colnames(Final)[2]='lum'
   
-  if(Lya_tran<1){
-    sel=which(Final$wave<1215.67)
-    Final$lum[sel]=Final$lum[sel]*Lya_tran
-  }
+  # if(Lya_tran<1){ # Deprecated: now works with emission lines inside SFHfunc
+  #   sel=which(Final$wave<1215.67)
+  #   Final$lum[sel]=Final$lum[sel]*Lya_tran
+  # }
   
   if(is.null(filtout) & !is.null(filters)){
     if(filters[1]=='all'){
