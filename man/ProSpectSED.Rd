@@ -14,7 +14,7 @@ pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
 Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
 returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
-waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, Lya_tran = 1, agemax = NULL, ...)
+waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, agemax = NULL, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -96,9 +96,6 @@ The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 /
 }
   \item{unimax}{
 Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0. Overridden by \option{agemax} if that is provided.
-}
-  \item{Lya_tran}{
-Numeric scalar; the transmission of flux below Ly-alpha (1215.67 Ang). This only modifies the luminosity of \option{FinalFlux} and the output of \option{Photom} and\option{FinalLum}. It does not change \option{StarsAtten}, \option{StarsUnAtten}, \option{DustEmit}, \option{AGN}. This is useful at high redshift, where the transmission below Ly-alpha can drop considerably (hence Ly-alpha drop outs).
 }
   \item{agemax}{
 Numeric scalar; maximum allowed age of any stellar population relative to the redshift of the observed galaxy. Any star formation that is older than this will be set to 0. Overridden by \option{unimax} if provided. It is computational a bit faster to provide this since we do not need to compute a lookup time from the redshift.

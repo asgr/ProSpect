@@ -1,7 +1,24 @@
-emissionLines=function(Ha_lum=1, SFR=NULL, Z=0.02, q=NULL, veldisp=50, lumscale=21684047, log=TRUE, method='linear', range=5, res=0.5, LKL10=NULL){
+emissionLines=function(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, SFR=NULL, Z=0.02, q=NULL, veldisp=50, lumscale=21612724, log=TRUE, method='linear', range=5, res=0.5, LKL10=NULL){
   if(is.null(LKL10)){
-    LKL10=NULL
-    data('LKL10', envir = environment())
+    if(!is.null(Ha_lum) | !is.null(SFR)){
+      LKL10_NormHalpha=NULL
+      data('LKL10_NormHalpha', envir = environment())
+      LKL10=LKL10_NormHalpha
+    }else if(!is.null(Hb_lum)){
+      LKL10_NormHbeta=NULL
+      data('LKL10_NormHbeta', envir = environment())
+      LKL10=LKL10_NormHbeta
+    }else if(!is.null(Hlines_lum)){
+      LKL10_NormHlines=NULL
+      data('LKL10_NormHlines', envir = environment())
+      LKL10=LKL10_NormHlines
+    }else if(!is.null(All_lum)){
+      LKL10_NormAll=NULL
+      data('LKL10_NormAll', envir = environment())
+      LKL10=LKL10_NormAll
+    }else{
+      stop("Need one of the scalings to be non-NULL!")
+    }
   }
   
   Zweights=interp_param(Z, LKL10$Z, log=log, method = method)
@@ -33,14 +50,24 @@ emissionLines=function(Ha_lum=1, SFR=NULL, Z=0.02, q=NULL, veldisp=50, lumscale=
   
   if(!is.null(SFR)){
     Ha_lum=SFR2Lum(SFR, lumscale=lumscale)
+    lum=lum*Ha_lum
+  }else if(!is.null(Ha_lum)){
+    lum=lum*Ha_lum
+  }else if(!is.null(Hb_lum)){
+    lum=lum*Hb_lum
+  }else if(!is.null(Hlines_lum)){
+    lum=lum*Hlines_lum
+  }else if(!is.null(All_lum)){
+    lum=lum*All_lum
+  }else{
+    stop("Need one of the scalings to be non-NULL!")
   }
-  #need to fix how the emission features stack
-  return(data.frame(wave=wavegrid, lum=lum*Ha_lum))
+  return(data.frame(wave=wavegrid, lum=lum))
 }
 
 Z2q=function(Zgas = 0.02, q0 = 2.8e7, g0 = -1.3, Z0 = 0.012){q0*(Zgas/Z0)^g0}
 
-SFR2Lum=function(SFR=1, lumscale=21684047){
+SFR2Lum=function(SFR=1, lumscale=21612724){
   return(SFR*lumscale)
 }
 
