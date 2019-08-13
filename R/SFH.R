@@ -875,6 +875,9 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     }
   }else{
     lum=colSums(speclib$Zspec[[Zuse]]*massvec)
+    if(escape_frac<1){
+      speclib$Zspec[[Zuse]][,speclib$Wave<Ly_limit]=speclib$Zspec[[Zuse]][,speclib$Wave<Ly_limit]*escape_frac
+    }
   }
 
   lumtot_unatten=sum(c(0,diff(speclib$Wave))*lum)
