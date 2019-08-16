@@ -744,7 +744,7 @@ SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, anci
   return(c(BurstSMform=burstform, YoungSMform=youngform, MidSMform=midform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=totform, TotSMstar=totstar))
 }
 
-SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=5, emission=FALSE, veldisp=50, emission_scale='FUV', escape_frac=0, Ly_limit=911.8, LKL10=NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', sparse=5, intSFR=FALSE, unimax=13.8e9, agemax=NULL, ...){
+SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=5, emission=FALSE, veldisp=50, emission_scale='FUV', escape_frac=1-emission, Ly_limit=911.8, LKL10=NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', sparse=5, intSFR=FALSE, unimax=13.8e9, agemax=NULL, ...){
   #Ly_limit should be 911.8 (the actual ionisation limit) or sometimes 1215.67
   
   dots=list(...)
@@ -783,6 +783,16 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
       cenwave=NULL
       data('cenwave', envir = environment())
       filters=cenwave$filter
+    }
+  }
+  
+  if(!is.function(Z)){
+    if(Z %% 1 != 0){ #Check if the Z is non integer, if so then convert to a function
+      tempZfunc=function(age, Z, ...){
+        rep(Z, length(age))
+      }
+      formals(tempZfunc)$Z=Z
+      Z=tempZfunc
     }
   }
   
@@ -903,9 +913,11 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   if(emission){
     if(emission_scale=='FUV'){
       All_lum=(1-escape_frac)*sum(c(0,diff(speclib$Wave[speclib$Wave<Ly_limit]))*lum_unatten[speclib$Wave<Ly_limit])
+      emission_input=list(All_lum=All_lum, veldisp=veldisp, Z=Zvec[1])
       emissionadd_unatten=emissionLines(All_lum=All_lum, veldisp=veldisp, Z=Zvec[1])
     }else if(emission_scale=='SFR'){
       SFRburst_emission=(1-escape_frac)*do.call('integrate', c(list(f=massfunc, lower=0, upper=1e7),massfunc_args))$value*forcescale/1e7
+      emission_input=list(SFR=SFRburst_emission, veldisp=veldisp, Z=Zvec[1])
       emissionadd_unatten=emissionLines(SFR=SFRburst_emission, veldisp=veldisp, Z=Zvec[1])
     }else{
       stop('emission_scale must be one of SFR or FUV!')
@@ -923,6 +935,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     lum=addspec(speclib$Wave, lum, emissionadd_atten$wave, emissionadd_atten$lum)$flux
     speclib$Wave=lum_unatten$wave
     lum_unatten=lum_unatten$flux
+  }else{
+    emission_input=NULL
   }
   
   if(tau_screen!=0){
@@ -937,51 +951,53 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
   
   if(z<0 | is.null(filters)){
-    return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst, Zvec=Zvec))) # returns the minimal luminosity outputs
-  }
-  if(z>0){
-    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
-    if(!is.null(outtype)){
-      out=photom_flux(flux, outtype = outtype, filters = filters)
-      if(is.list(filters)){
-        cenout={}
-        for(i in filters){
-          cenout=c(cenout,cenwavefunc(i))
-        }
-        if(all(!is.null(names(filters)))){
-          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
-        }else{
-          out=data.frame(filter=NA, cenwave=cenout, out=out)
-        }
-      }else{
-        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
-      }
-    }else{
-      out=NULL
-    }
+    out=NULL
+    flux=NULL
   }else{
-    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
-    if(!is.null(outtype)){
-      out=photom_flux(flux, outtype = outtype, filters = filters)
-      if(is.list(filters)){
-        cenout={}
-        for(i in filters){
-          cenout=c(cenout,cenwavefunc(i))
-        }
-        if(all(!is.null(names(filters)))){
-          out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+    if(z>0){
+      flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
+      if(!is.null(outtype)){
+        out=photom_flux(flux, outtype = outtype, filters = filters)
+        if(is.list(filters)){
+          cenout={}
+          for(i in filters){
+            cenout=c(cenout,cenwavefunc(i))
+          }
+          if(all(!is.null(names(filters)))){
+            out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+          }else{
+            out=data.frame(filter=NA, cenwave=cenout, out=out)
+          }
         }else{
-          out=data.frame(filter=NA, cenwave=cenout, out=out)
+          out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
         }
       }else{
-        out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+        out=NULL
       }
     }else{
-      out=NULL
+      flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
+      if(!is.null(outtype)){
+        out=photom_flux(flux, outtype = outtype, filters = filters)
+        if(is.list(filters)){
+          cenout={}
+          for(i in filters){
+            cenout=c(cenout,cenwavefunc(i))
+          }
+          if(all(!is.null(names(filters)))){
+            out=data.frame(filter=names(filters), cenwave=cenout, out=out)
+          }else{
+            out=data.frame(filter=NA, cenwave=cenout, out=out)
+          }
+        }else{
+          out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
+        }
+      }else{
+        out=NULL
+      }
     }
   }
   
-  return(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, SFR=massvec/speclib$AgeWeights, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst, Zvec=Zvec))
+  return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, SFR=massvec/speclib$AgeWeights, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst, Zvec=Zvec, emission_input=emission_input)))
 }
 
 SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=5, z=0.1, H0=67.8, OmegaM=0.308, OmegaL=1-OmegaM, ref, unimax=13.8e9, agemax=NULL, ...){
@@ -1015,6 +1031,16 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
     birthcloud=max(which(speclib$Age<=1e7))
   }else{
     birthcloud=1
+  }
+  
+  if(!is.function(Z)){
+    if(Z %% 1 != 0){ #Check if the Z is non integer, if so then convert to a function
+      tempZfunc=function(age, Z, ...){
+        rep(Z, length(age))
+      }
+      formals(tempZfunc)$Z=Z
+      Z=tempZfunc
+    }
   }
   
   if(is.function(Z)){

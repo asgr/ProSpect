@@ -82,7 +82,7 @@ List of 3\cr
   .. ..$ q4e8   : num [1:47] 8.21028 0.00651 0.00348 0.05369 0.06299 ...\cr
 }
 \details{
-Select outputs of Levesque, Kewley & Larson (2010). Here I selected an electron density of 100. Sub lists are sorted by metallicity (as per \option{Z}) and within each list are columns specifying the wavelength (Ang), element, state and radiation field as per \option{q}.
+Select outputs of Levesque, Kewley & Larson (2010). Here we selected an electron density of 100. Sub lists are sorted by metallicity (as per \option{Z}) and within each list are columns specifying the wavelength (Ang), element, state (neutral line = I, single ionised = II, double ionised = III etc), and radiation field as per \option{q}.
 
 There are 4 variants each scales differently. \code{LKL10_NormHalpha} is scale so that the Halpha line is 1, and all other lines are scaled in proportion to this. \code{LKL10_NormHbeta} is scale so that the Hbeta line is 1, and all other lines are scaled in proportion to this. \code{LKL10_NormHlines} is scale so that the sum of all hydrogen lines is 1, and all other lines are scaled in proportion to this. \code{LKL10_NormAll} is scale so that the sum of lines is 1.
 }
