@@ -5,6 +5,14 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
                      OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, unimax=13.8e9,
                      agemax=NULL, ...){
   
+  call=match.call()
+  
+  if('emission' %in% names(call)){
+    if(eval(call$emission) & missing(waveout)){
+      waveout=NULL
+    }
+  }
+  
   tau_birth=.interval(tau_birth,0,10,reflect=FALSE)
   tau_screen=.interval(tau_screen,0,10,reflect=FALSE)
   tau_AGN=.interval(tau_AGN,0,10,reflect=FALSE)
@@ -97,7 +105,7 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
     StarsAtten=data.frame(wave=Stars$wave_lum, lum=Stars$lum_atten)
     StarsUnAtten=data.frame(wave=Stars$wave, lum=Stars$lum_unatten)
     DustEmit=data.frame(wave=Dust_Screen$Wave, lum=SED_Bdust_Sdust)
-    return(invisible(list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, StarsAtten=StarsAtten, StarsUnAtten=StarsUnAtten, DustEmit=DustEmit, AGN=AGN, Stars=Stars, dustmass=c(birth=dustmass_birth, screen=dustmass_screen, AGN=dustmass_AGN, total=sum(c(dustmass_birth,dustmass_screen,dustmass_AGN),na.rm=TRUE)), dustlum=c(birth=dustlum_birth, screen=dustlum_screen, AGN=dustlum_AGN, total=sum(c(dustlum_birth,dustlum_screen,dustlum_AGN),na.rm=TRUE)))))
+    return(invisible(list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, StarsAtten=StarsAtten, StarsUnAtten=StarsUnAtten, DustEmit=DustEmit, AGN=AGN, Stars=Stars, dustmass=c(birth=dustmass_birth, screen=dustmass_screen, AGN=dustmass_AGN, total=sum(c(dustmass_birth,dustmass_screen,dustmass_AGN),na.rm=TRUE)), dustlum=c(birth=dustlum_birth, screen=dustlum_screen, AGN=dustlum_AGN, total=sum(c(dustlum_birth,dustlum_screen,dustlum_AGN),na.rm=TRUE)), call=call)))
   }else{
     return(invisible(photom_out))
   }
