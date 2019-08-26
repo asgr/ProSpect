@@ -18,6 +18,19 @@ As of v0.8.0 \code{SFHp4} and \code{SFHp5} are deprecated and will be removed en
 The star formation history functions discussed here compute output galaxy spectra  and stellar masses using variable star formation histories. This can be either a pure burst (\code{SFHburst}), distinct phases (\code{SFHp4} / \code{SFHp5}), or a functional form (\code{SFHfunc}). Uses either BC03 or EMILES libraries. For \code{SFHp4} and \code{SFHp5}, each star formation phase can have a different metallicity associated with it (default solar), whereas \code{SFHfunc} can take a functional form for the metallicity.
 }
 \usage{
+SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1, stellpop = "BC03lr",
+speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
+filters = "all", Z = 5, emission = FALSE, veldisp = 50, emission_scale = "FUV",
+escape_frac = 1 - emission, Ly_limit = 911.8, LKL10 = NULL, z = 0.1, H0 = 67.8,
+OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
+unimax = 1.38e+10, agemax = NULL, ...) 
+
+SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
+burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
+oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr",
+speclib = NULL, Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
+unimax = 1.38e+10, agemax = NULL, ...)
+
 SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
 tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,  filters = 'all',
 Z = 0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = 'mag',
@@ -39,11 +52,6 @@ pow_screen = -0.7, filters = "all", Z = c(5, 5, 5, 5, 5), z = 0.1, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", cossplit = c(9e+09, 1.3e+10),
 dosplit = FALSE, sparse = 5, unimax = 1.38e+10, agemax = NULL, ...)
 
-SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1, stellpop = "BC03lr",
-speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
-filters = "all", Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
-outtype = "mag", sparse = 5, intSFR = FALSE, unimax = 1.38e+10, agemax = NULL, ...) 
-
 SMstarp4(burstmass = 1e+08, youngmass = 1e+09, oldmass = 1e+10, ancientmass = 1e+10,
 burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), oldage = c(1e+09, 9e+09),
 ancientage = c(9e+09, 1.3e+10), stellpop='BC03lr', speclib = NULL, Z = c(5, 5, 5, 5),
@@ -55,12 +63,6 @@ ancientmass = 1e+10, burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09),
 midage = c(1e+09, 5e+09), oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10),
 stellpop = "BC03lr", speclib = NULL, Z = c(5, 5, 5, 5, 5), z = 0, H0 = 67.8,
 OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit = c(9e+09, 1.3e+10), dosplit = FALSE,
-unimax = 1.38e+10, agemax = NULL, ...)
-
-SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
-burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
-oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr",
-speclib = NULL, Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
 unimax = 1.38e+10, agemax = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -126,7 +128,25 @@ Numeric scalar; power to further raise the dust attenuation of the dust screen. 
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. Can also be a list of matrices or functions to pass into \code{\link{bandpass}}. This creates increasingly faster code, but requires more user effort.
 }
   \item{Z}{
-Numeric scalar (\code{SFHburst}), or integer vector of length 4/5 (\code{SFHp4} / \code{SFHp5}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Fe/H (so 0.02 for solar). \code{SFHp4}) and \code{SFHp5} also take functional inputs, in which case the nearest matching discrete metallicity is used for each phase. Additional \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}.
+Numeric scalar (\code{SFHburst}), or integer vector of length 4/5 (\code{SFHp4} / \code{SFHp5}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Z (so 0.02 for solar). \code{SFHp4}) and \code{SFHp5} also take functional inputs, in which case the nearest matching discrete metallicity is used for each phase. Additional \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHp4} / \code{SFHp5} /\code{SFHfunc}. For convenience, if a non-integer value is provided then this is interpreted as the desired metallicity value (so Z=0.02 for solar etc), and converted into the appropriate function internally, e.g. \option{Z}=5 and \option{Z}=0.02 will give the same outputs for \code{\link{BC03}}.
+}
+  \item{emission}{
+Logical; should emission features be added to the spectrum? This will be done using \code{\link{emissionLines}}. 
+}
+  \item{veldisp}{
+Numeric scalar; velocity dispersion (km/s) of emission features. See \code{\link{emissionLines}}. 
+}
+  \item{emission_scale}{
+Character; one of 'FUV' or 'SFR'. 'FUV' scales the emission features via an energy balance, absorbing all unattenuated flux below \option{Ly_limit} by a factor (1-\option{escape_frac}) and re-emitting as lines. 'SFR' scales Halpha from Kennicutt (1998), but still absorbs flux below \option{Ly_limit} by a factor (1-\option{escape_frac}). If providing \option{LKL10} to speed code up then it must be \option{LKL10}=\code{\link{LKL10_NormAll}} when \option{emission_scale}='FUV', and \option{LKL10}=\code{\link{LKL10_NormHalpha}} when \option{emission_scale}='SFR'. Otherwise these are loaded internally as appropriate.
+}
+  \item{escape_frac}{
+Numeric scalar; the fraction of photons allows to escape when the wavelength is shorter than \option{Ly_limit}. If \option{emission}=TRUE and \option{emission_scale}='FUV' then the absorbed flux (1-\option{escape_frac}) is re-emitted as lines. By default it is \option{escape_frac} = 1 - \option{emission}, i.e. if we do not want emission then we allow all UV photons out of the star forming region (to possibly then be attenuated by dust), but if we want emission then all of these photons are used to excite our emission lines.
+}
+  \item{Ly_limit}{
+Numeric scalar; the Lyman limit to use (Angstroms). Photons with wavelengths shorted than \option{Ly_limit} are absorbed by a factor 1-\option{escape_frac}. If \option{emission}=TRUE and \option{emission_scale}='FUV' then the absorbed flux (1-\option{escape_frac}) is re-emitted as lines. The \option{Ly_limit} should generally be 911.8 (the actual ionisation limit n=Inf of 13.6 eV), or sometimes 1215.67 (Lyman alpha n=2).
+}
+  \item{LKL10}{
+List; LKL template to use. If \option{LKL10}=NULL then the appropriate template is loaded internally (this is the safest option). To speed things up the user can pass in the appropriate \code{\link{LKL10}} template, but care must be taken to ensure the scaling used makes use of the correct dataset. See \code{\link{emissionLines}}.  
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).
@@ -197,6 +217,7 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{SFR}{Numeric vector; the star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 \item{sSFR}{Numeric vector; the specific star formation rate averaged out over each star formation phase (\code{SFHp4} / \code{SFHp5} only).}
 \item{SFRburst}{Numeric scalar; the star formation rate over the last 10^8 years.}
+\item{emission_input}{List; the inputs sent to \code{\link{emissionLines}} when \option{emission}=TRUE.}
 
 \code{SMstarp4} / \code{SMstarp5} / \code{SMstarfunc} produces both the stellar mass formed (4/5/5 elements) and the stellar mass remaining (a further 4/5/5 elements) for the 5 different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
 }
@@ -205,7 +226,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}, \code{\link{massfunc}}
+\code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}, \code{\link{massfunc}}, \code{\link{emissionLines}}
 }
 \examples{
 #A pretty full example showing some low level things:
