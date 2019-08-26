@@ -32,7 +32,7 @@ Numeric vector; desired output wavelength grid to use (but must be the same as \
 }
 }
 \details{
-Internally it uses the R code{\link{approxfun}}, so if more sophisticated interpolation is necessary then other roues might be required.
+Internally it uses the R \code{\link{approxfun}}, so if more sophisticated interpolation is necessary then other routes might be required.
 }
 \value{
 Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux.

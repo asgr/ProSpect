@@ -14,7 +14,7 @@ pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
 alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
 Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
 returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
-waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, Lya_tran = 1, agemax = NULL, ...)
+waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, agemax = NULL, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -89,16 +89,13 @@ Numeric scalar; Omega Matter today (default is 0.308).
 Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1 - OmegaM = 0.692).
 }
   \item{waveout}{
-Numeric vector; desired output log10 wavelength grid to use in Ang. Default covers typical range of galaxy SED data.
+Numeric vector; desired output log10 wavelength grid to use in Ang. Default covers typical range of galaxy SED data at a resolution good enough for broad band photometry. Spectroscopic work requires the resolution to be increase by a factor ~10. If \option{emission}=TRUE (to be passed down to \code{\link{SFHfunc}}) and \option{waveout} is missing (so not explicitly supplied by the user) then \option{waveout} is internally set to NULL, meaning the full available resolution is used to ensure a good reproduction of the emission features. This operation is generally desirable, since it would be a bad idea to produce emission features, but then sample the wavelength range too coarsely to see any!
 }
   \item{ref}{
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
 }
   \item{unimax}{
 Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0. Overridden by \option{agemax} if that is provided.
-}
-  \item{Lya_tran}{
-Numeric scalar; the transmission of flux below Ly-alpha (1215.67 Ang). This only modifies the luminosity of \option{FinalFlux} and the output of \option{Photom} and\option{FinalLum}. It does not change \option{StarsAtten}, \option{StarsUnAtten}, \option{DustEmit}, \option{AGN}. This is useful at high redshift, where the transmission below Ly-alpha can drop considerably (hence Ly-alpha drop outs).
 }
   \item{agemax}{
 Numeric scalar; maximum allowed age of any stellar population relative to the redshift of the observed galaxy. Any star formation that is older than this will be set to 0. Overridden by \option{unimax} if provided. It is computational a bit faster to provide this since we do not need to compute a lookup time from the redshift.
@@ -184,6 +181,7 @@ If \option{returnall}=TRUE, then we get a list containing:
 \item{Stars}{List; the full output of the relevant SFH function used. See \code{\link{SFHfunc}}}
 \item{dustmass}{Numeric vector; contains dust mass for the birth cloud, screen, AGN and total in Msol (requires \option{Dale_M2L_func})}
 \item{dustlum}{Numeric vector; contains dust luminosities for the birth cloud, screen, AGN and total in Lsol (requires \option{Dale_M2L_func})}
+\item{call}{The original function call.}
 }
 \author{
 Aaron Robotham
