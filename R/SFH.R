@@ -87,7 +87,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
     lumtot_screen=0
   }
   
-  lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_atten = lumtot_unatten - sum(c(0,diff(speclib$Wave))*lum)
   
   masstot=burstmass
   
@@ -290,7 +290,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     lumtot_screen=0
   }
   
-  lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_atten = lumtot_unatten - sum(c(0,diff(speclib$Wave))*lum)
   
   masstot=burstmass+youngmass+oldmass+ancientmass
   
@@ -592,7 +592,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     lumtot_screen=0
   }
   
-  lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_atten = lumtot_unatten - sum(c(0,diff(speclib$Wave))*lum)
   
   masstot=burstmass+youngmass+midmass+oldmass+ancientmass
   
@@ -948,7 +948,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   
   SFRburst=do.call('integrate', c(list(f=massfunc, lower=0, upper=1e8),massfunc_args))$value*forcescale/1e8
   
-  lumtot_atten=sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_atten = lumtot_unatten - sum(c(0,diff(speclib$Wave))*lum)
   
   if(z<0 | is.null(filters)){
     out=NULL
