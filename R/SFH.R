@@ -799,7 +799,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   if(is.function(Z)){
     dots=list(...)
     Z_args=dots[names(dots) %in% names(formals(Z))]
-    Zvec=do.call('Z',c(list(age=speclib$Age*agescale),list(massfunc=massfunc),Z_args,massfunc_args))
+    Zvec=do.call('Z',c(list(speclib$Age*agescale),list(massfunc=massfunc),Z_args,massfunc_args))
     Zlist=interp_param(Zvec, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
@@ -1046,7 +1046,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
   if(is.function(Z)){
     dots=list(...)
     Z_args=dots[names(dots) %in% names(formals(Z))]
-    Zvec=do.call('Z',c(list(age=speclib$Age*agescale),list(massfunc=massfunc),Z_args,massfunc_args))
+    Zvec=do.call('Z',c(list(speclib$Age*agescale),list(massfunc=massfunc),Z_args,massfunc_args))
     Zlist=interp_param(Zvec, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
