@@ -174,7 +174,7 @@ massfunc_snorm=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13
   magemax=magemax*1e9
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
-  
+  #normal SFH
   temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
   
   temp[temp<0]=0
@@ -190,12 +190,52 @@ massfunc_snorm_burst=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew
   magemax=magemax*1e9
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
-  
+  #normal SFH
   temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
-  
+  #burst
   temp[age<mburstage]=temp[age<mburstage]+mburst
   
   temp[temp<0]=0
   temp[age>magemax]=0
   invisible(temp)
 }
+
+massfunc_snorm_trunc=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13.8, mtrunc=2){
+  #Scale functions ages to years
+  mpeak=mpeak*1e9
+  mperiod=mperiod*1e9
+  magemax=magemax*1e9
+  
+  age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
+  #normal SFH
+  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  #truncation
+  timetrunc = abs(magemax - mpeak)
+  temp = temp * (1 - pnorm(age, mean = mpeak + timetrunc/mtrunc, sd = timetrunc/(2*mtrunc)))
+  
+  temp[temp<0]=0
+  temp[age>magemax]=0
+  invisible(temp)
+}
+
+massfunc_snorm_burst_trunc=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, mburstage=0.1, magemax=13.8, mtrunc=2){
+  #Scale functions ages to years
+  mpeak=mpeak*1e9
+  mperiod=mperiod*1e9
+  mburstage=mburstage*1e9
+  magemax=magemax*1e9
+  
+  age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
+  #normal SFH
+  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  #burst
+  temp[age<mburstage]=temp[age<mburstage]+mburst
+  #truncation
+  timetrunc = abs(magemax - mpeak)
+  temp = temp * (1 - pnorm(age, mean = mpeak + timetrunc/mtrunc, sd = timetrunc/(2*mtrunc)))
+  
+  temp[temp<0]=0
+  temp[age>magemax]=0
+  invisible(temp)
+}
+

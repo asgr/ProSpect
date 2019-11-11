@@ -11,6 +11,8 @@
 \alias{massfunc_exp_burst}
 \alias{massfunc_snorm}
 \alias{massfunc_snorm_burst}
+\alias{massfunc_snorm_trunc}
+\alias{massfunc_snorm_burst_trunc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Useful Star Formation Functions
@@ -37,6 +39,10 @@ massfunc_exp_burst(age, mburst = 0, mSFR = 10, mtau = 1, mpivot = magemax,
 massfunc_snorm(age, mSFR = 10, mpeak = 10, mperiod = 1, mskew = 0.5, magemax = 13.8)
 massfunc_snorm_burst(age, mburst = 0, mSFR = 10, mpeak = 10, mperiod = 1, mskew = 0.5,
   mburstage = 0.1, magemax = 13.8)
+massfunc_snorm_trunc(age, mSFR = 10, mpeak = 10, mperiod = 1, mskew = 0.5, magemax = 13.8,
+  mtrunc = 2)
+massfunc_snorm_burst_trunc(age, mburst = 0, mSFR = 10, mpeak = 10, mperiod = 1,
+  mskew = 0.5, mburstage = 0.1, magemax = 13.8, mtrunc = 2)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -105,6 +111,9 @@ Numeric scalar; the skew of the star formation history, 0 means perfectly Normal
 }
   \item{magemax}{
 Numeric scalar; max age allowed, SFR is set to 0 beyond this value (Gyr) [all].
+}
+  \item{mtrunc}{
+Numeric scalar; controls truncation between \option{mpeak} and \option{magemax}. 0 means no extra truncation, 1 is about half truncated and 2 is softly but fairly fully truncated. Larger values will be sharper.
 }
 }
 \details{

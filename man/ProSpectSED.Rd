@@ -95,10 +95,10 @@ Numeric vector; desired output log10 wavelength grid to use in Ang. Default cove
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
 }
   \item{unimax}{
-Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0. Overridden by \option{agemax} if that is provided.
+Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today) in years. Any star formation that is older than this will be set to 0. Overridden by \option{agemax} if that is provided.
 }
   \item{agemax}{
-Numeric scalar; maximum allowed age of any stellar population relative to the redshift of the observed galaxy. Any star formation that is older than this will be set to 0. Overridden by \option{unimax} if provided. It is computational a bit faster to provide this since we do not need to compute a lookup time from the redshift.
+Numeric scalar; maximum allowed age of any stellar population relative to the redshift of the observed galaxy in years. Any star formation that is older than this will be set to 0. Overridden by \option{unimax} if provided. It is computational a bit faster to provide this since we do not need to compute a lookup time from the redshift.
 }
   \item{parm}{
 Numeric vector; arguments to be passed to \code{ProSpectSED}.
