@@ -162,6 +162,18 @@ SFR = mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*
 SFR = mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi) [also 0 above magemax]
 SFR[age<mburstage] = SFR[age<mburstage] + mburst
 
+\code{massfunc_snorm_trunc} produces a rising and falling skewed Normal star formation that looks a bit like the CSFH (can be perfectly Normal if \option{mskew}=0). The truncation means it can be forced to have very low SFR in the early Universe:
+
+SFR = mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi) [also 0 above magemax]
+timetrunc = abs(magemax - mpeak)
+SFR = SFR * (1 - pnorm(age, mean = mpeak + timetrunc/mtrunc, sd = timetrunc/(2*mtrunc)))
+
+\code{massfunc_snorm_burst_trunc} produces a rising and falling skewed Normal star formation that looks a bit like the CSFH (can be perfectly Normal if \option{mskew}=0) and has a recent burst. The truncation means it can be forced to have very low SFR in the early Universe:
+
+SFR = mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi) [also 0 above magemax]
+SFR[age<mburstage] = SFR[age<mburstage] + mburst
+timetrunc = abs(magemax - mpeak)
+SFR = SFR * (1 - pnorm(age, mean = mpeak + timetrunc/mtrunc, sd = timetrunc/(2*mtrunc)))
 }
 \value{
 In all cases the output is the star formation rate (Msol/yr) at a given age in years.
@@ -183,6 +195,8 @@ curve(massfunc_exp, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 curve(massfunc_exp_burst, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 curve(massfunc_snorm, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 curve(massfunc_snorm_burst, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
+curve(massfunc_snorm_trunc, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
+curve(massfunc_snorm_burst_trunc, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
