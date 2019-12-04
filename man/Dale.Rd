@@ -98,7 +98,8 @@ Something to be aware of is how Dale 2014 does the mixing. It is actually define
 Downloaded the file spectra.SFAGN.tar.gz from http://physics.uwyo.edu/~ddale/research/seds/seds.html.
 }
 \references{
-Dale et al, 2014, ApJ, 784, 11; Draine et al, 2007, ApJ, 663, 866
+Dale et al, 2014, ApJ, 784, 11 \cr
+Draine et al, 2007, ApJ, 663, 866
 }
 \examples{
 ### Sanity check of different scaling options:

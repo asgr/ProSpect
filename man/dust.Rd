@@ -78,7 +78,7 @@ For \code{atten_emit} the input spectrum is attenuated by the specified Charlot 
 }
 }
 \references{
-Charlot & Fall, 2000, ApJ, 539, 718
+Charlot & Fall, 2000, ApJ, 539, 718 \cr
 da Cunha et al, 2008, MNRAS, 388, 1595
 }
 \author{

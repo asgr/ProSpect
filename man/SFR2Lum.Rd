@@ -26,7 +26,7 @@ Best effort SFR to H[alpha] luminosity conversion function.
 The H[alpha] line luminosity in Lsol.
 }
 \references{
-Kennicutt et al, 1994, ApJ, 435, 22
+Kennicutt et al, 1994, ApJ, 435, 22 \cr
 Kennicutt et al, 1998, ARAA, 36, 189
 }
 \author{
