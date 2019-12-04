@@ -5,7 +5,7 @@
 Emission Line Generation
 }
 \description{
-Code to generate emission line specra based on Levesue, Kewley & Larson (2010).
+Code to generate emission line specra based on Levesque, Kewley & Larson (2010).
 }
 \usage{
 emissionLines(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, SFR=NULL,
@@ -70,6 +70,9 @@ Aaron Robotham
 }
 \seealso{
 \code{\link{LKL10}}, \code{\link{SFR2Lum}}, \code{\link{Z2q}}, \code{\link{interp_param}}
+}
+\references{
+Levesque, Kewley & Larson, 2010, AJ, 139, 712
 }
 \examples{
 plot(emissionLines(Ha_lum=1, veldisp=100), type='l', xlim=c(6400,6800), ylim=c(0,0.2))

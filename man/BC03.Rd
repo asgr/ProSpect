@@ -152,8 +152,8 @@ There are 6 metallicities (as given in \option{Z}), 221 age steps per population
 http://www.bruzual.org/bc03
 }
 \references{
-BC03/GALEXev: Bruzual and Charlot, 2003, MNRAS, 344, 1000
-Padova 1994 isochrones: Bertelli et al., 1994, A\&AS, 106, 275
+BC03/GALEXev: Bruzual and Charlot, 2003, MNRAS, 344, 1000 \cr
+Padova 1994 isochrones: Bertelli et al., 1994, A\&AS, 106, 275 \cr
 Chabrier IMF: Chabrier, 2003, PASP, 115, 763
 }
 \examples{
