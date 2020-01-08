@@ -1,0 +1,198 @@
+---
+title: "Fake It Until You Make It"
+author: "Aaron Robotham"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Making Mock Data
+
+Load the libraries we will need:
+
+```{r}
+library(ProSpect)
+library(LaplacesDemon)
+library(foreach)
+library(celestial)
+library(magicaxis)
+```
+
+Load some data we want to use:
+
+```{r}
+data("BC03lr") #BC03 spectral library
+data("Dale_NormTot") #Normalised Dale templates
+```
+
+```{r}
+set.seed(1)
+redshift = 0.1
+
+filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA',
+          'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE', 'W4_WISE', 'P100_Herschel', 
+          'P160_Herschel', 'S250_Herschel' , 'S350_Herschel', 'S500_Herschel')
+
+filtout=foreach(i = filters)%do%{approxfun(getfilt(i))}
+
+tempcen=cenwave[cenwave$filter %in% c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE', 'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel', 'S500_Herschel'),]
+
+agemax = 13.3e9-cosdistTravelTime(z=redshift, H0 = 67.8, OmegaM = 0.308)*1e9
+```
+
+Create our model galaxy We will be using a snorm_trunc SFH function and a massmap_lin metallicity with the following parameters:
+
+```{r}
+inpar=c(mSFR = 0, #log-space
+        mpeak = 0.7, #log-space
+        mperiod = 0.3, #log-space
+        mskew = 0.3,
+        tau_birth = 0, #log-space
+        tau_screen = -0.5, #log-space
+        alpha_SF_birth = 1,
+        alpha_SF_screen = 3
+        )
+```
+
+Simple function to view our target SFH:
+
+```{r}
+plotSFH=function(par,agemax=13.3, add=FALSE,col='black',ylim=NULL){
+ magcurve(massfunc_snorm_trunc(age=x,mSFR=10^par[1],mpeak=10^par[2],mperiod=10^par[3],mskew=par[4], magemax=agemax),0,13.8e9,add=add,col=col,ylim=ylim,xlab='Age (Yr)', ylab='SFR (Msol / Yr)')
+}
+```
+
+Let's take a look:
+
+```{r}
+plotSFH(inpar)
+```
+
+Now we can generate our galaxies SED:
+
+```{r}
+genSED=ProSpectSED(massfunc=massfunc_snorm_trunc,
+                   mSFR=10^inpar[1],
+                   mpeak=10^inpar[2],
+                   mperiod=10^inpar[3],
+                   mskew=inpar[4],
+                   tau_birth=10^inpar[5], 
+                   tau_screen=10^inpar[6], 
+                   alpha_SF_birth=inpar[7], 
+                   alpha_SF_screen=inpar[8],
+                   z=0.1,
+                   Z=Zfunc_massmap_lin,
+                   filtout=filtout,
+                   Dale=Dale_NormTot,
+                   speclib=BC03lr,
+                   agemax = agemax
+)
+```
+
+At this point we create our mock photometry catalogue entry with a fractional error in flux of 0.1 assumed (roughly 0.092 mag error). The photom output of **ProSpectSED** is always Jansky, which is what we want for fitting (you shouldn't fit in magnitude space!).
+
+```{r}
+flux_input=data.frame(filter=tempcen$filter, cenwave=tempcen$cenwave, flux=genSED$Photom, fluxerr=genSED$Photom*0.1)
+  #flux$flux=rnorm(length(flux$flux),mean=flux$flux,sd=flux$fluxerr)
+print(flux_input)
+```
+
+## Fitting a Galaxy
+
+In principle if you have a real galaxy to fit and it is already in the required format of **flux_input**, you can start from this point.
+
+```{r}
+Data=list(flux=flux_input,
+          arglist=list(z=0.1, massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin),
+          speclib=BC03lr, 
+          Dale=Dale_NormTot, 
+          filtout=filtout, 
+          SFH=SFHfunc, # the preferred functional form of the SFH (eg either SFHfunc, SFHburst, SFHp4, SFHp5)
+          parm.names=c('mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen','alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
+          logged=c(T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
+          intervals=list(lo=c(-4,-2,-1,-0.5,-2.5,-2.5,0,0), hi=c(3,1,1,1,1.5,1,4,4)), # fitting range for parameters
+          fit = 'LD', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
+          mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
+          N=length(filters), # number of observed filters
+          like='norm',
+          verbose=FALSE
+  )
+```
+
+
+
+Now we can run an MCMC fit using LaplacesDemon:
+
+```{r eval=FALSE}
+LDout = LaplacesDemon(Model=ProSpectSEDlike, Data=Data,  Initial.Values=inpar, control=list(abstol=0.1), Iterations=1e4, Algorithm='CHARM', Thinning=1)
+```
+
+Above we cheated by starting on the right values for the fit. In reality we would have to use an optimiser to get a reasonable starting position. **R** comes with many, but **optim** is a good simple start:
+
+```{r, eval=FALSE}
+Data$fit = 'optim'
+optout = optim(par=inpar, fn=ProSpectSEDlike, Data=Data, method = 'BFGS')
+```
+
+In practice we might want to use something better like CMA to get pretty close pretty quickly (you can get this from my GitHub at asgr/cmaeshpc). Here we set the wall time to 2 minutes (which is usually enough for this many parameters).
+
+```{r, eval=FALSE}
+library(cmaeshpc)
+Data$fit = 'CMA'
+badpar = (Data$intervals$lo + Data$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
+CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data, lower=Data$intervals$lo, upper=Data$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+```
+
+## Exploring Results
+
+We can check the posterior monitored distribution of stellar mass formed (masstot). This is a derived parameter given the star formation history, hence we have to monitor it as we go. Otherwise we would need to reconstruct the mass formed for all 10^4 combinations of parameters generated (which would take a long time!).
+
+```{r, eval=FALSE}
+maghist(LDout$Monitor[,"masstot"], verbose = FALSE, xlab='Stellar Mass / Msol', ylab='PDF')
+abline(v=genSED$Stars$masstot, col='red')
+```
+
+We can also see what fluxes were generated by our various MCMC samples:
+
+```{r, eval=FALSE}
+magplot(flux_input$cenwave, LDout$Monitor[1,4:23], type='l', log='xy', grid=TRUE,
+        xlab="Wavelength (Ang)", ylab='Flux Density / Jy')
+for(i in 2:1e4){
+  lines(flux_input$cenwave, LDout$Monitor[i,4:23], col=hsv(alpha=0.1))
+}
+points(flux_input[,c("cenwave","flux")])
+magerr(flux_input$cenwave, flux_input$flux, ylo=flux_input$fluxerr)
+```
+
+## Fitting for Redshift
+
+It is easy to add redshift as an explored parameter, given access to SED based photo-z. Basically we have to remove it from arglist and add it to parm.names, making sure we give it a reasonable range. Here we explore it in log-space:
+
+```{r}
+Data_z=list(flux=flux_input,
+           arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin),
+           speclib=BC03lr, 
+           Dale=Dale_NormTot, 
+           filtout=filtout, 
+           SFH=SFHfunc, # the preferred funcitonal form of the SFH (eg either SFHfunc, SFHburst, SFHp4, SFHp5)
+           parm.names=c('z', 'mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen','alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
+           logged=c(T, T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
+           intervals=list(lo=c(-3, -4,-2,-1,-0.5,-2.5,-2.5,0,0), hi=c(0, 3,1,1,1,1.5,1,4,4)), # fitting range for parameters
+           fit = 'CMA', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
+           mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
+           N=length(filters), # number of observed filters
+           like='norm',
+           verbose=FALSE
+)
+```
+
+A CMA fit returns the expected value (log10(z) = -1) pretty well:
+
+```{r, eval=FALSE}
+badpar_z = (Data_z$intervals$lo + Data_z$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
+CMAout_z = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$intervals$lo, upper=Data_z$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+```
+
