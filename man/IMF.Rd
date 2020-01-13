@@ -64,7 +64,7 @@ Mostly useful for exploring the fraction of mass in different stellar mass range
 If \option{massmult} = FALSE then the return is dN/dM for the specified \option{mass}, if \option{massmult} = TRUE then the return is M.dN/dM.
 }
 \references{
-Chabrier, 2003, PASP, 115, 763
+Chabrier, 2003, PASP, 115, 763 \cr
 Kroupa, 2001, MNRAS, 322, 231
 }
 \author{
