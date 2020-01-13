@@ -27,10 +27,10 @@ Name of filter to use.
 }
 }
 \details{
-Depending on the format of the target photometry it may be more appropriate to work in AB mag, CGS or Jansky. As a reminder, Jansky is simply CGS*1e23, which scales things to nearer unity for typical astrophysical sources.
+Depending on the format of the target photometry it may be more appropriate to work in AB mag, CGS or Jansky (1e-26 W/m^2/Hz). As a reminder, Jansky is simply CGS*1e23, which scales things to nearer unity for typical astrophysical sources. Remember here that 1W = 1e7 erg/s.
 }
 \value{
-Numeric scalar; flux in target units (i.e. AB mag, CGS or Jansky).
+Numeric scalar; flux in target units, i.e. AB mag (m = -2.5.log10(f[CGS]) - 48.60), CGS (erg/s/cm^2/Hz = 1e-23 W/m^2/Hz) or Jansky (1 Jy = 1e-26 W/m^2/Hz).
 }
 \author{
 Aaron Robotham

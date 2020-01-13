@@ -31,7 +31,7 @@ Numeric vector; the value to be converted (in units of the LHS of the function n
 }
 }
 \details{
-For clarity the conversion used are provided below:
+For clarity the conversions used are provided below:
 
 magAB2Jansky = 10^(-0.4*(magAB-8.9))
 
@@ -53,7 +53,15 @@ WHzToAbsolute = Jansky2magAB(WHz/(4*pi*((3.086e+17)^2)*1e-26))
 
 }
 \value{
-Numeric vector; the converted value (in units of the RHS of the function name).
+Numeric vector; the converted value (in units of the RHS of the function name).\cr
+
+Where output units are:\cr
+
+AB mag (m = -2.5.log10(f[CGS]) - 48.60)\cr
+
+CGS (erg/s/cm^2/Hz = 1e-23 W/m^2/Hz)\cr
+
+Jansky (1 Jy = 1e-26 W/m^2/Hz)
 }
 \author{
 Aaron Robotham
