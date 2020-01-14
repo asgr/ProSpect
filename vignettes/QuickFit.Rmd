@@ -150,6 +150,7 @@ Data$fit = 'CMA'
 badpar = (Data$intervals$lo + Data$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
 CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data, lower=Data$intervals$lo,
                   upper=Data$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+print(CMAout$par)
 ```
 
 ## Exploring Results
@@ -202,5 +203,6 @@ A CMA fit returns the expected value (log10(z) = -1) pretty well:
 badpar_z = (Data_z$intervals$lo + Data_z$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
 CMAout_z = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$intervals$lo,
                     upper=Data_z$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+print(CMAout_z$par)
 ```
 
