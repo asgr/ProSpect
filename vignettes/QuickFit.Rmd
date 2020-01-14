@@ -33,8 +33,9 @@ set.seed(1)
 redshift = 0.1
 
 filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA',
-          'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE', 'W4_WISE', 'P100_Herschel', 
-          'P160_Herschel', 'S250_Herschel' , 'S350_Herschel', 'S500_Herschel')
+          'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE',
+          'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel',
+          'S500_Herschel')
 
 filtout=foreach(i = filters)%do%{approxfun(getfilt(i))}
 
@@ -61,13 +62,15 @@ Simple function to view our target SFH:
 
 ```{r}
 plotSFH=function(par,agemax=13.3, add=FALSE,col='black',ylim=NULL){
- magcurve(massfunc_snorm_trunc(age=x,mSFR=10^par[1],mpeak=10^par[2],mperiod=10^par[3],mskew=par[4], magemax=agemax),0,13.8e9,add=add,col=col,ylim=ylim,xlab='Age (Yr)', ylab='SFR (Msol / Yr)')
+ magcurve(massfunc_snorm_trunc(age=x,mSFR=10^par[1],mpeak=10^par[2],mperiod=10^par[3],
+                               mskew=par[4], magemax=agemax),0,13.8e9,add=add,col=col,
+                               ylim=ylim,xlab='Age (Yr)', ylab='SFR (Msol / Yr)')
 }
 ```
 
 Let's take a look:
 
-```{r}
+```{r, fig.width=8, fig.height=6}
 plotSFH(inpar)
 ```
 
@@ -111,7 +114,8 @@ Data=list(flux=flux_input,
           Dale=Dale_NormTot, 
           filtout=filtout, 
           SFH=SFHfunc, # the preferred functional form of the SFH (eg either SFHfunc, SFHburst, SFHp4, SFHp5)
-          parm.names=c('mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen','alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
+          parm.names=c('mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen',
+                       'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
           logged=c(T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
           intervals=list(lo=c(-4,-2,-1,-0.5,-2.5,-2.5,0,0), hi=c(3,1,1,1,1.5,1,4,4)), # fitting range for parameters
           fit = 'LD', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
@@ -127,7 +131,8 @@ Data=list(flux=flux_input,
 Now we can run an MCMC fit using LaplacesDemon:
 
 ```{r eval=FALSE}
-LDout = LaplacesDemon(Model=ProSpectSEDlike, Data=Data,  Initial.Values=inpar, control=list(abstol=0.1), Iterations=1e4, Algorithm='CHARM', Thinning=1)
+LDout = LaplacesDemon(Model=ProSpectSEDlike, Data=Data,  Initial.Values=inpar,
+                      control=list(abstol=0.1), Iterations=1e4, Algorithm='CHARM', Thinning=1)
 ```
 
 Above we cheated by starting on the right values for the fit. In reality we would have to use an optimiser to get a reasonable starting position. **R** comes with many, but **optim** is a good simple start:
@@ -143,7 +148,8 @@ In practice we might want to use something better like CMA to get pretty close p
 library(cmaeshpc)
 Data$fit = 'CMA'
 badpar = (Data$intervals$lo + Data$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
-CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data, lower=Data$intervals$lo, upper=Data$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data, lower=Data$intervals$lo,
+                  upper=Data$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
 ```
 
 ## Exploring Results
@@ -178,8 +184,9 @@ Data_z=list(flux=flux_input,
            Dale=Dale_NormTot, 
            filtout=filtout, 
            SFH=SFHfunc, # the preferred funcitonal form of the SFH (eg either SFHfunc, SFHburst, SFHp4, SFHp5)
-           parm.names=c('z', 'mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen','alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
-           logged=c(T, T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
+           parm.names=c('z', 'mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen',
+                        'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
+           logged=c(T,T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
            intervals=list(lo=c(-3, -4,-2,-1,-0.5,-2.5,-2.5,0,0), hi=c(0, 3,1,1,1,1.5,1,4,4)), # fitting range for parameters
            fit = 'CMA', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
            mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
@@ -193,6 +200,7 @@ A CMA fit returns the expected value (log10(z) = -1) pretty well:
 
 ```{r, eval=FALSE}
 badpar_z = (Data_z$intervals$lo + Data_z$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
-CMAout_z = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$intervals$lo, upper=Data_z$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+CMAout_z = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$intervals$lo,
+                    upper=Data_z$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
 ```
 
