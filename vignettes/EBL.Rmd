@@ -9,6 +9,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+The Extra Galactic Background Light (EBL) is the flux density observed across all wavelengths of light. It is dominated by the CMB, followed by the optical and NIR (about 10-20\%). There are a few ways to measure it, but my work has focussed on the method of integrating out the number counts of galaxies at different wavelengths. Assuming we have sufficiently deep photometry, this should directly capture most of the EBL, with the rest estimated by either a model or non-parametric spline fit (see Driver et al 2016).
+
 Load the libraries we need:
 
 ```{r}
@@ -20,12 +22,12 @@ library(foreach)
 Encode the Madua and Dickenson 2014 CSFH function:
 
 ```{r}
-MD14func = function(z, norm=0.00945){ #norm here is MD14 0.015*0.63 (latter Salp to Chab Driver correction)
+MD14func = function(z, norm=0.00945){ #norm here is MD14 0.015*0.63 (latter Salp to Chab Driver 2016 correction)
   norm * ((1+z)^2.7) / ((1+((1+z)/2.9)^5.6))
 }
 ```
 
-Create a function to generate the Extra Galactic Background light:
+Create a function to generate the EBL:
 
 ```{r}
 EBL = function(massfunc_z = MD14func, norm=0.00945, Zfinal=0.02, zvec = 10^seq(-3,1, by=0.1),
@@ -53,16 +55,16 @@ EBL = function(massfunc_z = MD14func, norm=0.00945, Zfinal=0.02, zvec = 10^seq(-
     tempSFH = approxfun(agevec - agevec[i], SFRvec, yleft = 0, yright = 0) # Create a SFH from the current time to the end of the Universe
     tempZH = function(x,...){approxfun(agevec - agevec[i], Zvec, yleft = 0, yright = 0)(x)} # Create a ZH from the current time to the end of the Universe
     
-    ProSpectSED(SFH = SFHfunc, massfunc=tempSFH, z = zvec[i], agemax = max(agevec) - agevec[i], filtout=filtout, #Run ProSpect SED for our target tempSFH and tempZH
+    ProSpectSED(SFH = SFHfunc, massfunc=tempSFH, z = zvec[i], agemax = max(agevec) - agevec[i], filtout=filtout, # Run ProSpect SED for our target tempSFH and tempZH
                 Dale=Dale_NormTot, speclib=BC03lr, OmegaM = 0.3, OmegaL=0.7, H0=70, Z=tempZH, ...)$Photom*1e-26 # x1e-26To get to W/m2/Hz (output is Jansky)
   }
   
-  fluxz = fluxz * volweights #weight by volume elements
-  flux = colSums(fluxz) # sum epochs
+  fluxz = fluxz * volweights # Weight by volume elements
+  flux = colSums(fluxz) # Sum epochs
   tempcen = cenwave[cenwave$filter %in% filters,'cenwave']
-  tempfreq =  299792458/(tempcen/1e10)
-  flux = flux * tempfreq * 1e9 # scale to nW/m2
-  flux = flux / (4*pi) # scale to nW/m2/sr
+  tempfreq =  299792458/(tempcen/1e10) # Convert central wavelength from wavelength to freq
+  flux = flux * tempfreq * 1e9 # Scale to nW/m2
+  flux = flux / (4*pi) # Scale to nW/m2/sr
   
   return(data.frame(wave=tempcen, flux=flux))
 }
@@ -72,8 +74,52 @@ The wavelength is in Angstroms and the flux is nW/m2/sr (as per Driver et al 201
 
 Now we can generate some EBL models:
 
+```{r, fig.width=8, fig.height=6}
+magplot(EBL(), xlab='Wave / Ang', ylab='nW/m^2/sr', ylim=c(0,13), type='l', grid=TRUE)
+lines(EBL(norm=0.008), col='red')
+lines(EBL(norm=0.008, Zfinal=0.01), col='blue')
+lines(EBL(norm=0.008, Zfinal=0.03), col='darkgreen')
+```
+
+Can we fit the EBL? Let's try with 5\% error:
+
 ```{r}
-print(EBL())
-print(EBL(norm=0.008))
-print(EBL(norm=0.008, Zfinal=0.01))
+EBLin = EBL(norm=0.008, Zfinal=0.01)
+EBLin$fluxerr = EBLin$flux*0.05
+EBLin$flux = rnorm(9, mean=EBLin$flux, sd=EBLin$fluxerr)
+```
+
+Take a look at our mock EBL:
+
+```{r, fig.width=8, fig.height=6}
+magplot(EBLin[,1:2], ylim=c(0,13), xlab='Wave / Ang', ylab='nW/m^2/sr', grid=TRUE)
+magerr(EBLin$wave, EBLin$flux, ylo=EBLin$fluxerr)
+```
+
+Here we will fit for the normalisation and the final metallicity in our closed box model (notice we do the fit in log space):
+
+```{r, eval=FALSE}
+# Make likelihood function:
+EBLlike=function(par, Data){
+  -sum(dnorm(x = EBL(norm=10^par[1], Zfinal=10^par[2])$flux, mean = Data$flux,
+             sd = Data$fluxerr, log = TRUE))
+}
+# Fit it (this takes about a minute):
+EBLfit = optim(par=c(-2,-1.7), EBLlike, Data=EBLin, method = 'L-BFGS-B',
+               lower=c(-3,-3), upper=c(-1,-1), hessian = TRUE)
+```
+
+And now we can check the outputs. Here I basically get back the model we put in:
+
+```{r, eval=FALSE}
+print(10^EBLfit$par) # model parameters, I see 0.008222504 0.012269921
+print(sqrt(diag(solve(EBLfit$hessian)))) # dex errors, I see 0.01191497 0.09821987
+```
+
+Compare our fitted model to the observations:
+
+```{r, eval=FALSE, fig.width=8, fig.height=6}
+magplot(EBLin[,1:2], ylim=c(0,13), xlab='Wave / Ang', ylab='nW/m^2/sr', grid=TRUE)
+magerr(EBLin$wave, EBLin$flux, ylo=EBLin$fluxerr)
+lines(EBL(norm=10^EBLfit$par[1], Zfinal=10^EBLfit$par[2]), col='red')
 ```
