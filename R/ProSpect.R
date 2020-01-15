@@ -96,6 +96,10 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
     for(i in 1:length(filtout)){
       photom_out = c(photom_out, bandpass(flux=Flux$flux, wave=Flux$wave, filter=filtout[[i]], lum=TRUE))
     }
+  }else if(z>0 & is.null(filtout)){
+    Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+    Flux$flux=convert_wave2freq(flux_wave=Flux$flux*.cgs_to_jansky, wave=Flux$wave)
+    photom_out=NULL
   }else{
     Flux=NULL
     photom_out=NULL

@@ -11,6 +11,10 @@ vignette: >
 
 The Extra Galactic Background Light (EBL) is the flux density observed across all wavelengths of light. It is dominated by the CMB, followed by the optical and NIR (about 10-20\%). There are a few ways to measure it, but my work has focussed on the method of integrating out the number counts of galaxies at different wavelengths. Assuming we have sufficiently deep photometry, this should directly capture most of the EBL, with the rest estimated by either a model or non-parametric spline fit (see Driver et al 2016).
 
+## Generating the EBL
+
+You will need ProSpect v0.8.6 for this vignette to fully run.
+
 Load the libraries we need:
 
 ```{r}
@@ -30,10 +34,12 @@ MD14func = function(z, norm=0.00945){ #norm here is MD14 0.015*0.63 (latter Salp
 Create a function to generate the EBL:
 
 ```{r}
-EBL = function(massfunc_z = MD14func, norm=0.00945, Zfinal=0.02, zvec = 10^seq(-3,1, by=0.1),
-               SFRvec=rep(0.01,length(zvec)),
-               filters=c('u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA',
-                         'J_VISTA', 'H_VISTA', 'K_VISTA'), ...){
+EBL = function(massfunc_z = MD14func, norm=0.00945, Zstart=1e-4, Zfinal=0.02,
+               zvec = 10^seq(-3,1, by=0.1), SFRvec=rep(0.01,length(zvec)),
+               filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS',
+               'Z_VISTA', 'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE',
+               'W3_WISE', 'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' ,
+               'S350_Herschel', 'S500_Herschel'), out='Photom', ...){
   
   data(Dale_NormTot)
   data(BC03lr)
@@ -49,42 +55,66 @@ EBL = function(massfunc_z = MD14func, norm=0.00945, Zfinal=0.02, zvec = 10^seq(-
   filtout = foreach(i = filters)%do%{approxfun(getfilt(i))} # Generate our filter sets for quick generation
   
   tempSFH = approxfun(agevec, SFRvec, yleft = 0, yright = 0) # Generate our temporary SFH function to create our ZH
-  Zvec = Zfunc_massmap_box(agevec, massfunc=tempSFH, Zfinal=Zfinal) # Create out closed box ZH
+  Zvec = Zfunc_massmap_box(agevec, massfunc=tempSFH, Zstart=Zstart, Zfinal=Zfinal) # Create out closed box ZH
   
   fluxz = foreach(i = 1:length(agevec), .combine='rbind')%do%{
     tempSFH = approxfun(agevec - agevec[i], SFRvec, yleft = 0, yright = 0) # Create a SFH from the current time to the end of the Universe
     tempZH = function(x,...){approxfun(agevec - agevec[i], Zvec, yleft = 0, yright = 0)(x)} # Create a ZH from the current time to the end of the Universe
     
-    ProSpectSED(SFH = SFHfunc, massfunc=tempSFH, z = zvec[i], agemax = max(agevec) - agevec[i], filtout=filtout, # Run ProSpect SED for our target tempSFH and tempZH
-                Dale=Dale_NormTot, speclib=BC03lr, OmegaM = 0.3, OmegaL=0.7, H0=70, Z=tempZH, ...)$Photom*1e-26 # x1e-26To get to W/m2/Hz (output is Jansky)
+    if(out=='Photom'){
+      ProSpectSED(SFH = SFHfunc, massfunc=tempSFH, z = zvec[i], agemax = max(agevec) - agevec[i], filtout=filtout, # Run ProSpect SED for our target tempSFH and tempZH
+                Dale=Dale_NormTot, speclib=BC03lr, OmegaM = 0.3, OmegaL=0.7, H0=70, Z=tempZH, returnall=FALSE, ...)
+    }else if(out=='Spec'){
+      temp=ProSpectSED(SFH = SFHfunc, massfunc=tempSFH, z = zvec[i], agemax = max(agevec) - agevec[i], filters=NULL, # Run ProSpect SED for our target tempSFH and tempZH
+                Dale=Dale_NormTot, speclib=BC03lr, OmegaM = 0.3, OmegaL=0.7, H0=70, Z=tempZH, returnall=TRUE, ...)$FinalFlux
+      temp=approxfun(temp)
+      temp(10^seq(2, 7, by=0.01))
+    }
   }
   
   fluxz = fluxz * volweights # Weight by volume elements
   flux = colSums(fluxz) # Sum epochs
-  tempcen = cenwave[cenwave$filter %in% filters,'cenwave']
-  tempfreq =  299792458/(tempcen/1e10) # Convert central wavelength from wavelength to freq
-  flux = flux * tempfreq * 1e9 # Scale to nW/m2
-  flux = flux / (4*pi) # Scale to nW/m2/sr
+  flux = flux * 1e-26 # x1e-26 to get to W/m2/Hz (output is Jansky)
+  flux = flux * 1e9 # to get to nW/m2/Hz
+  flux = flux / (4*pi) # to get to nW/m2/Hz/sr
   
-  return(data.frame(wave=tempcen, flux=flux))
+  if(out=='Photom'){
+    tempcen = cenwave[cenwave$filter %in% filters,'cenwave']
+    tempfreq =  299792458/(tempcen/1e10) # Convert central wavelength from wavelength to freq
+    flux = flux * tempfreq # Scale to nW/m2/sr
+    output=data.frame(wave=tempcen, flux=flux)
+  }else if(out=='Spec'){
+    tempwave = 10^seq(2, 7, by=0.01)
+    tempfreq =  299792458/(tempwave/1e10) # Convert central wavelength from wavelength to freq
+    flux = flux * tempfreq # Scale to nW/m2/sr
+    output=data.frame(tempwave, flux=flux)
+  }
+  return(invisible(output))
 }
 ```
 
 The wavelength is in Angstroms and the flux is nW/m2/sr (as per Driver et al 2016).
 
-Now we can generate some EBL models:
+Now we can generate some EBL models (need to up the default zvec resolution to get this looking smooth though):
 
 ```{r, fig.width=8, fig.height=6}
-magplot(EBL(), xlab='Wave / Ang', ylab='nW/m^2/sr', ylim=c(0,13), type='l', grid=TRUE)
-lines(EBL(norm=0.008), col='red')
-lines(EBL(norm=0.008, Zfinal=0.01), col='blue')
-lines(EBL(norm=0.008, Zfinal=0.03), col='darkgreen')
+magplot(EBL(out='Spec', zvec = 10^seq(-3,1, by=0.01)), xlab='Wave / Ang', ylab='nW/m^2/sr',
+        ylim=c(0,13), log='x', type='l', grid=TRUE)
+lines(EBL(norm=0.008, Zfinal=0.02, out='Spec', zvec = 10^seq(-3,1, by=0.01)), col='red')
+lines(EBL(norm=0.008, Zfinal=0.01, out='Spec', zvec = 10^seq(-3,1, by=0.01)), col='blue')
+lines(EBL(norm=0.008, Zstart=0.02, Zfinal=0.02, out='Spec', zvec = 10^seq(-3,1, by=0.01)), col='darkgreen')
+lines(EBL(norm=0.008, Zstart=0.01, Zfinal=0.01, out='Spec', zvec = 10^seq(-3,1, by=0.01)), col='brown')
 ```
 
-Can we fit the EBL? Let's try with 5\% error:
+## Fitting the EBL
+
+Can we fit the EBL? Let's try with 5\% error, where we just use optical and NIR filters:
 
 ```{r}
-EBLin = EBL(norm=0.008, Zfinal=0.01)
+set.seed(1)
+filters=c('u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA', 'Y_VISTA', 'J_VISTA',
+          'H_VISTA', 'K_VISTA')
+EBLin = EBL(norm=0.008, Zfinal=0.01, filters=filters)
 EBLin$fluxerr = EBLin$flux*0.05
 EBLin$flux = rnorm(9, mean=EBLin$flux, sd=EBLin$fluxerr)
 ```
@@ -101,8 +131,8 @@ Here we will fit for the normalisation and the final metallicity in our closed b
 ```{r, eval=FALSE}
 # Make likelihood function:
 EBLlike=function(par, Data){
-  -sum(dnorm(x = EBL(norm=10^par[1], Zfinal=10^par[2])$flux, mean = Data$flux,
-             sd = Data$fluxerr, log = TRUE))
+  -sum(dnorm(x = EBL(norm=10^par[1], Zfinal=10^par[2], filters=filters)$flux,
+             mean = Data$flux, sd = Data$fluxerr, log = TRUE))
 }
 # Fit it (this takes about a minute):
 EBLfit = optim(par=c(-2,-1.7), EBLlike, Data=EBLin, method = 'L-BFGS-B',
@@ -112,8 +142,8 @@ EBLfit = optim(par=c(-2,-1.7), EBLlike, Data=EBLin, method = 'L-BFGS-B',
 And now we can check the outputs. Here I basically get back the model we put in:
 
 ```{r, eval=FALSE}
-print(10^EBLfit$par) # model parameters, I see 0.008222504 0.012269921
-print(sqrt(diag(solve(EBLfit$hessian)))) # dex errors, I see 0.01191497 0.09821987
+print(10^EBLfit$par) # model parameters, I see 0.008235409, 0.012355299
+print(sqrt(diag(solve(EBLfit$hessian)))) # dex errors, I see 0.01309136, 0.11251226
 ```
 
 Compare our fitted model to the observations:
@@ -122,4 +152,39 @@ Compare our fitted model to the observations:
 magplot(EBLin[,1:2], ylim=c(0,13), xlab='Wave / Ang', ylab='nW/m^2/sr', grid=TRUE)
 magerr(EBLin$wave, EBLin$flux, ylo=EBLin$fluxerr)
 lines(EBL(norm=10^EBLfit$par[1], Zfinal=10^EBLfit$par[2]), col='red')
+```
+
+## SFH Normalisation
+
+Looking at the EBLs generated above, it is clear that even for very different metallicity evolutions, the K band EBL flux is a very good estimator of the SFH normalisation.
+
+We can check this:
+
+```{r}
+set.seed(666)
+norm_ran = runif(20, 0.007, 0.015)
+Zstart_ran = runif(20, 1e-4, 0.04)
+Zfinal_ran = runif(20, Zstart_ran, 0.04)
+```
+
+Generate the EBLs:
+
+```{r}
+Knorm = foreach(i=1:20, .combine='c')%do%{EBL(norm=norm_ran[i], Zstart = Zstart_ran[i],
+                                            Zfinal=Zfinal_ran[i], filters='K_VISTA')[1,2]}
+```
+
+Find the best fit line:
+
+```{r}
+KvEBL = lm(Knorm ~ norm_ran)
+print(KvEBL)
+```
+
+Plot the K band EBL flux versus the input normalisation (for very different ZH remember):
+
+```{r, fig.width=8, fig.height=8}
+magplot(norm_ran, Knorm, xlab='SFH Norm (Msol/Yr/Mpc^3)', ylab='K band EBL flux (nW/m2^2/sr)',
+        grid=TRUE, asp=1)
+abline(KvEBL, col='red')
 ```
