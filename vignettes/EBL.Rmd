@@ -185,6 +185,6 @@ Plot the K band EBL flux versus the input normalisation (for very different ZH r
 
 ```{r, fig.width=8, fig.height=8}
 magplot(norm_ran, Knorm, xlab='SFH Norm (Msol/Yr/Mpc^3)', ylab='K band EBL flux (nW/m2^2/sr)',
-        grid=TRUE, asp=1)
+        grid=TRUE)
 abline(KvEBL, col='red')
 ```
