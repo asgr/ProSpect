@@ -1,23 +1,23 @@
 getfilt=function(filter){
   out=NULL
-  if(filter=='FUV_GALEX'){filt_FUV_GALEX=NULL; data('filt_FUV_GALEX', envir = environment()); out=filt_FUV_GALEX}
-  if(filter=='NUV_GALEX'){filt_NUV_GALEX=NULL; data('filt_NUV_GALEX', envir = environment()); out=filt_NUV_GALEX}
-  if(filter=='u_SDSS'){filt_u_SDSS=NULL; data('filt_u_SDSS', envir = environment()); out=filt_u_SDSS}
-  if(filter=='g_SDSS'){filt_g_SDSS=NULL; data('filt_g_SDSS', envir = environment()); out=filt_g_SDSS}
-  if(filter=='r_SDSS'){filt_r_SDSS=NULL; data('filt_r_SDSS', envir = environment()); out=filt_r_SDSS}
-  if(filter=='i_SDSS'){filt_i_SDSS=NULL; data('filt_i_SDSS', envir = environment()); out=filt_i_SDSS}
-  if(filter=='z_SDSS'){filt_z_SDSS=NULL; data('filt_z_SDSS', envir = environment()); out=filt_z_SDSS}
+  if(filter=='FUV_GALEX' | filter=='FUV'){filt_FUV_GALEX=NULL; data('filt_FUV_GALEX', envir = environment()); out=filt_FUV_GALEX}
+  if(filter=='NUV_GALEX' | filter=='NUV'){filt_NUV_GALEX=NULL; data('filt_NUV_GALEX', envir = environment()); out=filt_NUV_GALEX}
+  if(filter=='u_SDSS' | filter=='u'){filt_u_SDSS=NULL; data('filt_u_SDSS', envir = environment()); out=filt_u_SDSS}
+  if(filter=='g_SDSS' | filter=='g'){filt_g_SDSS=NULL; data('filt_g_SDSS', envir = environment()); out=filt_g_SDSS}
+  if(filter=='r_SDSS' | filter=='r'){filt_r_SDSS=NULL; data('filt_r_SDSS', envir = environment()); out=filt_r_SDSS}
+  if(filter=='i_SDSS' | filter=='i'){filt_i_SDSS=NULL; data('filt_i_SDSS', envir = environment()); out=filt_i_SDSS}
+  if(filter=='z_SDSS' | filter=='z'){filt_z_SDSS=NULL; data('filt_z_SDSS', envir = environment()); out=filt_z_SDSS}
   if(filter=='u_VST'){filt_u_VST=NULL; data('filt_u_VST', envir = environment()); out=filt_u_VST}
   if(filter=='g_VST'){filt_g_VST=NULL; data('filt_g_VST', envir = environment()); out=filt_g_VST}
   if(filter=='r_VST'){filt_r_VST=NULL; data('filt_r_VST', envir = environment()); out=filt_r_VST}
   if(filter=='i_VST'){filt_i_VST=NULL; data('filt_i_VST', envir = environment()); out=filt_i_VST}
   if(filter=='z_VST'){filt_z_VST=NULL; data('filt_z_VST', envir = environment()); out=filt_z_VST}
-  if(filter=='Z_VISTA'){filt_Z_VISTA=NULL; data('filt_Z_VISTA', envir = environment()); out=filt_Z_VISTA}
-  if(filter=='Y_VISTA'){filt_Y_VISTA=NULL; data('filt_Y_VISTA', envir = environment()); out=filt_Y_VISTA}
-  if(filter=='J_VISTA'){filt_J_VISTA=NULL; data('filt_J_VISTA', envir = environment()); out=filt_J_VISTA}
-  if(filter=='H_VISTA'){filt_H_VISTA=NULL; data('filt_H_VISTA', envir = environment()); out=filt_H_VISTA}
-  if(filter=='K_VISTA'){filt_K_VISTA=NULL; data('filt_K_VISTA', envir = environment()); out=filt_K_VISTA}
-  if(filter=='Ks_VISTA'){filt_Ks_VISTA=NULL; data('filt_Ks_VISTA', envir = environment()); out=filt_Ks_VISTA}
+  if(filter=='Z_VISTA' | filter=='Z'){filt_Z_VISTA=NULL; data('filt_Z_VISTA', envir = environment()); out=filt_Z_VISTA}
+  if(filter=='Y_VISTA' | filter=='Y'){filt_Y_VISTA=NULL; data('filt_Y_VISTA', envir = environment()); out=filt_Y_VISTA}
+  if(filter=='J_VISTA' | filter=='J'){filt_J_VISTA=NULL; data('filt_J_VISTA', envir = environment()); out=filt_J_VISTA}
+  if(filter=='H_VISTA' | filter=='H'){filt_H_VISTA=NULL; data('filt_H_VISTA', envir = environment()); out=filt_H_VISTA}
+  if(filter=='K_VISTA' | filter=='K'){filt_K_VISTA=NULL; data('filt_K_VISTA', envir = environment()); out=filt_K_VISTA}
+  if(filter=='Ks_VISTA' | filter=='Ks'){filt_Ks_VISTA=NULL; data('filt_Ks_VISTA', envir = environment()); out=filt_Ks_VISTA}
   if(filter=='W1_WISE' | filter=='W1'){filt_W1_WISE=NULL; data('filt_W1_WISE', envir = environment()); out=filt_W1_WISE}
   if(filter=='W2_WISE' | filter=='W2'){filt_W2_WISE=NULL; data('filt_W2_WISE', envir = environment()); out=filt_W2_WISE}
   if(filter=='W3_WISE' | filter=='W3'){filt_W3_WISE=NULL; data('filt_W3_WISE', envir = environment()); out=filt_W3_WISE}

@@ -239,3 +239,19 @@ massfunc_snorm_burst_trunc=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1,
   invisible(temp)
 }
 
+massfunc_dtau=function(age, mSFR = 10,  mpeak = 10, mtau = 2, magemax = 13.8){
+  mtau = mtau*1e9
+  mpeak = mpeak*1e9
+  magemax = magemax*1e9
+  mtrunc = mtau / (magemax - mpeak)
+  age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
+  
+  x = rep(0, length(age))
+  x[age<=mpeak] = (mtau + mpeak - age[age<=mpeak]) / mtau
+  x[age>mpeak] = ((mtau/mtrunc) + mpeak - age[age>mpeak]) / (mtau/mtrunc)
+  temp = x * exp(-x)
+  temp = (mSFR/exp(-1)) * temp
+  temp[temp<0]=0
+  temp[age>magemax]=0
+  invisible(temp)
+}
