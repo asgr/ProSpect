@@ -13,6 +13,7 @@
 \alias{massfunc_snorm_burst}
 \alias{massfunc_snorm_trunc}
 \alias{massfunc_snorm_burst_trunc}
+\alias{massfunc_dtau}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Useful Star Formation Functions
@@ -43,6 +44,7 @@ massfunc_snorm_trunc(age, mSFR = 10, mpeak = 10, mperiod = 1, mskew = 0.5, magem
   mtrunc = 2)
 massfunc_snorm_burst_trunc(age, mburst = 0, mSFR = 10, mpeak = 10, mperiod = 1,
   mskew = 0.5, mburstage = 0.1, magemax = 13.8, mtrunc = 2)
+massfunc_dtau(age, mSFR = 10,  mpeak = 10, mtau = 2, magemax = 13.8)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -50,7 +52,7 @@ massfunc_snorm_burst_trunc(age, mburst = 0, mSFR = 10, mpeak = 10, mperiod = 1,
 Numeric vector; age in lookback time where 0 means now (yr).
 }
   \item{mSFR}{
-Numeric scalar; SFR scaling (Msol/yr). For most functions this ends up being the peak SFR [\code{massfunc_const} / \code{massfunc_exp} / \code{massfunc_exp_burst} / \code{massfunc_snorm} / \code{massfunc_snorm_burst}].  
+Numeric scalar; SFR scaling (Msol/yr). For most functions this ends up being the peak SFR [\code{massfunc_const} / \code{massfunc_exp} / \code{massfunc_exp_burst} / \code{massfunc_snorm} / \code{massfunc_snorm_burst} / \code{massfunc_dtau}].  
 }
   \item{mburst}{
 Numeric scalar; SFR of a recent Age < \option{mburstage} yr burst (Msol/yr) [\code{massfunc_p3_burst} / \code{massfunc_exp_burst} / \code{massfunc_snorm_burst}].
@@ -95,13 +97,13 @@ Numeric scalar; age at 5th node (Gyr) [\code{massfunc_p6}].
 Numeric scalar; age at 6th node (Gyr) [\code{massfunc_p6}].
 }
   \item{mtau}{
-Numeric scalar; exponential decline parameter tau [\code{massfunc_exp} / \code{massfunc_exp_burst}].
+Numeric scalar; exponential decline parameter tau [\code{massfunc_exp} / \code{massfunc_exp_burst} / \code{massfunc_dtau}].
 }
   \item{mpivot}{
 Numeric scalar; exponential pivot age where SFR passes though \option{mSFR} (Gyr) [\code{massfunc_exp} / \code{massfunc_exp_burst}].
 }
   \item{mpeak}{
-Numeric scalar; location of peak SFR (Gyr) [\code{massfunc_snorm} / \code{massfunc_snorm_burst}].
+Numeric scalar; location of peak SFR (Gyr) [\code{massfunc_snorm} / \code{massfunc_snorm_burst} / \code{massfunc_dtau}].
 }
   \item{mperiod}{
 Numeric scalar; time period of the star formation, the standard deviation of the Normal when \option{mskew}=0 (Gyr) [\code{massfunc_snorm} / \code{massfunc_snorm_burst}].
@@ -110,10 +112,10 @@ Numeric scalar; time period of the star formation, the standard deviation of the
 Numeric scalar; the skew of the star formation history, 0 means perfectly Normal, -ve means long tail to old ages, +ve means long tail to young ages [\code{massfunc_snorm} / \code{massfunc_snorm_burst}].
 }
   \item{magemax}{
-Numeric scalar; max age allowed, SFR is set to 0 beyond this value (Gyr) [all].
+Numeric scalar; max age allowed, SFR is set to 0 beyond this value (Gyr) [all]. In the case of \code{massfunc_dtau} the star formation truncation is scaled such that it is exactly 0 at \option{magemax} and grows from this point up to its peak value.
 }
   \item{mtrunc}{
-Numeric scalar; controls truncation between \option{mpeak} and \option{magemax}. 0 means no extra truncation, 1 is about half truncated and 2 is softly but fairly fully truncated. Larger values will be sharper.
+Numeric scalar; controls truncation between \option{mpeak} and \option{magemax}. For \code{massfunc_snorm_trunc} and \code{massfunc_snorm_burst_trunc}, 0 means no extra truncation, 1 is about half truncated and 2 is softly but fairly fully truncated. Larger values will be sharper.
 }
 }
 \details{
@@ -174,6 +176,14 @@ SFR = mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*
 SFR[age<mburstage] = SFR[age<mburstage] + mburst
 timetrunc = abs(magemax - mpeak)
 SFR = SFR * (1 - pnorm(age, mean = mpeak + timetrunc/mtrunc, sd = timetrunc/(2*mtrunc)))
+
+\code{massfunc_dtau} produces a delayed tau rising and falling star formation that looks a bit like the CSFH. It is a modified version of the typical delayed tau SFH, where it is possible to specify the exact age the star formation starts growing from via the \option{magemax} parameter. If \option{magemax} = \option{mpeak} + \option{mtau} then the function reverts exactly to the standard delated tau model:
+
+mtrunc = mtau / (magemax - mpeak)
+x[age<=mpeak] = (mtau + mpeak - age[age<=mpeak]) / mtau
+x[age>mpeak] = ((mtau/mtrunc) + mpeak - age[age>mpeak]) / (mtau/mtrunc)
+SFR = x * exp(-x)
+SFR = (mSFR/exp(-1)) * SFR
 }
 \value{
 In all cases the output is the star formation rate (Msol/yr) at a given age in years.
