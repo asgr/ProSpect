@@ -30,3 +30,5 @@
 
 .cgs_to_si = 1e-3
 .si_to_cgs = 1e3
+
+.lsol_to_absolute = .lsol_to_erg/(4*pi*(.mpc_to_cm*1e-5)^2)

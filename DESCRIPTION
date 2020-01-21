@@ -1,8 +1,8 @@
 Package: ProSpect
 Type: Package
 Title: Interface to BC03 and EMILES Libraries
-Version: 0.8.7
-Date: 2020-01-20
+Version: 0.9.0
+Date: 2020-01-21
 Author: Aaron Robotham
 Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>
 Description: A basic interface to the BC03 (low and high resolution) and EMILES libraries as well as the Dale 2014 dust emission templates.

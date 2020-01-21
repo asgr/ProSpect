@@ -23,7 +23,7 @@ ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 Function; the star formation history to use. Must be one of \code{\link{SFHburst}}, \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}} (default).
 }
   \item{z}{
-Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).
+Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z} <= 0 then only luminosities are computed if \option{filtout}=NULL. If filters are provided via \option{filtout} then the \option{Photom} output returns Absolute AB magnitudes for convenience.
 }
   \item{tau_birth}{
 Numeric scalar; dust tau of birth clouds. Associated with sub 10 Myr star formation. See \code{\link{CF_birth}}.
@@ -167,11 +167,11 @@ Logical; should verbose messages be shown. If missing it is set to TRUE.
 }
 }
 \value{
-If \option{returnall}=FALSE then we get a vector containing the photometry in Jansky.
+If \option{returnall}=FALSE then we get a vector containing the \option{Photom} output, which is usually the photometry in Jansky (special case when \option{z} < 0, where this is instead the Absolute AB magnitudes for convenience).
 
 If \option{returnall}=TRUE, then we get a list containing:
 
-\item{Photom}{Vector; photometry in Jansky}
+\item{Photom}{Vector; photometry in Jansky. If \option{z} <= 0 and filters are provided via \option{filtout} then the \option{Photom} output returns Absolute AB magnitudes for convenience (i.e. source is placed at a distance of 10 pc).}
 \item{FinalFlux}{Two column data.frame; Wavelength in Ang, Flux in Jansky}
 \item{FinalLum}{Two column data.frame; Wavelength in Ang, Total SED luminosity in Lsol / Ang}
 \item{StarsAtten}{Two column data.frame; Wavelength in Ang, Attenuated stellar SED luminosity in Lsol / Ang}

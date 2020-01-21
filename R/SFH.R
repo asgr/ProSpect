@@ -121,7 +121,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
       out=NULL
     }
   }else{
-    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
+    flux=cbind(wave = speclib$Wave, flux = lum*.lsol_to_absolute)
     if(!is.null(outtype)){
       out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
@@ -145,6 +145,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
   return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=burstage, masstot=burstmass, SFRburst=SFRburst)))
 }
 
+# SFHp4 is deprecataed
 SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,  filters='all', Z=c(5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, unimax=13.8e9, agemax=NULL, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
@@ -318,7 +319,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
       out=NULL
     }
   }else{
-    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
+    flux=cbind(wave = speclib$Wave, flux = lum*.lsol_to_absolute)
     if(!is.null(outtype)){
       out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
@@ -348,6 +349,8 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
 
   return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=ages, masstot=masstot, masses=masses, SFR=SFR, sSFR=sSFR, SFRburst=burstmass/1e8)))
 }
+
+# SMstarp4 is deprecataed
 
 SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), oldage=c(1e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, unimax=13.8e9, agemax=NULL, ...){
   
@@ -435,6 +438,8 @@ SMstarp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, 
   totstar=burststar+youngstar+oldstar+ancientstar
   return(c(BurstSMform=burstform, YoungSMform=youngform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=totform, TotSMstar=totstar))
 }
+
+# SFHp5 is deprecataed
 
 SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7, filters='all', Z=c(5,5,5,5,5), z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype='mag', cossplit=c(9e9,1.3e10), dosplit=FALSE, sparse=5, unimax=13.8e9, agemax=NULL, ...){
   
@@ -620,7 +625,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
       out=NULL
     }
   }else{
-    flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
+    flux=cbind(wave = speclib$Wave, flux = lum*.lsol_to_absolute)
     if(!is.null(outtype)){
       out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){
@@ -650,6 +655,8 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
 
   return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=ages, masstot=masstot, masses=masses, SFR=SFR, sSFR=sSFR, SFRburst=burstmass/1e8)))
 }
+
+# SMstarp5 is deprecataed
 
 SMstarp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancientmass=1e10, burstage=c(0,1e8), youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9), ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL, Z=c(5,5,5,5,5), z=0, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, cossplit=c(9e9,1.3e10), dosplit=FALSE, unimax=13.8e9, agemax=NULL, ...){
   
@@ -975,7 +982,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
         out=NULL
       }
     }else{
-      flux=cbind(wave = speclib$Wave, flux = lum*3e-07)
+      flux=cbind(wave = speclib$Wave, flux = lum*.lsol_to_absolute)
       if(!is.null(outtype)){
         out=photom_flux(flux, outtype = outtype, filters = filters)
         if(is.list(filters)){
