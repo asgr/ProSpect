@@ -5,7 +5,7 @@ Version: 0.9.1
 Date: 2020-01-21
 Author: Aaron Robotham
 Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>
-Description: A basic interface to the BC03 (low and high resolution) and EMILES libraries as well as the Dale 2014 dust emission templates.
+Description: A high level interface to the BC03 (low and high resolution) and EMILES libraries, as well as the Dale 2014 dust emission templates. This package allows for complex star formation and metallicity histories to be specified, and can be used in a generative or fitting (Bayesian) mode.
 License: LGPL-3
 Depends: R (>= 3.0)
 Imports: celestial, NISTunits, pracma
