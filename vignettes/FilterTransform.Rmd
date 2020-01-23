@@ -1,0 +1,118 @@
+---
+title: "Filter Transforms"
+author: "Aaron Robotham"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+In astronomy we often have filters that are similar but annoyingly different to each other. For instance the Sloan $ugri$ filter set are all similar to, but not identical to, the VST $ugri$ filters. In fact in detail probably almost no two telescopes have identical versions of the same filters (even if their names imply that they do). But no fear, **ProSpect** can help fix this with relative ease!
+
+In general to solve this problem you will need two nearby filters in one system to the one you want to fix in another, e.g. Sloan $r_S$ and $i_S$ can be used to convert the Sloan $r_S$ to VST $r_V$.
+
+## Setting Things Up
+
+Load the libraries we will need:
+
+```{r}
+library(ProSpect)
+library(hyper.fit)
+library(data.table)
+library(foreach)
+```
+
+Load some data we want to use:
+
+```{r}
+data("BC03lr") #BC03 spectral library
+data("Dale_NormTot") #Normalised Dale templates
+```
+
+Preprocess filters:
+
+```{r}
+filters =c('r_SDSS','i_SDSS','r_VST')
+filtout = foreach(i = filters)%do%{approxfun(getfilt(i))}
+```
+
+We are interested in comparing the Sloan and VST $r$ bands so let's see what these look like:
+
+```{r, fig.width=8, fig.height=6}
+magcurve(filtout[[1]](x), 5000, 7500, ylim=c(0,1), grid=TRUE, xlab='Wave / Ang', ylab='Norm')
+magcurve(filtout[[3]](x), 5000, 7500, col='red', add=TRUE)
+legend('topleft', legend=c('r_SDSS','r_VST'), col=c('black','red'), lty=1)
+```
+
+The normalisation of filter throughput does not matter (so ignore the vertical offset), but what is clear is that the VST filter stretches bluewards compared to SDSS. This is significant since steep spectral shapes at low redshift in this regime means the VST $r$ band will usually be a bit brighter than SDSS.
+
+## Predicting Filters
+
+Make some random SFHs with redshifts over the range of interest. The first 5 arguments here control the SFH, and the last is a Uniform sampling of the redshift. This last part might need to be adapted to better match extreme samples (very high redshift), where an additional use of the redshift dependency might improve the converstion.
+
+```{r}
+set.seed(666)
+
+params = cbind(runif(1e3), runif(1e3), runif(1e3), runif(1e3), runif(1e3), runif(1e3,0,0.5))
+
+ranSFHs = foreach(i = 1:1e3, .combine='rbind')%do%{
+ProSpectSED(m1=params[i,1], m2=params[i,2], m3=params[i,3], m4=params[i,4], m5=params[i,5],
+            z=params[i,6], filtout=filtout, speclib=BC03lr, Dale=Dale_NormTot,
+            returnall = FALSE)
+}
+ranSFHs = data.table(ranSFHs)
+colnames(ranSFHs)=filters
+ranSFHs[,mag_rs:=Jansky2magAB(r_SDSS)]
+ranSFHs[,mag_is:=Jansky2magAB(i_SDSS)]
+ranSFHs[,mag_rv:=Jansky2magAB(r_VST)]
+ranSFHs[,rs_rv:=mag_rs-mag_rv] # to make r_SDSS minus r)VST colours
+ranSFHs[,rs_is:=mag_rs-mag_is] # to make r_SDSS minus i_SDSS colours
+```
+
+We can see how close the Sloan and VST $r$ bands really are:
+
+```{r, fig.width=8, fig.height=6}
+ magplot(density(ranSFHs[,mag_rv-mag_rs]), grid=TRUE, xlab='rv - ri')
+```
+
+It is clear there is a strong shift of around 0.03 mag, with the VST filter appearing to be brighter because it is a bit redder, and template shapes at these redshifts mean a bit redder is a bit brighter.
+
+```{r}
+fitout = hyper.fit(ranSFHs[,list(rs_is, rs_rv)])
+```
+
+Plot it:
+
+```{r, fig.width=8, fig.height=6}
+plot(fitout, grid=TRUE)
+```
+
+Check the output:
+
+```{r}
+summary(fitout)
+```
+
+With a bit of re-arrangement we get to:
+
+$$
+r_v = r_s - 0.1723 (r_s - i_s) + 0.0173
+$$
+ Let's check that this works well:
+ 
+```{r}
+ ranSFHs[,mag_rv_pred:=mag_rs - 0.1723*(rs_is)+0.0173]
+```
+ 
+ And now we can see if we have fixed things:
+ 
+```{r, fig.width=8, fig.height=6}
+magplot(density(ranSFHs[,mag_rv-mag_rs]), grid=TRUE, xlab='r - r', xlim=c(-0.2,0.2),
+        ylim=c(0,50))
+lines(density(ranSFHs[,mag_rv-ranSFHs$mag_rv_pred]), col='red')
+legend('topleft', legend=c('rv - rs', 'rv - rv_pred'), col=c('black', 'red'), lty=1)
+```
+
+Da dah!

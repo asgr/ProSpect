@@ -1,7 +1,7 @@
 Package: ProSpect
 Type: Package
 Title: Interface to BC03 and EMILES Libraries
-Version: 0.9.0
+Version: 0.9.1
 Date: 2020-01-21
 Author: Aaron Robotham
 Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>
@@ -9,7 +9,7 @@ Description: A basic interface to the BC03 (low and high resolution) and EMILES 
 License: LGPL-3
 Depends: R (>= 3.0)
 Imports: celestial, NISTunits, pracma
-Suggests: shiny, magicaxis, knitr, LaplacesDemon, foreach
+Suggests: shiny, magicaxis, knitr, LaplacesDemon, foreach, data.table, hyper.fit
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
