@@ -14,8 +14,8 @@ vignette: >
 First get **ProSpect**:
 
 ```{r, eval=FALSE}
-install.packages('devtools')
-library(devtools)
+install.packages('remotes')
+library(remotes)
 install_github('asgr/ProSpect') #This might take a while since there is a lot of data embedded in the package.
 library(ProSpect)
 ```
