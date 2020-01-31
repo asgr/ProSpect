@@ -36,6 +36,7 @@ Preprocess filters:
 ```{r}
 filters =c('r_SDSS','i_SDSS','r_VST')
 filtout = foreach(i = filters)%do%{approxfun(getfilt(i))}
+names(filtout) = filters
 ```
 
 We are interested in comparing the Sloan and VST $r$ bands so let's see what these look like:
@@ -74,7 +75,7 @@ ranSFHs[,rs_is:=mag_rs-mag_is] # to make r_SDSS minus i_SDSS colours
 We can see how close the Sloan and VST $r$ bands really are:
 
 ```{r, fig.width=8, fig.height=6}
- magplot(density(ranSFHs[,mag_rv-mag_rs]), grid=TRUE, xlab='rv - ri')
+magplot(density(ranSFHs[,mag_rv-mag_rs]), grid=TRUE, xlab='rv - ri')
 ```
 
 It is clear there is a strong shift of around 0.03 mag, with the VST filter appearing to be brighter because it is a bit redder, and template shapes at these redshifts mean a bit redder is a bit brighter.
@@ -116,3 +117,23 @@ legend('topleft', legend=c('rv - rs', 'rv - rv_pred'), col=c('black', 'red'), lt
 ```
 
 Da dah!
+
+## Now We Heave Learnt What To Do...
+
+**ProSpect** offers a very high level routine to do all of this in one magical go. Here we will try it using three different input filters to best map the VST $r$ band:
+
+```{r}
+filters =c('g_SDSS','r_SDSS','i_SDSS','r_VST')
+filt_in = foreach(i = filters[1:3])%do%{approxfun(getfilt(i))}
+filt_out = approxfun(getfilt(filters[4]))
+names(filt_in) = filters[1:3] #vital we give our input filters useful names
+```
+
+This can all be run through the above steps in all adjacent band combinations with:
+
+```{r}
+trans = filterTranBands(filt_in=filt_in, filt_out = filt_out)
+print(trans)
+```
+
+In general we want the filter transform that minimises the vertical scatter (scat.vert above). This happens to be the transform we computed manually using the SDSS $r$ and $i$ bands. Note we also see a small preference for predicting off the nearest band as the additive reference (SDSS $r$ rather than $i$).
