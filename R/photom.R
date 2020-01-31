@@ -252,6 +252,17 @@ cenwavefunc=function(filter){
   }
 }
 
+pivwavefunc=function(filter){
+  if(is.function(filter)){
+    return(NA)
+  }else{
+    wave=filter[,1]
+    response=filter[,2]
+    Ptot=sum(response/wave, na.rm=TRUE)
+    return(sqrt((1/Ptot)*sum(response*wave, na.rm=TRUE)))
+  }
+}
+
 convert_wave2freq=function(flux_wave, wave, wavefac=1e-10, freqfac=1){
   return(invisible((wavefac*flux_wave*wave^2)/.c_to_mps))
 }

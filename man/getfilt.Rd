@@ -28,6 +28,11 @@ getfilt(filter)
   r_VST  \tab  VST r band \cr
   i_VST  \tab  VST i band \cr
   z_VST  \tab  VST z band \cr
+  g_HSC  \tab  HSC g band \cr
+  r_HSC  \tab  HSC r band \cr
+  i_HSC  \tab  HSC i band \cr
+  z_HSC  \tab  HSC z band \cr
+  Y_HSC  \tab  HSC Y band \cr
   Z_VISTA  \tab  VISTA Z band \cr
   Y_VISTA  \tab  VISTA Y band \cr
   J_VISTA  \tab  VISTA J band \cr

@@ -12,6 +12,11 @@ getfilt=function(filter){
   if(filter=='r_VST'){filt_r_VST=NULL; data('filt_r_VST', envir = environment()); out=filt_r_VST}
   if(filter=='i_VST'){filt_i_VST=NULL; data('filt_i_VST', envir = environment()); out=filt_i_VST}
   if(filter=='z_VST'){filt_z_VST=NULL; data('filt_z_VST', envir = environment()); out=filt_z_VST}
+  if(filter=='g_HSC'){filt_g_HSC=NULL; data('filt_g_HSC', envir = environment()); out=filt_g_HSC}
+  if(filter=='r_HSC'){filt_r_HSC=NULL; data('filt_r_HSC', envir = environment()); out=filt_r_HSC}
+  if(filter=='i_HSC'){filt_i_HSC=NULL; data('filt_i_HSC', envir = environment()); out=filt_i_HSC}
+  if(filter=='z_HSC'){filt_z_HSC=NULL; data('filt_z_HSC', envir = environment()); out=filt_z_HSC}
+  if(filter=='Y_HSC'){filt_Y_HSC=NULL; data('filt_Y_HSC', envir = environment()); out=filt_Y_HSC}
   if(filter=='Z_VISTA' | filter=='Z'){filt_Z_VISTA=NULL; data('filt_Z_VISTA', envir = environment()); out=filt_Z_VISTA}
   if(filter=='Y_VISTA' | filter=='Y'){filt_Y_VISTA=NULL; data('filt_Y_VISTA', envir = environment()); out=filt_Y_VISTA}
   if(filter=='J_VISTA' | filter=='J'){filt_J_VISTA=NULL; data('filt_J_VISTA', envir = environment()); out=filt_J_VISTA}
