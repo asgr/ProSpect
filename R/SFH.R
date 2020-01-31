@@ -38,10 +38,11 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
   }
   
   if(!is.null(filters)){
-    if(filters[1]=='all'){
-      cenwave=NULL
-      data('cenwave', envir = environment())
-      filters=cenwave$filter
+    if(filters[1]=='all' | filters[1]=='GAMA'){
+      filters=c('FUV_GALEX', 'NUV_GALEX', 'u_VST', 'g_VST', 'r_VST', 'i_VST', 'Z_VISTA',
+                'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE',
+                'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel',
+                'S500_Herschel')
     }
   }
   
@@ -196,10 +197,11 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   }
   
   if(!is.null(filters)){
-    if(filters[1]=='all'){
-      cenwave=NULL
-      data('cenwave', envir = environment())
-      filters=cenwave$filter
+    if(filters[1]=='all' | filters[1]=='GAMA'){
+      filters=c('FUV_GALEX', 'NUV_GALEX', 'u_VST', 'g_VST', 'r_VST', 'i_VST', 'Z_VISTA',
+                'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE',
+                'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel',
+                'S500_Herschel')
     }
   }
 
@@ -492,10 +494,11 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   }
   
   if(!is.null(filters)){
-    if(filters[1]=='all'){
-      cenwave=NULL
-      data('cenwave', envir = environment())
-      filters=cenwave$filter
+    if(filters[1]=='all' | filters[1]=='GAMA'){
+      filters=c('FUV_GALEX', 'NUV_GALEX', 'u_VST', 'g_VST', 'r_VST', 'i_VST', 'Z_VISTA',
+                'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE',
+                'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel',
+                'S500_Herschel')
     }
   }
   
@@ -786,10 +789,11 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   }
   
   if(!is.null(filters)){
-    if(filters[1]=='all'){
-      cenwave=NULL
-      data('cenwave', envir = environment())
-      filters=cenwave$filter
+    if(filters[1]=='all' | filters[1]=='GAMA'){
+      filters=c('FUV_GALEX', 'NUV_GALEX', 'u_VST', 'g_VST', 'r_VST', 'i_VST', 'Z_VISTA',
+                'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE',
+                'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel',
+                'S500_Herschel')
     }
   }
   
