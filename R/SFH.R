@@ -116,6 +116,8 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
           out=data.frame(filter=NA, cenwave=cenout, out=out)
         }
       }else{
+        cenwave=NULL
+        data('cenwave', envir = environment())
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
     }else{
@@ -136,6 +138,8 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL, ta
           out=data.frame(filter=NA, cenwave=cenout, out=out)
         }
       }else{
+        cenwave=NULL
+        data('cenwave', envir = environment())
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
     }else{
@@ -315,6 +319,8 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
           out=data.frame(filter=NA, cenwave=cenout, out=out)
         }
       }else{
+        cenwave=NULL
+        data('cenwave', envir = environment())
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
     }else{
@@ -335,6 +341,8 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
           out=data.frame(filter=NA, cenwave=cenout, out=out)
         }
       }else{
+        cenwave=NULL
+        data('cenwave', envir = environment())
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
     }else{
@@ -622,6 +630,8 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
           out=data.frame(filter=NA, cenwave=cenout, out=out)
         }
       }else{
+        cenwave=NULL
+        data('cenwave', envir = environment())
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
     }else{
@@ -642,6 +652,8 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
           out=data.frame(filter=NA, cenwave=cenout, out=out)
         }
       }else{
+        cenwave=NULL
+        data('cenwave', envir = environment())
         out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
       }
     }else{
@@ -980,6 +992,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
             out=data.frame(filter=NA, cenwave=cenout, out=out)
           }
         }else{
+          cenwave=NULL
+          data('cenwave', envir = environment())
           out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
         }
       }else{
@@ -1000,6 +1014,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
             out=data.frame(filter=NA, cenwave=cenout, out=out)
           }
         }else{
+          cenwave=NULL
+          data('cenwave', envir = environment())
           out=data.frame(cenwave[match(filters, cenwave$filter),], out=out)
         }
       }else{
