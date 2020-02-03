@@ -1,4 +1,4 @@
-filterTranMags = function(mag_in, mag_out){
+filterTranMags = function(mag_in, mag_out, return='all'){
   if(is.vector(mag_in)){
     Nbands=1
   }else{
@@ -34,7 +34,17 @@ filterTranMags = function(mag_in, mag_out){
   }else{
     stop('Number of bands for mag_in must be >=1')
   }
-  return(fits)
+  if(return=='all'){
+    return(fits)
+  }else if (return=='best'){
+    scatvec=rep(0,length(fits))
+    for(i in 1:length(fits)){
+      scatvec[i] = fits[[i]]['scat']
+    }
+    return(fits[which.min(scatvec)])
+  }else{
+    stop('return must be one of all or best!')
+  }
 }
 
 filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=666){

@@ -9,7 +9,7 @@ Filter Transformation Functions
 High and low level interface to achieving colour and simple offset filter conversions. These functions can work on simulated or observed data.
 }
 \usage{
-filterTranMags(mag_in, mag_out)
+filterTranMags(mag_in, mag_out, return='all')
 filterTranBands(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=666)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -19,6 +19,9 @@ Numeric matrix, data.frame or vector; columns should be observed magnitudes from
 }
   \item{mag_out}{
 Numeric vector; magnitudes of target filter to map.
+}
+  \item{return}{
+Character scalar; either 'all' (returning all fit combinations), or 'best' (returning just the best in terms of scatter).
 }
   \item{filt_in}{
 List of functions; filters to be used to calculate filter conversions. In general these should at least be near each other in wavelength.  
