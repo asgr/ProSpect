@@ -11,7 +11,7 @@ filterTranMags = function(mag_in, mag_out, return='all'){
   fits=list()
   
   if(Nbands==1){
-    tempcol = mag_in - mag_out
+    tempcol = mag_out - mag_in
     tempmean = mean(tempcol)
     tempsd = sd(tempcol)
     fits = c(beta = tempmean, scat = tempsd)
@@ -36,14 +36,32 @@ filterTranMags = function(mag_in, mag_out, return='all'){
   }
   if(return=='all'){
     return(fits)
-  }else if (return=='best'){
-    scatvec=rep(0,length(fits))
+  }else if (return=='bestalpha'){
+    bestvec=rep(0,length(fits))
     for(i in 1:length(fits)){
-      scatvec[i] = fits[[i]]['scat']
+      bestvec[i] = abs(fits[[i]]['alpha'])
     }
-    return(fits[which.min(scatvec)])
+    return(fits[which.min(bestvec)])
+  }else if (return=='bestbeta'){
+    bestvec=rep(0,length(fits))
+    for(i in 1:length(fits)){
+      bestvec[i] = abs(fits[[i]]['beta'])
+    }
+    return(fits[which.min(bestvec)])
+  }else if (return=='bestscat'){
+    bestvec=rep(0,length(fits))
+    for(i in 1:length(fits)){
+      bestvec[i] = fits[[i]]['scat']
+    }
+    return(fits[which.min(bestvec)])
+  }else if (return=='bestall'){
+    bestvec=rep(0,length(fits))
+    for(i in 1:length(fits)){
+      bestvec[i] = 2*(fits[[i]]['alpha']^2) + fits[[i]]['beta']^2 + fits[[i]]['scat']^2
+    }
+    return(fits[which.min(bestvec)])
   }else{
-    stop('return must be one of all or best!')
+    stop('return must be one of all, bestalpha, bestbeta, bestscat or bestall!')
   }
 }
 

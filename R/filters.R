@@ -15,6 +15,13 @@ getfilt=function(filter){
   if(filter=='i_VST'){filt_i_VST=NULL; data('filt_i_VST', envir = environment()); out=filt_i_VST}
   if(filter=='z_VST'){filt_z_VST=NULL; data('filt_z_VST', envir = environment()); out=filt_z_VST}
   
+  if(filter=='u_LSST' | filter=='u_Rubin'){filt_u_LSST=NULL; data('filt_u_LSST', envir = environment()); out=filt_u_LSST}
+  if(filter=='g_LSST' | filter=='r_Rubin'){filt_g_LSST=NULL; data('filt_g_LSST', envir = environment()); out=filt_g_LSST}
+  if(filter=='r_LSST' | filter=='r_Rubin'){filt_r_LSST=NULL; data('filt_r_LSST', envir = environment()); out=filt_r_LSST}
+  if(filter=='i_LSST' | filter=='i_Rubin'){filt_i_LSST=NULL; data('filt_i_LSST', envir = environment()); out=filt_i_LSST}
+  if(filter=='z_LSST' | filter=='z_Rubin'){filt_z_LSST=NULL; data('filt_z_LSST', envir = environment()); out=filt_z_LSST}
+  if(filter=='y_LSST' | filter=='y_Rubin'){filt_y_LSST=NULL; data('filt_y_LSST', envir = environment()); out=filt_y_LSST}
+  
   if(filter=='g_HSC'){filt_g_HSC=NULL; data('filt_g_HSC', envir = environment()); out=filt_g_HSC}
   if(filter=='r_HSC'){filt_r_HSC=NULL; data('filt_r_HSC', envir = environment()); out=filt_r_HSC}
   if(filter=='i_HSC'){filt_i_HSC=NULL; data('filt_i_HSC', envir = environment()); out=filt_i_HSC}

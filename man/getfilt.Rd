@@ -13,16 +13,18 @@ getfilt(filter)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{filter}{
+  
+For the full set now available see options at \code{\link{filters}}, where all data with are accessible to the \code{getfilt} function (with the removal of the preceding "filt_"). The original set available was: \cr
 %%     ~~Describe \code{filter} here~~
 \tabular{ll}{
   Name    \tab  Filter reference \cr
   FUV     \tab  GALEX FUV band \cr
   NUV     \tab  GALEX NUV band \cr
-  u_SDSS  \tab  Sloan u band \cr
-  g_SDSS  \tab  Sloan g band \cr
-  r_SDSS  \tab  Sloan r band \cr
-  i_SDSS  \tab  Sloan i band \cr
-  z_SDSS  \tab  Sloan z band \cr
+  u  \tab  Sloan u band \cr
+  g  \tab  Sloan g band \cr
+  r  \tab  Sloan r band \cr
+  i  \tab  Sloan i band \cr
+  z  \tab  Sloan z band \cr
   u_VST  \tab  VST u band \cr
   g_VST  \tab  VST g band \cr
   r_VST  \tab  VST r band \cr
@@ -33,11 +35,11 @@ getfilt(filter)
   i_HSC  \tab  HSC i band \cr
   z_HSC  \tab  HSC z band \cr
   Y_HSC  \tab  HSC Y band \cr
-  Z_VISTA  \tab  VISTA Z band \cr
-  Y_VISTA  \tab  VISTA Y band \cr
-  J_VISTA  \tab  VISTA J band \cr
-  H_VISTA  \tab  VISTA H band \cr
-  K_VISTA or Ks_VISTA  \tab  VISTA Ks band \cr
+  Z  \tab  VISTA Z band \cr
+  Y  \tab  VISTA Y band \cr
+  J  \tab  VISTA J band \cr
+  H  \tab  VISTA H band \cr
+  K or Ks  \tab  VISTA Ks band \cr
   W1      \tab  Wise W1 band  \cr
   W2      \tab  Wise W2 band  \cr
   W3      \tab  Wise W3 band  \cr
@@ -64,6 +66,8 @@ getfilt(filter)
 }
 \details{
 Returns a target named filter from the internal database of filters. Filters returned are of the type to be used when calculating AB magnitudes in \code{\link{bandpass}}.
+\cr
+Note LSST filters can also be accessed with "Rubin" (the preferred new shorthand name for the observatory).
 }
 \value{
 Two column matrix. First column is the wavelength in Angstrom and second column is the filter response.
