@@ -17,6 +17,9 @@ Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8, ...
 
 Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc, ...){
   #Scale functions ages to years
+  if(missing(Zagemax) & 'magemax' %in% names(list(...))){
+    Zagemax = list(...)$magemax
+  }
   Zagemax=Zagemax*1e9
   if(missing(massfunc)){
     stop('Need massfunc!')
@@ -36,6 +39,9 @@ Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc
 Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13.8, massfunc, ...){
   #Scale functions ages to years
   massfrac_final=1-exp(-(Zfinal-Zstart)/yield)
+  if(missing(Zagemax) & 'magemax' %in% names(list(...))){
+    Zagemax = list(...)$magemax
+  }
   Zagemax=Zagemax*1e9
   if(missing(massfunc)){
     stop('Need massfunc!')
