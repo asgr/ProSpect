@@ -26,14 +26,20 @@ getfilt=function(filter){
   if(filter=='r_HSC'){filt_r_HSC=NULL; data('filt_r_HSC', envir = environment()); out=filt_r_HSC}
   if(filter=='i_HSC'){filt_i_HSC=NULL; data('filt_i_HSC', envir = environment()); out=filt_i_HSC}
   if(filter=='z_HSC'){filt_z_HSC=NULL; data('filt_z_HSC', envir = environment()); out=filt_z_HSC}
-  if(filter=='Y_HSC'){filt_Y_HSC=NULL; data('filt_Y_HSC', envir = environment()); out=filt_Y_HSC}
-  
+  if(filter=='y_HSC'){filt_y_HSC=NULL; data('filt_y_HSC', envir = environment()); out=filt_y_HSC}
+
   if(filter=='Z_VISTA' | filter=='Z'){filt_Z_VISTA=NULL; data('filt_Z_VISTA', envir = environment()); out=filt_Z_VISTA}
   if(filter=='Y_VISTA' | filter=='Y'){filt_Y_VISTA=NULL; data('filt_Y_VISTA', envir = environment()); out=filt_Y_VISTA}
   if(filter=='J_VISTA' | filter=='J'){filt_J_VISTA=NULL; data('filt_J_VISTA', envir = environment()); out=filt_J_VISTA}
   if(filter=='H_VISTA' | filter=='H'){filt_H_VISTA=NULL; data('filt_H_VISTA', envir = environment()); out=filt_H_VISTA}
   if(filter=='K_VISTA' | filter=='K'){filt_K_VISTA=NULL; data('filt_K_VISTA', envir = environment()); out=filt_K_VISTA}
   if(filter=='Ks_VISTA' | filter=='Ks'){filt_Ks_VISTA=NULL; data('filt_Ks_VISTA', envir = environment()); out=filt_Ks_VISTA}
+  
+  if(filter=='Z_UKIRT'){filt_Z_UKIRT=NULL; data('filt_Z_UKIRT', envir = environment()); out=filt_Z_UKIRT}
+  if(filter=='Y_UKIRT'){filt_Y_UKIRT=NULL; data('filt_Y_UKIRT', envir = environment()); out=filt_Y_UKIRT}
+  if(filter=='J_UKIRT'){filt_J_UKIRT=NULL; data('filt_J_UKIRT', envir = environment()); out=filt_J_UKIRT}
+  if(filter=='H_UKIRT'){filt_H_UKIRT=NULL; data('filt_H_UKIRT', envir = environment()); out=filt_H_UKIRT}
+  if(filter=='K_UKIRT'){filt_K_UKIRT=NULL; data('filt_K_UKIRT', envir = environment()); out=filt_K_UKIRT}
   
   if(filter=='F070W_JWST'){filt_F070W_JWST=NULL; data('filt_F070W_JWST', envir = environment()); out=filt_F070W_JWST}
   if(filter=='F090W_JWST'){filt_F090W_JWST=NULL; data('filt_F090W_JWST', envir = environment()); out=filt_F090W_JWST}

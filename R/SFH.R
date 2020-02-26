@@ -239,7 +239,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
     burstage[1]=speclib$Age[burstageloc[1]]
     burstage[2]=speclib$Age[burstageloc[2]]
-    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum=colSums(speclib_burst[burstageloc[1]:burstageloc[2],,drop=FALSE]*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
     burstlum[is.nan(burstlum)]=0
   }else{
     burstlum=0
@@ -249,7 +249,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
     youngage[1]=speclib$Age[youngageloc[1]]
     youngage[2]=speclib$Age[youngageloc[2]]
-    younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+    younglum=colSums(speclib_young[youngageloc[1]:youngageloc[2],,drop=FALSE]*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
     younglum[is.nan(younglum)]=0
   }else{
     younglum=0
@@ -259,7 +259,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
     oldage[1]=speclib$Age[oldageloc[1]]
     oldage[2]=speclib$Age[oldageloc[2]]
-    oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+    oldlum=colSums(speclib_old[oldageloc[1]:oldageloc[2],,drop=FALSE]*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
     oldlum[is.nan(oldlum)]=0
   }else{
     oldlum=0
@@ -269,7 +269,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
     ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
     ancientage[1]=speclib$Age[ancientageloc[1]]
     ancientage[2]=speclib$Age[ancientageloc[2]]
-    ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+    ancientlum=colSums(speclib_ancient[ancientageloc[1]:ancientageloc[2],,drop=FALSE]*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
     ancientlum[is.nan(ancientlum)]=0
   }else{
     ancientlum=0
@@ -283,7 +283,7 @@ SFHp4=function(burstmass=1e8, youngmass=1e9, oldmass=1e10, ancientmass=1e10, bur
   if(tau_birth!=0 & burstmass>0){
     lum=lum-burstlum
     speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum=colSums(speclib_burst[burstageloc[1]:burstageloc[2],,drop=FALSE]*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
     lum=lum+burstlum
     lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
   }else{
@@ -540,7 +540,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
     burstage[1]=speclib$Age[burstageloc[1]]
     burstage[2]=speclib$Age[burstageloc[2]]
-    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum=colSums(speclib_burst[burstageloc[1]:burstageloc[2],,drop=FALSE]*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
     burstlum[is.nan(burstlum)]=0
   }else{
     burstlum=0
@@ -550,7 +550,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
     youngage[1]=speclib$Age[youngageloc[1]]
     youngage[2]=speclib$Age[youngageloc[2]]
-    younglum=colSums(rbind(speclib_young[youngageloc[1]:youngageloc[2],])*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
+    younglum=colSums(speclib_young[youngageloc[1]:youngageloc[2],,drop=FALSE]*speclib$AgeWeights[youngageloc[1]:youngageloc[2]])*youngmass/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
     younglum[is.nan(younglum)]=0
   }else{
     younglum=0
@@ -560,7 +560,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     midageloc=c(which.min(abs(speclib$Age-midage[1])),which.min(abs(speclib$Age-midage[2])))
     midage[1]=speclib$Age[midageloc[1]]
     midage[2]=speclib$Age[midageloc[2]]
-    midlum=colSums(rbind(speclib_mid[midageloc[1]:midageloc[2],])*speclib$AgeWeights[midageloc[1]:midageloc[2]])*midmass/sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
+    midlum=colSums(speclib_mid[midageloc[1]:midageloc[2],,drop=FALSE]*speclib$AgeWeights[midageloc[1]:midageloc[2]])*midmass/sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
     midlum[is.nan(midlum)]=0
   }else{
     midlum=0
@@ -570,7 +570,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
     oldage[1]=speclib$Age[oldageloc[1]]
     oldage[2]=speclib$Age[oldageloc[2]]
-    oldlum=colSums(rbind(speclib_old[oldageloc[1]:oldageloc[2],])*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
+    oldlum=colSums(speclib_old[oldageloc[1]:oldageloc[2],,drop=FALSE]*speclib$AgeWeights[oldageloc[1]:oldageloc[2]])*oldmass/sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
     oldlum[is.nan(oldlum)]=0
   }else{
     oldlum=0
@@ -580,7 +580,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
     ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
     ancientage[1]=speclib$Age[ancientageloc[1]]
     ancientage[2]=speclib$Age[ancientageloc[2]]
-    ancientlum=colSums(rbind(speclib_ancient[ancientageloc[1]:ancientageloc[2],])*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
+    ancientlum=colSums(speclib_ancient[ancientageloc[1]:ancientageloc[2],,drop=FALSE]*speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])*ancientmass/sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
     ancientlum[is.nan(ancientlum)]=0
   }else{
     ancientlum=0
@@ -594,7 +594,7 @@ SFHp5=function(burstmass=1e8, youngmass=1e9, midmass=1e10, oldmass=1e10, ancient
   if(tau_birth!=0 & burstmass>0){
     lum=lum-burstlum
     speclib_burst[1:birthcloud,]=t(t(speclib_burst[1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
-    burstlum=colSums(rbind(speclib_burst[burstageloc[1]:burstageloc[2],])*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
+    burstlum=colSums(speclib_burst[burstageloc[1]:burstageloc[2],,drop=FALSE]*speclib$AgeWeights[burstageloc[1]:burstageloc[2]])*burstmass/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
     lum=lum+burstlum
     lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
   }else{

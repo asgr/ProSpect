@@ -1,5 +1,7 @@
 exportPattern("^[[:alpha:]]+")
 
+import("checkmate")
+
 importFrom("stats", "approxfun",  "dt", "dchisq", "var", "lm", "runif", "sd")
 importFrom("utils", "data")
 importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWave", "cosplanckLawRadWave")
