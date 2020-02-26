@@ -14,7 +14,7 @@ filterTranMags = function(mag_in, mag_out, return='all'){
     tempcol = mag_out - mag_in
     tempmean = mean(tempcol)
     tempsd = sd(tempcol)
-    fits = c(beta = tempmean, scat = tempsd)
+    fits = c(beta = tempmean, sigma = tempsd)
   }else if(Nbands>=2){
     for(i in 1:Nbands){
       for(j in 1:Nbands){
@@ -24,11 +24,11 @@ filterTranMags = function(mag_in, mag_out, return='all'){
         tempcol = mag_in[,bluesel] - mag_in[,redsel]
 
         tempfit = lm(mag_out - mag_in[,i] ~ tempcol)$coefficients[2:1]
-        scat = sd(mag_in[,i] + tempfit[1]*tempcol + tempfit[2] - mag_out, na.rm = TRUE)
-        tempfit=c(tempfit,scat)
-        names(tempfit) = c('alpha', 'beta', 'scat')
+        sigma = sd(mag_in[,i] + tempfit[1]*tempcol + tempfit[2] - mag_out, na.rm = TRUE)
+        tempfit=c(tempfit,sigma)
+        names(tempfit) = c('alpha', 'beta', 'sigma')
         fits=c(fits, list(tempfit))
-        names(fits)[length(fits)] = paste(inputnames[i],' + alpha.(',inputnames[bluesel],' - ',inputnames[redsel],') + beta +/- scat', sep='')
+        names(fits)[length(fits)] = paste(inputnames[i],' + alpha.(',inputnames[bluesel],' - ',inputnames[redsel],') + beta +/- sigma', sep='')
       }
     }
   }else{
@@ -48,20 +48,20 @@ filterTranMags = function(mag_in, mag_out, return='all'){
       bestvec[i] = abs(fits[[i]]['beta'])
     }
     return(fits[which.min(bestvec)])
-  }else if (return=='bestscat'){
+  }else if (return=='bestsigma'){
     bestvec=rep(0,length(fits))
     for(i in 1:length(fits)){
-      bestvec[i] = fits[[i]]['scat']
+      bestvec[i] = fits[[i]]['sigma']
     }
     return(fits[which.min(bestvec)])
   }else if (return=='bestall'){
     bestvec=rep(0,length(fits))
     for(i in 1:length(fits)){
-      bestvec[i] = 2*(fits[[i]]['alpha']^2) + fits[[i]]['beta']^2 + fits[[i]]['scat']^2
+      bestvec[i] = 2*(fits[[i]]['alpha']^2) + fits[[i]]['beta']^2 + fits[[i]]['sigma']^2
     }
     return(fits[which.min(bestvec)])
   }else{
-    stop('return must be one of all, bestalpha, bestbeta, bestscat or bestall!')
+    stop('return must be one of all, bestalpha, bestbeta, bestsigma or bestall!')
   }
 }
 

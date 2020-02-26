@@ -220,7 +220,7 @@ atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale
 
 #Lower level functions:
 
-bandpass=function(wave, flux, filter, lum = TRUE){
+bandpass=function(wave, flux, filter, lum=TRUE, flux_in='freq', flux_out='freq', detect_type='photon'){
   # flux must be flux_nu, i.e. erg/s / cm^2 / Hz, not erg/s / cm^2 / Ang!
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
@@ -231,13 +231,42 @@ bandpass=function(wave, flux, filter, lum = TRUE){
   if(!is.function(filter)){
     filter = approxfun(x = filter[, 1], y = abs(filter[, 2]))
   }
-  tempremap = filter(wave)
-  tempremap[is.na(tempremap)] = 0
-  if (lum) {
-    return(sum(tempremap * wave * flux, na.rm = TRUE)/sum(tempremap * wave, na.rm = TRUE))
+  response = filter(wave)
+  response[is.na(response)] = 0
+  
+  if(flux_in=='freq' & flux_out=='wave'){
+    flux = convert_freq2wave(flux, wave)
+    flux_in = 'wave'
   }
-  else {
-    return(tempremap * wave * flux/sum(tempremap * wave, na.rm = TRUE))
+  
+  if(flux_in=='wave' & flux_out=='freq'){
+    flux = convert_wave2freq(flux, wave)
+    flux_in = 'freq'
+  }
+  
+  if(flux_in=='freq'){
+    freq=1/wave
+    freq_diff=c(0,abs(diff(freq)))
+    if(detect_type=='photon'){
+      output = response * wave * flux * freq_diff/sum(response * wave * freq_diff, na.rm = TRUE)
+    }else if(detect_type=='energy'){
+      output = response * flux * freq_diff/sum(response * freq_diff, na.rm = TRUE)
+    }
+  }else if(flux_in=='wave'){
+    wave_diff=c(0,abs(diff(wave)))
+    if(detect_type=='photon'){
+      output = response * wave * flux * wave_diff/sum(response * wave * wave_diff, na.rm = TRUE)
+    }else if(detect_type=='energy'){
+      output = response * flux * wave_diff/sum(response * wave_diff, na.rm = TRUE)
+    }
+  }else{
+    stop('flux_in must be one of: freq / wave.')
+  }
+
+  if (lum) {
+    return(sum(output, na.rm=TRUE))
+  }else {
+    return(output)
   }
 }
 
@@ -264,9 +293,9 @@ pivwavefunc=function(filter){
 }
 
 convert_wave2freq=function(flux_wave, wave, wavefac=1e-10, freqfac=1){
-  return(invisible((wavefac*flux_wave*wave^2)/.c_to_mps))
+  return(invisible(flux_wave*((wavefac/freqfac)*wave^2)/.c_to_mps))
 }
 
 convert_freq2wave=function(flux_freq, wave, wavefac=1e-10, freqfac=1){
-  return(invisible(flux_freq*.c_to_mps/(wavefac*wave^2)))
+  return(invisible(flux_freq*.c_to_mps/((wavefac/freqfac)*wave^2)))
 }

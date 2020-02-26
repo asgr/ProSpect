@@ -42,7 +42,7 @@ Aaron Robotham
 \examples{
 fluxBC03=Lum2Flux(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)
 
-#The below should give the same answers (6.637537e-28):
+#The below should give the same answers (6.515128e-28):
 
 CGScalc(fluxBC03)
 bandpass(fluxBC03[,1], (1e-10*fluxBC03[,2]*fluxBC03[,1]^2)/299792458,

@@ -40,6 +40,11 @@ For the full set now available see options at \code{\link{filters}}, where all d
   J  \tab  VISTA J band \cr
   H  \tab  VISTA H band \cr
   K or Ks  \tab  VISTA Ks band \cr
+  Z_UKIRT  \tab  UKIRT Z band \cr
+  Y_UKIRT  \tab  UKIRT Y band \cr
+  J_UKIRT  \tab  UKIRT J band \cr
+  H_UKIRT  \tab  UKIRT H band \cr
+  K_UKIRT  \tab  UKIRT K band \cr
   W1      \tab  Wise W1 band  \cr
   W2      \tab  Wise W2 band  \cr
   W3      \tab  Wise W3 band  \cr
