@@ -9,8 +9,9 @@ Filter Transformation Functions
 High and low level interface to achieving colour and simple offset filter conversions. These functions can work on simulated or observed data.
 }
 \usage{
-filterTranMags(mag_in, mag_out, return='all')
-filterTranBands(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=666)
+filterTranMags(mag_in, mag_out, return = 'all')
+filterTranBands(filt_in, filt_out, zrange = c(0,0.5), Nsamp = 1e3, seed = 666,
+return = 'all')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -56,6 +57,7 @@ Aaron Robotham
 }
 \examples{
 \dontrun{
+#Using filterTranBands
 filters = c('g_SDSS', 'r_SDSS', 'i_SDSS')
 filt_in = {}
 for(i in filters){filt_in=c(filt_in,list(approxfun(getfilt(i))))}
@@ -63,9 +65,15 @@ names(filt_in) = filters
 filt_out = approxfun(getfilt('r_VST'))
 
 filterTranBands(filt_in, filt_out)
+
+#Using filterTranMags with Shark SFH samples:
+
+data(ProFiltTrans_Shark)
+filterTranMags(ProFiltTrans_Shark$maglist$Age3[,c("g_SDSS", "r_SDSS", "i_SDSS")],
+               ProFiltTrans_Shark$maglist$Age3[,"r_VST"])
+
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\concept{ filter }% use one of  RShowDoc("KEYWORDS")

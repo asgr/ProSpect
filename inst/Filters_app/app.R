@@ -1,0 +1,103 @@
+#
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
+library(shiny)
+library(ProSpect)
+library(magicaxis)
+data("ProFiltTrans_Shark")
+
+filter_names = ProFiltTrans_Shark$Names
+
+z_steps = round((ProFiltTrans_Shark$zsteps[2:length(z_steps)] + ProFiltTrans_Shark$zsteps[1:(length(z_steps)-1)])/2,2)
+z_choices = lapply(1:length(z_steps),function(x){x})
+names(z_choices) = z_steps
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+
+    # Application title
+    titlePanel("ProSpect Filter Transforms"),
+
+    # Sidebar with a slider input for number of bins 
+    sidebarLayout(
+        sidebarPanel(
+            selectInput("filter_target",
+                        "Target Filter:",
+                        choices = filter_names,
+                        selected = 'r_SDSS'
+                        ),
+            selectInput("filter_ref1",
+                        "Reference Filter 1:",
+                        choices = filter_names,
+                        selected = 'g_VST'
+            ),
+            selectInput("filter_ref2",
+                        "Reference Filter 2:",
+                        choices = filter_names,
+                        selected = 'r_VST'
+            ),
+            selectInput("z_step",
+                        "Redshift:",
+                        choices = z_choices,
+                        selected = 1
+            )
+        ),
+
+        # Show a plot of the generated distribution
+        mainPanel(
+            uiOutput("trans_func"),
+            plotOutput("trans_hist"),
+            plotOutput("trans_plot")
+        )
+    )
+)
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+    
+    transform=reactive({
+        filterTranMags(
+            mag_in = ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,c(input$filter_ref1, input$filter_ref2)],
+            mag_out = ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target],
+            return = 'bestall'
+        )
+    })
+        
+    output$trans_func = renderUI({
+        list(
+            HTML(input$filter_target,'~',names(transform()$params[1]),'<br/>'),
+            HTML('alpha =', round(as.numeric(transform()$params[[1]]['alpha']), digits=4), '<br/>'),
+            HTML('beta =', round(as.numeric(transform()$params[[1]]['beta']), digits=4), '<br/>'),
+            HTML('sigma =', round(as.numeric(transform()$params[[1]]['sigma']), digits=4), '<br/>')
+        )
+    })
+    
+    output$trans_hist = renderPlot({
+        maghist(
+            ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - transform()$predict,
+            xlab = paste0(input$filter_target,' - Predict'),
+            ylab = 'Counts',
+            breaks=100,
+            grid=TRUE
+        )
+    })
+    
+    output$trans_plot = renderPlot({
+        magplot(
+            ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target],
+            transform()$predict,
+            xlab=input$filter_target,
+            ylab='Prediction',
+            grid=TRUE
+        )
+    })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
