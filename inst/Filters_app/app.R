@@ -52,8 +52,9 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
             uiOutput("trans_func"),
-            plotOutput("trans_hist"),
-            plotOutput("trans_plot")
+            plotOutput("filter_comp"),
+            plotOutput("trans_hist")
+            #plotOutput("trans_plot")
         )
     )
 )
@@ -78,25 +79,86 @@ server <- function(input, output) {
         )
     })
     
-    output$trans_hist = renderPlot({
-        maghist(
-            ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - transform()$predict,
-            xlab = paste0(input$filter_target,' - Predict'),
-            ylab = 'Counts',
-            breaks=100,
-            grid=TRUE
+    output$filter_comp = renderPlot({
+        if(input$filter_target %in% pivwave$filter){
+            filttemp = getfilt(input$filter_target)    
+        } else{
+            filttemp = EAZY_filters$filters[[which(EAZY_filters$info == input$filter_target)]]
+        }
+        filttemp[,2] = filttemp[,2] / max(filttemp[,2], na.rm=TRUE)
+        magplot(
+            filttemp,
+            type = 'l',
+            xlim = c(2e3,3e4),
+            ylim = c(0,1),
+            log = 'x',
+            grid = TRUE,
+            xlab = 'Wavelength / Ang',
+            ylab = 'Response'
+        )
+        
+        if(input$filter_ref1 %in% pivwave$filter){
+            filttemp = getfilt(input$filter_ref1)    
+        } else{
+            filttemp = EAZY_filters$filters[[which(EAZY_filters$info == input$filter_ref1)]]
+        }
+        filttemp[,2] = filttemp[,2] / max(filttemp[,2], na.rm=TRUE)
+        lines(
+            filttemp,
+            col = 'blue'
+        )
+        
+        if(input$filter_ref2 %in% pivwave$filter){
+            filttemp = getfilt(input$filter_ref2)    
+        } else{
+            filttemp = EAZY_filters$filters[[which(EAZY_filters$info == input$filter_ref2)]]
+        }
+        filttemp[,2] = filttemp[,2] / max(filttemp[,2], na.rm=TRUE)
+        lines(
+            filttemp,
+            col = 'red'
+        )
+        legend(
+            'topleft',
+            legend = c(input$filter_target, input$filter_ref1, input$filter_ref2),
+            col = c('black', 'blue', 'red'),
+            lty = 1
         )
     })
     
-    output$trans_plot = renderPlot({
+    output$trans_hist = renderPlot({
         magplot(
-            ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target],
-            transform()$predict,
-            xlab=input$filter_target,
-            ylab='Prediction',
-            grid=TRUE
+            density(ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - transform()$predict),
+            xlab = paste0(input$filter_target,' - Transformed / Ref1 / Ref2'),
+            ylab = 'PDF',
+            xlim = c(-0.1,0.1),
+            grid = TRUE
+        )
+        lines(
+            density(ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_ref1]),
+            col = 'blue'
+        )
+        lines(
+            density(ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_ref2]),
+            col = 'red'
+        )
+        legend(
+            'topleft',
+            legend = c('Transformed', input$filter_ref1, input$filter_ref2),
+            col = c('black', 'blue', 'red'),
+            lty = 1
         )
     })
+    
+    # output$trans_plot = renderPlot({
+    #     magplot(
+    #         ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target],
+    #         transform()$predict,
+    #         xlab=input$filter_target,
+    #         ylab='Prediction',
+    #         grid=TRUE
+    #     )
+    # })
 }
 
 # Run the application 
