@@ -14,7 +14,7 @@ data("ProFiltTrans_Shark")
 
 filter_names = ProFiltTrans_Shark$Names
 
-z_steps = round((ProFiltTrans_Shark$zsteps[2:length(z_steps)] + ProFiltTrans_Shark$zsteps[1:(length(z_steps)-1)])/2,2)
+z_steps = round((ProFiltTrans_Shark$zsteps[2:length(ProFiltTrans_Shark$zsteps)] + ProFiltTrans_Shark$zsteps[1:(length(ProFiltTrans_Shark$zsteps)-1)])/2,2)
 z_choices = lapply(1:length(z_steps),function(x){x})
 names(z_choices) = z_steps
 
@@ -69,13 +69,25 @@ server <- function(input, output) {
             return = 'bestall'
         )
     })
-        
+    
+    ref1_offset=reactive({
+        temp=ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_ref1]
+        return(c(med=median(temp,na.rm = TRUE), sd=sd(temp)))
+    })
+    
+    ref2_offset=reactive({
+        temp=ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_ref2]
+        return(c(med=median(temp,na.rm = TRUE), sd=sd(temp)))
+    })
+    
     output$trans_func = renderUI({
         list(
             HTML(input$filter_target,'~',names(transform()$params[1]),'<br/>'),
             HTML('alpha =', round(as.numeric(transform()$params[[1]]['alpha']), digits=4), '<br/>'),
             HTML('beta =', round(as.numeric(transform()$params[[1]]['beta']), digits=4), '<br/>'),
-            HTML('sigma =', round(as.numeric(transform()$params[[1]]['sigma']), digits=4), '<br/>')
+            HTML('sigma =', round(as.numeric(transform()$params[[1]]['sigma']), digits=4), '<br/><br/>'),
+            HTML(input$filter_target,'~', input$filter_ref1, switch(sign(ref1_offset()[1])+2,'-',NA,'+'), round(abs(as.numeric(ref1_offset()[1])), digits=4), '+/-', round(as.numeric(ref1_offset()[2]), digits=4), '<br/>'),
+            HTML(input$filter_target,'~', input$filter_ref2, switch(sign(ref2_offset()[1])+2,'-',NA,'+'), round(abs(as.numeric(ref2_offset()[1])), digits=4), '+/-', round(as.numeric(ref2_offset()[2]), digits=4), '<br/>')
         )
     })
     
@@ -138,10 +150,16 @@ server <- function(input, output) {
             density(ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_ref1]),
             col = 'blue'
         )
+        abline(v=ref1_offset()[1], col='blue')
+        abline(v=ref1_offset()[1] - ref1_offset()[2], col='blue', lty=3)
+        abline(v=ref1_offset()[1] + ref1_offset()[2], col='blue', lty=3)
         lines(
             density(ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_ref2]),
             col = 'red'
         )
+        abline(v=ref2_offset()[1], col='red')
+        abline(v=ref2_offset()[1] - ref2_offset()[2], col='red', lty=3)
+        abline(v=ref2_offset()[1] + ref2_offset()[2], col='red', lty=3)
         legend(
             'topleft',
             legend = c('Transformed', input$filter_ref1, input$filter_ref2),
