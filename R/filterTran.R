@@ -77,7 +77,11 @@ filterTranMags = function(mag_in, mag_out, return='all'){
 }
 
 filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=666, return='all'){
-  Nfilt_in = length(filt_in)
+  if(is.list(filt_in)){
+    Nfilt_in = length(filt_in)
+  }else{
+    Nfilt_in = 1
+  }
   if(is.null(names(filt_in)) & Nfilt_in>1){stop('filt_in must have filter names for sensical results!')}
   #if(is.null(names(filt_out))){stop('filt_out must have filter names for sensical results!')}
   BC03lr=NULL
@@ -87,7 +91,7 @@ filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=6
   set.seed(seed)
   params = cbind(runif(Nsamp), runif(Nsamp), runif(Nsamp), runif(Nsamp), runif(Nsamp), runif(Nsamp,zrange[1],zrange[2]))
   ranSFHs = matrix(0,Nsamp,Nfilt_in+1)
-  if(Nfilt_in==1){
+  if(Nfilt_in==1 & !is.list(filt_in)){
     filt_in=list(filt_in)
   }
   filtout = c(filt_in, list(filt_out))
