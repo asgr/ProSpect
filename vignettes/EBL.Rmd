@@ -21,6 +21,7 @@ Load the libraries we need:
 library(ProSpect)
 library(celestial)
 library(foreach)
+library(magicaxis)
 ```
 
 Encode the Madua and Dickenson 2014 CSFH function:
