@@ -25,7 +25,7 @@
 \alias{filt_z_LSST}
 \alias{filt_Y_VISTA}
 \alias{filt_Y_UKIRT}
-\alias{filt_y_HSC}
+\alias{filt_Y_HSC}
 \alias{filt_y_LSST}
 \alias{filt_J_VISTA}
 \alias{filt_J_UKIRT}
@@ -130,7 +130,7 @@ data("filt_g_HSC")
 data("filt_r_HSC")
 data("filt_i_HSC")
 data("filt_z_HSC")
-data("filt_y_HSC")
+data("filt_Y_HSC")
 data("filt_Z_VISTA")
 data("filt_Y_VISTA")
 data("filt_J_VISTA")
