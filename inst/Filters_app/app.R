@@ -150,6 +150,8 @@ server <- function(input, output) {
             density(ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_target] - ProFiltTrans_Shark$maglist[[as.integer(input$z_step)]][,input$filter_ref1]),
             col = 'blue'
         )
+        abline(v=transform()$params[[1]]['sigma'], lty=3)
+        abline(v=-transform()$params[[1]]['sigma'], lty=3)
         abline(v=ref1_offset()[1], col='blue')
         abline(v=ref1_offset()[1] - ref1_offset()[2], col='blue', lty=3)
         abline(v=ref1_offset()[1] + ref1_offset()[2], col='blue', lty=3)
