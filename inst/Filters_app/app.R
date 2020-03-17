@@ -86,8 +86,16 @@ server <- function(input, output) {
             HTML('alpha =', round(as.numeric(transform()$params[[1]]['alpha']), digits=4), '<br/>'),
             HTML('beta =', round(as.numeric(transform()$params[[1]]['beta']), digits=4), '<br/>'),
             HTML('sigma =', round(as.numeric(transform()$params[[1]]['sigma']), digits=4), '<br/><br/>'),
-            HTML(input$filter_target,'~', input$filter_ref1, switch(sign(ref1_offset()[1])+2,'-',NA,'+'), round(abs(as.numeric(ref1_offset()[1])), digits=4), '+/-', round(as.numeric(ref1_offset()[2]), digits=4), '<br/>'),
-            HTML(input$filter_target,'~', input$filter_ref2, switch(sign(ref2_offset()[1])+2,'-',NA,'+'), round(abs(as.numeric(ref2_offset()[1])), digits=4), '+/-', round(as.numeric(ref2_offset()[2]), digits=4), '<br/>')
+            HTML('<br>',
+                    '<font color="blue">',
+                        input$filter_target,'~', input$filter_ref1, switch(sign(ref1_offset()[1])+2,'-',NA,'+'), round(abs(as.numeric(ref1_offset()[1])), digits=4), '+/-', round(as.numeric(ref1_offset()[2]), digits=4),
+                    '<font/>',
+                 '<br/>'),
+            HTML('<br>',
+                    '<font color="red">',
+                        input$filter_target,'~', input$filter_ref2, switch(sign(ref2_offset()[1])+2,'-',NA,'+'), round(abs(as.numeric(ref2_offset()[1])), digits=4), '+/-', round(as.numeric(ref2_offset()[2]), digits=4),
+                    '<font/>',
+                '<br/>')
         )
     })
     
