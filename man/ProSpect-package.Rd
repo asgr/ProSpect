@@ -15,7 +15,7 @@ Type: \tab Package\cr
 Version: \tab 0.9.7\cr
 Date: \tab 2020-03-13x\cr
 License: \tab LGPL-3\cr
-Depends: \tab R (>= 3.5)\cr
+Depends: \tab R (>= 3.0)\cr
 Imports:  \tab celestial, NISTunits, pracma\cr
 Suggests: \tab shiny, magicaxis, knitr, LaplacesDemon, foreach, data.table, hyper.fit\cr
 }
