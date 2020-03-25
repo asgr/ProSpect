@@ -113,7 +113,7 @@ Data=list(flux=flux_input,
           speclib=BC03lr, 
           Dale=Dale_NormTot, 
           filtout=filtout, 
-          SFH=SFHfunc, # the preferred functional form of the SFH (eg either SFHfunc, SFHburst, SFHp4, SFHp5)
+          SFH=SFHfunc, # the preferred functional form of the SFH (eg either SFHfunc, SFHburst)
           parm.names=c('mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen',
                        'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
           logged=c(T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
@@ -184,7 +184,7 @@ Data_z=list(flux=flux_input,
            speclib=BC03lr, 
            Dale=Dale_NormTot, 
            filtout=filtout, 
-           SFH=SFHfunc, # the preferred funcitonal form of the SFH (eg either SFHfunc, SFHburst, SFHp4, SFHp5)
+           SFH=SFHfunc, # the preferred funcitonal form of the SFH (eg either SFHfunc, SFHburst)
            parm.names=c('z', 'mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen',
                         'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
            logged=c(T,T,T,T,F,T,T,F,F), # fit parameters in logged or linear space

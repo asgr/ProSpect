@@ -45,72 +45,64 @@ Aaron Robotham
 #Let's try varying our burst mass and seeing what happen to various outputs:
 #The below spans the typical DustMass/StellMass = 0.001 - 0.01 range nicely!
 
-burstmass=0
-SFHdemo_dust=SFHp4(burstmass=burstmass)
-SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
-SMdemo=SMstarp4(burstmass=burstmass)
+SFHdemo_dust=SFHfunc(m1=1)
+SMdemo=SMstarfunc(m1=1)
 SMdemo
-dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
+dustout=dustmass(SFHdemo_dust$wave_lum, SFHdemo_dust$lum_unatten, SFHdemo_dust$lum_atten,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
-dustout[1]/SMdemo[5]
+dustout[1]/SMdemo[12]
 dustflux=Lum2Flux(Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,]*dustout[1])
-plot(SFHdemo_nodust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
+plot(SFHdemo_dust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
 xlab='Wavelength / Ang', ylab='Flux (erg/s/cm^2/Ang)', col='darkgrey')
 lines(dustflux, col='brown')
 lines(addspec(dustflux[,1], dustflux[,2], SFHdemo_dust$flux[,1], SFHdemo_dust$flux[,2]))
-legend('topleft', legend=paste('SM =',round(log10(SMdemo[5]),2)))
+legend('topleft', legend=paste('SM =',round(log10(SMdemo[12]),2)))
 legend('topright', legend=paste('DM =',round(log10(dustout[1]),2)))
 
-burstmass=1e8
-SFHdemo_dust=SFHp4(burstmass=burstmass)
-SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
-SMdemo=SMstarp4(burstmass=burstmass)
+SFHdemo_dust=SFHfunc(m1=10, m2=10)
+SMdemo=SMstarfunc(m1=10, m2=10)
 SMdemo
-dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
+dustout=dustmass(SFHdemo_dust$wave_lum, SFHdemo_dust$lum_unatten, SFHdemo_dust$lum_atten,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
-dustout[1]/SMdemo[5]
+dustout[1]/SMdemo[12]
 dustflux=Lum2Flux(Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,]*dustout[1])
-plot(SFHdemo_nodust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
+plot(SFHdemo_dust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
 xlab='Wavelength / Ang', ylab='Flux (erg/s/cm^2/Ang)', col='darkgrey')
 lines(dustflux, col='brown')
 lines(addspec(dustflux[,1], dustflux[,2], SFHdemo_dust$flux[,1], SFHdemo_dust$flux[,2]))
-legend('topleft', legend=paste('SM =',round(log10(SMdemo[5]),2)))
+legend('topleft', legend=paste('SM =',round(log10(SMdemo[12]),2)))
 legend('topright', legend=paste('DM =',round(log10(dustout[1]),2)))
 
-burstmass=1e9
-SFHdemo_dust=SFHp4(burstmass=burstmass)
-SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
-SMdemo=SMstarp4(burstmass=burstmass)
+SFHdemo_dust=SFHfunc(m1=100, m2=10)
+SMdemo=SMstarfunc(m1=100, m2=10)
 SMdemo
-dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
+dustout=dustmass(SFHdemo_dust$wave_lum, SFHdemo_dust$lum_unatten, SFHdemo_dust$lum_atten,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
-dustout[1]/SMdemo[5]
+dustout[1]/SMdemo[12]
 dustflux=Lum2Flux(Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,]*dustout[1])
-plot(SFHdemo_nodust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
+plot(SFHdemo_dust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
 xlab='Wavelength / Ang', ylab='Flux (erg/s/cm^2/Ang)', col='darkgrey')
 lines(dustflux, col='brown')
 lines(addspec(dustflux[,1], dustflux[,2], SFHdemo_dust$flux[,1], SFHdemo_dust$flux[,2]))
-legend('topleft', legend=paste('SM =',round(log10(SMdemo[5]),2)))
+legend('topleft', legend=paste('SM =',round(log10(SMdemo[12]),2)))
 legend('topright', legend=paste('DM =',round(log10(dustout[1]),2)))
 
-burstmass=1e10
-SFHdemo_dust=SFHp4(burstmass=burstmass)
-SFHdemo_nodust=SFHp4(burstmass=burstmass, tau_birth=0, tau_screen=0)
-SMdemo=SMstarp4(burstmass=burstmass)
+SFHdemo_dust=SFHfunc(m1=100, m2=100)
+SMdemo=SMstarfunc(m1=100, m2=100)
 SMdemo
-dustout=dustmass(BC03lr$Wave, SFHdemo_nodust$lum, SFHdemo_dust$lum,
+dustout=dustmass(SFHdemo_dust$wave_lum, SFHdemo_dust$lum_unatten, SFHdemo_dust$lum_atten,
 Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,])
 dustout
-dustout[1]/SMdemo[5]
+dustout[1]/SMdemo[12]
 dustflux=Lum2Flux(Dale_Msol$Wave, Dale_Msol$Aspec[[1]][24,]*dustout[1])
-plot(SFHdemo_nodust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
+plot(SFHdemo_dust$flux, type='l', log='xy', xlim=c(1e2,1e7), ylim=c(1e-20,1e-12),
 xlab='Wavelength / Ang', ylab='Flux (erg/s/cm^2/Ang)', col='darkgrey')
 lines(dustflux, col='brown')
 lines(addspec(dustflux[,1], dustflux[,2], SFHdemo_dust$flux[,1], SFHdemo_dust$flux[,2]))
-legend('topleft', legend=paste('SM =',round(log10(SMdemo[5]),2)))
+legend('topleft', legend=paste('SM =',round(log10(SMdemo[12]),2)))
 legend('topright', legend=paste('DM =',round(log10(dustout[1]),2)))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

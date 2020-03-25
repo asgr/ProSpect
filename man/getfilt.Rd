@@ -13,7 +13,7 @@ getfilt(filter)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{filter}{
-  
+Either filter name explictly built in to \code{ProSpect}, or an unambiguous grep match to one of the available filters in \code{\link{EAZY_filters}}, e.g. 'cfht_mega_u' unabmigously matches to the full filter name of 'megaprime/cfht_mega_u_cfh9301.dat'. \cr
 For the full set now available see options at \code{\link{filters}}, where all data with are accessible to the \code{getfilt} function (with the removal of the preceding "filt_"). The original set available was: \cr
 %%     ~~Describe \code{filter} here~~
 \tabular{ll}{
@@ -81,7 +81,7 @@ Two column matrix. First column is the wavelength in Angstrom and second column 
 Aaron Robotham
 }
 \seealso{
-\code{\link{photom}}, \code{\link{bandpass}}, \code{\link{magABcalc}}, \code{\link{SFHp4}}
+\code{\link{photom}}, \code{\link{bandpass}}, \code{\link{magABcalc}}, \code{\link{SFHfunc}}
 }
 \examples{
 colvec=rev(rainbow(9, end=2/3))

@@ -24,22 +24,22 @@ Mostly used to run the app, but it can also return the current parameters to hel
 Data.frame(4 columns, filter name, central wave (Ang), flux (Jy), fluxerr (Jy)). If provided this data will be overlaid in the "Flux" tab to compare against the current model. See \code{\link{ProSpectSEDlike}}.
 }
   \item{burstmass}{
-Numeric scalar; the total stellar mass formed in a recent burst in units Msol. See \code{\link{SFHp5}}.
+Numeric scalar; the total stellar mass formed in a recent burst in units Msol. See \code{\link{SFHfunc}}.
 }
   \item{youngmass}{
-Numeric scalar; the total stellar mass formed in young stars in units Msol. See \code{\link{SFHp5}}.
+Numeric scalar; the total stellar mass formed in young stars in units Msol. See \code{\link{SFHfunc}}.
 }
   \item{midmass}{
-Numeric scalar; the total stellar mass formed in mid stars in units Msol. See \code{\link{SFHp5}}.
+Numeric scalar; the total stellar mass formed in mid stars in units Msol. See \code{\link{SFHfunc}}.
 }
   \item{oldmass}{
-Numeric scalar; the total stellar mass formed in old stars in units Msol. See \code{\link{SFHp5}}.
+Numeric scalar; the total stellar mass formed in old stars in units Msol. See \code{\link{SFHfunc}}.
 }
   \item{ancientmass}{
-Numeric scalar; the total stellar mass formed in ancient stars in units Msol. See \code{\link{SFHp5}}.
+Numeric scalar; the total stellar mass formed in ancient stars in units Msol. See \code{\link{SFHfunc}}.
 }
   \item{z}{
-Numeric scalar; cosmological redshift of the source. See \code{\link{SFHp5}}.
+Numeric scalar; cosmological redshift of the source. See \code{\link{SFHfunc}}.
 }
   \item{tau_birth}{
 Numeric scalar; dust tau of birth clouds. Associated with sub 10 Myr star formation. See \code{\link{CF_birth}}.
@@ -63,7 +63,7 @@ Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dus
 Numeric scalar; AGN bolometric luminosity in erg.
 }
   \item{Z}{
-Integer vector; length 5. Specifies the metallicity to use for each phase (default is 5, so solar metallicity for all phases, which is fairly appropriate at low \option{z}. See \code{\link{SFHp5}}.
+Integer vector; length 5. Specifies the metallicity to use for each phase (default is 5, so solar metallicity for all phases, which is fairly appropriate at low \option{z}. See \code{\link{SFHfunc}}.
 }
 }
 \value{
