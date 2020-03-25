@@ -41,7 +41,7 @@ Levesque, Kewley & Larson, 2010, AJ, 139, 712 \cr
 Vazdekis et al., 2016, MNRAS, 463, 3409
 }
 \examples{
-SFHdemo_dust=SFHp4()
+SFHdemo_dust=SFHfunc()
 plot(SFHdemo_dust$out[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
 ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
 }

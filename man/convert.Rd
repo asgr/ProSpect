@@ -37,7 +37,7 @@ Numeric vector; the converted spectral flux.
 Aaron Robotham
 }
 \seealso{
-\code{\link{photom}}, \code{\link{magABcalc}}, \code{\link{getfilt}}, \code{\link{SFHp4}}
+\code{\link{photom}}, \code{\link{magABcalc}}, \code{\link{getfilt}}, \code{\link{SFHfunc}}
 }
 \examples{
 fluxBC03=Lum2Flux(BC03lr$Wave, BC03lr$Zspec[[5]][161,]*1e10)

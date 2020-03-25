@@ -9,7 +9,7 @@
 Generate SED from SFH
 }
 \description{
-As of v1.0.0 the older \code{SFHp4} and \code{SFHp5} have been removed, use \code{\link{massfunc_b4}} / \code{\link{massfunc_b5}} in combination with \code{SFHfunc} (this is now default) to create stepped SFHs. The mass formed in bins is now specified as a SFR, not as a total mass formed.
+As of v1.0.0 the older \code{SFHp4} and \code{SFHp5} have been removed, use \code{\link{massfunc_b5}} in combination with \code{SFHfunc} (this is now default) to create stepped SFHs. The mass formed in bins is now specified as a SFR, not as a total mass formed.
 
 The star formation history functions discussed here compute output galaxy spectra  and stellar masses using variable star formation histories. This can be either a pure burst (\code{SFHburst}), or a functional form (\code{SFHfunc}). Uses either BC03 or EMILES libraries. \code{SFHfunc} can take a functional form for the metallicity.
 }
@@ -34,23 +34,11 @@ sparse = 5, unimax=  13.8e9, agemax = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+  \item{massfunc}{
+Function; a function which will take \option{age} (in years) as an input and return SFR (in Msol/yr). Additional \option{massfunc} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. Various sensible functions are available in \code{ProSpect}, see \code{\link{massfunc}}.
+}
   \item{burstmass}{
 Numeric scalar; the total stellar mass formed in a recent burst in units Msol.
-}
-  \item{youngmass}{
-Numeric scalar; the total stellar mass formed in young stars in units Msol.
-}
-  \item{midmass}{
-Numeric scalar; the total stellar mass formed in mid stars in units Msol.
-}
-  \item{oldmass}{
-Numeric scalar; the total stellar mass formed in old stars in units Msol.
-}
-  \item{ancientmass}{
-Numeric scalar; the total stellar mass formed in ancient stars in units Msol.
-}
-  \item{massfunc}{
-Function; a function which will take \option{age} (in years) as an input and return SFR (in Msun/yr). Additional \option{massfunc} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. Various sensible functions are available in \code{ProSpect}, see \code{\link{massfunc}}.
 }
   \item{burstage}{
 Numeric vector; the age limits in years for the burst phase. Numeric scalar; the age of the burst in years (\code{SFHburst}).
@@ -68,7 +56,7 @@ Numeric vector; the age limits in years for the old phase.
 Numeric vector; the age limits in years for the ancient phase.
 }
   \item{forcemass}{
-Logical or numeric scalar; if FALSE then the stellar mass is directly computed from the \option{massfunc} function, i.e. the output of this must be a true star formation rate in Msun per year. If \option{forcemass} is a number then this specifies the required integrated stellar mass that must be formed over all time, and the output of \option{massfunc} will linearly scaled as required to achieve this.
+Logical or numeric scalar; if FALSE then the stellar mass is directly computed from the \option{massfunc} function, i.e. the output of this must be a true star formation rate in Msol per year. If \option{forcemass} is a number then this specifies the required integrated stellar mass that must be formed over all time, and the output of \option{massfunc} will linearly scaled as required to achieve this.
 }
   \item{agescale}{
 Numeric scalar; scaling to apply to the ages (which will passed in years) to \option{massfunc}. E.g. if left at \option{agescale}=1 then \option{massfunc} is expecting the age in years, but if set to 1e-6/1e-9 then \option{massfunc} is expecting the age in Myrs/Gyrs.
@@ -138,12 +126,6 @@ Numeric scalar; maximum allowed age of any stellar population relative to the re
 }
   \item{outtype}{
 Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
-}
-  \item{cossplit}{
-Numeric vector; the cosmological age at which the ancient star formation event begins and ends (only used if \option{dosplit=TRUE}).
-}
-  \item{dosplit}{
-Boolean scalar; should the \option{cossplit} ancient star formation limits be used?
 }
   \item{sparse}{
 Numeric scalar; amount of sparse sampling of the spectra to make. Higher values mean coarser spectra is processed, which means less accurate photometry, but faster processing. Generally done when computing higher resolution libraries for AB mags.
@@ -235,12 +217,12 @@ old=SFHfunc(massfunc=massfunc_p6, m1=0, m2=0, m3=0, m4=0, m5=1, m6=1,
 
 #SFHs:
 
-plot(BC03lr$Age, bursty$SFR, type='l', col='purple', xlim=c(0,1e10), ylim=c(0,5),
+plot(bursty$agevec, bursty$SFR, type='l', col='purple', xlim=c(0,1e10), ylim=c(0,5),
   xlab='Age / Yrs', ylab='SFR / Msol/yr')
-lines(BC03lr$Age, constant$SFR, col='blue')
-lines(BC03lr$Age, young$SFR, col='darkgreen')
-lines(BC03lr$Age, old$SFR, col='red')
-legend('bottomleft', legend=c('bursty', 'constant', 'young', 'old'), lty=1, 
+lines(constant$agevec, constant$SFR, col='blue')
+lines(young$agevec, young$SFR, col='darkgreen')
+lines(old$agevec, old$SFR, col='red')
+legend('top', legend=c('bursty', 'constant', 'young', 'old'), lty=1, 
   col=c('purple', 'blue', 'darkgreen', 'red'))
 
 #Luminosities with default dust attenuation:
@@ -250,7 +232,7 @@ plot(wave, bursty$lum_atten, log='xy', type='l', col='purple', ylim=c(1e-1,1e8),
   xlab='Wavelength / Ang', ylab='Lsun / Ang')
 lines(wave, constant$lum_atten, col='blue')
 lines(wave, young$lum_atten, col='darkgreen')
-lines(wave, dead$lum_atten, col='red')
+lines(wave, old$lum_atten, col='red')
 legend('topright', legend=c('bursty', 'constant', 'young', 'old'), lty=1, 
   col=c('purple', 'blue', 'darkgreen', 'red'))
 }

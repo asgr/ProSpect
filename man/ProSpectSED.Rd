@@ -20,7 +20,7 @@ ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{SFH}{
-Function; the star formation history to use. Must be one of \code{\link{SFHburst}}, \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}} (default).
+Function; the star formation history to use. Must be one of \code{\link{SFHfunc}} of \code{\link{SFHburst}} (default).
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z} <= 0 then only luminosities are computed if \option{filtout}=NULL. If filters are provided via \option{filtout} then the \option{Photom} output returns Absolute AB magnitudes for convenience.
@@ -120,7 +120,7 @@ Some more info on the required \option{Data} list inputs:
 Object; required. Data.frame(4 columns, filter [band name], cenwave [central wave, Ang], flux [Jy], fluxerr [Jy])
 }
   \item{Data$SFH}{
-Object; required. The star formation history function to use. Must be one of \code{\link{SFHp4}}, \code{\link{SFHp5}} and \code{\link{SFHfunc}}.
+Object; required. The star formation history function to use. Must be one of \code{\link{SFHfunc}} or \code{\link{SFHburst}}.
 }
   \item{Data$arglist}{
 List; optional list of named parameters and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
@@ -205,7 +205,7 @@ for(i in filters){filtout=c(filtout,list(approxfun(getfilt(i))))}
 
 #Try playing around with the below to see what impact different AGN, dust etc have:
 
-testSED=ProSpectSED(SFH=SFHp4, AGNlum=1e43, tau_birth=1, tau_screen=0.3, tau_AGN=2,
+testSED=ProSpectSED(AGNlum=1e43, tau_birth=1, tau_screen=0.3, tau_AGN=2,
 alpha_SF_birth=1, alpha_SF_screen=3, alpha_SF_AGN=0, speclib=BC03lr, Dale=Dale_NormTot,
 AGN=AGN_UnOb_Sparse, filtout=filtout, Dale_M2L_func=Dale_M2L_func, returnall=TRUE)
 
