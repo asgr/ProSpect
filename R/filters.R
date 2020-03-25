@@ -112,6 +112,12 @@ getfilt=function(filter){
   if(filter=='1mm_Aztec' | filter=='1mm'){filt_1mm_Aztec=NULL; data('filt_1mm_Aztec', envir = environment()); out=filt_1mm_Aztec}
   
   if(filter=='2mm_Gizmo' | filter=='2mm'){filt_2mm_Gizmo=NULL; data('filt_2mm_Gizmo', envir = environment()); out=filt_2mm_Gizmo}
+  Eazy_try = grep(filter, EAZY_filters$info)
+  if(length(Eazy_try)==1){
+    out=EAZY_filters$filters[[Eazy_try]]
+  }else if(length(Eazy_try)>1){
+    message(paste(c('Eazy filter name is ambiguous, currently grep-ing:',EAZY_filters$info[Eazy_try]), collapse=' '))
+  }
   if(is.null(out)){
     message(paste('Filter name',filter,'not recognised!'))
   }
