@@ -70,7 +70,7 @@ Bruzual and Charlot, 2003, MNRAS, 344, 1000
 Aaron Robotham
 }
 \seealso{
-\code{\link{SFHp4}}
+\code{\link{SFHfunc}}
 }
 \examples{
 data('cenwave')

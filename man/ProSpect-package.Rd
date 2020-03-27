@@ -12,12 +12,12 @@
 \tabular{ll}{
 Package: \tab ProSpect\cr
 Type: \tab Package\cr
-Version: \tab 0.9.5\cr
-Date: \tab 2020-02-25\cr
+Version: \tab 1.0.0\cr
+Date: \tab 2020-03-25\cr
 License: \tab LGPL-3\cr
-Depends: \tab R (>= 2.13)\cr
+Depends: \tab R (>= 3.0)\cr
 Imports:  \tab celestial, NISTunits, pracma\cr
-Suggests: \tab shiny, magicaxis\cr
+Suggests: \tab shiny, magicaxis, knitr, LaplacesDemon, foreach, data.table, hyper.fit\cr
 }
 }
 
@@ -41,7 +41,7 @@ Levesque, Kewley & Larson, 2010, AJ, 139, 712 \cr
 Vazdekis et al., 2016, MNRAS, 463, 3409
 }
 \examples{
-SFHdemo_dust=SFHp4()
+SFHdemo_dust=SFHfunc()
 plot(SFHdemo_dust$out[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
 ylab='Mag', col=rev(rainbow(26, end=2/3)), pch=16)
 }

@@ -142,8 +142,8 @@ for(i in 2:5){
 
 EAZY_filters$info[c(120:121,278:282,256:259)]
 
-SFHdemo_dust=SFHp4(filters=EAZY_filters$filters[c(120:121,278:282,256:259)])
-plot(SFHdemo_dust$out[,2:3], log='x', ylim=c(26,17), xlab=BC03lr$Labels$Wavelab,
+SFHdemo_dust=SFHfunc(filters=EAZY_filters$filters[c(120:121,278:282,256:259)])
+plot(SFHdemo_dust$out[,2:3], log='x', ylim=c(22,17), xlab=BC03lr$Labels$Wavelab,
 ylab='Mag')
 }
 \keyword{datasets}

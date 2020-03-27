@@ -9,12 +9,13 @@ filterTranMags = function(mag_in, mag_out, return='all'){
   if(!is.vector(mag_out)){'mag_out should be a vector!'}
   
   fits=list()
+  ref_bands={}
   
   if(Nbands==1){
     tempcol = mag_out - mag_in
     tempmean = mean(tempcol)
     tempsd = sd(tempcol)
-    fits = c(beta = tempmean, scat = tempsd)
+    fits = c(beta = tempmean, sigma = tempsd)
   }else if(Nbands>=2){
     for(i in 1:Nbands){
       for(j in 1:Nbands){
@@ -24,11 +25,12 @@ filterTranMags = function(mag_in, mag_out, return='all'){
         tempcol = mag_in[,bluesel] - mag_in[,redsel]
 
         tempfit = lm(mag_out - mag_in[,i] ~ tempcol)$coefficients[2:1]
-        scat = sd(mag_in[,i] + tempfit[1]*tempcol + tempfit[2] - mag_out, na.rm = TRUE)
-        tempfit=c(tempfit,scat)
-        names(tempfit) = c('alpha', 'beta', 'scat')
+        sigma = sd(mag_in[,i] + tempfit[1]*tempcol + tempfit[2] - mag_out, na.rm = TRUE)
+        tempfit=c(tempfit,sigma)
+        names(tempfit) = c('alpha', 'beta', 'sigma')
+        ref_bands = rbind(ref_bands, c(inputnames[i], inputnames[bluesel], inputnames[redsel]))
         fits=c(fits, list(tempfit))
-        names(fits)[length(fits)] = paste(inputnames[i],' + alpha.(',inputnames[bluesel],' - ',inputnames[redsel],') + beta +/- scat', sep='')
+        names(fits)[length(fits)] = paste(inputnames[i],' + alpha.(',inputnames[bluesel],' - ',inputnames[redsel],') + beta +/- sigma', sep='')
       }
     }
   }else{
@@ -41,32 +43,45 @@ filterTranMags = function(mag_in, mag_out, return='all'){
     for(i in 1:length(fits)){
       bestvec[i] = abs(fits[[i]]['alpha'])
     }
-    return(fits[which.min(bestvec)])
   }else if (return=='bestbeta'){
     bestvec=rep(0,length(fits))
     for(i in 1:length(fits)){
       bestvec[i] = abs(fits[[i]]['beta'])
     }
-    return(fits[which.min(bestvec)])
-  }else if (return=='bestscat'){
+  }else if (return=='bestsigma'){
     bestvec=rep(0,length(fits))
     for(i in 1:length(fits)){
-      bestvec[i] = fits[[i]]['scat']
+      bestvec[i] = fits[[i]]['sigma']
     }
-    return(fits[which.min(bestvec)])
   }else if (return=='bestall'){
     bestvec=rep(0,length(fits))
     for(i in 1:length(fits)){
-      bestvec[i] = 2*(fits[[i]]['alpha']^2) + fits[[i]]['beta']^2 + fits[[i]]['scat']^2
+      bestvec[i] = 2*(fits[[i]]['alpha']^2) + fits[[i]]['beta']^2 + fits[[i]]['sigma']^2
     }
-    return(fits[which.min(bestvec)])
   }else{
-    stop('return must be one of all, bestalpha, bestbeta, bestscat or bestall!')
+    stop('return must be one of all, bestalpha, bestbeta, bestsigma or bestall!')
   }
+  
+  params=fits[which.min(bestvec)]
+  ref_bands = ref_bands[which.min(bestvec),]
+  
+  return(
+    invisible(
+      list(
+        params = params,
+        ref_bands = ref_bands,
+        predict = mag_in[,ref_bands[1]] + params[[1]][1]*(mag_in[,ref_bands[2]] - mag_in[,ref_bands[3]]) + params[[1]][2]
+      )
+    )
+  )
 }
 
-filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=666){
-  Nfilt_in = length(filt_in)
+filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=666, return='all'){
+  if(is.list(filt_in)){
+    Nfilt_in = length(filt_in)
+  }else{
+    Nfilt_in = 1
+  }
   if(is.null(names(filt_in)) & Nfilt_in>1){stop('filt_in must have filter names for sensical results!')}
   #if(is.null(names(filt_out))){stop('filt_out must have filter names for sensical results!')}
   BC03lr=NULL
@@ -76,7 +91,7 @@ filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=6
   set.seed(seed)
   params = cbind(runif(Nsamp), runif(Nsamp), runif(Nsamp), runif(Nsamp), runif(Nsamp), runif(Nsamp,zrange[1],zrange[2]))
   ranSFHs = matrix(0,Nsamp,Nfilt_in+1)
-  if(Nfilt_in==1){
+  if(Nfilt_in==1 & !is.list(filt_in)){
     filt_in=list(filt_in)
   }
   filtout = c(filt_in, list(filt_out))
@@ -91,6 +106,6 @@ filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=6
     ranSFHs[,i] = Jansky2magAB(ranSFHs[,i])
   }
   
-  fits = filterTranMags(mag_in = ranSFHs[,1:(dim(ranSFHs)[2]-1)], mag_out = ranSFHs[,dim(ranSFHs)[2]])
+  fits = filterTranMags(mag_in = ranSFHs[,1:(dim(ranSFHs)[2]-1)], mag_out = ranSFHs[,dim(ranSFHs)[2]], return=return)
   return(fits)
 }
