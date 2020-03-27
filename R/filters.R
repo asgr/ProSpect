@@ -20,20 +20,26 @@ getfilt=function(filter){
   if(filter=='r_LSST' | filter=='r_Rubin'){filt_r_LSST=NULL; data('filt_r_LSST', envir = environment()); out=filt_r_LSST}
   if(filter=='i_LSST' | filter=='i_Rubin'){filt_i_LSST=NULL; data('filt_i_LSST', envir = environment()); out=filt_i_LSST}
   if(filter=='z_LSST' | filter=='z_Rubin'){filt_z_LSST=NULL; data('filt_z_LSST', envir = environment()); out=filt_z_LSST}
-  if(filter=='y_LSST' | filter=='y_Rubin'){filt_y_LSST=NULL; data('filt_y_LSST', envir = environment()); out=filt_y_LSST}
+  if(filter=='y_LSST' | filter=='Y_LSST' | filter=='y_Rubin' | filter=='Y_Rubin'){filt_y_LSST=NULL; data('filt_y_LSST', envir = environment()); out=filt_y_LSST}
   
   if(filter=='g_HSC'){filt_g_HSC=NULL; data('filt_g_HSC', envir = environment()); out=filt_g_HSC}
   if(filter=='r_HSC'){filt_r_HSC=NULL; data('filt_r_HSC', envir = environment()); out=filt_r_HSC}
   if(filter=='i_HSC'){filt_i_HSC=NULL; data('filt_i_HSC', envir = environment()); out=filt_i_HSC}
   if(filter=='z_HSC'){filt_z_HSC=NULL; data('filt_z_HSC', envir = environment()); out=filt_z_HSC}
-  if(filter=='Y_HSC'){filt_Y_HSC=NULL; data('filt_Y_HSC', envir = environment()); out=filt_Y_HSC}
-  
+  if(filter=='y_HSC' | filter=='Y_HSC'){filt_Y_HSC=NULL; data('filt_Y_HSC', envir = environment()); out=filt_Y_HSC}
+
   if(filter=='Z_VISTA' | filter=='Z'){filt_Z_VISTA=NULL; data('filt_Z_VISTA', envir = environment()); out=filt_Z_VISTA}
   if(filter=='Y_VISTA' | filter=='Y'){filt_Y_VISTA=NULL; data('filt_Y_VISTA', envir = environment()); out=filt_Y_VISTA}
   if(filter=='J_VISTA' | filter=='J'){filt_J_VISTA=NULL; data('filt_J_VISTA', envir = environment()); out=filt_J_VISTA}
   if(filter=='H_VISTA' | filter=='H'){filt_H_VISTA=NULL; data('filt_H_VISTA', envir = environment()); out=filt_H_VISTA}
   if(filter=='K_VISTA' | filter=='K'){filt_K_VISTA=NULL; data('filt_K_VISTA', envir = environment()); out=filt_K_VISTA}
   if(filter=='Ks_VISTA' | filter=='Ks'){filt_Ks_VISTA=NULL; data('filt_Ks_VISTA', envir = environment()); out=filt_Ks_VISTA}
+  
+  if(filter=='Z_UKIRT'){filt_Z_UKIRT=NULL; data('filt_Z_UKIRT', envir = environment()); out=filt_Z_UKIRT}
+  if(filter=='Y_UKIRT'){filt_Y_UKIRT=NULL; data('filt_Y_UKIRT', envir = environment()); out=filt_Y_UKIRT}
+  if(filter=='J_UKIRT'){filt_J_UKIRT=NULL; data('filt_J_UKIRT', envir = environment()); out=filt_J_UKIRT}
+  if(filter=='H_UKIRT'){filt_H_UKIRT=NULL; data('filt_H_UKIRT', envir = environment()); out=filt_H_UKIRT}
+  if(filter=='K_UKIRT'){filt_K_UKIRT=NULL; data('filt_K_UKIRT', envir = environment()); out=filt_K_UKIRT}
   
   if(filter=='F070W_JWST'){filt_F070W_JWST=NULL; data('filt_F070W_JWST', envir = environment()); out=filt_F070W_JWST}
   if(filter=='F090W_JWST'){filt_F090W_JWST=NULL; data('filt_F090W_JWST', envir = environment()); out=filt_F090W_JWST}
@@ -106,6 +112,16 @@ getfilt=function(filter){
   if(filter=='1mm_Aztec' | filter=='1mm'){filt_1mm_Aztec=NULL; data('filt_1mm_Aztec', envir = environment()); out=filt_1mm_Aztec}
   
   if(filter=='2mm_Gizmo' | filter=='2mm'){filt_2mm_Gizmo=NULL; data('filt_2mm_Gizmo', envir = environment()); out=filt_2mm_Gizmo}
+  if(is.null(out)){
+    EAZY_filters=NULL
+    data('EAZY_filters', envir = environment())
+    Eazy_try = grep(filter, EAZY_filters$info)
+    if(length(Eazy_try)==1){
+      out=EAZY_filters$filters[[Eazy_try]]
+    }else if(length(Eazy_try)>1){
+      message(paste(c('Eazy filter name is ambiguous, currently grep-ing:',EAZY_filters$info[Eazy_try]), collapse=' '))
+    }
+  }
   if(is.null(out)){
     message(paste('Filter name',filter,'not recognised!'))
   }
