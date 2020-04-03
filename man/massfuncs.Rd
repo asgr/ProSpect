@@ -207,6 +207,7 @@ curve(massfunc_snorm, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 curve(massfunc_snorm_burst, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 curve(massfunc_snorm_trunc, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 curve(massfunc_snorm_burst_trunc, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
+curve(massfunc_dtau, 0, 14e9, xlab='Age/yr', ylab='SFR / Msol/yr')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
