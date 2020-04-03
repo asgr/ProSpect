@@ -1,8 +1,8 @@
 Package: ProSpect
 Type: Package
 Title: Interface to BC03 and EMILES Libraries
-Version: 1.0.0
-Date: 2020-03-25
+Version: 1.0.1
+Date: 2020-04-03
 Author: Aaron Robotham
 Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>
 Description: A high level interface to the BC03 (low and high resolution) and EMILES libraries, as well as the Dale 2014 dust emission templates. This package allows for complex star formation and metallicity histories to be specified, and can be used in a generative or fitting (Bayesian) mode.
