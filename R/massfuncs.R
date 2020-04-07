@@ -175,7 +175,7 @@ massfunc_snorm=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   #normal SFH
-  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew)^asinh((age-mpeak)/mperiod)))*sqrt(2*pi)
   
   temp[temp<0]=0
   temp[age>magemax]=0
@@ -191,7 +191,7 @@ massfunc_snorm_burst=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   #normal SFH
-  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew)^asinh((age-mpeak)/mperiod)))*sqrt(2*pi)
   #burst
   temp[age<mburstage]=temp[age<mburstage]+mburst
   
@@ -208,7 +208,7 @@ massfunc_snorm_trunc=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, mage
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   #normal SFH
-  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew)^asinh((age-mpeak)/mperiod)))*sqrt(2*pi)
   #truncation
   timetrunc = abs(magemax - mpeak)
   temp = temp * (1 - pnorm(age, mean = mpeak + timetrunc/mtrunc, sd = timetrunc/(2*mtrunc)))
@@ -227,7 +227,7 @@ massfunc_snorm_burst_trunc=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1,
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   #normal SFH
-  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew))^asinh((age-mpeak)/mperiod))*sqrt(2*pi)
+  temp=mSFR*dnorm(((age-mpeak)/mperiod)*(exp(mskew)^asinh((age-mpeak)/mperiod)))*sqrt(2*pi)
   #burst
   temp[age<mburstage]=temp[age<mburstage]+mburst
   #truncation
