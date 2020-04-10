@@ -22,7 +22,8 @@ library(ProSpect)
 library(celestial)
 library(foreach)
 library(magicaxis)
-registerDoParallel(cores=detectCores()-2)
+#library(doParallel)
+#registerDoParallel(cores=detectCores()-2)
 ```
 
 Encode the Madua and Dickenson 2014 CSFH function:
@@ -54,12 +55,12 @@ EBL = function(massfunc_z = MD14func, norm=0.00945, Zstart=1e-4, Zfinal=0.02,
   
   covolvec = cosdistCoVol(zvec, OmegaM = 0.3, OmegaL=0.7, H0=70) * 1e9 #  x1e9 to get to Mpc^3 (output is Gpc^3)
   volweights = (c(0,diff(covolvec)) + c(diff(covolvec),0))/2 # This evens out the volume weights around bin edges
-  filtout = foreach(i = filters)%dopar%{approxfun(getfilt(i))} # Generate our filter sets for quick generation
+  filtout = foreach(i = filters)%do%{approxfun(getfilt(i))} # Generate our filter sets for quick generation
   
   tempSFH = approxfun(agevec, SFRvec, yleft = 0, yright = 0) # Generate our temporary SFH function to create our ZH
   Zvec = Zfunc_massmap_box(agevec, massfunc=tempSFH, Zstart=Zstart, Zfinal=Zfinal) # Create out closed box ZH
   
-  fluxz = foreach(i = 1:length(agevec), .combine='rbind')%dopar%{
+  fluxz = foreach(i = 1:length(agevec), .combine='rbind')%do%{
     tempSFH = approxfun(agevec - agevec[i], SFRvec, yleft = 0, yright = 0) # Create a SFH from the current time to the end of the Universe
     tempZH = function(x,...){approxfun(agevec - agevec[i], Zvec, yleft = 0, yright = 0)(x)} # Create a ZH from the current time to the end of the Universe
     

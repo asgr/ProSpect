@@ -1,0 +1,113 @@
+---
+title: "Gen Box"
+author: "Aaron Robotham"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Gen Box}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+library(ProSpect)
+library(magicaxis)
+```
+
+```{r}
+sfunc = function(t, total, gasfrac, argsfr){1} # SFR = 1
+time = 20 # time = 20 Gyrs
+total = 1e10 # Initial gas mass = 1e10 Msol
+alpha = 0.55 # alpha = 0.55 (half of all mass is locked up in stars in each epoch of star formation)
+Zsn = 0.04 # Zsn = 0.04 (actually Z of all metals returns in gas, so includes AGB etc)
+step = 0.01 # step size (10 Myrs)
+```
+
+```{r}
+test = genbox(
+  sfunc = sfunc,
+  time = time,
+  total = total,
+  alpha = alpha,
+  Zsn = Zsn,
+  step = step
+)
+```
+
+Initial yield will be:
+
+$$
+\rho_{\rm start} = (Z_{\rm SN} - Z_{\rm start}) \frac{1 - \alpha}{\alpha} \\
+\rho_{\rm start} = (`r Zsn` - 0) \frac{`r 1-alpha`}{`r alpha`} = `r Zsn*(1-alpha)/alpha`
+$$
+
+```{r}
+start_yield = Zsn*(1-alpha)/alpha
+```
+
+But let's see how it evolves over time:
+
+```{r, fig.width=6, fig.height=4}
+magplot(test$time, test$yield, type='l', grid=TRUE, xlab='Age / GYrs', ylab='Yield')
+```
+
+```{r, fig.width=6, fig.height=4}
+magplot(test$time, test$Zgas, type='l', grid=TRUE, xlab='Age / GYrs', ylab='Z', col='blue')
+lines(test$time, test$Zstars, col='red')
+lines(test$time, test$Zfrac) # Fraction of all mass in metals
+legend('topleft', legend=c('Stars', 'Gas', 'Total'), col=c('red', 'blue', 'black'), lty=1)
+```
+
+```{r, fig.width=6, fig.height=4}
+magplot(test$time, test$sumZgas, col='blue', type='l', grid=TRUE, ylim=c(0,4e8),
+        xlab='Age / GYrs', ylab='Metal Mass', lwd=5)
+lines(test$time, test$sumZstars, col='red', lwd=5)
+lines(test$time, test$sumZall, lwd=5)
+legend('topleft', legend=c('Stars', 'Gas', 'Total'), col=c('red', 'blue', 'black'), lty=1)
+
+lines(test$time, start_yield*test$sumstars, lty=2, lwd=3, col='cyan') # Celine's I think
+lines(test$time, start_yield*cumsum(test$SFR)*1e7*alpha, lty=2, lwd=3, col='brown') # Exactly equivilant to the above
+lines(test$time, test$yield*cumsum(test$SFR)*1e7*alpha, lty=3, col='green', lwd=3) # better, but as I said, only predicts the mass in gas
+lines(test$time, start_yield*test$sumstars*alpha, lty=2, col='red')
+lines(test$time, (start_yield*test$sumstars + test$yield*cumsum(test$SFR)*1e7*alpha)/2, lty=3, col='purple', lwd=3) #oddly works quite well
+lines(test$time, test$Zgas*test$sumgas + test$Zstars*test$sumstars, lty=4, col='pink', lwd=3) # by definition the correct answer
+```
+
+Now again, but fixing the yield:
+
+```{r}
+test2 = genbox(
+  sfunc = sfunc,
+  time = time,
+  total = total,
+  alpha = alpha,
+  Zsn = Zsn,
+  yield = start_yield,
+  step = step
+)
+```
+
+And similar plots:
+
+```{r, fig.width=6, fig.height=4}
+magplot(test2$time, test2$sumZgas, col='blue', type='l', grid=TRUE, ylim=c(0,4e8),
+        xlab='Age / GYrs', ylab='Metal Mass', lwd=5)
+lines(test2$time, test2$sumZstars, col='red', lwd=5)
+lines(test2$time, test2$sumZall, lwd=5)
+legend('topleft', legend=c('Stars', 'Gas', 'Total'), col=c('red', 'blue', 'black'), lty=1)
+
+lines(test2$time, start_yield*test2$sumstars, lty=2, lwd=3, col='cyan') # Celine's I think
+lines(test2$time, start_yield*cumsum(test2$SFR)*1e7*alpha, lty=2, lwd=3, col='brown') # Exactly equivilant to the above
+lines(test2$time, test2$yield*cumsum(test2$SFR)*1e7*alpha, lty=3, col='green', lwd=3) # better, but as I said, only predicts the mass in gas
+lines(test2$time, start_yield*test2$sumstars*alpha, lty=2, col='red')
+lines(test2$time, (start_yield*test2$sumstars + test2$yield*cumsum(test2$SFR)*1e7*alpha)/2, lty=3, col='purple', lwd=3) #oddly works quite well
+lines(test2$time, test2$Zgas*test2$sumgas + test2$Zstars*test2$sumstars, lty=4, col='pink', lwd=3) # by definition the correct answer
+```
+
+```{r}
+magplot(test$starfrac, test$sumZall, col='blue', type='l', grid=TRUE, ylim=c(0,4e8),
+        xlab='Star Fraction', ylab='Metal Mass', lwd=5)
+lines(test2$starfrac, test2$sumZall, col='red', lwd=5)
+legend('topleft', legend=c('Evolving Yield','Fixed Yield'), col=c('blue','red'), lty=1, lwd=5)
+```
+
