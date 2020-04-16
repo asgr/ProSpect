@@ -126,8 +126,6 @@ Data=list(flux=flux_input,
   )
 ```
 
-
-
 Now we can run an MCMC fit using LaplacesDemon (depending on machine, this might take 10-20 minutes):
 
 ```{r eval=FALSE}
@@ -206,3 +204,82 @@ CMAout_z = cmaeshpc(par=badpar_z, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$
 print(CMAout_z$par)
 ```
 
+## Fitting a Galaxy for Redshift
+
+In principle if you have a real galaxy to fit and it is already in the required format of **flux_input**, you can start from this point. In this example we will do something very similar to the above, but now also fit for the redshift.
+
+```{r}
+Data=list(flux=flux_input,
+          arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin), # we remove the explicit z from here
+          speclib=BC03lr, 
+          Dale=Dale_NormTot, 
+          filtout=filtout, 
+          SFH=SFHfunc, # the preferred functional form of the SFH (eg either SFHfunc, SFHburst)
+          parm.names=c('z','mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen', # we add z as a parameter to fit here
+                       'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
+          logged=c(T,T,T,T,F,T,T,F,F), # fit parameters in logged or linear space (note z will be fitted in log space)
+          intervals=list(lo=c(-3,-4,-2,-1,-0.5,-2.5,-2.5,0,0), hi=c(1,3,1,1,1,1.5,1,4,4)), # fitting range for parameters (z will be 0.001 to 10)
+          fit = 'LD', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
+          mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
+          N=length(filters), # number of observed filters
+          like='norm',
+          verbose=FALSE
+  )
+```
+
+Now we can run an MCMC fit using LaplacesDemon (depending on machine, this might take 10-20 minutes):
+
+```{r eval=FALSE}
+LDout = LaplacesDemon(Model=ProSpectSEDlike, Data=Data,  Initial.Values=c(0.1,inpar),
+                      control=list(abstol=0.1), Iterations=1e4, Algorithm='CHARM', Thinning=1)
+```
+
+We can see that the redshift, fitted without any prior (or implicitly a uniform in log-space prior) is degenerate with many other parameters. In particular the total stellar mass, where higher redshifts results in more stellar mass. This is because a galaxy need to be brighter and on average more massive if placed at higher redshift to create the same amount of observed flux.
+
+```{r, eval=FALSE}
+magtri(cbind(LDout$Posterior1,SM=LDout$Monitor[5001:1e4,"masstot"]))
+```
+
+In practice we might want to use something better like CMA to get pretty close pretty quickly (you can get this from my GitHub at asgr/cmaeshpc). Here we set the wall time to 2 minutes (which is usually enough for this many parameters).
+
+```{r, eval=FALSE}
+library(cmaeshpc)
+Data$fit = 'CMA'
+badpar = (Data$intervals$lo + Data$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
+CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data, lower=Data$intervals$lo,
+                  upper=Data$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+print(CMAout$par)
+```
+
+With photo-z like prior
+
+```{r}
+prior = function(parm){
+return(dnorm(parm[1], mean=-1, sd=0.02, log=TRUE)) # 10^0.02 gives about 4.7% photo-z error
+}
+```
+
+```{r}
+Data=list(flux=flux_input,
+          arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin), # we remove the explicit z from here
+          speclib=BC03lr, 
+          Dale=Dale_NormTot, 
+          filtout=filtout, 
+          SFH=SFHfunc, # the preferred functional form of the SFH (eg either SFHfunc, SFHburst)
+          parm.names=c('z','mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen', # we add z as a parameter to fit here
+                       'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
+          logged=c(T,T,T,T,F,T,T,F,F), # fit parameters in logged or linear space (note z will be fitted in log space)
+          prior=prior,
+          intervals=list(lo=c(-3,-4,-2,-1,-0.5,-2.5,-2.5,0,0), hi=c(1,3,1,1,1,1.5,1,4,4)), # fitting range for parameters (z will be 0.001 to 10)
+          fit = 'LD', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
+          mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
+          N=length(filters), # number of observed filters
+          like='norm',
+          verbose=FALSE
+  )
+```
+
+```{r eval=FALSE}
+LDout_prior = LaplacesDemon(Model=ProSpectSEDlike, Data=Data,  Initial.Values=c(0.1,inpar),
+                      control=list(abstol=0.1), Iterations=1e4, Algorithm='CHARM', Thinning=1)
+``` 
