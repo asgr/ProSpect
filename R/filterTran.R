@@ -101,7 +101,11 @@ filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=6
                     returnall = FALSE)
   }
   ranSFHs = data.frame(ranSFHs)
-  colnames(ranSFHs) = c(names(filt_in), names(filt_out))
+  if(length(names(filt_out))==1){
+    colnames(ranSFHs) = c(names(filt_in), names(filt_out))
+  }else{
+    colnames(ranSFHs) = c(names(filt_in), names('Target'))
+  }
   for(i in 1:dim(ranSFHs)[2]){
     ranSFHs[,i] = Jansky2magAB(ranSFHs[,i])
   }
