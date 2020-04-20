@@ -22,6 +22,7 @@ library(ProSpect)
 library(hyper.fit)
 library(data.table)
 library(foreach)
+library(magicaxis)
 ```
 
 Load some data we want to use:
@@ -132,8 +133,69 @@ names(filt_in) = filters[1:3] #vital we give our input filters useful names
 This can all be run through the above steps in all adjacent band combinations with:
 
 ```{r}
-trans = filterTranBands(filt_in=filt_in, filt_out = filt_out)
+trans = filterTranBands(filt_in=filt_in, filt_out=filt_out)
 print(trans)
 ```
 
-In general we want the filter transform that minimises the vertical scatter (scat.vert above). This happens to be the transform we computed manually using the SDSS $r$ and $i$ bands. Note we also see a small preference for predicting off the nearest band as the additive reference (SDSS $r$ rather than $i$).
+In general we want the filter transform that minimises the vertical scatter (sigma above). This happens to be the transform we computed manually using the SDSS $r$ and $i$ bands.
+
+## Using your own filters
+
+If you have your own filter file where the columns are wavelength (in Angstroms, named 'wave') and throughput (in photons not energy, named 'response') then it is fairly simple to compute your own filter conversions based on the following example. Note the throughput/response does not need to be normalised to anything in particular (so does not need to integrate to 1.0, or have a max value of 1.0 etc)- this is done internally.
+
+First we need to create some fake filter file data. For simplicity we will just put this in a random temp file:
+
+```{r}
+filt_temp_r = tempfile()
+write.table(getfilt('r_SDSS'), file=filt_temp_r)
+```
+
+For most users, the below is where you enter the problem- you already have some filter data in the correct format and you wish to read this in:
+
+```{r}
+filt_r = read.table(filt_temp_r)
+filt_r[1:5,]
+```
+
+We can check this looks okay:
+
+```{r, fig.width=8, fig.height=6}
+magplot(filt_r, type='l', xlab='Wave / Ang', ylab='Norm', grid=TRUE)
+```
+
+We will now do a similar thing with our g and i data:
+
+```{r}
+filt_temp_g = tempfile()
+write.table(getfilt('g_SDSS'), file=filt_temp_g)
+filt_g = read.table(filt_temp_g)
+
+filt_temp_i = tempfile()
+write.table(getfilt('i_SDSS'), file=filt_temp_i)
+filt_i = read.table(filt_temp_i)
+```
+
+We now need to put this into the list structure that filterTranBands expects. First we define out input filter set that we wish to transform *from* (we can have lots of these):
+
+```{r}
+filt_in = list(
+  g_SDSS = filt_g, # note faster if wrapped in approxfun(filt_X) etc
+  r_SDSS = filt_r,
+  i_SDSS = filt_i
+)
+```
+
+Now we define our target filter that we want to transform to (we can have just one of these):
+
+```{r}
+filt_out = getfilt('r_VST') # note faster if wrapped in approxfun(filt_X) etc
+```
+
+And we can check that this long-winded (but informative for those loading in their own filters) way round gives the same answers as before:
+
+```{r}
+trans = filterTranBands(filt_in=filt_in, filt_out=filt_out)
+print(trans)
+```
+
+Yes they do!
