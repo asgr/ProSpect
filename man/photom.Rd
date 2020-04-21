@@ -15,10 +15,13 @@ These functions can manipulate restframe spectra in useful ways, e.g. placing it
 \usage{
 photom_flux(wave, flux, outtype = 'mag', filters = "all")
 photom_lum(wave, lum, outtype = 'mag', filters = "all", z = 0.1, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
-Lum2Flux(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
-Flux2Lum(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
-Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref)
+OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm = NULL)
+Lum2Flux(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
+Dl_cm = NULL)
+Flux2Lum(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, 
+Dl_cm = NULL)
+Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, 
+Dl_cm = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -51,6 +54,9 @@ Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL =
 }
   \item{ref}{
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
+  }
+  \item{Dl_cm}{
+Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. 
   }
 }
 \details{

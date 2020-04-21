@@ -59,10 +59,12 @@ Janskycalc=function(wave, flux, filter='r_VST'){
 }
 
 
-Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref){
+Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm=NULL){
   # Assuming lum to be converted is in the BC03 Lsol / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Hz flux
-  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
+  if(is.null(Dl_cm)){
+    Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
+  }
   factor=.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z)
   return(factor)
 }
@@ -84,7 +86,7 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
   return(data.frame(wave=wave, flux=flux))
 }
 
-Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref){
+Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm=NULL){
   #Assumed lux input is erg/s/cm^2/Ang (not per Hz!)
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
@@ -92,7 +94,9 @@ Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - O
       wave=wave[,1]
     }
   }
-  Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
+  if(is.null(Dl_cm)){
+    Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
+  }
   lum=flux/(.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z))
   wave=wave/(1+z)
   #output is Lsol / Angstrom format
