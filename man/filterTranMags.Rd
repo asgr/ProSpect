@@ -53,7 +53,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{ProFiltTrans}}, \code{\link{getfilt}}, \code{\link{EAZY_filters}}
+\code{\link{ProFiltTrans}}, \code{\link{getfilt}}, \code{\link{EAZY_filters}}, \code{\link{runShinySED}}
 }
 \examples{
 \dontrun{
