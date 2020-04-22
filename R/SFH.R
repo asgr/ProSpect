@@ -3,7 +3,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
                  pow_screen=-0.7, filters='all', Z=5, emission=FALSE, veldisp=50,
                  emission_scale='FUV', escape_frac=1-emission, Ly_limit=911.8,
                  LKL10=NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
-                 ref, outtype='mag', sparse=5, intSFR=FALSE, unimax=13.8e9, agemax=NULL, ...){
+                 ref, outtype='mag', sparse=5, intSFR=FALSE, unimax=13.8e9, agemax=NULL,
+                 LumDist_Mpc=NULL, ...){
   #Ly_limit should be 911.8 (the actual ionisation limit) or sometimes 1215.67
   
   dots=list(...)
@@ -114,7 +115,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   
   if(unimax!=FALSE){
     if(is.null(agemax)){
-      agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+      agemax = unimax-cosdistTravelTime(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)*1e9
     }
   }
   
@@ -216,7 +217,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     flux=NULL
   }else{
     if(z>0){
-      flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
+      flux=Lum2Flux(wave = speclib$Wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
       if(!is.null(outtype)){
         out=photom_flux(flux, outtype = outtype, filters = filters)
         if(is.list(filters)){
@@ -334,7 +335,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
   
   if(unimax!=FALSE){
     if(is.null(agemax)){
-      agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+      agemax = unimax-cosdistTravelTime(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)*1e9
     }
   }
   
@@ -391,7 +392,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
                   tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,
                   filters='all', Z=0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308,
                   OmegaL = 1 - OmegaM, ref, outtype='mag', sparse=5, unimax=13.8e9,
-                  agemax=NULL, ...){
+                  agemax=NULL, LumDist_Mpc=NULL, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
   
@@ -441,7 +442,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
   
   if(unimax!=FALSE){
     if(is.null(agemax)){
-      agemax = unimax-cosdistTravelTime(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)*1e9
+      agemax = unimax-cosdistTravelTime(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)*1e9
     }
   }
   
@@ -495,7 +496,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
     return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot, SFRburst=SFRburst))) # returns the minimal luminosity and mass outputs
   }
   if(z>0){
-    flux=Lum2Flux(wave = speclib$Wave, lum = lum, z = z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref = ref)
+    flux=Lum2Flux(wave = speclib$Wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
     if(!is.null(outtype)){
       out=photom_flux(flux, outtype = outtype, filters = filters)
       if(is.list(filters)){

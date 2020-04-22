@@ -10,11 +10,12 @@ Top Level ProSpect SED Functions
 }
 \usage{
 ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
-pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
-alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
-Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
-returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
-waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, agemax = NULL, ...)
+ pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
+ alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
+ Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
+ returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+ waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
+ LumDist_Mpc = NULL, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -99,6 +100,9 @@ Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i
 }
   \item{agemax}{
 Numeric scalar; maximum allowed age of any stellar population relative to the redshift of the observed galaxy in years. Any star formation that is older than this will be set to 0. Overridden by \option{unimax} if provided. It is computational a bit faster to provide this since we do not need to compute a lookup time from the redshift.
+}
+  \item{LumDist_Mpc}{
+Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
 }
   \item{parm}{
 Numeric vector; arguments to be passed to \code{ProSpectSED}.

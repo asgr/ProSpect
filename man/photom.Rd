@@ -15,13 +15,13 @@ These functions can manipulate restframe spectra in useful ways, e.g. placing it
 \usage{
 photom_flux(wave, flux, outtype = 'mag', filters = "all")
 photom_lum(wave, lum, outtype = 'mag', filters = "all", z = 0.1, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm = NULL)
-Lum2Flux(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
-Dl_cm = NULL)
-Flux2Lum(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, 
-Dl_cm = NULL)
+OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc = NULL)
+Lum2Flux(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+  ref, LumDist_Mpc = NULL)
+Flux2Lum(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+  ref, LumDist_Mpc = NULL)
 Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, 
-Dl_cm = NULL)
+  LumDist_Mpc = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -54,10 +54,10 @@ Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL =
 }
   \item{ref}{
 The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
-  }
-  \item{Dl_cm}{
-Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. 
-  }
+}
+  \item{LumDist_Mpc}{
+Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
+}
 }
 \details{
 \code{photom_lum} is a useful utility function since it fully converts between an intrinsic spectrum (e.g. of the type created when integrating a star formation history over differ stellar population models) all the way to a band-pass magnitude in AB mags (or Jy or CGS). The latter is how many surveys represent their photometry, so this is usually a sensible unit space to use for feature fitting etc. In some circumstances fluxes (CGS or Jansky type) might be more appropriate, espeically when signal to noise is low a meaurements might be negative.

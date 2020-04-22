@@ -3,7 +3,7 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
                      filtout=NULL, filters='all', Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
                      OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,7,by=0.01), ref, unimax=13.8e9,
-                     agemax=NULL, ...){
+                     agemax=NULL, LumDist_Mpc=NULL, ...){
   
   call=match.call()
   
@@ -90,14 +90,14 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
   }
   
   if(z>0 & !is.null(filtout)){
-    Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+    Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
     Flux$flux=convert_wave2freq(flux_wave=Flux$flux*.cgs_to_jansky, wave=Flux$wave)
     photom_out={}
     for(i in 1:length(filtout)){
       photom_out = c(photom_out, bandpass(flux=Flux$flux, wave=Flux$wave, filter=filtout[[i]], lum=TRUE))
     }
   }else if(z>0 & is.null(filtout)){
-    Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+    Flux=Lum2Flux(wave=Final$wave, lum=Final$lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
     Flux$flux=convert_wave2freq(flux_wave=Flux$flux*.cgs_to_jansky, wave=Flux$wave)
     photom_out=NULL
   }else if(z<=0 & !is.null(filtout)){
