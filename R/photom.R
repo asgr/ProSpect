@@ -59,17 +59,18 @@ Janskycalc=function(wave, flux, filter='r_VST'){
 }
 
 
-Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm=NULL){
+Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
   # Assuming lum to be converted is in the BC03 Lsol / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Hz flux
-  if(is.null(Dl_cm)){
-    Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
+  if(is.null(LumDist_Mpc)){
+    LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
   }
+  Dl_cm = LumDist_Mpc * .mpc_to_cm
   factor=.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z)
   return(factor)
 }
 
-Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm=NULL){
+Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
   #Assumed lux input is Lsol / Angstrom
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
@@ -77,26 +78,28 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
       wave=wave[,1]
     }
   }
-  if(is.null(Dl_cm)){
-    Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
+  if(is.null(LumDist_Mpc)){
+    LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
   }
+  Dl_cm = LumDist_Mpc * .mpc_to_cm
   flux=lum*.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z)
   wave=wave*(1+z)
   #output is erg/s/cm^2/Ang (not per Hz! Need to make this final conversion to get to AB mag, but this is the standard way of viewing spectra).
   return(data.frame(wave=wave, flux=flux))
 }
 
-Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm=NULL){
-  #Assumed lux input is erg/s/cm^2/Ang (not per Hz!)
+Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
+  #Assumed flux input is erg/s/cm^2/Ang (not per Hz!)
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       flux=wave[,2]
       wave=wave[,1]
     }
   }
-  if(is.null(Dl_cm)){
-    Dl_cm=cosdistLumDist(z=z, H0 = H0, OmegaM = OmegaM, OmegaL = OmegaL, ref=ref)*.mpc_to_cm
+  if(is.null(LumDist_Mpc)){
+    LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
   }
+  Dl_cm = LumDist_Mpc * .mpc_to_cm
   lum=flux/(.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z))
   wave=wave/(1+z)
   #output is Lsol / Angstrom format
@@ -146,7 +149,7 @@ photom_flux=function(wave, flux, outtype='mag', filters='all'){
   return(photom)
 }
 
-photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, Dl_cm=NULL){
+photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
   
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
@@ -159,7 +162,7 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
     filters=list(filters)
   }
   
-  flux=Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, Dl_cm=Dl_cm)
+  flux=Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
 
   if((filters=='all')[1]){
     cenwave=NULL

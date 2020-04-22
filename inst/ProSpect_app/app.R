@@ -36,14 +36,10 @@ tau_AGN=.checkoption('tauscreen',1)
 alpha_SF_birth=.checkoption('alpha_SF_birth',1)
 alpha_SF_screen=.checkoption('alpha_SF_screen',3)
 alpha_SF_AGN=.checkoption('alpha_SF_AGN',0)
-burstZ=.checkoption('burstZ',5)
-youngZ=.checkoption('youngZ',5)
-midZ=.checkoption('midZ',5)
-oldZ=.checkoption('oldZ',5)
-ancientZ=.checkoption('ancientZ',5)
+Z=.checkoption('Z',5)
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui = fluidPage(
   # Application title
   fluidRow(
         h1("ProSpect SED")
@@ -90,30 +86,10 @@ ui <- fluidPage(
                      min = 30,
                      max = 50,
                      value = AGNlum, step=0.2),
-         selectInput('burstZ',
-                     'Burst Z',
+         selectInput('Z',
+                     'Z',
                      list('1e-04'=1, '4e-04'=2, '0.004'=3, '0.008'=4, '0.02'=5, '0.05'=6),
-                     burstZ
-         ),
-         selectInput('youngZ',
-                     'Young Z',
-                     list('1e-04'=1, '4e-04'=2, '0.004'=3, '0.008'=4, '0.02'=5, '0.05'=6),
-                     youngZ
-         ),
-         selectInput('midZ',
-                     'Mid Z',
-                     list('1e-04'=1, '4e-04'=2, '0.004'=3, '0.008'=4, '0.02'=5, '0.05'=6),
-                     midZ
-         ),
-         selectInput('oldZ',
-                     'Old Z',
-                     list('1e-04'=1, '4e-04'=2, '0.004'=3, '0.008'=4, '0.02'=5, '0.05'=6),
-                     oldZ
-         ),
-         selectInput('ancientZ',
-                     'Ancient Z',
-                     list('1e-04'=1, '4e-04'=2, '0.004'=3, '0.008'=4, '0.02'=5, '0.05'=6),
-                     ancientZ
+                     Z
          )
   ),
   column(2,
@@ -167,7 +143,7 @@ ui <- fluidPage(
                                 plotOutput("SFH_plot", height="250px"),
                                 br(),
                                 h4('Log10(Mass/Msol):'),
-                                dataTableOutput('table')
+                                DT::dataTableOutput('table')
                               )
                      ),
                      tabPanel('Info',
@@ -185,11 +161,7 @@ ui <- fluidPage(
                                 p(strong('Alpha SF Birth'),"Dale dust radiation power law for the birth cloud (lower values mean hotter)"),
                                 p(strong('Alpha SF Screen'),"Dale dust radiation power law for the dust screen (lower values mean hotter)"),
                                 p(strong('Alpha SF AGN'),"Dale dust radiation power law for the AGN torus (lower values mean hotter)"),
-                                p(strong('Burst Z'),"Metallicity of the burst stars in Fe/H (0.02 is solar)"),
-                                p(strong('Young Z'),"Metallicity of the young stars in Fe/H (0.02 is solar)"),
-                                p(strong('Mid Z'),"Metallicity of the middle aged stars in Fe/H (0.02 is solar)"),
-                                p(strong('Old Z'),"Metallicity of the old stars in Fe/H (0.02 is solar)"),
-                                p(strong('Ancient Z'),"Metallicity of the ancient stars in Fe/H (0.02 is solar)"),
+                                p(strong('Z'),"Metallicity of the stars in Fe/H (0.02 is solar)"),
                                 
                                 h3("Getting Started"),
                                 p("New to Synthetic Spectra? Then take a look here: [sedfitting.org](http://www.sedfitting.org/Models.html). There's a bunch of useful stuff there, and a lot of dead links :-(. But it is worth exploring in some detail. In particular for the stellar population models have a look at BASTI, BPASS, Galaxev (which is BC03 to most astronomers), MILES, Pegase, SLUG and Starburst99. For dust stuff have a look at Dale+Helou and Draine+Li, for UV-FIR Da Cunha (which is MagPhys), CIGALE and Grasil. Those are the most popular variants of what they do in their respective fields. Caveats abound about which is better, but these days they are all pretty sophisticated in their own way."),
@@ -205,7 +177,7 @@ The 5 phase model (SFHp5) covers 5 key phases of star formation and models them 
   )
 )
 
-server <- function(input, output) {
+server = function(input, output) {
   
   observe({
     if(input$stop > 0){
@@ -223,21 +195,21 @@ server <- function(input, output) {
         alpha_SF_birth=input$alpha_SF_birth,
         alpha_SF_screen=input$alpha_SF_screen,
         alpha_SF_AGN=input$alpha_SF_AGN,
-        Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ))
+        Z=as.integer(input$Z)
       )
       )
     }
   })
   
-  output$SED_flux_plot <- renderPlot({
+  output$SED_flux_plot = renderPlot({
     
-    SED=ProSpectSED(SFH=SFHp5,
+    SED=ProSpectSED(SFH=SFHfunc,
                     z=max(input$z,2.261565e-09,na.rm=TRUE),
-                    burstmass=10^input$burstmass,
-                    youngmass=10^input$youngmass,
-                    midmass=10^input$midmass,
-                    oldmass=10^input$oldmass,
-                    ancientmass=10^input$ancientmass,
+                    m1=10^input$burstmass/1e8,
+                    m2=10^input$youngmass/9e8,
+                    m3=10^input$midmass/4e9,
+                    m4=10^input$oldmass/4e9,
+                    m5=10^input$ancientmass/4e9,
                     AGNlum=10^input$AGNlum,
                     tau_birth=input$tau_birth,
                     tau_screen=input$tau_screen,
@@ -245,7 +217,7 @@ server <- function(input, output) {
                     alpha_SF_birth=input$alpha_SF_birth,
                     alpha_SF_screen=input$alpha_SF_screen,
                     alpha_SF_AGN=input$alpha_SF_AGN,
-                    Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ)),
+                    Z=as.integer(input$Z),
                     speclib=BC03lr,
                     Dale=Dale_NormTot,
                     AGN=AGN_UnOb_Sparse,
@@ -275,15 +247,15 @@ server <- function(input, output) {
     }
   })
   
-  output$SED_lum_plot <- renderPlot({
+  output$SED_lum_plot = renderPlot({
     
-    SED=ProSpectSED(SFH=SFHp5,
+    SED=ProSpectSED(SFH=SFHfunc,
                     z=max(input$z,2.261565e-09,na.rm=TRUE),
-                    burstmass=10^input$burstmass,
-                    youngmass=10^input$youngmass,
-                    midmass=10^input$midmass,
-                    oldmass=10^input$oldmass,
-                    ancientmass=10^input$ancientmass,
+                    m1=10^input$burstmass/1e8,
+                    m2=10^input$youngmass/9e8,
+                    m3=10^input$midmass/4e9,
+                    m4=10^input$oldmass/4e9,
+                    m5=10^input$ancientmass/4e9,
                     AGNlum=10^input$AGNlum,
                     tau_birth=input$tau_birth,
                     tau_screen=input$tau_screen,
@@ -291,7 +263,7 @@ server <- function(input, output) {
                     alpha_SF_birth=input$alpha_SF_birth,
                     alpha_SF_screen=input$alpha_SF_screen,
                     alpha_SF_AGN=input$alpha_SF_AGN,
-                    Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ)),
+                    Z=as.integer(input$Z),
                     speclib=BC03lr,
                     Dale=Dale_NormTot,
                     AGN=AGN_UnOb_Sparse,
@@ -316,25 +288,25 @@ server <- function(input, output) {
     lines(SED$AGN, col='brown', lwd=2)
     legend('topright', legend=c('Observed Total', 'Unattenuated Stars', 'Attenuated Stars', 'Re-emitted dust', 'AGN'), col=c('grey', 'blue', 'green', 'darkgreen', 'brown'), lty=c(1,2,1,1,1), lwd=c(5,2,2,2,2))
     
-    SMphases=SMstarp5(z=max(input$z,2.261565e-09,na.rm=TRUE),
-                      burstmass=10^input$burstmass,
-                      youngmass=10^input$youngmass,
-                      midmass=10^input$midmass,
-                      oldmass=10^input$oldmass,
-                      ancientmass=10^input$ancientmass,
-                      Z=c(as.integer(input$burstZ),as.integer(input$youngZ),as.integer(input$midZ),as.integer(input$oldZ),as.integer(input$ancientZ))
+    SMphases=SMstarfunc(z=max(input$z,2.261565e-09,na.rm=TRUE),
+                        m1=10^input$burstmass/1e8,
+                        m2=10^input$youngmass/9e8,
+                        m3=10^input$midmass/4e9,
+                        m4=10^input$oldmass/4e9,
+                        m5=10^input$ancientmass/4e9,
+                        Z=as.integer(input$Z)
     )
     
     SMphases=round(log10(SMphases),2)
     
-    SMphases=cbind(c(SMphases['TotSMform'],SMphases[1:5]),c(SMphases['TotSMstar'],SMphases[1:5+5]))
+    SMphases=data.frame(c(SMphases['TotSMform'],SMphases[1:5]),c(SMphases['TotSMstar'],SMphases[1:5+5]))
     SMphases=cbind(c('Total','Burst','Young','Mid','Old','Ancient'),SMphases)
     colnames(SMphases)=c('Phase','Formed','Remaining')
     
-    output$table <- renderDataTable(SMphases)
+    output$table = DT::renderDataTable(SMphases)
   })
   
-  output$SFH_plot <- renderPlot({
+  output$SFH_plot = renderPlot({
     
     TravelTime=cosdistTravelTime(z=max(input$z,2.261565e-09,na.rm=TRUE), H0 = 67.8, OmegaM = 0.308)
     

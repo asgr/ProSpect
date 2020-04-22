@@ -14,23 +14,25 @@ As of v1.0.0 the older \code{SFHp4} and \code{SFHp5} have been removed, use \cod
 The star formation history functions discussed here compute output galaxy spectra  and stellar masses using variable star formation histories. This can be either a pure burst (\code{SFHburst}), or a functional form (\code{SFHfunc}). Uses either BC03 or EMILES libraries. \code{SFHfunc} can take a functional form for the metallicity.
 }
 \usage{
-SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1, stellpop = "BC03lr",
-speclib = NULL, tau_birth = 1, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
-filters = "all", Z = 5, emission = FALSE, veldisp = 50, emission_scale = "FUV",
-escape_frac = 1 - emission, Ly_limit = 911.8, LKL10 = NULL, z = 0.1, H0 = 67.8,
-OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
-unimax = 1.38e+10, agemax = NULL, ...) 
+SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
+ stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3,
+ pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 5, emission = FALSE,
+ veldisp = 50, emission_scale = "FUV", escape_frac = 1 - emission,
+ Ly_limit = 911.8, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
+ OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
+unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, ...) 
 
 SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
-burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
-oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr",
-speclib = NULL, Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
-unimax = 1.38e+10, agemax = NULL, ...)
+ burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
+ oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr",
+ speclib = NULL, Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+ ref, unimax = 1.38e+10, agemax = NULL, ...)
 
 SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
-tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,  filters = 'all',
-Z = 0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = 'mag',
-sparse = 5, unimax=  13.8e9, agemax = NULL, ...)
+ tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
+ filters = 'all', Z = 0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308,
+ OmegaL = 1 - OmegaM, ref, outtype = 'mag', sparse = 5, unimax=  13.8e9,
+ agemax = NULL, LumDist_Mpc = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -132,6 +134,9 @@ Numeric scalar; amount of sparse sampling of the spectra to make. Higher values 
 }
   \item{intSFR}{
 Boolean scalar; should the \option{massfunc} be intergrated between ages? This might be necessary if the SFH is quite bursty, but it is more expensive to compute and not required if the SFH is quite smooth.  
+}
+  \item{LumDist_Mpc}{
+Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
 }
   \item{\dots}{
 Further arguments to be passed to \code{massfunc} or \code{Z} functions, as appropriate (this is achieved by formals matching, so be careful to used unique names).

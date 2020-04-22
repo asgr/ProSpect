@@ -13,7 +13,7 @@ Simple wrapper function to run the Shiny SED and Filters App. The SED app shows 
 runShinySED(flux = NULL, burstmass = 1e+08, youngmass = 1e+09, midmass = 1e+10,
 oldmass = 1e+10, ancientmass = 1e+10, z = 0.1, tau_birth = 1, tau_screen = 0.3,
 tau_AGN = 1, alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 1e+42,
-Z = rep(5,5))
+Z = 5)
 runShinyFilters()
 }
 \details{
