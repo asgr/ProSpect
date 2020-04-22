@@ -152,7 +152,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     }
   }
   
-  lumtot_unatten=sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_unatten=sum(.qdiff(speclib$Wave)*lum)
   lum_unatten=lum
   
   if(tau_birth!=0){
@@ -167,14 +167,14 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
         lum=colSums(speclib$Zspec[[Zid]]*massvec)
       }
     }
-    lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
+    lumtot_birth=lumtot_unatten-sum(.qdiff(speclib$Wave)*lum)
   }else{
     lumtot_birth=0
   }
   
   if(emission){
     if(emission_scale=='FUV'){
-      All_lum=(1-escape_frac)*sum(c(0,diff(speclib$Wave[speclib$Wave<Ly_limit]))*lum_unatten[speclib$Wave<Ly_limit])
+      All_lum=(1-escape_frac)*sum(.qdiff(speclib$Wave[speclib$Wave<Ly_limit])*lum_unatten[speclib$Wave<Ly_limit])
       emission_input=list(All_lum=All_lum, veldisp=veldisp, Z=Zvec[1])
       emissionadd_unatten=emissionLines(All_lum=All_lum, veldisp=veldisp, Z=Zvec[1])
     }else if(emission_scale=='SFR'){
@@ -188,8 +188,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     emissionadd_atten=emissionadd_unatten
     emissionadd_atten$lum=emissionadd_atten$lum*CF_birth(emissionadd_atten$wave, tau=tau_birth, pow=pow_birth)
     
-    lumtot_emission_unatten=sum(c(0,diff(emissionadd_unatten$wave))*emissionadd_unatten$lum)
-    lumtot_emission_atten=sum(c(0,diff(emissionadd_atten$wave))*emissionadd_atten$lum)
+    lumtot_emission_unatten=sum(.qdiff(emissionadd_unatten$wave)*emissionadd_unatten$lum)
+    lumtot_emission_atten=sum(.qdiff(emissionadd_atten$wave)*emissionadd_atten$lum)
     
     lumtot_birth=lumtot_birth-lumtot_emission_unatten+lumtot_emission_atten
     
@@ -203,14 +203,14 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   
   if(tau_screen!=0){
     lum=lum*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen)
-    lumtot_screen=(lumtot_unatten-lumtot_birth)-sum(c(0,diff(speclib$Wave))*lum)
+    lumtot_screen=(lumtot_unatten-lumtot_birth)-sum(.qdiff(speclib$Wave)*lum)
   }else{
     lumtot_screen=0
   }
   
   SFRburst=do.call('integrate', c(list(f=massfunc, lower=0, upper=1e8),massfunc_args))$value*forcescale/1e8
   
-  lumtot_atten = lumtot_unatten - sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_atten = lumtot_unatten - sum(.qdiff(speclib$Wave)*lum)
   
   if(z<0 | is.null(filters)){
     out=NULL
@@ -466,23 +466,23 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
   
   lum_unatten=lum_unatten*burstmass
   lum=lum_unatten
-  lumtot_unatten=sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_unatten=sum(.qdiff(speclib$Wave)*lum)
   
   if(tau_birth!=0 & burstage<=1e7){
     lum=lum*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth)
-    lumtot_birth=lumtot_unatten-sum(c(0,diff(speclib$Wave))*lum)
+    lumtot_birth=lumtot_unatten-sum(.qdiff(speclib$Wave)*lum)
   }else{
     lumtot_birth=0
   }
   
   if(tau_screen!=0){
     lum=lum*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen)
-    lumtot_screen=(lumtot_unatten-lumtot_birth)-sum(c(0,diff(speclib$Wave))*lum)
+    lumtot_screen=(lumtot_unatten-lumtot_birth)-sum(.qdiff(speclib$Wave)*lum)
   }else{
     lumtot_screen=0
   }
   
-  lumtot_atten = lumtot_unatten - sum(c(0,diff(speclib$Wave))*lum)
+  lumtot_atten = lumtot_unatten - sum(.qdiff(speclib$Wave)*lum)
   
   masstot=burstmass
   

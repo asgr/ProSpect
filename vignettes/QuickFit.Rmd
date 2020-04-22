@@ -92,7 +92,7 @@ genSED=ProSpectSED(massfunc=massfunc_snorm_trunc,
                    filtout=filtout,
                    Dale=Dale_NormTot,
                    speclib=BC03lr,
-                   agemax = agemax
+                   agemax=agemax
 )
 ```
 

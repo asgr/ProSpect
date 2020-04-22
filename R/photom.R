@@ -255,14 +255,14 @@ bandpass=function(wave, flux, filter, lum=TRUE, flux_in='freq', flux_out='freq',
   
   if(flux_in=='freq'){
     freq=1/wave
-    freq_diff=c(0,abs(diff(freq)))
+    freq_diff=abs(.qdiff(freq))
     if(detect_type=='photon'){
       output = response * wave * flux * freq_diff/sum(response * wave * freq_diff, na.rm = TRUE)
     }else if(detect_type=='energy'){
       output = response * flux * freq_diff/sum(response * freq_diff, na.rm = TRUE)
     }
   }else if(flux_in=='wave'){
-    wave_diff=c(0,abs(diff(wave)))
+    wave_diff=abs(.qdiff(wave))
     if(detect_type=='photon'){
       output = response * wave * flux * wave_diff/sum(response * wave * wave_diff, na.rm = TRUE)
     }else if(detect_type=='energy'){
