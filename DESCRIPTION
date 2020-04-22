@@ -1,7 +1,7 @@
 Package: ProSpect
 Type: Package
 Title: Interface to BC03 and EMILES Libraries
-Version: 1.0.3
+Version: 1.0.4
 Date: 2020-04-22
 Author: Aaron Robotham
 Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>

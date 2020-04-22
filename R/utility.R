@@ -97,3 +97,11 @@ interp_param=function(x, params, log=FALSE, method='linear'){
     }
     return(x)
 }
+
+.qdiff=function(vec, pad0=TRUE){
+  if(pad0){
+    return(c(0,vec[2:length(vec)]-vec[1:(length(vec)-1)]))
+  }else{
+    return(vec[2:length(vec)]-vec[1:(length(vec)-1)])
+  }
+}
