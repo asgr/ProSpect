@@ -159,7 +159,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     lum=rep(0,length(speclib$Wave))
     for(Zid in Zuse){
       if(tau_birth!=0){
-        speclib$Zspec[[Zid]][1:birthcloud,]=t(t(speclib$Zspec[[Zid]][1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+        #speclib$Zspec[[Zid]][1:birthcloud,]=t(t(speclib$Zspec[[Zid]][1:birthcloud,])*CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth))
+        speclib$Zspec[[Zid]][1:birthcloud,]=speclib$Zspec[[Zid]][1:birthcloud,]*rep(CF_birth(speclib$Wave, tau=tau_birth, pow=pow_birth), each=birthcloud)
       }
       if(Zdoweight){
         lum=lum+colSums(speclib$Zspec[[Zid]]*massvec*Zwmat[,Zid])
@@ -270,7 +271,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
                     youngage=c(1e8,1e9), midage=c(1e9,5e9), oldage=c(5e9,9e9),
                     ancientage=c(9e9,1.3e10), stellpop='BC03lr', speclib=NULL,
                     Z=5, z=0.1, H0=67.8, OmegaM=0.308, OmegaL=1-OmegaM, ref,
-                    unimax=13.8e9, agemax=NULL, ...){
+                    unimax=13.8e9, agemax=NULL, intSFR=FALSE, ...){
   
   dots=list(...)
   massfunc_args=dots[names(dots) %in% names(formals(massfunc))]
@@ -331,7 +332,35 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
     Zdoweight=FALSE
   }
   
-  massvec=do.call('massfunc',c(list(agevec), massfunc_args))*speclib$AgeWeights
+  if(intSFR){
+    massvec=rep(0,length(agevec))
+    for(i in 1:length(agevec)){
+      tempint=try(
+        do.call('integrate', c(list(f=massfunc, lower=speclib$AgeBins[i]*agescale, upper=speclib$AgeBins[i+1]*agescale), massfunc_args))$value,
+        silent=TRUE)
+      if(class(tempint)=="try-error"){
+        massvec[i]=0
+      }else{
+        massvec[i]=tempint
+      }
+    }
+    if(sum(massvec,na.rm=TRUE)==0){
+      #pracma integral seems to work for very bursty star formation where integrate fails
+      massvec=rep(0,length(agevec))
+      for(i in 1:length(agevec)){
+        tempint=try(
+          do.call('integral', c(list(f=massfunc, xmin=speclib$AgeBins[i]*agescale, xmax=speclib$AgeBins[i+1]*agescale), massfunc_args)),
+          silent=TRUE)
+        if(class(tempint)=="try-error"){
+          massvec[i]=0
+        }else{
+          massvec[i]=tempint
+        }
+      }
+    }
+  }else{
+    massvec=do.call('massfunc',c(list(agevec), massfunc_args))*speclib$AgeWeights
+  }
   
   if(unimax!=FALSE){
     if(is.null(agemax)){
