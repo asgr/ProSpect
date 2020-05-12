@@ -234,7 +234,7 @@ legend('top', legend=c('bursty', 'constant', 'young', 'old'), lty=1,
 
 wave=bursty$wave_lum
 plot(wave, bursty$lum_atten, log='xy', type='l', col='purple', ylim=c(1e-1,1e8), 
-  xlab='Wavelength / Ang', ylab='Lsun / Ang')
+  xlab='Wavelength / Ang', ylab='Lsol / Ang')
 lines(wave, constant$lum_atten, col='blue')
 lines(wave, young$lum_atten, col='darkgreen')
 lines(wave, old$lum_atten, col='red')
