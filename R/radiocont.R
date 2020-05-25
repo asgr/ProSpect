@@ -28,11 +28,13 @@ RadioThermal_lam = function(wave=1e10*.c_to_mps/(1e9*1.4), FIR=10e-14, Te=1e4, t
 
 Radio_add = function(wave, flux_freq, z=0, Te=1e4, th_frac=0.1, freq_samp=seq(-1,3,by=0.01), wavecut=3e7){
   #wave in Ang, flux_freq in Jy
+  #z reflects the stretching of the input wave
+  freq = .c_to_mps/(wave/(1+z)/1e10) # wave in Ang -> freq in Hz
+  tempfun = approxfun(freq, flux_freq)
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
-  tempfun=approxfun(.c_to_mps/(wave/(1+z)/1e10), flux_freq)
-  FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value*1e-26
-  wave_samp = 1e10*.c_to_mps/(1e9*10^freq_samp)*(1+z)
-  selwave = wave/(1+z)>1e6 #only subtract off FIR and longer
+  FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value*1e-26 
+  wave_samp = (1e10*.c_to_mps/(1e9*10^freq_samp))*(1+z)
+  selwave = wave/(1+z) > 1e6 #only subtract off FIR and longer
   radio_sub = RadioThermal_lam(wave=wave[selwave]/(1+z), FIR=FIR, Te=Te, th_frac=0.104)[,'tot_flux']
   flux_freq[selwave] = flux_freq[selwave] - radio_sub
   flux_freq[flux_freq<=0] = 1e-200
