@@ -22,7 +22,7 @@ magABcalc=function(wave, flux, filter='r_VST'){
     filter=getfilt(filter[1])
   }
   fluxnu=convert_wave2freq(flux, wave)
-  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter, lum = T)
+  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter)
   return(-2.5 * log10(totlumnu) - 48.6)
 }
 
@@ -38,7 +38,7 @@ CGScalc=function(wave, flux, filter='r_VST'){
     filter=getfilt(filter[1])
   }
   fluxnu=convert_wave2freq(flux, wave)
-  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter, lum = T)
+  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter)
   return(totlumnu)
 }
 
@@ -54,7 +54,7 @@ Janskycalc=function(wave, flux, filter='r_VST'){
     filter=getfilt(filter[1])
   }
   fluxnu=convert_wave2freq(flux, wave)
-  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter, lum = T)
+  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter)
   return(totlumnu*1e23)
 }
 
@@ -229,7 +229,7 @@ atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale
 
 #Lower level functions:
 
-bandpass=function(wave, flux, filter, lum=TRUE, flux_in='freq', flux_out='freq', detect_type='photon'){
+bandpass=function(wave, flux, filter, flux_in='freq', flux_out='freq', detect_type='photon'){
   # flux must be flux_nu, i.e. erg/s / cm^2 / Hz, not erg/s / cm^2 / Ang!
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
@@ -250,10 +250,10 @@ bandpass=function(wave, flux, filter, lum=TRUE, flux_in='freq', flux_out='freq',
   
   if(flux_in=='wave' & flux_out=='freq'){
     flux = convert_wave2freq(flux, wave)
-    flux_in = 'freq'
+    flux_out = 'freq'
   }
   
-  if(flux_in=='freq'){
+  if(flux_out=='freq'){
     freq=1/wave
     freq_diff=abs(.qdiff(freq))
     if(detect_type=='photon'){
@@ -261,7 +261,7 @@ bandpass=function(wave, flux, filter, lum=TRUE, flux_in='freq', flux_out='freq',
     }else if(detect_type=='energy'){
       output = response * flux * freq_diff/sum(response * freq_diff, na.rm = TRUE)
     }
-  }else if(flux_in=='wave'){
+  }else if(flux_out=='wave'){
     wave_diff=abs(.qdiff(wave))
     if(detect_type=='photon'){
       output = response * wave * flux * wave_diff/sum(response * wave * wave_diff, na.rm = TRUE)
@@ -269,14 +269,9 @@ bandpass=function(wave, flux, filter, lum=TRUE, flux_in='freq', flux_out='freq',
       output = response * flux * wave_diff/sum(response * wave_diff, na.rm = TRUE)
     }
   }else{
-    stop('flux_in must be one of: freq / wave.')
+    stop('flux_out must be one of: freq / wave.')
   }
-
-  if (lum) {
-    return(sum(output, na.rm=TRUE))
-  }else {
-    return(output)
-  }
+  return(sum(output, na.rm=TRUE))
 }
 
 cenwavefunc=function(filter){
