@@ -29,7 +29,7 @@
 }
 
 radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8,
-                     wavesamp=seq(7,9.4,by=0.01), flux_in='freq', flux_out=flux_in){
+                     wavesamp=seq(7,9.35,by=0.01), flux_in='freq', flux_out=flux_in){
   #wave in Ang, flux in Jy
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
@@ -42,7 +42,7 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
   if(flux_in == 'wave'){
     flux = convert_wave2freq(flux, wave)
   }
-  tempfun = approxfun(freq, flux)
+  tempfun = approxfun(freq, flux, yleft=0, yright=0)
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
   FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value * 1e-26 
   wavesamp = (10^wavesamp) * (1+z)

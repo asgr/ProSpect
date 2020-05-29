@@ -9,7 +9,7 @@ Can take an output \code{ProSpect} spectrum and extend it into the radio regime 
 }
 \usage{
 radiocont(wave, flux, z = 0, Te = 10000, ff_frac = 0.1, ff_power = -0.1, sy_power = -0.8,
-wavesamp = seq(7, 9.4, by = 0.01), flux_in = "freq", flux_out = flux_in)
+wavesamp = seq(7, 9.35, by = 0.01), flux_in = "freq", flux_out = flux_in)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,16 +23,16 @@ Numeric vector; flux spectral density in per Hz or per Ang units (see \option{fl
 Numeric scalar; the redshift of the input spectrum (usually only relevant for observed frame flux spectra, not rest frame luminosity spectra).
 }
   \item{Te}{
-Numeric scalar; effective plasma temperature in Kelvin. Leave as the default (10,000 K), unless you know what you are doing.
+Numeric scalar; effective HII nebular plasma temperature in Kelvin. Leave as the default (10,000 K), unless you know what you are doing.
 }
   \item{ff_frac}{
-Numeric scalar; free-free radio emission contribution fraction at 1.4 Ghz (should be between 0.05 and 0.2 typically). By defintion the radio synchrotron emission fraction at 1.4 Ghz will be 1 - \option{ff_frac}.
+Numeric scalar; free-free HII nebular plasma radio emission contribution fraction at 1.4 Ghz (should be between 0.05 and 0.2 typically). By defintion the radio synchrotron emission fraction at 1.4 Ghz will be 1 - \option{ff_frac}.
 }
   \item{ff_power}{
-Numeric scalar; power-law slope of the free-free emission. Leave as the default (-0.1), unless you know what you are doing.
+Numeric scalar; power-law slope of the free-free nebular plasma radio emission. Leave as the default (-0.1), unless you know what you are doing.
 }
   \item{sy_power}{
-Numeric scalar; power-law slope of the synchrotron emission (should be between -0.8 and -0.6 typically).
+Numeric scalar; power-law slope of the synchrotron radio emission (should be between -0.8 and -0.6 typically).
 }
   \item{wavesamp}{
 Numeric vector; desired output log10 wavelength radio emission grid to use in Ang. The default covers the FIR the 1.4 Ghz range, so is usually appropriate for the radio SED extension.
@@ -48,6 +48,8 @@ Character scalar; the output type of flux spectral density desired. Should be ei
 This radio continuum extension for \code{ProSpect} is mostly based on the work of Marvil et al (2015).
 
 The default options closely reproduce the Dale template radio emission. The advantage of using this interface is the user has fine control over the free-free and synchrotron radio emission mixing (which is fixed to 1:9 at 1.4 Ghz in the Dale templates), and also control over the power-law indices (fixed to -0.1 and -0.8 respectively in the Dale templates).
+
+Condon \& Yin suggest that \option{ff_frac} is seen to typically span the range 0.05 to 0.2, so it should probably be kept within these limits for generative and fitting purposes.
 }
 \value{
 Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux in the units of \option{flux_out}.

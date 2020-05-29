@@ -2,8 +2,9 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
                      pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth=1, alpha_SF_screen=3,
                      alpha_SF_AGN=0, AGNlum=0, sparse=5, speclib=NULL, Dale=NULL, AGN=NULL,
                      filtout=NULL, filters='all', Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
-                     OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,9.4,by=0.01), ref, unimax=13.8e9,
-                     agemax=NULL, LumDist_Mpc=NULL, ...){
+                     OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,9.35,by=0.01), ref, unimax=13.8e9,
+                     agemax=NULL, LumDist_Mpc=NULL, addradio=FALSE, Te=1e4, ff_frac=0.1,
+                     ff_power=-0.1, sy_power=-0.8, ...){
   
   call=match.call()
   
@@ -76,6 +77,11 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
     AGN=AGN$final
     Final=data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
     colnames(AGN)[2]='lum'
+  }
+  
+  if(addradio){
+    Final = radiocont(wave=Final$wave, flux=Final$flux, z=0, Te=Te, ff_frac=ff_frac,
+                      ff_power=ff_power, sy_power=sy_power, flux_in='wave', flux_out='wave')
   }
   
   colnames(Final)[2]='lum'
