@@ -14,8 +14,9 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
  alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
  Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
  returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
- waveout = seq(2,9.4,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
- LumDist_Mpc = NULL, ...)
+ waveout = seq(2,9.35,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
+ LumDist_Mpc = NULL, addradio = FALSE, Te = 10000, ff_frac = 0.1, ff_power = -0.1,
+ sy_power = -0.8, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -103,6 +104,21 @@ Numeric scalar; maximum allowed age of any stellar population relative to the re
 }
   \item{LumDist_Mpc}{
 Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
+}
+  \item{addradio}{
+Logical scalar; should free-free and synchrotron radio continuum be computing and appended to the spectrum? Extends to 21cm. Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). Note that even with this set to FALSE (default) the output spectrum will still have the radio continuum computed for the \code{\link{Dale}} templates. The default arguments almost perfectly reproduce the  \code{\link{Dale}} results, so it is only necessary to set \option{addradio} = TRUE if you want to change the \option{Te}, \option{ff_frac}, \option{ff_power} and \option{sy_power} parameters to non-default values.
+}
+  \item{Te}{
+Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}}. Leave as the default (10,000 K), unless you know what you are doing.
+}
+  \item{ff_frac}{
+Numeric scalar; free-free HII nebular plasma radio emission contribution fraction at 1.4 Ghz used in \code{\link{radiocont}} (should be between 0.05 and 0.2 typically). By defintion the radio synchrotron emission fraction at 1.4 Ghz will be 1 - \option{ff_frac}.
+}
+  \item{ff_power}{
+Numeric scalar; power-law slope of the free-free nebular plasma radio emission used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
+}
+  \item{sy_power}{
+Numeric scalar; power-law slope of the synchrotron radio emission used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
 }
   \item{parm}{
 Numeric vector; arguments to be passed to \code{ProSpectSED}.
