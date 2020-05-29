@@ -14,7 +14,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
  alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
  Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
  returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
- waveout = seq(2,7,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
+ waveout = seq(2,9.4,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
  LumDist_Mpc = NULL, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
