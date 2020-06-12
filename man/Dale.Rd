@@ -28,7 +28,7 @@ Dale_scale(alpha_SF = 1.5, AGNfrac = 0.5, Dale_in)
 \format{
 The two parameter model marginalises over AGN fraction and the alpha slope of the star forming population. To be consistent with how the data is provided the different AGN fractions are put into different list elements, and the alpha values are stored in different rows. The columns represent fluxes in various units, as per the Dale type used and can be matched against the corresponding length Wave list element.
 
-The wavelength (Wave) is in angstroms.
+The wavelength (Wave) is in Angstroms.
 
 The flux output is scaled differently for the 5 different scaling schemes (see Details).
 

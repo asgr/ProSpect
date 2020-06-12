@@ -1,3 +1,4 @@
+#Do not use this one anymore
 interp_param=function(x, params, log=FALSE, method='linear'){
   flag=rep(2,length(x))
   flag[x<min(params)]=1
@@ -14,8 +15,28 @@ interp_param=function(x, params, log=FALSE, method='linear'){
   ID_hi=ceiling(temp)
   ID_mode=ID_lo
   ID_mode[temp%%1>0.5]=ID_hi[temp%%1>0.5]
-  return(data.frame(x=x, param_lo=params[floor(temp)], param_hi=params[ceiling(temp)], ID_lo=ID_lo, ID_hi=ID_hi, ID_mode=ID_mode, weight_lo=1-temp%%1, weight_hi=temp%%1, flag=flag))
+  return(data.frame(x=x, param_lo=params[floor(temp)], param_hi=params[ceiling(temp)], ID_lo=ID_lo, ID_hi=ID_hi, ID_mode=ID_mode, wt_lo=1-temp%%1, wt_hi=temp%%1, flag=flag))
 }
+
+#Faster and pretty much same functionality
+interp_quick = function(x, params, log=FALSE){
+  if(length(x) > 1){stop('x must be scalar!')}
+  if(x < min(params)){
+    return(c(1,1,1,0))
+  }
+  if(x > max(params)){
+    return(c(max(params),max(params),0,1))
+  }
+  if(log){
+    params = log(params)
+    x = log(x)
+  }
+  interp = approx(params, 1:length(params), xout=x)$y
+  IDlo = floor(interp)
+  IDhi = ceiling(interp)
+  return(c(ID_lo = IDlo, ID_hi = IDhi, wt_lo = 1-(interp-IDlo), wt_hi = interp-IDlo))
+}
+
 
 #This is a direct copy of the interval function from LaplacesDemon. Since I only use this one function I didn't want to add the whole LD dependency
 
