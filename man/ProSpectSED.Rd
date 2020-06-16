@@ -16,7 +16,8 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
  returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
  waveout = seq(2,9.35,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
  LumDist_Mpc = NULL, addradio = FALSE, Te = 10000, ff_frac = 0.1, ff_power = -0.1,
- sy_power = -0.8, ...)
+ sy_power = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, AGNta = 1, AGNrm = 60,
+ AGNan = 30, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -112,13 +113,31 @@ Logical scalar; should free-free and synchrotron radio continuum be computing an
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}}. Leave as the default (10,000 K), unless you know what you are doing.
 }
   \item{ff_frac}{
-Numeric scalar; free-free HII nebular plasma radio emission contribution fraction at 1.4 Ghz used in \code{\link{radiocont}} (should be between 0.05 and 0.2 typically). By defintion the radio synchrotron emission fraction at 1.4 Ghz will be 1 - \option{ff_frac}.
+Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 Ghz used in \code{\link{radiocont}} (should be between 0.05 and 0.2 typically). By defintion the radio synchrotron emission fraction at 1.4 Ghz will be 1 - \option{ff_frac}.
 }
   \item{ff_power}{
-Numeric scalar; power-law slope of the free-free nebular plasma radio emission used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
+Numeric scalar; power-law slope of the free-free nebular plasma thermal radio emission used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
 }
   \item{sy_power}{
 Numeric scalar; power-law slope of the synchrotron radio emission used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
+}
+  \item{AGNct}{
+Numeric scalar; opening angle of torus in degrees.
+}
+  \item{AGNal}{
+Numeric scalar; gamma dust parameter.
+}
+  \item{AGNbe}{
+Numeric scalar; bBeta dust parameter.
+}
+  \item{AGNta}{
+Numeric scalar; optical depth tau.
+}
+  \item{AGNrm}{
+Numeric scalar; outer to inner torus radius ratio.
+}
+  \item{AGNan}{
+Numeric scalar; angle of observation in degrees, where 0 is edge on with torus, and 90 is polar aligned.
 }
   \item{parm}{
 Numeric vector; arguments to be passed to \code{ProSpectSED}.

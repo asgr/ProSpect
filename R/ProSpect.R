@@ -4,7 +4,8 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
                      filtout=NULL, filters='all', Dale_M2L_func=NULL, returnall=TRUE, H0=67.8,
                      OmegaM=0.308, OmegaL=1-OmegaM, waveout=seq(2,9.35,by=0.01), ref, unimax=13.8e9,
                      agemax=NULL, LumDist_Mpc=NULL, addradio=FALSE, Te=1e4, ff_frac=0.1,
-                     ff_power=-0.1, sy_power=-0.8, ...){
+                     ff_power=-0.1, sy_power=-0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, AGNta = 1,
+                     AGNrm = 60, AGNan = 30, ...){
   
   call=match.call()
   
@@ -55,28 +56,46 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
     dustlum_AGN=0
     dustmass_AGN=0
   }else{
-    #First we attenuate by the hot taurus
-    AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum/(.lsol_to_erg), tau=tau_AGN,
-                   pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func,
-                   waveout=waveout)
-    if(!is.null(Dale_M2L_func) & returnall){
-      dustlum_AGN=AGN$total_atten
-      dustmass_AGN=AGN$dustmass
-    }
-    #Second we re-attenuate the above by the screen (since it still has to pass out of the galaxy)
-    AGN=atten_emit(wave=AGN$final$wave, flux=AGN$final$flux, tau=tau_screen, pow=pow_screen,
-                   alpha_SF=alpha_SF_screen, Dale=Dale, Dale_M2L_func=Dale_M2L_func,
-                   waveout=waveout)
-    if(!is.null(Dale_M2L_func) & returnall){
-      dustlum_screen=dustlum_screen+AGN$total_atten
-      dustmass_screen=dustmass_screen+AGN$dustmass
+    if(inherits(AGN, 'Fritz')){
+      #Use new model
+      AGN = AGNinterp(lum=AGNlum, ct=AGNct, al=AGNal, be=AGNbe, ta=AGNta, rm=AGNrm, an=AGNan, Fritz=AGN)
+      dustlum_AGN = NA
+      dustmass_AGN = NA
+      AGN=atten_emit(wave=AGN$wave, flux=AGN$lum*.erg_to_lsol, tau=tau_screen, pow=pow_screen,
+                     alpha_SF=alpha_SF_screen, Dale=Dale, Dale_M2L_func=Dale_M2L_func,
+                     waveout=waveout)
+      if(!is.null(Dale_M2L_func) & returnall){
+        dustlum_screen=dustlum_screen+AGN$total_atten
+        dustmass_screen=dustmass_screen+AGN$dustmass
+      }
+      AGN=AGN$final
+      Final=data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
+      colnames(AGN)[2]='lum'
     }else{
-      dustlum_AGN=0
-      dustmass_AGN=0
+      #Use old model
+      #First we attenuate by the hot torus
+      AGN=atten_emit(wave=AGN$Wave, flux=AGN$Aspec*AGNlum*.erg_to_lsol, tau=tau_AGN,
+                     pow=pow_AGN, alpha_SF=alpha_SF_AGN, Dale=Dale, Dale_M2L_func=Dale_M2L_func,
+                     waveout=waveout)
+      if(!is.null(Dale_M2L_func) & returnall){
+        dustlum_AGN=AGN$total_atten
+        dustmass_AGN=AGN$dustmass
+      }
+      #Second we re-attenuate the above by the screen (since it still has to pass out of the galaxy)
+      AGN=atten_emit(wave=AGN$final$wave, flux=AGN$final$flux, tau=tau_screen, pow=pow_screen,
+                     alpha_SF=alpha_SF_screen, Dale=Dale, Dale_M2L_func=Dale_M2L_func,
+                     waveout=waveout)
+      if(!is.null(Dale_M2L_func) & returnall){
+        dustlum_screen=dustlum_screen+AGN$total_atten
+        dustmass_screen=dustmass_screen+AGN$dustmass
+      }else{
+        dustlum_AGN=0
+        dustmass_AGN=0
+      }
+      AGN=AGN$final
+      Final=data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
+      colnames(AGN)[2]='lum'
     }
-    AGN=AGN$final
-    Final=data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
-    colnames(AGN)[2]='lum'
   }
   
   if(addradio){
