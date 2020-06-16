@@ -107,9 +107,15 @@ print(flux_input)
 
 In principle if you have a real galaxy to fit and it is already in the required format of **flux_input**, you can start from this point.
 
+To speed things up we will also pre-compute the Luminosity distance to our source (since this will be the same for every iteration, and will save some computation time):
+
+```{r}
+LumDist_Mpc = cosdistLumDist(z=0.1, H0 = 67.8, OmegaM = 0.308)
+```
+
 ```{r}
 Data=list(flux=flux_input,
-          arglist=list(z=0.1, massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin),
+          arglist=list(z=0.1, massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin, LumDist_Mpc=LumDist_Mpc),
           speclib=BC03lr, 
           Dale=Dale_NormTot, 
           filtout=filtout, 
@@ -175,6 +181,8 @@ magerr(flux_input$pivwave, flux_input$flux, ylo=flux_input$fluxerr)
 ## Fitting for Redshift
 
 It is easy to add redshift as an explored parameter, given access to SED based photo-z. Basically we have to remove it from arglist and add it to parm.names, making sure we give it a reasonable range. Here we explore it in log-space:
+
+Note since we are fitting for redshift now we can no longer pass LumDist_Mpc because this will change for every realisation.
 
 ```{r}
 Data_z=list(flux=flux_input,
