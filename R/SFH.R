@@ -320,10 +320,10 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
     dots=list(...)
     Z_args=dots[names(dots) %in% names(formals(Z))]
     Zvec=do.call('Z',c(list(agevec),list(massfunc=massfunc),Z_args,massfunc_args))
-    Zlist=interp_quick(Zvec, speclib$Z, log=TRUE)
+    Zlist=interp_param(Zvec, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
-    Zwmat[cbind(1:length(speclib$Age),Zlist['ID_hi'])]=Zlist['wt_hi']
-    Zwmat[cbind(1:length(speclib$Age),Zlist['ID_lo'])]=Zlist['wt_lo']
+    Zwmat[cbind(1:length(speclib$Age),Zlist[,'ID_hi'])]=Zlist[,'wt_hi']
+    Zwmat[cbind(1:length(speclib$Age),Zlist[,'ID_lo'])]=Zlist[,'wt_lo']
     Zuse=which(colSums(Zwmat)>0)
     Zdoweight=TRUE
   }else{

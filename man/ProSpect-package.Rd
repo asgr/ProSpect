@@ -12,8 +12,8 @@
 \tabular{ll}{
 Package: \tab ProSpect\cr
 Type: \tab Package\cr
-Version: \tab 1.0.6\cr
-Date: \tab 2020-05-27\cr
+Version: \tab 1.0.7\cr
+Date: \tab 2020-06-17\cr
 License: \tab LGPL-3\cr
 Depends: \tab R (>= 3.0)\cr
 Imports:  \tab celestial, NISTunits, pracma\cr
@@ -35,6 +35,8 @@ Condon & Yin, 1990. ApJ, 357, 97 \cr
 da Cunha et al, 2008, MNRAS, 388, 1595 \cr
 Dale et al., 2014, ApJ, 784, 11 \cr
 Draine et al, 2007, ApJ, 663, 866 \cr
+Feltre et al, 2012, MNRAS, 426, 120 \cr
+Fritz et al, 2006, MNRAS, 366, 767 \cr
 Kennicutt et al, 1994, ApJ, 435, 22 \cr
 Kennicutt et al, 1998, ARAA, 36, 189 \cr
 Kroupa, 2001, MNRAS, 322, 231 \cr
