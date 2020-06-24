@@ -20,7 +20,7 @@ Janskycalc(wave, flux, filter='r_VST')
 Numeric vector; observed wavelength in Angstroms. For convenience, if a two column matrix or data frame is supplied then the first column is taken to be \option{wave} and the second is taken to be \option{flux}.
 }
   \item{flux}{
-Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
+Numeric vector; flux in erg/s / cm^2 / Angstrom spectral units. 
 }
   \item{filter}{
 Name of filter to use.

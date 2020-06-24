@@ -9,8 +9,8 @@ Code to generate emission line specra based on Levesque, Kewley & Larson (2010).
 }
 \usage{
 emissionLines(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, SFR=NULL,
-Z = 0.02, q = NULL, veldisp = 50, lumscale = 21612724, log = TRUE, method = "linear",
-range = 5, res = 0.5, LKL10 = NULL)
+Z = 0.02, q = NULL, veldisp = 50, lumscale = 21612724, log = TRUE, range = 5,
+res = 0.5, LKL10 = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -43,9 +43,6 @@ Numeric scalar; luminosity scaling to use in \code{\link{SFR2Lum}}. Unless you k
 }
   \item{log}{
 Logical; determines if the interpolation is done in log space when using \code{\link{interp_param}}.
-}
-  \item{method}{
-Character; method to be passed to \code{\link{interp_param}}.
 }
   \item{range}{
 Numeric scalar; how many sigma either side of the line should the velocity dispersion spread flux be evaluated (starts to become inaccurate if lower than 5).

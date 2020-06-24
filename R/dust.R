@@ -110,24 +110,24 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='NormTot', Dale=NULL){
   }
   
   if(AGNfrac>0 & AGNfrac<1){
-    AGNinterp=interp_param(x=AGNfrac, Dale$AGNfrac)
+    AGNinterp=interp_quick(x=AGNfrac, Dale$AGNfrac)
   }
   if(AGNfrac<1){
-    SFinterp=interp_param(x=alpha_SF, Dale$alpha_SF)
+    SFinterp=interp_quick(x=alpha_SF, Dale$alpha_SF)
   }
   
   if(AGNfrac==0){
     output=rep(0,1496)
-    output=output+Dale$Aspec[[1]][SFinterp$ID_lo,]*SFinterp$weight_lo
-    output=output+Dale$Aspec[[1]][SFinterp$ID_hi,]*SFinterp$weight_hi
+    output=output+Dale$Aspec[[1]][SFinterp['ID_lo'],]*SFinterp['wt_lo']
+    output=output+Dale$Aspec[[1]][SFinterp['ID_hi'],]*SFinterp['wt_hi']
     return(invisible(data.frame(Wave=Dale$Wave, Aspec=output)))
   }
   if(AGNfrac>0 & AGNfrac<1){
     output=rep(0,1496)
-    output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_lo,]*AGNinterp$weight_lo*SFinterp$weight_lo
-    output=output+Dale$Aspec[[AGNinterp$ID_lo]][SFinterp$ID_hi,]*AGNinterp$weight_lo*SFinterp$weight_hi
-    output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_lo,]*AGNinterp$weight_hi*SFinterp$weight_lo
-    output=output+Dale$Aspec[[AGNinterp$ID_hi]][SFinterp$ID_hi,]*AGNinterp$weight_hi*SFinterp$weight_hi
+    output=output+Dale$Aspec[[AGNinterp['ID_lo']]][SFinterp['ID_lo'],]*AGNinterp['wt_lo']*SFinterp['wt_lo']
+    output=output+Dale$Aspec[[AGNinterp['ID_lo']]][SFinterp['ID_hi'],]*AGNinterp['wt_lo']*SFinterp['wt_hi']
+    output=output+Dale$Aspec[[AGNinterp['ID_hi']]][SFinterp['ID_lo'],]*AGNinterp['wt_hi']*SFinterp['wt_lo']
+    output=output+Dale$Aspec[[AGNinterp['ID_hi']]][SFinterp['ID_hi'],]*AGNinterp['wt_hi']*SFinterp['wt_hi']
     return(invisible(data.frame(Wave=Dale$Wave, Aspec=output)))
   }
   if(AGNfrac==1){

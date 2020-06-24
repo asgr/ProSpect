@@ -65,8 +65,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     Zvec=do.call('Z',c(list(agevec),list(massfunc=massfunc),Z_args,massfunc_args))
     Zlist=interp_param(Zvec, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
-    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
-    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
+    Zwmat[cbind(1:length(speclib$Age),Zlist[,'ID_hi'])]=Zlist[,'wt_hi']
+    Zwmat[cbind(1:length(speclib$Age),Zlist[,'ID_lo'])]=Zlist[,'wt_lo']
     Zuse=which(colSums(Zwmat)>0)
     Zdoweight=TRUE
   }else{
@@ -322,8 +322,8 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
     Zvec=do.call('Z',c(list(agevec),list(massfunc=massfunc),Z_args,massfunc_args))
     Zlist=interp_param(Zvec, speclib$Z, log=TRUE)
     Zwmat=matrix(0, length(speclib$Age), length(speclib$Z))
-    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_hi)]=Zlist$weight_hi
-    Zwmat[cbind(1:length(speclib$Age),Zlist$ID_lo)]=Zlist$weight_lo
+    Zwmat[cbind(1:length(speclib$Age),Zlist[,'ID_hi'])]=Zlist[,'wt_hi']
+    Zwmat[cbind(1:length(speclib$Age),Zlist[,'ID_lo'])]=Zlist[,'wt_lo']
     Zuse=which(colSums(Zwmat)>0)
     Zdoweight=TRUE
   }else{
@@ -481,16 +481,16 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
     }
   }
   
-  metal_interp=interp_param(Z,speclib$Z, log=TRUE)
-  age_interp=interp_param(burstage, speclib$Age)
-  if(metal_interp['weight_lo']==1){
-    lum_unatten=speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_lo'],sparse]*age_interp[1,'weight_lo'] +
-      speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_hi'],sparse]*age_interp[1,'weight_hi']
+  metal_interp=interp_quick(Z, speclib$Z, log=TRUE)
+  age_interp=interp_quick(burstage, speclib$Age)
+  if(metal_interp['wt_lo']==1){
+    lum_unatten=speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_lo'],sparse]*age_interp['wt_lo'] +
+      speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_hi'],sparse]*age_interp['wt_hi']
   }else{
-    lum_unatten=speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_lo'],sparse]*age_interp[1,'weight_lo']*metal_interp[1,'weight_lo'] +
-      speclib$Zspec[[metal_interp[1,'ID_lo']]][age_interp[1,'ID_hi'],sparse]*age_interp[1,'weight_hi']*metal_interp[1,'weight_lo'] +
-      speclib$Zspec[[metal_interp[1,'ID_hi']]][age_interp[1,'ID_lo'],sparse]*age_interp[1,'weight_lo']*metal_interp[1,'weight_hi'] +
-      speclib$Zspec[[metal_interp[1,'ID_hi']]][age_interp[1,'ID_hi'],sparse]*age_interp[1,'weight_hi']*metal_interp[1,'weight_hi']
+    lum_unatten=speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_lo'],sparse]*age_interp['wt_lo']*metal_interp['wt_lo'] +
+      speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_hi'],sparse]*age_interp['wt_hi']*metal_interp['wt_lo'] +
+      speclib$Zspec[[metal_interp['ID_hi']]][age_interp['ID_lo'],sparse]*age_interp['wt_lo']*metal_interp['wt_hi'] +
+      speclib$Zspec[[metal_interp['ID_hi']]][age_interp['ID_hi'],sparse]*age_interp['wt_hi']*metal_interp['wt_hi']
   }
   
   lum_unatten=lum_unatten*burstmass
