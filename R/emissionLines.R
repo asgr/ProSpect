@@ -1,4 +1,4 @@
-emissionLines=function(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, SFR=NULL, Z=0.02, q=NULL, veldisp=50, lumscale=21612724, log=TRUE, method='linear', range=5, res=0.5, LKL10=NULL){
+emissionLines=function(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, SFR=NULL, Z=0.02, q=NULL, veldisp=50, lumscale=21612724, log=TRUE, range=5, res=0.5, LKL10=NULL){
   if(is.null(LKL10)){
     if(!is.null(Ha_lum) | !is.null(SFR)){
       LKL10_NormHalpha=NULL
@@ -21,30 +21,30 @@ emissionLines=function(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, 
     }
   }
   
-  Zweights=interp_param(Z, LKL10$Z, log=log, method = method)
+  Zweights=interp_quick(Z, LKL10$Z, log=log)
   if(is.null(q)){
     q=Z2q(Z)
   }
-  qweights=interp_param(q, LKL10$q, log=log, method = method)
+  qweights=interp_quick(q, LKL10$q, log=log)
   
   wavegrid=.makewavegrid(LKL10$Mappings[[1]]$wave, veldisp=veldisp, range=range, res=res)
   wavecen=LKL10$Mappings[[1]]$wave
   lum=rep(0, length(wavegrid))
   
-  if(Zweights[1,'weight_lo']>0 & qweights[1,'weight_lo']>0){
-    linelums=LKL10$Mappings[[Zweights[1,'ID_lo']]][,qweights[1,'ID_lo']+3]*Zweights[1,'weight_lo']*qweights[1,'weight_lo']
+  if(Zweights['wt_lo']>0 & qweights['wt_lo']>0){
+    linelums=LKL10$Mappings[[Zweights['ID_lo']]][,qweights['ID_lo']+3]*Zweights['wt_lo']*qweights['wt_lo']
     for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
   }
-  if(Zweights[1,'weight_lo']>0 & qweights[1,'weight_hi']>0){
-    linelums=LKL10$Mappings[[Zweights[1,'ID_lo']]][,qweights[1,'ID_hi']+3]*Zweights[1,'weight_lo']*qweights[1,'weight_hi']
+  if(Zweights['wt_lo']>0 & qweights['wt_hi']>0){
+    linelums=LKL10$Mappings[[Zweights['ID_lo']]][,qweights['ID_hi']+3]*Zweights['wt_lo']*qweights['wt_hi']
     for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
   }
-  if(Zweights[1,'weight_hi']>0 & qweights[1,'weight_lo']>0){
-    linelums=LKL10$Mappings[[Zweights[1,'ID_hi']]][,qweights[1,'ID_lo']+3]*Zweights[1,'weight_hi']*qweights[1,'weight_lo']
+  if(Zweights['wt_hi']>0 & qweights['wt_lo']>0){
+    linelums=LKL10$Mappings[[Zweights['ID_hi']]][,qweights['ID_lo']+3]*Zweights['wt_hi']*qweights['wt_lo']
     for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
   }
-  if(Zweights[1,'weight_hi']>0 & qweights[1,'weight_hi']>0){
-    linelums=LKL10$Mappings[[Zweights[1,'ID_hi']]][,qweights[1,'ID_hi']+3]*Zweights[1,'weight_hi']*qweights[1,'weight_hi']
+  if(Zweights['wt_hi']>0 & qweights['wt_hi']>0){
+    linelums=LKL10$Mappings[[Zweights['ID_hi']]][,qweights['ID_hi']+3]*Zweights['wt_hi']*qweights['wt_hi']
     for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
   }
   

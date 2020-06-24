@@ -52,5 +52,5 @@ lines(Dale_Orig$Wave, Dale_Msol$Aspec[[2]][25,])
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ Dale }% use one of  RShowDoc("KEYWORDS")
-\keyword{ Dust }% __ONLY ONE__ keyword per line
+\concept{ Dale }% use one of  RShowDoc("KEYWORDS")
+\concept{ Dust }% __ONLY ONE__ keyword per line
