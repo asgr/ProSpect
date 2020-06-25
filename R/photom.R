@@ -211,20 +211,7 @@ addspec=function(wave1, flux1, wave2, flux2, extrap='constant', waveout=NULL){
   }
   flux1[is.na(flux1)]=0
   flux2[is.na(flux2)]=0
-  return(invisible(data.frame(wave=10^waveout, flux=flux1+flux2)))
-}
-
-atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale_M2L_func=NULL, waveout=NULL){
-  atten=CF_atten(wave=wave, flux=flux, tau=tau, pow=pow)
-  emit=Dale_interp(alpha_SF=alpha_SF, AGNfrac = 0, Dale=Dale)
-  emit$Aspec=emit$Aspec*atten$total_atten
-  final=addspec(wave1=wave, flux1=atten$flux, wave2=emit$Wave, flux2=emit$Aspec, extrap=0, waveout=waveout)
-  if(!is.null(Dale_M2L_func)){
-    dustmass=atten$total_atten/Dale_M2L_func(alpha_SF)
-  }else{
-    dustmass=NULL
-  }
-  return(invisible(list(final=final, unatten=data.frame(wave=wave, flux=flux), atten=data.frame(wave=wave, flux=atten$flux), emit=data.frame(wave=emit$Wave, flux=emit$Aspec), total_atten=atten$total_atten, dustmass=dustmass)))
+  return(data.frame(wave=10^waveout, flux=flux1+flux2))
 }
 
 #Lower level functions:
@@ -297,9 +284,9 @@ pivwavefunc=function(filter){
 }
 
 convert_wave2freq=function(flux_wave, wave, wavefac=1e-10, freqfac=1){
-  return(invisible(flux_wave*((wavefac/freqfac)*wave^2)/.c_to_mps))
+  return(flux_wave*((wavefac/freqfac)*wave^2)/.c_to_mps)
 }
 
 convert_freq2wave=function(flux_freq, wave, wavefac=1e-10, freqfac=1){
-  return(invisible(flux_freq*.c_to_mps/((wavefac/freqfac)*wave^2)))
+  return(flux_freq*.c_to_mps/((wavefac/freqfac)*wave^2))
 }

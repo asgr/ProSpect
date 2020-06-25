@@ -145,14 +145,14 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
     StarsAtten=data.frame(wave=Stars$wave_lum, lum=Stars$lum_atten)
     StarsUnAtten=data.frame(wave=Stars$wave, lum=Stars$lum_unatten)
     DustEmit=data.frame(wave=Dust_Screen$Wave, lum=SED_Bdust_Sdust)
-    return(invisible(list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, 
+    return(list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, 
           StarsAtten=StarsAtten, StarsUnAtten=StarsUnAtten, DustEmit=DustEmit, 
           AGN=AGN, Stars=Stars, dustmass=c(birth=dustmass_birth, screen=dustmass_screen, 
           AGN=dustmass_AGN, total=sum(c(dustmass_birth,dustmass_screen,dustmass_AGN),na.rm=TRUE)),
           dustlum=c(birth=dustlum_birth, screen=dustlum_screen, AGN=dustlum_AGN,
-          total=sum(c(dustlum_birth,dustlum_screen,dustlum_AGN),na.rm=TRUE)), call=call)))
+          total=sum(c(dustlum_birth,dustlum_screen,dustlum_AGN),na.rm=TRUE)), call=call))
   }else{
-    return(invisible(photom_out))
+    return(photom_out)
   }
 }
 
@@ -277,7 +277,7 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   }else if(Data$fit=='ld' | Data$fit=='la'){
     return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
   }else if(Data$fit=='check'){
-    return(invisible(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm,SEDout=SEDout)))
+    return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm,SEDout=SEDout))
   }else{
     return('Bad fit type!')
   }
