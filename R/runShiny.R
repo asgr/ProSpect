@@ -13,7 +13,7 @@ runShinySED = function(flux = NULL, burstmass=1e8, youngmass=1e9, midmass=1e10, 
     stop("Could not find ProSpect_app directory. Try re-installing ProSpect.", call. = FALSE)
   }
 
-  return(invisible(shiny::runApp(appDir, display.mode = "normal")))
+  return(shiny::runApp(appDir, display.mode = "normal"))
 }
 
 runShinyFilters =function(){
@@ -22,5 +22,5 @@ runShinyFilters =function(){
     stop("Could not find Filters_app directory. Try re-installing ProSpect.", call. = FALSE)
   }
   
-  return(invisible(shiny::runApp(appDir, display.mode = "normal")))
+  return(shiny::runApp(appDir, display.mode = "normal"))
 }

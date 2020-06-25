@@ -1,13 +1,17 @@
 CF=function(wave, tau=0.3, pow=-0.7, pivot=5500){
-  return=exp(-tau*(wave/pivot)^(pow))
+  return(exp(-tau*(wave/pivot)^pow))
 }
 
 CF_birth=function(wave, tau=1.0, pow=-0.7, pivot=5500){
-  return=exp(-tau*(wave/pivot)^(pow))
+  return(exp(-tau*(wave/pivot)^pow))
 }
 
-CF_screen=function(wave, tau=0.3, pow=-0.7, pivot=5500){
-  return=exp(-tau*(wave/pivot)^(pow))
+CF_screen=function(wave, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470){
+  if(Eb>0){
+    return(exp(-tau*((wave/pivot)^pow + .drude(wave, Eb=Eb, L0=L0, LFWHM=LFWHM))))
+  }else{
+    return(exp(-tau*(wave/pivot)^pow))
+  }
 }
 
 CF_birth_atten=function(wave, flux, tau=1.0, pow=-0.7, pivot=5500){
@@ -15,15 +19,15 @@ CF_birth_atten=function(wave, flux, tau=1.0, pow=-0.7, pivot=5500){
   unatten=sum(flux*c(0,diff(wave)))
   atten=sum(flux_atten*c(0,diff(wave)))
   total_atten=unatten-atten
-  return=list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten)
+  return(list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten))
 }
 
-CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
-  flux_atten=CF_screen(wave, tau=tau, pow=pow, pivot=pivot)*flux
+CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470){
+  flux_atten=CF_screen(wave, tau=tau, pow=pow, pivot=pivot, Eb=Eb, L0=L0, LFWHM=LFWHM)*flux
   unatten=sum(flux*c(0,diff(wave)))
   atten=sum(flux_atten*c(0,diff(wave)))
   total_atten=unatten-atten
-  return=list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten)
+  return(list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten))
 }
 
 CF_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
@@ -31,16 +35,30 @@ CF_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
   unatten=sum(flux*c(0,diff(wave)))
   atten=sum(flux_atten*c(0,diff(wave)))
   total_atten=unatten-atten
-  return=list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten)
+  return(list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten))
 }
 
 .k_lambda=function(wave, beta=1.5){
-  return=wave^(-beta)/(850e4^(-beta))
+  return(wave^(-beta)/(850e4^(-beta)))
+}
+
+atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale_M2L_func=NULL, waveout=NULL, Eb=0, L0=2175.8, LFWHM=470){
+  atten=CF_screen_atten(wave=wave, flux=flux, tau=tau, pow=pow, Eb=Eb, L0=L0, LFWHM=LFWHM)
+  emit=Dale_interp(alpha_SF=alpha_SF, AGNfrac = 0, Dale=Dale)
+  emit$Aspec=emit$Aspec*atten$total_atten
+  final=addspec(wave1=wave, flux1=atten$flux, wave2=emit$Wave, flux2=emit$Aspec, extrap=0, waveout=waveout)
+  if(!is.null(Dale_M2L_func)){
+    dustmass=atten$total_atten/Dale_M2L_func(alpha_SF)
+  }else{
+    dustmass=NULL
+  }
+  return(list(final=final, unatten=data.frame(wave=wave, flux=flux), atten=data.frame(wave=wave, flux=atten$flux),
+              emit=data.frame(wave=emit$Wave, flux=emit$Aspec), total_atten=atten$total_atten, dustmass=dustmass))
 }
 
 blackbody=function(wave, Temp = 50, k850=0.077){
   A = 4*pi*.msol_to_kg*k850/.lsol_to_w/1e10
-  return=A*cosplanckLawRadWave(wave/1e10, Temp=Temp)
+  return(A*cosplanckLawRadWave(wave/1e10, Temp=Temp))
 }
 
 blackbody_norm=function(wave, Temp = 50, z=0, norm=1){
@@ -53,11 +71,11 @@ blackbody_norm=function(wave, Temp = 50, z=0, norm=1){
     scale=integrate(blackbody, lims[1], lims[2], Temp=Temp[i])$value
     output=output+blackbody(wave=wave/(1+z), Temp=Temp[i])*norm[i]/scale
   }
-  return=output
+  return(output)
 }
 
 greybody=function(wave, Temp=50, beta=1.5, k850=0.077){
-  return=.k_lambda(wave=wave, beta=beta)*blackbody(wave=wave, Temp=Temp, k850=k850)
+  return(.k_lambda(wave=wave, beta=beta)*blackbody(wave=wave, Temp=Temp, k850=k850))
 }
 
 greybody_norm=function(wave, Temp = 50, beta=1.5, z=0, norm=1){
@@ -71,7 +89,7 @@ greybody_norm=function(wave, Temp = 50, beta=1.5, z=0, norm=1){
     scale=integrate(greybody, lims[1], lims[2], Temp=Temp[i], beta=beta[i])$value
     output=output+greybody(wave=wave/(1+z), Temp=Temp[i], beta=beta[i])*norm[i]/scale
   }
-  return=output
+  return(output)
 }
 
 Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='NormTot', Dale=NULL){
@@ -160,4 +178,8 @@ dustmass=function(wave_star, lum_star_nodust, lum_star_dust, wave_dust, lum_dust
   LtoM=sum(c(0,diff(wave_dust))*lum_dust, na.rm=TRUE)
   DustMass=DustLum/LtoM
   return=c(DustMass=DustMass, DustLum=DustLum, M2L=1/LtoM)
+}
+
+.drude=function(wave, Eb=3.3, L0=2175.8, LFWHM=470){
+  return(Eb*(LFWHM*wave)^2 / ((wave^2 - L0^2)^2 + (LFWHM*wave)^2))
 }

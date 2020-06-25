@@ -19,10 +19,12 @@ CF(wave, tau = 0.3, pow = -0.7, pivot = 5500)
 CF_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500)
 CF_birth(wave, tau = 1.0, pow = -0.7, pivot = 5500)
 CF_birth_atten(wave, flux, tau = 1.0, pow = -0.7, pivot = 5500)
-CF_screen(wave, tau = 0.3, pow = -0.7, pivot = 5500)
-CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500)
+CF_screen(wave, tau = 0.3, pow = -0.7, pivot = 5500, Eb = 0, L0 = 2175.8,
+  LFWHM = 470)
+CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500, Eb = 0,
+  L0 = 2175.8, LFWHM = 470)
 atten_emit(wave, flux, tau = 0.3, pow = -0.7, alpha_SF = 1.5, Dale = NULL,
-Dale_M2L_func = NULL, waveout = NULL) 
+Dale_M2L_func = NULL, waveout = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -40,6 +42,15 @@ Numeric scalar; power to further raise the attenuation. Charlot and Fall suggest
 }
   \item{pivot}{
 Numeric scalar; the pivot wavelength in Angstroms. Charlot and Fall suggested default.
+}
+  \item{Eb}{
+Numeric scalar; Additional attenuation at the 2175.8 Ang dust bump. The default of 0 means this has no effect, MW is near 3.3, and typical galaxies are around \option{Eb}=1.
+}
+  \item{L0}{
+Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+}
+  \item{LFWHM}{
+Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
 }
   \item{alpha_SF}{
 Numeric scalar; desired interpolated alpha slope of the star forming population. Lower values mean hotter dust.  
