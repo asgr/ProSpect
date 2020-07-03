@@ -17,7 +17,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
  waveout = seq(2,9.35,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
  LumDist_Mpc = NULL, addradio = FALSE, Te = 10000, ff_frac = 0.1, ff_power = -0.1,
  sy_power = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, AGNta = 1, AGNrm = 60,
- AGNan = 30, ...)
+ AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -144,6 +144,15 @@ Numeric vector; arguments to be passed to \code{ProSpectSED}.
 }
   \item{Data}{
 Object; data object containing everything else needs. See Details.  
+}
+  \item{Eb}{
+Numeric scalar; Additional attenuation at the 2175.8 Ang dust bump. The default of 0 means this has no effect, MW is near 3.3, and typical galaxies are around \option{Eb}=1.
+}
+  \item{L0}{
+Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+}
+  \item{LFWHM}{
+Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
 }
   \item{\dots}{
 All further arguments are passed directly into \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
