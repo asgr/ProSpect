@@ -20,7 +20,8 @@ SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  veldisp = 50, emission_scale = "FUV", escape_frac = 1 - emission,
  Ly_limit = 911.8, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
  OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
-unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, ...) 
+ unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
+ LFWHM = 470, ...) 
 
 SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
@@ -32,7 +33,7 @@ SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
  tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
  filters = 'all', Z = 0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308,
  OmegaL = 1 - OmegaM, ref, outtype = 'mag', sparse = 5, unimax=  13.8e9,
- agemax = NULL, LumDist_Mpc = NULL, ...)
+ agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -137,6 +138,15 @@ Boolean scalar; should the \option{massfunc} be intergrated between ages? This m
 }
   \item{LumDist_Mpc}{
 Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
+}
+  \item{Eb}{
+Numeric scalar; Additional attenuation at the 2175.8 Ang dust bump. The default of 0 means this has no effect, MW is near 3.3, and typical galaxies are around \option{Eb}=1.
+}
+  \item{L0}{
+Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+}
+  \item{LFWHM}{
+Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
 }
   \item{\dots}{
 Further arguments to be passed to \code{massfunc} or \code{Z} functions, as appropriate (this is achieved by formals matching, so be careful to used unique names).
