@@ -42,6 +42,7 @@ Kennicutt et al, 1998, ARAA, 36, 189 \cr
 Kroupa, 2001, MNRAS, 322, 231 \cr
 Levesque, Kewley & Larson, 2010, AJ, 139, 712 \cr
 Marvil et al, 2015, AJ, 149, 32 \cr
+Stanway and Eldridge, 2018, MNRAS, 479, 75 \cr
 Vazdekis et al., 2016, MNRAS, 463, 3409
 }
 \examples{

@@ -145,12 +145,14 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
     StarsAtten=data.frame(wave=Stars$wave_lum, lum=Stars$lum_atten)
     StarsUnAtten=data.frame(wave=Stars$wave, lum=Stars$lum_unatten)
     DustEmit=data.frame(wave=Dust_Screen$Wave, lum=SED_Bdust_Sdust)
-    return(list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, 
+    output = list(Photom=photom_out, FinalFlux=Flux, FinalLum=Final, 
           StarsAtten=StarsAtten, StarsUnAtten=StarsUnAtten, DustEmit=DustEmit, 
           AGN=AGN, Stars=Stars, dustmass=c(birth=dustmass_birth, screen=dustmass_screen, 
           AGN=dustmass_AGN, total=sum(c(dustmass_birth,dustmass_screen,dustmass_AGN),na.rm=TRUE)),
           dustlum=c(birth=dustlum_birth, screen=dustlum_screen, AGN=dustlum_AGN,
-          total=sum(c(dustlum_birth,dustlum_screen,dustlum_AGN),na.rm=TRUE)), call=call))
+          total=sum(c(dustlum_birth,dustlum_screen,dustlum_AGN),na.rm=TRUE)), call=call)
+    class(output) = 'ProSpectSED'
+    return(output)
   }else{
     return(photom_out)
   }
@@ -281,4 +283,25 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   }else{
     return('Bad fit type!')
   }
+}
+
+plot.ProSpectSED=function(x, xlim=c(1e2,1e7), ylim=c(1e2,max(x$StarsUnAtten)),
+                          xlab='Wavelength (Ang)', ylab='Lum (Lsol/Ang)', grid=TRUE, ...){
+  if(requireNamespace("magicaxis", quietly=TRUE)){
+    magicaxis::magplot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab,
+         ylab=ylab, type='l', lwd=5, grid=grid, ...)
+  }else{
+    plot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab,
+          type='l', lwd=5, ...)
+  }
+  lines(x$StarsUnAtten, col='blue', lty=2)
+  lines(x$StarsAtten, col='green')
+  lines(x$DustEmit, col='brown')
+  lines(x$AGN, col='purple')
+  legend('topright',
+         legend=c('Total Lum', 'Star Un-Atten', 'Stars Atten', 'Dust Emit', 'AGN'),
+         col=c('black', 'blue', 'darkgreen', 'brown', 'purple'),
+         lty=c(1,2,1,1,1),
+         lwd=c(5,1,1,1,1)
+  )
 }

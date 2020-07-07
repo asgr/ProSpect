@@ -197,6 +197,12 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
 addspec=function(wave1, flux1, wave2, flux2, extrap='constant', waveout=NULL){
   wave1=log10(wave1)
   wave2=log10(wave2)
+  if(anyNA(flux1)){
+    flux1[is.na(flux1)]=0
+  }
+  if(anyNA(flux2)){
+    flux2[is.na(flux2)]=0
+  }
   flux1=log10(flux1)
   flux2=log10(flux2)
   if(is.null(waveout)){
