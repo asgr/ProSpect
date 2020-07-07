@@ -286,6 +286,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
       BC03lr=NULL
       data('BC03lr', envir = environment())
       speclib=BC03lr
+      rm(BC03lr)
     }
   }
   if(stellpop=='BC03hr'){
@@ -293,6 +294,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
       BC03hr=NULL
       data('BC03hr', envir = environment())
       speclib=BC03hr
+      rm(BC03hr)
     }
   }
   if(stellpop=='EMILES'){
@@ -300,6 +302,15 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
+      rm(EMILES)
+    }
+  }
+  if(stellpop=='BPASS'){
+    if(is.null(speclib)){
+      BPASS=NULL
+      data('BPASS', envir = environment())
+      speclib=BPASS
+      rm(BPASS)
     }
   }
   
