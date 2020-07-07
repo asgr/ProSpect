@@ -257,12 +257,22 @@ testSED=ProSpectSED(AGNlum=1e43, tau_birth=1, tau_screen=0.3, tau_AGN=2,
 alpha_SF_birth=1, alpha_SF_screen=3, alpha_SF_AGN=0, speclib=BC03lr, Dale=Dale_NormTot,
 AGN=AGN_UnOb_Sparse, filtout=filtout, Dale_M2L_func=Dale_M2L_func, returnall=TRUE)
 
-plot(testSED$FinalLum, log='xy', xlim=c(1e2,1e7), ylim=c(1e2,1e7), xlab='Wave / Ang',
-ylab='Lum / Lsol/A', type='l', lwd=5)
+plot(testSED$FinalLum, log='xy', xlim=c(1e2,1e7), ylim=c(1e2,1e7),
+  xlab='Wavelength (Ang)', ylab='Lum (Lsol/Ang)', type='l', lwd=5)
 lines(testSED$StarsUnAtten, col='blue', lty=2)
 lines(testSED$StarsAtten, col='green')
-lines(testSED$DustEmit, col='darkgreen')
-lines(testSED$AGN, col='brown')
+lines(testSED$DustEmit, col='brown')
+lines(testSED$AGN, col='purple')
+legend('topright',
+legend=c('Total Lum', 'Star Un-Atten', 'Stars Atten', 'Dust Emit', 'AGN'),
+  col=c('black', 'blue', 'darkgreen', 'brown', 'purple'),
+  lty=c(1,2,1,1,1),
+  lwd=c(5,1,1,1,1)
+)
+
+# or easier:
+
+plot(testSED)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
