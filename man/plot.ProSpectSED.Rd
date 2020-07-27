@@ -1,15 +1,18 @@
-\name{plot.ProSpectSED}
+\name{plot.ProSpect}
 \alias{plot.ProSpectSED}
+\alias{plot.ProSpectSEDlike}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Plot ProSpect SED
+Plot ProSpect SED Outputs
 }
 \description{
-Simple plot of the various luminosity components in a ProSpectSED object.
+Simple plot of the various luminosity or flux components in a \code{ProSpectSED}/\code{ProSpectSEDlike} object.
 }
 \usage{
-\method{plot}{ProSpectSED}(x, xlim = c(100, 1e+07), ylim = c(100, max(x$StarsUnAtten)),
-  xlab = "Wavelength (Ang)", ylab = "Lum (Lsol/Ang)", grid = TRUE, ...)
+\method{plot}{ProSpectSED}(x, xlim=c(1e3,1e7), ylim='auto',
+xlab='Wavelength (Ang)', ylab='auto', grid=TRUE, type='lum', ...)
+\method{plot}{ProSpectSEDlike}(x, xlim=c(1e3,1e7), ylim='auto',
+xlab='Wavelength (Ang)', ylab='auto', grid=TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,26 +20,29 @@ Simple plot of the various luminosity components in a ProSpectSED object.
 Object of class 'ProSpectSED'.
 }
   \item{xlim}{
-Numeric vector; length 2, x limits.
+Numeric vector; length 1/2, x limits.
 }
   \item{ylim}{
-Numeric vector; length 2, y limits.
+Numeric vector; length 1/2, y limits. Default 'auto' generally chooses a sensible range.
 }
   \item{xlab}{
 Character scalar; x label.
 }
   \item{ylab}{
-Character scalar; y label.
+Character scalar; y label. Default 'auto' generally chooses a sensible name.
 }
   \item{grid}{
 Logical; show background grid?
 }
+  \item{type}{
+Character scalar; specifies whether to plot luminosity density (\option{type}='lum') or flux density (\option{type}='flux').
+}
   \item{\dots}{
-Passed to \code{magplot}.
+Passed to \code{magplot} or \code{plot}.
 }
 }
 \details{
-A simple plot for quick visualisation.
+A simple plot for quick visualisation of \code{\link{ProSpectSED}} or \code{\link{ProSpectSEDlike}}.
 }
 \value{
 Side effect is to create the plot.
@@ -46,7 +52,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{ProSpectSED}}
+\code{\link{ProSpectSED}}, \code{\link{ProSpectSEDlike}}
 }
 \examples{
 data('BC03lr')

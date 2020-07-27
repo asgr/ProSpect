@@ -277,31 +277,81 @@ ProSpectSEDlike=function(parm=c(8,9,10,10,0,-0.5,0.2), Data){
   if(Data$fit=='optim' | Data$fit=='cma'){
     return(-LP)
   }else if(Data$fit=='ld' | Data$fit=='la'){
-    return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm))
+    return(list(LP=LP, Dev=-2*LL, Monitor=Monitor, yhat=1, parm=parm))
   }else if(Data$fit=='check'){
-    return(list(LP=LP,Dev=-2*LL,Monitor=Monitor,yhat=1,parm=parm,SEDout=SEDout))
+    output = list(LP=LP, Dev=-2*LL, Monitor=Monitor, yhat=1, parm=parm, SEDout=SEDout, Data=Data)
+    class(output) = 'ProSpectSEDlike'
+    return(output)
   }else{
     return('Bad fit type!')
   }
 }
 
-plot.ProSpectSED=function(x, xlim=c(1e2,1e7), ylim=c(1e2,max(x$StarsUnAtten)),
-                          xlab='Wavelength (Ang)', ylab='Lum (Lsol/Ang)', grid=TRUE, ...){
-  if(requireNamespace("magicaxis", quietly=TRUE)){
-    magicaxis::magplot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab,
-         ylab=ylab, type='l', lwd=5, grid=grid, ...)
+plot.ProSpectSED=function(x, xlim=c(1e3,1e7), ylim='auto',
+                          xlab='Wavelength (Ang)', ylab='auto', grid=TRUE,
+                          type='lum', ...){
+  if(type=='lum'){
+    if(ylim[1]=='auto'){
+      ylim=c(quantile(x$FinalLum[,2],0.45), max(x$StarsUnAtten, na.rm = TRUE))
+    }
+    if(ylab[1]=='auto'){
+      ylab='Luminosity Density (Lsol/Ang)'
+    }
+    if(requireNamespace("magicaxis", quietly=TRUE)){
+      magicaxis::magplot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab,
+           ylab=ylab, type='l', lwd=5, grid=grid, ...)
+    }else{
+      plot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab,
+            type='l', lwd=5, ...)
+    }
+    lines(x$StarsUnAtten, col='blue', lty=2)
+    lines(x$StarsAtten, col='green')
+    lines(x$DustEmit, col='brown')
+    lines(x$AGN, col='purple')
+    legend('topright',
+           legend=c('Total Lum', 'Star Un-Atten', 'Stars Atten', 'Dust Emit', 'AGN'),
+           col=c('black', 'blue', 'darkgreen', 'brown', 'purple'),
+           lty=c(1,2,1,1,1),
+           lwd=c(5,1,1,1,1)
+    )
+  }else if(type=='flux'){
+    if(ylim[1]=='auto'){
+      ylim=quantile(x$FinalFlux[,2],c(0.1,1))
+    }
+    if(ylab[1]=='auto'){
+      ylab='Flux Density (Jansky)'
+    }
+    if(requireNamespace("magicaxis", quietly=TRUE)){
+      magicaxis::magplot(x$FinalFlux, log='xy', xlim=xlim, ylim=ylim, xlab=xlab,
+                         ylab=ylab, type='l', lwd=5, grid=grid, ...)
+    }else{
+      plot(x$FinalFlux, log='xy', xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab,
+           type='l', lwd=5, ...)
+    }
   }else{
-    plot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab,
-          type='l', lwd=5, ...)
+    stop('type argument must be one of lum or flux!')
   }
-  lines(x$StarsUnAtten, col='blue', lty=2)
-  lines(x$StarsAtten, col='green')
-  lines(x$DustEmit, col='brown')
-  lines(x$AGN, col='purple')
-  legend('topright',
-         legend=c('Total Lum', 'Star Un-Atten', 'Stars Atten', 'Dust Emit', 'AGN'),
-         col=c('black', 'blue', 'darkgreen', 'brown', 'purple'),
-         lty=c(1,2,1,1,1),
-         lwd=c(5,1,1,1,1)
-  )
+}
+
+plot.ProSpectSEDlike=function(x, xlim=c(1e3,1e7), ylim='auto',
+                          xlab='Wavelength (Ang)', ylab='auto', grid=TRUE,
+                          ...){
+  layout(rbind(1,2))
+  par(oma=c(3.1,3.1,1.1,1.1))
+  
+  par(mar=c(0,0,0,0))
+  plot(x$SEDout, xlim=xlim, ylim=ylim, xlab='', ylab=ylab, grid=grid, type='flux', ...)
+  points(x$Data$flux[,2:3], pch=16, col='red')
+  if(requireNamespace("magicaxis", quietly=TRUE)){
+    magicaxis::magerr(x$Data$flux[,2], x$Data$flux[,3], ylo=x$Data$flux[,4], col='red')  
+  }
+  
+  par(mar=c(0,0,0,0))
+  if(requireNamespace("magicaxis", quietly=TRUE)){
+    magicaxis::magplot(x$Data$flux[,2], (x$Data$flux[,3]-x$SEDout$Photom)/x$Data$flux[,4], pch=16, col='red', grid=grid,
+                       log='x', xlim=xlim, ylim=c(-4,4), xlab=xlab, ylab='Rel Flux Density: (Data - Model) / Error')
+  }else{
+    plot(x$Data$flux[,2], x$Data$flux[,3]-x$SEDout$Photom, pch=16, col='red',
+         log='x', xlim=xlim, ylim=c(-4,4), xlab=xlab, ylab='(Data-Model)/Error')
+  }
 }
