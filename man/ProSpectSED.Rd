@@ -215,7 +215,9 @@ Logical; should verbose messages be shown. If missing it is set to TRUE.
 }
 }
 \value{
-If \option{returnall}=FALSE then we get a vector containing the \option{Photom} output, which is usually the photometry in Jansky (special case when \option{z} < 0, where this is instead the Absolute AB magnitudes for convenience).
+For \code{ProSpectSED}: \cr
+
+If \option{returnall}=FALSE then we get a vector containing the \option{Photom} output, which is usually the photometry in Jansky (special case when \option{z} <= 0, where this is instead the Absolute AB magnitudes for convenience).
 
 If \option{returnall}=TRUE, then we get a list containing:
 
@@ -230,6 +232,16 @@ If \option{returnall}=TRUE, then we get a list containing:
 \item{dustmass}{Numeric vector; contains dust mass for the birth cloud, screen, AGN and total in Msol (requires \option{Dale_M2L_func})}
 \item{dustlum}{Numeric vector; contains dust luminosities for the birth cloud, screen, AGN and total in Lsol (requires \option{Dale_M2L_func})}
 \item{call}{The original function call.}
+
+For \code{ProSpectSEDlike}: \cr
+
+Output depends on the flag for \option{Data$fit}, where it can be one of 'optim' (or 'CMA'), 'LD' (or 'LA'), or 'check'. \cr
+
+The 'optim' output returns just the log-posterior value (LP). \cr
+
+The 'LD' output returns the full structure required for \code{LaplacesDemon} and \code{LaplaceApproximation} and should be set as such when using those optimisers. \cr
+
+The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnoistic plot via the \code{plot} method.
 }
 \author{
 Aaron Robotham
