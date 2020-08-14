@@ -4,7 +4,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
                  emission_scale='FUV', escape_frac=1-emission, Ly_limit=911.8,
                  LKL10=NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
                  ref, outtype='mag', sparse=5, intSFR=FALSE, unimax=13.8e9, agemax=NULL,
-                 LumDist_Mpc=NULL, ...){
+                 LumDist_Mpc=NULL, Eb=0, L0=2175.8, LFWHM=470, ...){
   #Ly_limit should be 911.8 (the actual ionisation limit) or sometimes 1215.67
   
   dots=list(...)
@@ -203,7 +203,7 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   }
   
   if(tau_screen!=0){
-    lum=lum*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen)
+    lum=lum*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen, Eb=Eb, L0=L0, LFWHM=LFWHM)
     lumtot_screen=(lumtot_unatten-lumtot_birth)-sum(.qdiff(speclib$Wave)*lum)
   }else{
     lumtot_screen=0
@@ -264,7 +264,12 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
     }
   }
   
-  return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, agevec=agevec, SFR=massvec/speclib$AgeWeights, masstot=masstot, massvec=massvec, M2L=masstot/lumtot_unatten, SFRburst=SFRburst, Zvec=Zvec, emission_input=emission_input)))
+  return(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten,
+              lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten,
+              lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, agevec=agevec,
+              SFR=massvec/speclib$AgeWeights, masstot=masstot, massvec=massvec,
+              M2L=masstot/lumtot_unatten, SFRburst=SFRburst, Zvec=Zvec,
+              emission_input=emission_input))
 }
 
 SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=c(0,1e8),
@@ -281,6 +286,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
       BC03lr=NULL
       data('BC03lr', envir = environment())
       speclib=BC03lr
+      rm(BC03lr)
     }
   }
   if(stellpop=='BC03hr'){
@@ -288,6 +294,7 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
       BC03hr=NULL
       data('BC03hr', envir = environment())
       speclib=BC03hr
+      rm(BC03hr)
     }
   }
   if(stellpop=='EMILES'){
@@ -295,6 +302,15 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
       EMILES=NULL
       data('EMILES', envir = environment())
       speclib=EMILES
+      rm(EMILES)
+    }
+  }
+  if(stellpop=='BPASS'){
+    if(is.null(speclib)){
+      BPASS=NULL
+      data('BPASS', envir = environment())
+      speclib=BPASS
+      rm(BPASS)
     }
   }
   
@@ -414,14 +430,17 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
   ancientstar=sum(totstar[ancientageloc[1]:ancientageloc[2]])*ancientrescale
   
   
-  return(c(BurstSMform=burstform, YoungSMform=youngform, MidSMform=midform, OldSMform=oldform, AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar, OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=sum(massvec,na.rm = TRUE), TotSMstar=sum(totstar,na.rm = TRUE)))
+  return(c(BurstSMform=burstform, YoungSMform=youngform, MidSMform=midform, OldSMform=oldform,
+           AncientSMform=ancientform, BurstSMstar=burststar, YoungSMstar=youngstar, MidSMstar=midstar,
+           OldSMstar=oldstar, AncientSMstar=ancientstar, TotSMform=sum(massvec,na.rm = TRUE),
+           TotSMstar=sum(totstar,na.rm = TRUE)))
 }
 
 SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
                   tau_birth=1.0, tau_screen=0.3, pow_birth=-0.7, pow_screen=-0.7,
                   filters='all', Z=0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308,
                   OmegaL = 1 - OmegaM, ref, outtype='mag', sparse=5, unimax=13.8e9,
-                  agemax=NULL, LumDist_Mpc=NULL, ...){
+                  agemax=NULL, LumDist_Mpc=NULL, Eb=0, L0=2175.8, LFWHM=470, ...){
   
   burstmass=.interval(burstmass,0,Inf,reflect=FALSE)
   
@@ -505,7 +524,7 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
   }
   
   if(tau_screen!=0){
-    lum=lum*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen)
+    lum=lum*CF_screen(speclib$Wave, tau=tau_screen, pow=pow_screen, Eb=Eb, L0=L0, LFWHM=LFWHM)
     lumtot_screen=(lumtot_unatten-lumtot_birth)-sum(.qdiff(speclib$Wave)*lum)
   }else{
     lumtot_screen=0
@@ -522,7 +541,9 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
   }
   
   if(z<0 | is.null(filters)){
-    return(invisible(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, masstot=masstot, SFRburst=SFRburst))) # returns the minimal luminosity and mass outputs
+    return(list(wave_lum=speclib$Wave, lum_atten=lum, lum_unatten=lum_unatten, lumtot_unatten=lumtot_unatten,
+                lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen,
+                masstot=masstot, SFRburst=SFRburst)) # returns the minimal luminosity and mass outputs
   }
   if(z>0){
     flux=Lum2Flux(wave = speclib$Wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
@@ -570,5 +591,8 @@ SFHburst=function(burstmass=1e8, burstage=0, stellpop='BC03lr', speclib=NULL,
     }
   }
   
-  return(invisible(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten, lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten, lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten, ages=burstage, masstot=burstmass, SFRburst=SFRburst)))
+  return(list(flux=flux, out=out, wave_lum=speclib$Wave, lum_unatten=lum_unatten,
+              lum_atten=lum, lumtot_unatten=lumtot_unatten, lumtot_atten=lumtot_atten,
+              lumtot_birth=lumtot_birth, lumtot_screen=lumtot_screen, M2L=masstot/lumtot_unatten,
+              ages=burstage, masstot=burstmass, SFRburst=SFRburst))
 }

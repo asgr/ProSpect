@@ -15,7 +15,8 @@ interp_param=function(x, params, log=FALSE, method='linear'){
   ID_hi=ceiling(temp)
   ID_mode=ID_lo
   ID_mode[temp%%1>0.5]=ID_hi[temp%%1>0.5]
-  return(data.frame(x=x, param_lo=params[floor(temp)], param_hi=params[ceiling(temp)], ID_lo=ID_lo, ID_hi=ID_hi, ID_mode=ID_mode, wt_lo=1-temp%%1, wt_hi=temp%%1, flag=flag))
+  return(data.frame(x=x, param_lo=params[floor(temp)], param_hi=params[ceiling(temp)],
+                    ID_lo=ID_lo, ID_hi=ID_hi, ID_mode=ID_mode, wt_lo=1-temp%%1, wt_hi=temp%%1, flag=flag))
 }
 
 #Faster and pretty much same functionality

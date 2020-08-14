@@ -13,7 +13,7 @@ Zfunc_p2=function(age, Z1=0.02, Z2=Z1, Z1age=0, Z2age=Zagemax, Zagemax=13.8, ...
   temp[temp<1e-04]=1e-04
   temp[age>Zagemax]=1e-04
   temp[is.na(temp)]=1e-04
-  invisible(temp)
+  return(temp)
 }
 
 Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc, ...){
@@ -35,7 +35,7 @@ Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc
   temp[temp<1e-04]=1e-04
   temp[age>Zagemax]=1e-04
   temp[is.na(temp)]=1e-04
-  invisible(temp)
+  return(temp)
 }
 
 Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13.8, massfunc, ...){
@@ -58,5 +58,5 @@ Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13
   temp[temp<1e-04]=1e-04
   temp[age>Zagemax]=1e-04
   temp[is.na(temp)]=1e-04
-  invisible(temp)
+  return(temp)
 }

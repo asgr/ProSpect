@@ -136,7 +136,7 @@ Padova 1994 isochrones: Bertelli et al., 1994, A\&AS, 106, 275 \cr
 Chabrier IMF: Chabrier, 2003, PASP, 115, 763
 }
 \examples{
-#The spectrum of our Sun today (Z=0.02, Age=4.6 Gyrs):
+#The spectrum of our Sun today (Z=0.02, Age=4.5 Gyrs [nearest to 4.6 Gyrs]):
 plot(EMILES$Wave, EMILES$Zspec[[9]][34,], log='xy', type='l', xlim=c(2e3,4e4),
 ylim=c(1e-8,1e-4), xlab=EMILES$Labels$Wavelab, ylab=EMILES$Labels$Lumlab)
 }

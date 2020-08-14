@@ -7,12 +7,12 @@
   )
   out[mass<masslow | mass>massmax]=0
   if(massmult){out=out*mass}
-  invisible(out)
+  return(out)
 }
 
 IMF_Chabrier = function(mass, alpha = 2.3, a = 0.08, b = 0.69, masslow = 0.01, massmax = 150, massform = 1, massmult = FALSE){
   norm=integrate(.Chabrier_shape, lower=masslow, upper=massmax, alpha=alpha, a=a, b=b, masslow=masslow, massmax=massmax, massmult=TRUE)$value
-  invisible(massform*.Chabrier_shape(mass=mass, alpha, a=a, b=b, masslow=masslow, massmax=massmax, massmult=massmult)/norm)
+  return(massform*.Chabrier_shape(mass=mass, alpha, a=a, b=b, masslow=masslow, massmax=massmax, massmult=massmult)/norm)
 }
 
 .Kroupa_shape=function(mass, alpha1 = 0.3, alpha2 = 1.3, alpha3 = 2.3, masslow = 0.01, mass1 = 0.08, mass2=0.5, massmax=150, massmult = FALSE){
@@ -25,10 +25,10 @@ IMF_Chabrier = function(mass, alpha = 2.3, a = 0.08, b = 0.69, masslow = 0.01, m
   )
   out[mass<masslow | mass>massmax]=0
   if(massmult){out=out*mass}
-  invisible(out)
+  return(out)
 }
 
 IMF_Kroupa = function(mass, alpha1 = 0.3, alpha2 = 1.3, alpha3 = 2.3, masslow = 0.01, mass1 = 0.08, mass2 = 0.5, massmax = 150, massform = 1, massmult = FALSE){
   norm=integrate(.Kroupa_shape, lower=masslow, upper=massmax, alpha1 = alpha1, alpha2 = alpha2, alpha3 = alpha3, masslow = masslow, mass1 = mass1, mass2=mass2, massmax=massmax, massmult=TRUE)$value
-  invisible(massform*.Kroupa_shape(mass=mass, alpha1 = alpha1, alpha2 = alpha2, alpha3 = alpha3, masslow = masslow, mass1 = mass1, mass2=mass2, massmax=massmax, massmult=massmult)/norm)
+  return(massform*.Kroupa_shape(mass=mass, alpha1 = alpha1, alpha2 = alpha2, alpha3 = alpha3, masslow = masslow, mass1 = mass1, mass2=mass2, massmax=massmax, massmult=massmult)/norm)
 }

@@ -18,7 +18,7 @@
   output[,2] = sy_flux
   output[,3] = tot_flux
   colnames(output) = c('ff_flux', 'sy_flux', 'tot_flux')
-  return(invisible(output))
+  return(output)
 }
 
 .radioemission_lam = function(wave=2.141e9, FIR=10e-14, Te=1e4,
@@ -59,5 +59,5 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
   if(flux_out == 'wave'){
     output = data.frame(wave=output$wave, flux=convert_freq2wave(output$flux, output$wave))
   }
-  return(invisible(output))
+  return(output)
 }

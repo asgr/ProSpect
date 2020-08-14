@@ -157,11 +157,11 @@ Padova 1994 isochrones: Bertelli et al., 1994, A\&AS, 106, 275 \cr
 Chabrier IMF: Chabrier, 2003, PASP, 115, 763
 }
 \examples{
-#The low resolution spectrum of our Sun today (Z=0.02, Age=4.6s Gyrs):
+#Low res spectrum of Sun today (Z=0.02, Age=4.75 Gyrs) [nearest to 4.6 Gyrs]:
 plot(BC03lr$Wave, BC03lr$Zspec[[5]][160,], log='xy', type='l', xlim=c(2e3,4e4),
 ylim=c(1e-8,1e-4), xlab=BC03lr$Labels$Wavelab, ylab=BC03lr$Labels$Lumlab)
 
-#The high resolution spectrum of our Sun today (Z=0.02, Age=4.6 Gyrs):
+#High res spectrum of Sun today (Z=0.02, Age=4.75 Gyrs) [nearest to 4.6 Gyrs]:
 plot(BC03hr$Wave, BC03hr$Zspec[[5]][160,], log='xy', type='l', xlim=c(2e3,4e4),
 ylim=c(1e-8,1e-4), xlab=BC03lr$Labels$Wavelab, ylab=BC03lr$Labels$Lumlab)
 }
