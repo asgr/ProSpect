@@ -4,7 +4,7 @@ massfunc_const = function(age, mSFR=1, magemax=13.8){
   
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   
-  invisible(ifelse(age < magemax, mSFR, 0))
+  return(ifelse(age < magemax, mSFR, 0))
 }
 
 massfunc_p2=function(age, m1=1, m2=m1, m1age=0, m2age=magemax, magemax=13.8){
@@ -23,7 +23,7 @@ massfunc_p2=function(age, m1=1, m2=m1, m1age=0, m2age=magemax, magemax=13.8){
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_p3=function(age ,m1=1, m2=m1, m3=m2, m1age=1e-4, m2age=7, m3age=13, magemax=13.8){
@@ -39,7 +39,7 @@ massfunc_p3=function(age ,m1=1, m2=m1, m3=m2, m1age=1e-4, m2age=7, m3age=13, mag
 
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_p3_burst=function(age, mburst=0, m1=1, m2=m1, m3=m2, m1age=1e-4, m2age=7, m3age=13, mburstage=0.1, magemax=13.8){
@@ -62,7 +62,7 @@ massfunc_p3_burst=function(age, mburst=0, m1=1, m2=m1, m3=m2, m1age=1e-4, m2age=
   temp[temp<0]=0
   temp[age>magemax]=0
   
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_p4=function(age, m1=1, m2=m1, m3=m2, m4=m3, m1age=1e-4, m2age=2, m3age=9, m4age=13, magemax=13.8){
@@ -79,7 +79,7 @@ massfunc_p4=function(age, m1=1, m2=m1, m3=m2, m4=m3, m1age=1e-4, m2age=2, m3age=
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_p6=function(age, m1=1, m2=m1, m3=m2, m4=m3, m5=m4, m6=m5, m1age=1e-4, m2age=0.1, m3age=1, m4age=5, m5age=9, m6age=13, magemax=13.8){
@@ -98,7 +98,7 @@ massfunc_p6=function(age, m1=1, m2=m1, m3=m2, m4=m3, m5=m4, m6=m5, m1age=1e-4, m
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_b5=function(age, m1=1, m2=m1, m3=m2, m4=m3, m5=m4, m1age=0, m2age=0.1, m3age=1, m4age=5, m5age=9, m6age=13, magemax=13.8){
@@ -130,7 +130,7 @@ massfunc_b5=function(age, m1=1, m2=m1, m3=m2, m4=m3, m5=m4, m1age=0, m2age=0.1, 
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_exp=function(age, mSFR=10, mtau=1, mpivot=magemax, magemax=13.8){
@@ -144,7 +144,7 @@ massfunc_exp=function(age, mSFR=10, mtau=1, mpivot=magemax, magemax=13.8){
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_exp_burst=function(age, mburst=0, mSFR=10, mtau=1, mpivot=magemax, mburstage=0.1, magemax=13.8){
@@ -164,7 +164,7 @@ massfunc_exp_burst=function(age, mburst=0, mSFR=10, mtau=1, mpivot=magemax, mbur
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_snorm=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13.8){
@@ -181,7 +181,7 @@ massfunc_snorm=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_snorm_burst=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, mburstage=0.1, magemax=13.8){
@@ -201,7 +201,7 @@ massfunc_snorm_burst=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_snorm_trunc=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, magemax=13.8, mtrunc=2){
@@ -221,7 +221,7 @@ massfunc_snorm_trunc=function(age, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, mage
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_snorm_burst_trunc=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1, mskew=0.5, mburstage=0.1, magemax=13.8, mtrunc=2){
@@ -245,7 +245,7 @@ massfunc_snorm_burst_trunc=function(age, mburst=0, mSFR=10, mpeak=10, mperiod=1,
   
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }
 
 massfunc_dtau=function(age, mSFR = 10,  mpeak = 10, mtau = 2, magemax = 13.8){
@@ -262,5 +262,5 @@ massfunc_dtau=function(age, mSFR = 10,  mpeak = 10, mtau = 2, magemax = 13.8){
   temp = (mSFR/exp(-1)) * temp
   temp[temp<0]=0
   temp[age>magemax]=0
-  invisible(temp)
+  return(temp)
 }

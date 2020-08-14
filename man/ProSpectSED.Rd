@@ -17,7 +17,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
  waveout = seq(2,9.35,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
  LumDist_Mpc = NULL, addradio = FALSE, Te = 10000, ff_frac = 0.1, ff_power = -0.1,
  sy_power = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, AGNta = 1, AGNrm = 60,
- AGNan = 30, ...)
+ AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -145,6 +145,15 @@ Numeric vector; arguments to be passed to \code{ProSpectSED}.
   \item{Data}{
 Object; data object containing everything else needs. See Details.  
 }
+  \item{Eb}{
+Numeric scalar; Additional attenuation at the 2175.8 Ang dust bump. The default of 0 means this has no effect, MW is near 3.3, and typical galaxies are around \option{Eb}=1.
+}
+  \item{L0}{
+Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+}
+  \item{LFWHM}{
+Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+}
   \item{\dots}{
 All further arguments are passed directly into \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
 }
@@ -206,7 +215,9 @@ Logical; should verbose messages be shown. If missing it is set to TRUE.
 }
 }
 \value{
-If \option{returnall}=FALSE then we get a vector containing the \option{Photom} output, which is usually the photometry in Jansky (special case when \option{z} < 0, where this is instead the Absolute AB magnitudes for convenience).
+For \code{ProSpectSED}: \cr
+
+If \option{returnall}=FALSE then we get a vector containing the \option{Photom} output, which is usually the photometry in Jansky (special case when \option{z} <= 0, where this is instead the Absolute AB magnitudes for convenience).
 
 If \option{returnall}=TRUE, then we get a list containing:
 
@@ -221,6 +232,16 @@ If \option{returnall}=TRUE, then we get a list containing:
 \item{dustmass}{Numeric vector; contains dust mass for the birth cloud, screen, AGN and total in Msol (requires \option{Dale_M2L_func})}
 \item{dustlum}{Numeric vector; contains dust luminosities for the birth cloud, screen, AGN and total in Lsol (requires \option{Dale_M2L_func})}
 \item{call}{The original function call.}
+
+For \code{ProSpectSEDlike}: \cr
+
+Output depends on the flag for \option{Data$fit}, where it can be one of 'optim' (or 'CMA'), 'LD' (or 'LA'), or 'check'. \cr
+
+The 'optim' output returns just the log-posterior value (LP). \cr
+
+The 'LD' output returns the full structure required for \code{LaplacesDemon} and \code{LaplaceApproximation} and should be set as such when using those optimisers. \cr
+
+The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnoistic plot via the \code{plot} method.
 }
 \author{
 Aaron Robotham
@@ -248,12 +269,22 @@ testSED=ProSpectSED(AGNlum=1e43, tau_birth=1, tau_screen=0.3, tau_AGN=2,
 alpha_SF_birth=1, alpha_SF_screen=3, alpha_SF_AGN=0, speclib=BC03lr, Dale=Dale_NormTot,
 AGN=AGN_UnOb_Sparse, filtout=filtout, Dale_M2L_func=Dale_M2L_func, returnall=TRUE)
 
-plot(testSED$FinalLum, log='xy', xlim=c(1e2,1e7), ylim=c(1e2,1e7), xlab='Wave / Ang',
-ylab='Lum / Lsol/A', type='l', lwd=5)
+plot(testSED$FinalLum, log='xy', xlim=c(1e2,1e7), ylim=c(1e2,1e7),
+  xlab='Wavelength (Ang)', ylab='Lum (Lsol/Ang)', type='l', lwd=5)
 lines(testSED$StarsUnAtten, col='blue', lty=2)
 lines(testSED$StarsAtten, col='green')
-lines(testSED$DustEmit, col='darkgreen')
-lines(testSED$AGN, col='brown')
+lines(testSED$DustEmit, col='brown')
+lines(testSED$AGN, col='purple')
+legend('topright',
+legend=c('Total Lum', 'Star Un-Atten', 'Stars Atten', 'Dust Emit', 'AGN'),
+  col=c('black', 'blue', 'darkgreen', 'brown', 'purple'),
+  lty=c(1,2,1,1,1),
+  lwd=c(5,1,1,1,1)
+)
+
+# or easier:
+
+plot(testSED)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -35,7 +35,7 @@ genbox=function(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step 
   rownames(output)=rep('',length(output[,1]))
   output=as.data.frame(output)
   rownames(output)=NULL
-  invisible(output)
+  return(output)
 }
 
 
@@ -106,6 +106,6 @@ genbox=function(sfunc = function(t, total, gasfrac, argsfr){1}, time = 10, step 
   dustfrac = sumdgas / total													  #dust fraction in the SF region
   
   output=c(sumgas=sumgas, sumstars=sumstars, total=total, sumZgas=sumZgas, sumZstars=sumZstars, sumZall=sumZall, sumdgas=sumdgas, Zgas=Zgas, Zstars=Zstars, Zfrac=Zfrac, dgas=dgas, gasfrac=gasfrac, starfrac=starfrac, dustfrac=dustfrac, yield=yield, addstars=addstars, dead=dead, recycle=recycle, infall=infall, outflow=outflow)
-  invisible(output)
+  return(output)
 }
 
