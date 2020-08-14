@@ -336,7 +336,7 @@ plot.ProSpectSED=function(x, xlim=c(1e3,1e7), ylim='auto',
 plot.ProSpectSEDlike=function(x, xlim=c(1e3,1e7), ylim='auto',
                           xlab='Wavelength (Ang)', ylab='auto', grid=TRUE,
                           ...){
-  layout(rbind(1,2))
+  layout(rbind(1,2),heights=c(0.7,0.3))
   par(oma=c(3.1,3.1,1.1,1.1))
   
   par(mar=c(0,0,0,0))
