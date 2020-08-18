@@ -114,12 +114,12 @@ massfunc_b5=function(age, m1=1, m2=m1, m3=m2, m4=m3, m5=m4, m1age=0, m2age=0.1, 
   age[age<1e5]=1e5 #Stop dodgy very yound stellar pops forming
   
   temp=
-  ifelse(age>m1age & age<m2age, m1,
-    ifelse(age>m2age & age<m3age, m2,
-      ifelse(age>m2age & age<m3age, m2,
-        ifelse(age>m3age & age<m4age, m3,
-          ifelse(age>m4age & age<m5age, m4,
-            ifelse(age>m5age & age<m6age, m5,
+  ifelse(age>=m1age & age<m2age, m1,
+    ifelse(age>=m2age & age<m3age, m2,
+      ifelse(age>=m2age & age<m3age, m2,
+        ifelse(age>=m3age & age<m4age, m3,
+          ifelse(age>=m4age & age<m5age, m4,
+            ifelse(age>=m5age & age<=m6age, m5,
               0
             )
           )
