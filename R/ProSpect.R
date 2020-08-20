@@ -348,22 +348,27 @@ plot.ProSpectSED=function(x, xlim=c(1e3,1e7), ylim='auto',
 
 plot.ProSpectSEDlike=function(x, xlim=c(1e3,1e7), ylim='auto',
                           xlab='Wavelength (Ang)', ylab='auto', grid=TRUE,
-                          ...){
-  layout(rbind(1,2),heights=c(0.7,0.3))
-  par(oma=c(3.1,3.1,1.1,1.1))
-  par(mar=c(0,0,0,0))
-  plot(x$SEDout, xlim=xlim, ylim=ylim, xlab='', ylab=ylab, grid=grid, type='flux', ...)
-  points(x$Data$flux[,2:3], pch=16, col='red')
-  if(requireNamespace("magicaxis", quietly=TRUE)){
-    magicaxis::magerr(x$Data$flux[,2], x$Data$flux[,3], ylo=x$Data$flux[,4], col='red')  
-  }
-  
-  par(mar=c(0,0,0,0))
-  if(requireNamespace("magicaxis", quietly=TRUE)){
-    magicaxis::magplot(x$Data$flux[,2], (x$Data$flux[,3]-x$SEDout$Photom)/x$Data$flux[,4], pch=16, col='red', grid=grid,
-                       log='x', xlim=xlim, ylim=c(-4,4), xlab=xlab, ylab='(Data-Model)/Error')
-  }else{
-    plot(x$Data$flux[,2], x$Data$flux[,3]-x$SEDout$Photom, pch=16, col='red',
-         log='x', xlim=xlim, ylim=c(-4,4), xlab=xlab, ylab='(Data-Model)/Error')
+                          type='flux', ...){
+  if(type=='flux'){
+    layout(rbind(1,2),heights=c(0.7,0.3))
+    par(oma=c(3.1,3.1,1.1,1.1))
+    par(mar=c(0,0,0,0))
+    plot(x$SEDout, xlim=xlim, ylim=ylim, xlab='', ylab=ylab, grid=grid, type='flux', ...)
+    points(x$Data$flux[,2:3], pch=16, col='red')
+    if(requireNamespace("magicaxis", quietly=TRUE)){
+      magicaxis::magerr(x$Data$flux[,2], x$Data$flux[,3], ylo=x$Data$flux[,4], col='red')  
+    }
+    legend('topleft', legend=paste('LP =',round(x$LP,3)))
+    
+    par(mar=c(0,0,0,0))
+    if(requireNamespace("magicaxis", quietly=TRUE)){
+      magicaxis::magplot(x$Data$flux[,2], (x$Data$flux[,3]-x$SEDout$Photom)/x$Data$flux[,4], pch=16, col='red', grid=grid,
+                         log='x', xlim=xlim, ylim=c(-4,4), xlab=xlab, ylab='(Data-Model)/Error')
+    }else{
+      plot(x$Data$flux[,2], x$Data$flux[,3]-x$SEDout$Photom, pch=16, col='red',
+           log='x', xlim=xlim, ylim=c(-4,4), xlab=xlab, ylab='(Data-Model)/Error')
+    }
+  }else if(type=='lum'){
+    plot(x$SEDout, xlim=xlim, ylim=ylim, xlab='', ylab=ylab, grid=grid, type='lum', ...)
   }
 }
