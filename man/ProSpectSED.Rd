@@ -71,7 +71,7 @@ Object; required. Pass in the Dale dust library \code{\link{Dale_NormTot}} direc
 Object; required. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
 }
   \item{filtout}{
-Object; required. Pass in the photometric filters directly (either matrices of functins). If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
+Object; required. Pass in the photometric filters directly (either matrices of functions). If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
 }
   \item{filters}{
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. Can also be a list of matrices or functions to pass into \code{\link{bandpass}}. This creates increasingly faster code, but requires more user effort.
@@ -165,52 +165,52 @@ Some more info on the required \option{Data} list inputs:
 
 \describe{
   \item{Data$flux}{
-Object; required. Data.frame(4 columns, filter [band name], cenwave [central wave, Ang], flux [Jy], fluxerr [Jy])
+Data.frame, required; 4 columns: filter [band name], cenwave [central wave, Ang], flux [Jy], fluxerr [Jy].
 }
   \item{Data$SFH}{
-Object; required. The star formation history function to use. Must be one of \code{\link{SFHfunc}} or \code{\link{SFHburst}}.
+Function, required; the star formation history function to use. Must be one of \code{\link{SFHfunc}} or \code{\link{SFHburst}}.
 }
   \item{Data$arglist}{
-List; optional list of named parameters and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
+List, optional; named arguments and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
 }
   \item{Data$speclib}{
-Object; required. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
+List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
 }
   \item{Data$Dale}{
-Object; required. Pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly).
+List, optional but recommended; pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly).
 }
   \item{Data$AGN}{
-Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
+Data.frame, optional; pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
 }
   \item{Data$filtout}{
-Object; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
+List; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
 }
   \item{Data$fit}{
-Character scalar; one of 'optim', 'LD' or 'check'. See Value for full information on what is output in each case. If missing it is set to 'optim'.
+Character scalar, required; one of 'optim', 'LD' or 'check'. See Value for full information on what is output in each case. If missing it is set to 'optim'.
 }
   \item{Data$like}{
-Character scalar; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. If missing it is set to 'st'.
+Character scalar, required; specifies the type of likelihood. One of 'norm' (Normal), 'st' (Student-T) or 'chisq' (Chi-Square). If not one of these then all useful output is returned in a list. If missing it is set to 'st'.
 }
   \item{Data$parm.names}{
-Object; required. Character vector; correctly named and position matched parameters for fitting. Must match length of \option{parm} in \code{ProSpectSEDlike}, and elements should correctly describe the respective values.
+Character vector, required; correctly named and position matched parameters for fitting. Must match length of \option{parm} in \code{ProSpectSEDlike}, and elements should correctly describe the respective values.
 }
   \item{Data$logged}{
-Logical vector; match length of \option{parm} in \code{ProSpectSEDlike}, and elements should say which values should be raised to the power 10 when fitting. This is useful since scale parameters are better fit in log space, so Data$logged=TRUE for those elements.
+Logical vector, optional; match length of \option{parm} in \code{ProSpectSEDlike}, and elements should say which values should be raised to the power 10 when fitting. This is useful since scale parameters are better fit in log space, so Data$logged=TRUE for those elements. If missing assumes all parameters are to be fit in linear space.
 }
   \item{Data$prior}{
-Function; a prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
+Function, optional; a prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
 }
   \item{Data$intervals}{
-List; has elements \option{lo} and \option{hi} which if provided must be the same length as \option{parm} in \code{ProSpectSEDlike}. These specify the lower and upper limits in the same linear/log space as \option{parm}, i.e. set \option{lo} to -1 if you do not want to logged unit to go below 0.1. 
+List, optional; has elements \option{lo} and \option{hi} which if provided must be the same length as \option{parm} in \code{ProSpectSEDlike}. These specify the lower and upper limits in the same linear/log space as \option{parm}, i.e. set \option{lo} to -1 if you do not want to logged unit to go below 0.1. 
 }
   \item{Data$constraints}{
-Function, a constraints function that takes in the\option{parm} vector and modifies it as required, updating with the new \option{parm} which is passed out. Using this you can control physical relationships between certain parameters if required. \option{Data$intervals} is passed after this, and always over-ride the constraints if there is a conflict. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
+Function, optional; a constraints function that takes in the\option{parm} vector and modifies it as required, updating with the new \option{parm} which is passed out. Using this you can control physical relationships between certain parameters if required. \option{Data$intervals} is passed after this, and always over-ride the constraints if there is a conflict. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
 }
   \item{Data$mon.names}{
-Character vector; can contain "dustmass.birth", "dustmass.screen", "dustmass.AGN", "dustmass.total" (dust masses in birth cloud, screen, AGN and total), "dustlum.birth", "dustlum.screen", "dustlum.AGN", "dustlum.total" (dust luminosities in birth cloud, screen, AGN and total), "LP" (log posterior), "masstot" (total mass formed) and "SFRburst" (stars formed in the most recent 10^8 years). You can also monitor fluxes via "flux.XXX", where XXX specifies the name of the band as given in Data$flux$filter. Only named monitored variables are returned, in the order specified.
+Character vector, optional; can contain "dustmass.birth", "dustmass.screen", "dustmass.AGN", "dustmass.total" (dust masses in birth cloud, screen, AGN and total), "dustlum.birth", "dustlum.screen", "dustlum.AGN", "dustlum.total" (dust luminosities in birth cloud, screen, AGN and total), "LP" (log posterior), "masstot" (total mass formed) and "SFRburst" (stars formed in the most recent 10^8 years). You can also monitor fluxes via "flux.XXX", where XXX specifies the name of the band as given in Data$flux$filter. Only named monitored variables are returned, in the order specified.
 }
   \item{Data$verbose}{
-Logical; should verbose messages be shown. If missing it is set to TRUE.
+Logical, optional; should verbose messages be shown. If missing it is set to TRUE.
 }
 }
 }
