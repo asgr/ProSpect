@@ -24,10 +24,11 @@ For a typical GAMA galaxy using the 21 band photometry from LAMBDAR a full SFH p
 
 Property | ProSpect Type  |  Relevant Help
 ----------------- | -------------------- | ---------------
-SSPs | BC03 or EMILES  |  ?BC03 and ?EMILES
-IMF | Chabrier (2003) for both BC03 and EMILES  |  ?BC03 and ?EMILES
-Isochrones | Padova (1994) for both BC03 and EMILES   |   ?BC03 and ?EMILES
-Stellar Atmospheres  |  See relevant text in BC03 and EMILES papers |   ?BC03 and ?EMILES
+SSPs | BC03 or EMILES  |  ?BC03, ?EMILES, ?BPASS
+IMF | Chabrier (2003) |  ?BC03, ?EMILES, ?BPASS
+Isochrones | Padova (1994) for BC03, EMILES   |   ?BC03, ?EMILES
+Isochrones | STARS for BPASS |   ?BPASS
+Stellar Atmospheres  |  See relevant text in BC03, EMILES, BPASS papers |   ?BC03, ?EMILES, ?BPASS
 Dust Attenuation Law | Charlot and Fall (2000) for birth cloud and screen   |  ?CF
 Dust Model  |  Dale et al (2014)  |  ?Dale
 
