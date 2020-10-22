@@ -2,10 +2,10 @@
 \alias{SpecLoad}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Load Generic Spectral Library FITS into ProSpect
+Load Generic SSP into ProSpect
 }
 \description{
-Loads generic spectral library FITS into ProSpect. This means if users can format a generic spectral library into the required format, then ProSpect can use it once it has been loaded and processed with this function.
+Loads generic simple stellar population (SSP) spectral library FITS into ProSpect. This means if users can format a generic spectral library into the required format, then ProSpect can use it once it has been loaded and processed with this function.
 }
 \usage{
 SpecLoad(filename, AgeBins = NULL, Labels = list(Zlab = "Metallicity",
@@ -27,7 +27,7 @@ Character vector; vector of plot labels (probably no reason to alter this from t
 \details{
 Fairly simple function to convert a target external FITS to the internal list format used by \code{\link{ProSpectSED}}.
 
-The key thing re the multi-extension FITS format is that the \option{Zspec} and \option{Zevo} structures are flattened so there is one matrix (\option{Zpsec}) and one table (\option{Zevo}) per extension. These must be ordered in the same increasing manner as \option{Z}, with \option{Zpsec} matrices written before \option{Zevo} tables. See the example BC03lr.fits for guidance.
+The key thing re the multi-extension FITS format is that the \option{Zspec} and \option{Zevo} structures are flattened so there is one matrix (\option{Zpsec}) and one table (\option{Zevo}) per extension. These must be ordered in the same increasing manner as \option{Z}, with \option{Zpsec} matrices extensions positioned immediately before \option{Zevo} tables. See the example BC03lr.fits for guidance.
 }
 \value{
 Complex list. See e.g. \code{\link{BC03lr}}. The below is the basic format output:
@@ -38,7 +38,7 @@ Complex list. See e.g. \code{\link{BC03lr}}. The below is the basic format outpu
   \item{AgeWeights}{Numeric vector of length Na giving the total time in years for the stellar population bins. This is internally calculated as AgeWeights = diff(AgeBins) to conserve mass.}
   \item{Wave}{Numeric vector of length Nw giving the spectral wavelength in Angstroms.}
   \item{Labels}{Character vector of length 5 giving handy axis labels.}
-  \item{Zpsec}{List containing 6 (for each metallicity) Na x Nw matrices that give the full spectral information.}
+  \item{Zpsec}{List containing 6 (for each metallicity) Na x Nw (i.e. Age rows by Wave columns, so each column should be a contiguous spectrum) matrices that give the full spectral information. The units of the spectra must be Lsol / Ang (for 1 Msol SF). This is pretty standard (i.e. how BC03 comes).}
   \item{Zevo}{List containing 6 (for each metallicity) Na x 5 data frames that contain the evolution information for the stellar material (stellar mass in stars [1] / gas [2] / total [3]; the star formation rate [4] and the stellar mass in remnants [5]). This columns must have the exact names: SMstar / SMgas / SMtot / SFR / SMrem.}
 }
 \author{
