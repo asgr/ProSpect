@@ -69,6 +69,11 @@ testSED=ProSpectSED(AGNlum=1e43, tau_birth=1, tau_screen=0.3, tau_AGN=2,
 alpha_SF_birth=1, alpha_SF_screen=3, alpha_SF_AGN=0, speclib=BC03lr, Dale=Dale_NormTot,
 AGN=AGN_UnOb_Sparse, filtout=filtout, Dale_M2L_func=Dale_M2L_func, returnall=TRUE)
 plot(testSED)
+
+#An example of a more physical SFH and ZH:
+
+testSED2 = ProSpectSED(massfunc = massfunc_snorm, Z=Zfunc_massmap_box)
+plot(testSED2,type = 'lum')
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

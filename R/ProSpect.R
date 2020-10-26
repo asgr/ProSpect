@@ -299,7 +299,7 @@ plot.ProSpectSED=function(x, xlim=c(1e3,1e7), ylim='auto',
       ylab='Luminosity Density (Lsol/Ang)'
     }
     layout(rbind(1,2),heights=c(0.7,0.3))
-    par(oma=c(3.1,3.1,1.1,1.1))
+    par(oma=c(3.1,3.1,1.1,2.1))
     par(mar=c(0,0,0,0))
     if(requireNamespace("magicaxis", quietly=TRUE)){
       magicaxis::magplot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab,
@@ -308,24 +308,32 @@ plot.ProSpectSED=function(x, xlim=c(1e3,1e7), ylim='auto',
       plot(x$FinalLum, log='xy', xlim=xlim, ylim=ylim, xlab=xlab, ylab=ylab,
             type='l', lwd=5, ...)
     }
-    lines(x$StarsUnAtten, col='blue', lty=2)
-    lines(x$StarsAtten, col='green')
-    lines(x$DustEmit, col='brown')
-    lines(x$AGN, col='purple')
+    lines(x$StarsUnAtten, col='blue', lty=2, lwd=2)
+    lines(x$StarsAtten, col='darkgreen', lwd=2)
+    lines(x$DustEmit, col='brown', lwd=2)
+    lines(x$AGN, col='purple', lwd=2)
     legend('topright',
            legend=c('Total Lum', 'Star Un-Atten', 'Stars Atten', 'Dust Emit', 'AGN'),
            col=c('black', 'blue', 'darkgreen', 'brown', 'purple'),
            lty=c(1,2,1,1,1),
-           lwd=c(5,1,1,1,1)
+           lwd=c(5,2,2,2,2)
     )
     
     par(mar=c(0,0,0,0))
     if(requireNamespace("magicaxis", quietly=TRUE)){
       magicaxis::magplot(x$Stars$agevec/1e9, x$Stars$SFR, xlab='Age (Gyr)', ylab='SFR (Msol/Yr)',
                          type='l', lwd=5, grid=grid)
+      par(usr = c(par()$usr[1:2], -max(x$Stars$Zvec, na.rm=TRUE)*0.04,max(x$Stars$Zvec, na.rm=TRUE)*1.04))
+      lines(x$Stars$agevec/1e9, x$Stars$Zvec, col='red', lwd=2)
+      magicaxis::magaxis(4,col.axis='red',axis.col='red')
+      legend('bottomright', legend=c('SFR','Z'), col=c('black','red'), lty=1, lwd=c(5,2))
     }else{
       plot(x$Stars$agevec/1e9, x$Stars$SFR, xlab='Age (Gyr)', ylab='SFR (Msol/Yr)',
            type='l', lwd=5)
+      par(usr = c(par()$usr[1:2], -max(x$Stars$Zvec, na.rm=TRUE)*0.04,max(x$Stars$Zvec, na.rm=TRUE)*1.04))
+      lines(x$Stars$agevec/1e9, x$Stars$Zvec, col='red', lwd=2)
+      axis(4,col='red',col.axis='red')
+      legend('bottomright', legend=c('SFR','Z'), col=c('black','red'), lty=1, lwd=c(5,2))
     }
   }else if(type=='flux'){
     if(ylim[1]=='auto'){
