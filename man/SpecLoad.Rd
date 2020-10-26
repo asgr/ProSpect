@@ -27,7 +27,30 @@ Character vector; vector of plot labels (probably no reason to alter this from t
 \details{
 Fairly simple function to convert a target external FITS to the internal list format used by \code{\link{ProSpectSED}}.
 
-The key thing re the multi-extension FITS format is that the \option{Zspec} and \option{Zevo} structures are flattened so there is one matrix (\option{Zpsec}) and one table (\option{Zevo}) per extension. These must be ordered in the same increasing manner as \option{Z}, with \option{Zpsec} matrices extensions positioned immediately before \option{Zevo} tables. See the example BC03lr.fits for guidance.
+The extensions and ordering of the target FITS file should look similar to the included BC03lr example used in the Examples below (e.g. note the extension names and the overall ordering): \cr
+
+\tabular{lllll}{
+ Ext  \tab       Name  \tab      Class  \tab        Dim  \tab Size.MB \cr
+   1  \tab          Z  \tab    numeric  \tab          6  \tab  0.0001 \cr
+   2  \tab        Age  \tab    numeric  \tab        221  \tab  0.0017 \cr
+   3  \tab    AgeBins  \tab    numeric  \tab        221  \tab  0.0017 \cr
+   4  \tab AgeWeights  \tab    numeric  \tab        221  \tab  0.0017 \cr
+   5  \tab       Wave  \tab    numeric  \tab       1221  \tab  0.0094 \cr
+   6  \tab     Zspec1  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+   7  \tab     Zspec2  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+   8  \tab     Zspec3  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+   9  \tab     Zspec4  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+  10  \tab     Zspec5  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+  11  \tab     Zspec6  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+  12  \tab      Zevo1  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  13  \tab      Zevo2  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  14  \tab      Zevo3  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  15  \tab      Zevo4  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  16  \tab      Zevo5  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  17  \tab      Zevo6  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+}
+
+The key thing re the multi-extension FITS format is that the \option{Zspec} and \option{Zevo} structures are flattened so there is one matrix (\option{Zpsec}) and one table (\option{Zevo}) per extension. They must have also have extension names starting 'Zspec' and 'Zevo', e.g. 'Zspec1' and 'Zevo1' etc. What follows the leading part of the name is not important. These must be ordered in the same increasing manner as \option{Z}, with \option{Zspec} matrices extensions positioned immediately before \option{Zevo} tables. See the example BC03lr.fits for guidance.
 }
 \value{
 Complex list. See e.g. \code{\link{BC03lr}}. The below is the basic format output:

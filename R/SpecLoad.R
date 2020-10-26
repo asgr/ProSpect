@@ -50,7 +50,7 @@ SpecLoad = function(filename,
       }
     }
     
-    Zevo_locs = Zspec_locs + length(Zspec_locs)
+    Zevo_locs = grep('Zevo', names(spec_FITS))
     Zevo = list()
     for(i in Zevo_locs){
       Zevo = c(Zevo, list(spec_FITS[[i]][]))

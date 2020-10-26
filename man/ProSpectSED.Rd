@@ -285,6 +285,11 @@ legend=c('Total Lum', 'Star Un-Atten', 'Stars Atten', 'Dust Emit', 'AGN'),
 # or easier:
 
 plot(testSED)
+
+#An example of a more physical SFH and ZH:
+
+testSED2 = ProSpectSED(massfunc = massfunc_snorm, Z=Zfunc_massmap_box)
+plot(testSED2)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
