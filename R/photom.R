@@ -206,7 +206,7 @@ addspec=function(wave1, flux1, wave2, flux2, extrap='constant', waveout=NULL){
   flux1=log10(flux1)
   flux2=log10(flux2)
   if(is.null(waveout)){
-    waveout=sort(c(wave1,wave2))
+    waveout=sort(unique(c(wave1,wave2)))
   }
   if(extrap=='constant'){
     flux1=10^approxfun(wave1, flux1, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])(waveout)
