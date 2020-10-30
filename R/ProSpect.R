@@ -93,7 +93,11 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
         dustmass_AGN=0
       }
       AGN=AGN$final
-      Final=data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
+      if(length(SED_Stars_Bdust_Sdust$flux) == length(AGN$flux)){
+        Final = data.frame(wave=SED_Stars_Bdust_Sdust$wave, flux=SED_Stars_Bdust_Sdust$flux+AGN$flux)
+      }else{
+        Final = addspec(wave1=SED_Stars_Bdust_Sdust$wave, flux1=SED_Stars_Bdust_Sdust$flux, wave2=AGN$wave, flux2=AGN$flux)
+      }
       colnames(AGN)[2]='lum'
     }
   }
