@@ -35,7 +35,7 @@ Numeric scalar; dust tau of birth clouds. Associated with sub 10 Myr star format
 Numeric scalar; dust tau of the dust screen. See \code{\link{CF_screen}}.
 }
   \item{tau_AGN}{
-Numeric scalar; dust tau of the dust screen. See \code{\link{CF}}.
+Numeric scalar; dust tau of the AGN. See \code{\link{CF}}.
 }
   \item{pow_birth}{
 Numeric scalar; power to further raise the dust attenuation of birth clouds. See \code{\link{CF_birth}}.
@@ -44,7 +44,7 @@ Numeric scalar; power to further raise the dust attenuation of birth clouds. See
 Numeric scalar; power to further raise the dust attenuation of the dust screen. See \code{\link{CF_screen}}.
 }
   \item{pow_AGN}{
-Numeric scalar; power to further raise the dust attenuation of the AGN taurus. See \code{\link{CF_screen}}.
+Numeric scalar; power to further raise the dust attenuation of the AGN torus. See \code{\link{CF_screen}}.
 }
   \item{alpha_SF_birth}{
 Numeric scalar; alpha slope of the birth cloud dust. Lower values mean hotter dust. See \code{\link{Dale}}.
@@ -53,7 +53,7 @@ Numeric scalar; alpha slope of the birth cloud dust. Lower values mean hotter du
 Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. See \code{\link{Dale}}.
 }
   \item{alpha_SF_AGN}{
-Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dust. See \code{\link{Dale}}.
+Numeric scalar; alpha slope of the AGN torus dust. Lower values mean hotter dust. See \code{\link{Dale}}.
 }
   \item{AGNlum}{
 Numeric scalar; AGN bolometric luminosity in erg/s.
