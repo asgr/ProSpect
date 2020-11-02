@@ -13,8 +13,8 @@ getfilt(filter)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{filter}{
-Either filter name explictly built in to \code{ProSpect}, or an unambiguous grep match to one of the available filters in \code{\link{EAZY_filters}}, e.g. 'cfht_mega_u' unabmigously matches to the full filter name of 'megaprime/cfht_mega_u_cfh9301.dat'. \cr
-For the full set now available see options at \code{\link{filters}}, where all data with are accessible to the \code{getfilt} function (with the removal of the preceding "filt_"). The original set available was: \cr
+Either filter name explictly built in to \code{ProSpect}, or an unambiguous grep match to one of the available filters in \code{\link{EAZY_filters}}, e.g. 'cfht_mega_u' unabmigously matches to the full filter name of 'megaprime/cfht_mega_u_cfh9301.dat'. You can also conveniently specify your own tophat with the filter name syntax 'tophat_lo_hi' where 'lo' and 'hi' corresponds to the lower and upper limits of the filter tophat in Angstrom. \cr
+For the full set now available see options at \code{\link{filters}}, where all listed filers are accessible to the \code{getfilt} function (with the removal of the preceding "filt_"). The original set available was: \cr
 %%     ~~Describe \code{filter} here~~
 \tabular{ll}{
   Name    \tab  Filter reference \cr
