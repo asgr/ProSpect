@@ -66,6 +66,12 @@ For the full set now available see options at \code{\link{filters}}, where all d
   S850    \tab  JCMT SCUBA-2 850 band  \cr
   1mm     \tab  Aztec 1mm band \cr
   2mm     \tab  Gizmo 2mm band \cr
+  Band9   \tab  ALMA Band 9 \cr
+  Band8   \tab  ALMA Band 8 \cr
+  Band7   \tab  ALMA Band 7 \cr
+  Band6   \tab  ALMA Band 6 \cr
+  Band5   \tab  ALMA Band 5 \cr
+  Band4   \tab  ALMA Band 4 \cr
 }
 }
 }
