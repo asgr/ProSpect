@@ -62,13 +62,13 @@ Numeric scalar; AGN bolometric luminosity in erg/s.
 Numeric scalar; amount of sparse sampling of the spectra to make.
 }
   \item{speclib}{
-Object; required. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
+Object; optional. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
 }
   \item{Dale}{
-Object; required. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly).
+Object; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly).
 }
   \item{AGN}{
-Object; required. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
+Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
 }
   \item{filtout}{
 Object; required. Pass in the photometric filters directly (either matrices of functions). If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
