@@ -17,11 +17,11 @@ The star formation history functions discussed here compute output galaxy spectr
 SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3,
  pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 5, emission = FALSE,
- veldisp = 50, emission_scale = "FUV", escape_frac = 1 - emission,
- Ly_limit = 911.8, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
- OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
- unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
- LFWHM = 470, ...) 
+ veldisp = 50, emission_scale = "FUV", escape_frac=rep(1-emission, length(Ly_limit)),
+ Ly_limit=c(1215.7, 1025.7, 972.5, 911.8), LKL10 = NULL, z = 0.1, H0 = 67.8,
+ OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5,
+ intSFR = FALSE, unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0,
+ L0 = 2175.8, LFWHM = 470, ...) 
 
 SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
@@ -98,10 +98,10 @@ Numeric scalar; velocity dispersion (km/s) of emission features. See \code{\link
 Character; one of 'FUV' or 'SFR'. 'FUV' scales the emission features via an energy balance, absorbing all unattenuated flux below \option{Ly_limit} by a factor (1-\option{escape_frac}) and re-emitting as lines. 'SFR' scales Halpha from Kennicutt (1998), but still absorbs flux below \option{Ly_limit} by a factor (1-\option{escape_frac}). If providing \option{LKL10} to speed code up then it must be \option{LKL10}=\code{\link{LKL10_NormAll}} when \option{emission_scale}='FUV', and \option{LKL10}=\code{\link{LKL10_NormHalpha}} when \option{emission_scale}='SFR'. Otherwise these are loaded internally as appropriate.
 }
   \item{escape_frac}{
-Numeric scalar; the fraction of photons allows to escape when the wavelength is shorter than \option{Ly_limit}. If \option{emission}=TRUE and \option{emission_scale}='FUV' then the absorbed flux (1-\option{escape_frac}) is re-emitted as lines. By default it is \option{escape_frac} = 1 - \option{emission}, i.e. if we do not want emission then we allow all UV photons out of the star forming region (to possibly then be attenuated by dust), but if we want emission then all of these photons are used to excite our emission lines.
+Numeric scalar/vector; the fraction of photons allows to escape when the wavelength is shorter than the corresponding element of \option{Ly_limit}. If \option{emission}=TRUE and \option{emission_scale}='FUV' then the absorbed flux (1-\option{escape_frac}) is re-emitted as lines. By default it is \option{escape_frac} = 1 - \option{emission}, i.e. if we do not want emission then we allow all UV photons out of the star forming region (to possibly then be attenuated by dust), but if we want emission then all of these photons are used to excite our emission lines.
 }
   \item{Ly_limit}{
-Numeric scalar; the Lyman limit to use (Angstroms). Photons with wavelengths shorted than \option{Ly_limit} are absorbed by a factor 1-\option{escape_frac}. If \option{emission}=TRUE and \option{emission_scale}='FUV' then the absorbed flux (1-\option{escape_frac}) is re-emitted as lines. The \option{Ly_limit} should generally be 911.8 (the actual ionisation limit n=Inf of 13.6 eV), or sometimes 1215.67 (Lyman alpha n=2).
+Numeric scalar/vector; the Lyman limit/s to use (Angstroms). Photons with wavelengths shorted than the \option{Ly_limit}[i] are absorbed by a factor 1-\option{escape_frac}[i]. If \option{emission}=TRUE and \option{emission_scale}='FUV' then the absorbed flux (1-\option{escape_frac}) is re-emitted as lines. By default we expect absorption short of Ly alpha (1215.7 A), Ly beta (1025.7 A), Lyman gamma (972.5 A), and the Lyman series limit (911.8 A), where a different \option{escape_frac} can be specified for each. Generally aborption gets stronger as the wavelength gets shorter, creating a characteristic saw-tooth absorption spectrum with a jump at each Lyman series level. Users can specify more Lyman limits (e.g. delta etc), but generally this is not needed. The escape fraction short of the Lyman series limit (911.8 A) should generally be 0 if not known otherwise. A single crude \option{Ly_limit} should generally be 911.8 (the actual ionisation limit n=Inf of 13.6 eV), or sometimes 1215.67 (Lyman alpha n=2).
 }
   \item{LKL10}{
 List; LKL template to use. If \option{LKL10}=NULL then the appropriate template is loaded internally (this is the safest option). To speed things up the user can pass in the appropriate \code{\link{LKL10}} template, but care must be taken to ensure the scaling used makes use of the correct dataset. See \code{\link{emissionLines}}.  
@@ -170,9 +170,9 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{lum_atten}{Numeric vector; attenuated stellar luminosity in the standard BC03 units of Lsol / Angstrom.}
 \item{lum_unatten}{Numeric vector; unattenuated stellar luminosity in the standard BC03 units of Lsol / Angstrom.}
 \item{lumtot_unatten}{Numeric scalar, total unattenuated stellar luminosity in Lsol.}
-\item{lumtot_atten}{Numeric scalar, total attenuated stellar luminosity in Lsol.}
-\item{lumtot_birth}{Numeric scalar, total attenuated luminosity in birth cloud in Lsol.}
-\item{lumtot_screen}{Numeric scalar, total attenuated luminosity in screen cloud in Lsol.}
+\item{lumtot_atten}{Numeric scalar, total attenuated stellar luminosity in Lsol (i.e. this is power that will be re-radiated).}
+\item{lumtot_birth}{Numeric scalar, total attenuated luminosity in birth cloud in Lsol (i.e. this is power that will be re-radiated by birth clouds).}
+\item{lumtot_screen}{Numeric scalar, total attenuated luminosity in screen cloud in Lsol (i.e. this is power that will be re-radiated by the ISM screen).}
 \item{masstot}{Numeric scalar; total mass formed in Msol.}
 \item{massvec}{Numeric vector; the total mass formed in each age window  (\code{SFHfunc} only).}
 \item{M2L}{Numeric scalar; total mass to light ratio.}
