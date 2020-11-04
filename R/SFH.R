@@ -197,8 +197,8 @@ SFHfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, stellpop='BC
   
   if(emission){
     if(emission_scale=='FUV'){
-      if(length(Ly_limit)==1){
-        sel = which(wave_lum < Ly_limit[length(Ly_limit)])
+      if(length(Ly_limit)==1 | all(escape_frac == escape_frac[1])){
+        sel = which(wave_lum < Ly_limit[1])
         All_lum = (1-escape_frac)*sum(.qdiff(wave_lum[sel])*lum_unatten[sel])
       }else{
         All_lum = 0
