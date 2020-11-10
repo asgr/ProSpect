@@ -1,4 +1,5 @@
 \name{LKL10}
+\alias{LKL}
 \alias{LKL10}
 \alias{LKL10_NormHalpha}
 \alias{LKL10_NormHbeta}
