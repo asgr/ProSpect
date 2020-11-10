@@ -27,6 +27,7 @@ Suggests: \tab shiny, magicaxis, knitr, LaplacesDemon, foreach, data.table, hype
 Maintainer: \packageMaintainer{ProSpect}
 }
 \references{
+Akhlaghi et al, 2015, ApJSS, 220, 1 \cr
 Bertelli et al., 1994, A\&AS, 106, 275 \cr
 Brammer, van Dokkum & Coppi, 2008, ApJ, 686, 1503 \cr
 Bruzual and Charlot, 2003, MNRAS, 344, 1000 \cr
@@ -42,6 +43,7 @@ Kennicutt et al, 1998, ARAA, 36, 189 \cr
 Kroupa, 2001, MNRAS, 322, 231 \cr
 Levesque, Kewley & Larson, 2010, AJ, 139, 712 \cr
 Marvil et al, 2015, AJ, 149, 32 \cr
+Songaila, 2004, AJ, 127, 2598 \cr
 Stanway and Eldridge, 2018, MNRAS, 479, 75 \cr
 Vazdekis et al., 2016, MNRAS, 463, 3409
 }

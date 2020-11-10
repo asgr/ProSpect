@@ -17,7 +17,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
  waveout = seq(2,9.35,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
  LumDist_Mpc = NULL, addradio = FALSE, Te = 10000, ff_frac = 0.1, ff_power = -0.1,
  sy_power = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, AGNta = 1, AGNrm = 60,
- AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
+ AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, IGMabsorb = 0, ...)
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -154,6 +154,9 @@ Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do n
   \item{LFWHM}{
 Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
 }
+  \item{IGMabsorb}{
+Numeric scalar; absorbing fraction for the intervening IGM. This should be thought of as absorption due to material between the galaxy of interest an the observer. This suppressing fraction is applied to wavelength in the Lyman regime (911.8 - 1215.7 Angstrom). Based on Songaila (2004) a resonable approximation for this is given by \option{IGMabsorb} = pnorm(z, mean=3.8, sd=1.2), meaning it is almost 0 (complete transmission) at low redshift and almost 1 (complete absorption) by redshift 8.
+}
   \item{\dots}{
 All further arguments are passed directly into \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
 }
@@ -243,6 +246,11 @@ The 'LD' output returns the full structure required for \code{LaplacesDemon} and
 
 The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnoistic plot via the \code{plot} method.
 }
+
+\references{
+Songaila, 2004, AJ, 127, 2598
+}
+
 \author{
 Aaron Robotham
 }
