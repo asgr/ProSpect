@@ -248,6 +248,7 @@ The 'check' output return all the outputs for \code{LaplacesDemon} and \code{Lap
 }
 
 \references{
+Robotham et al, 2020, MNRAS, 495, 905 \cr
 Songaila, 2004, AJ, 127, 2598
 }
 
