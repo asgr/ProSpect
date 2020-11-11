@@ -9,8 +9,8 @@ ProSpectSED=function(SFH=SFHfunc, z=0.1, tau_birth=1, tau_screen=0.3, tau_AGN=1,
   
   call=match.call()
   
-  if('emission' %in% names(call)){
-    if(eval(call$emission) & missing(waveout)){
+  if('emission' %in% names(list(...))){
+    if(list(...)$emission & missing(waveout)){
       waveout=NULL
     }
   }
