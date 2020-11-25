@@ -444,11 +444,21 @@ SMstarfunc=function(massfunc=massfunc_b5, forcemass=FALSE, agescale=1, burstage=
     }
   }
   
-  burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
-  youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
-  midageloc=c(which.min(abs(speclib$Age-midage[1])),which.min(abs(speclib$Age-midage[2])))
-  oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
-  ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
+  burstageloc = c(min(which(speclib$Age - burstage[1] > 0)),
+                 max(which(speclib$Age - burstage[2] < 0)))
+  youngageloc = c(min(which(speclib$Age - youngage[1] > 0)),
+                 max(which(speclib$Age - youngage[2] < 0)))
+  midageloc= c(min(which(speclib$Age - midage[1] > 0)),
+                 max(which(speclib$Age - midage[2] < 0)))
+  oldageloc= c(min(which(speclib$Age - oldage[1] > 0)),
+               max(which(speclib$Age - oldage[2] < 0)))
+  ancientageloc= c(min(which(speclib$Age - ancientage[1] > 0)),
+               max(which(speclib$Age - ancientage[2] < 0)))
+  #burstageloc=c(which.min(abs(speclib$Age-burstage[1])),which.min(abs(speclib$Age-burstage[2])))
+  #youngageloc=c(which.min(abs(speclib$Age-youngage[1])),which.min(abs(speclib$Age-youngage[2])))
+  #midageloc=c(which.min(abs(speclib$Age-midage[1])),which.min(abs(speclib$Age-midage[2])))
+  #oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
+  #ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
   
   burstrescale=(burstage[2]-burstage[1])/sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
   youngrescale=(youngage[2]-youngage[1])/sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
