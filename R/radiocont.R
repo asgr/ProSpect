@@ -29,12 +29,12 @@
 }
 
 radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8,
-                     wavesamp=seq(7,9.35,by=0.01), flux_in='freq', flux_out=flux_in){
+                     wavesamp=seq(6,9.38,by=0.01), flux_in='freq', flux_out=flux_in){
   #wave in Ang, flux in Jy
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
-      flux=wave[,2]
-      wave=wave[,1]
+      flux = wave[,2]
+      wave = wave[,1]
     }
   }
   #z reflects the stretching of the input wave
