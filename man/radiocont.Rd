@@ -9,7 +9,7 @@ Can take an output \code{ProSpect} spectrum and extend it into the radio regime 
 }
 \usage{
 radiocont(wave, flux, z = 0, Te = 10000, ff_frac = 0.1, ff_power = -0.1, sy_power = -0.8,
-wavesamp = seq(7, 9.35, by = 0.01), flux_in = "freq", flux_out = flux_in)
+wavesamp = seq(6, 9.35, by = 0.01), flux_in = "freq", flux_out = flux_in)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
