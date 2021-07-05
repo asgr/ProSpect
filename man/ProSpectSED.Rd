@@ -18,6 +18,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
  LumDist_Mpc = NULL, addradio = FALSE, Te = 10000, ff_frac = 0.1, ff_power = -0.1,
  sy_power = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, AGNta = 1, AGNrm = 60,
  AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, IGMabsorb = 0, ...)
+ 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -26,7 +27,7 @@ ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 Function; the star formation history to use. Must be one of \code{\link{SFHfunc}} of \code{\link{SFHburst}} (default).
 }
   \item{z}{
-Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z} <= 0 then only luminosities are computed if \option{filtout}=NULL. If filters are provided via \option{filtout} then the \option{Photom} output returns Absolute AB magnitudes for convenience.
+Numeric scalar; cosmological redshift of the source. If the provided \option{z} = 0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z} <= 0 then only luminosities are computed if \option{filtout}=NULL. If filters are provided via \option{filtout} then the \option{Photom} output returns Absolute AB magnitudes for convenience.
 }
   \item{tau_birth}{
 Numeric scalar; dust tau of birth clouds. Associated with sub 10 Myr star formation. See \code{\link{CF_birth}}.
