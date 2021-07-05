@@ -17,7 +17,7 @@ The star formation history functions discussed here compute output galaxy spectr
 SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3,
  pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 5, emission = FALSE,
- veldisp = 50, emission_scale = "FUV", escape_frac = 1-emission,
+ veldisp = 50, emission_scale = "FUV", escape_frac = 1 - emission,
  Ly_limit = 911.8, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
  OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
  unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
