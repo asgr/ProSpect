@@ -2,7 +2,7 @@ massfunc_const = function(age, mSFR = 1, magemax = 13.8) {
   #Scale functions ages to years
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   return(ifelse(age < magemax, mSFR, 0))
 }
@@ -18,7 +18,7 @@ massfunc_p2 = function(age,
   m2age = m2age * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   temp = rep(NA, length(age))
   temp[age < m1age] = 0
@@ -45,7 +45,7 @@ massfunc_p3 = function(age ,
   m3age = m3age * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   temp = splinefun(c(m1age, m2age, m3age), c(m1, m2, m3), method = 'monoH.FC')(age)
   
@@ -71,7 +71,7 @@ massfunc_p3_burst = function(age,
   m3age = m3age * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   temp = splinefun(c(m1age, m2age, m3age), c(m1, m2, m3), method = 'monoH.FC')(age)
   
@@ -103,7 +103,7 @@ massfunc_p4 = function(age,
   m4age = m4age * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   temp = splinefun(log10(c(m1age, m2age, m3age, m4age)), c(m1, m2, m3, m4), method =
                      'monoH.FC')(log10(age))
@@ -136,7 +136,7 @@ massfunc_p6 = function(age,
   m6age = m6age * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   temp = splinefun(log10(c(m1age, m2age, m3age, m4age, m5age, m6age)), c(m1, m2, m3, m4, m5, m6), method =
                      'monoH.FC')(log10(age))
@@ -206,7 +206,7 @@ massfunc_exp = function(age,
   mpivot = mpivot * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   temp = mSFR * exp(-mtau * ((mpivot - age) / mpivot))
   
@@ -227,7 +227,7 @@ massfunc_exp_burst = function(age,
   mburstage = mburstage * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   temp = mSFR * exp(-mtau * ((mpivot - age) / mpivot))
   
@@ -252,7 +252,7 @@ massfunc_snorm = function(age,
   mperiod = mperiod * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   #normal SFH
   Xtemp = (age - mpeak) / mperiod
   Ytemp = Xtemp * (exp(mskew) ^ asinh(Xtemp))
@@ -277,7 +277,7 @@ massfunc_snorm_burst = function(age,
   mburstage = mburstage * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   #normal SFH
   Xtemp = (age - mpeak) / mperiod
   Ytemp = Xtemp * (exp(mskew) ^ asinh(Xtemp))
@@ -302,7 +302,7 @@ massfunc_snorm_trunc = function(age,
   mperiod = mperiod * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   #normal SFH
   Xtemp = (age - mpeak) / mperiod
   Ytemp = Xtemp * (exp(mskew) ^ asinh(Xtemp))
@@ -335,7 +335,7 @@ massfunc_snorm_burst_trunc = function(age,
   mburstage = mburstage * 1e9
   magemax = magemax * 1e9
   
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   #normal SFH
   #normal SFH
   Xtemp = (age - mpeak) / mperiod
@@ -365,7 +365,7 @@ massfunc_dtau = function(age,
   mpeak = mpeak * 1e9
   magemax = magemax * 1e9
   mtrunc = mtau / (magemax - mpeak)
-  age[age < 1e5] = 1e5 #Stop dodgy very yound stellar pops forming
+  age[age < 1e5] = 1e5 #Stop dodgy very young stellar pops forming
   
   x = rep(0, length(age))
   x[age <= mpeak] = (mtau + mpeak - age[age <= mpeak]) / mtau

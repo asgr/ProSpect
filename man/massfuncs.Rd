@@ -146,6 +146,8 @@ SFR = splinefun(log10(c(m1age,m2age,m3age,m4age)), c(m1,m2,m3,m4), method='monoH
 
 SFR = splinefun(log10(c(m1age,m2age,m3age,m4age,m5age,m6age)), c(m1,m2,m3,m4,m5,m6), method='monoH.FC')(log10(age) [also 0 above magemax]
 
+\code{massfunc_b5} produces a series of constant periods of star formation (defined by the age limits), creating a stepwise SFH (sometimes called 'non-parametric' even though it is parameteric).
+
 \code{massfunc_exp} produces exponentially declining star formation from a certain age:
 
 SFR = mSFR*exp(-mtau*((mpivot-age)/mpivot)) [also 0 above magemax]
