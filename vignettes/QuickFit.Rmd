@@ -123,7 +123,7 @@ Data=list(flux=flux_input,
           parm.names=c('mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen',
                        'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
           logged=c(T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
-          intervals=list(lo=c(-4,-2,-1,-0.5,0,0,0.0625,0.0625), hi=c(3,1,1,1,1.5,1,4,4)), # fitting range for parameters
+          intervals=list(lo=c(-4,-2,-1,-0.5,-2.5,-2.5,0.0625,0.0625), hi=c(3,1,1,1,1,1,4,4)), # fitting range for parameters
           fit = 'LD', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
           mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
           N=length(filters), # number of observed filters
