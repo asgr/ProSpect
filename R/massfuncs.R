@@ -177,20 +177,16 @@ massfunc_b5 = function(age,
              age >= m2age & age < m3age,
              m2,
              ifelse(
-               age >= m2age & age < m3age,
-               m2,
-               ifelse(
-                 age >= m3age & age < m4age,
-                 m3,
-                 ifelse(
-                   age >= m4age & age < m5age,
-                   m4,
-                   ifelse(age >= m5age & age <= m6age, m5,
-                          0)
-                 )
-               )
-             )
-           ))
+                age >= m3age & age < m4age,
+                m3,
+                ifelse(
+                  age >= m4age & age < m5age,
+                  m4,
+                  ifelse(age >= m5age & age <= m6age, m5, 0)
+                )
+              )
+            )
+          )
   
   temp[temp < 0] = 0
   temp[age > magemax] = 0

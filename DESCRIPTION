@@ -13,4 +13,3 @@ Suggests: shiny, magicaxis, knitr, LaplacesDemon, foreach, data.table, hyper.fit
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-LazyData: true
