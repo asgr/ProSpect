@@ -41,19 +41,23 @@ SFHfunc = function(massfunc = massfunc_b5,
       data('BC03lr', envir = environment())
       speclib = BC03lr
     }
-  }
-  if (stellpop == 'BC03hr') {
+  }else if (stellpop == 'BC03hr') {
     if (is.null(speclib)) {
       BC03hr = NULL
       data('BC03hr', envir = environment())
       speclib = BC03hr
     }
-  }
-  if (stellpop == 'EMILES') {
+  }else if (stellpop == 'EMILES') {
     if (is.null(speclib)) {
       EMILES = NULL
       data('EMILES', envir = environment())
       speclib = EMILES
+    }
+  }else if (stellpop == 'BPASS') {
+    if (is.null(speclib)) {
+      BPASS = NULL
+      data('BPASS', envir = environment())
+      speclib = BPASS
     }
   }
   
@@ -316,6 +320,10 @@ SFHfunc = function(massfunc = massfunc_b5,
     
     lumtot_birth = lumtot_birth - lumtot_emission_unatten + lumtot_emission_atten
     
+    if(lumtot_birth < 0){
+      lumtot_birth = 0
+    }
+    
     #lum_unatten=addspec(wave_lum, lum_unatten, emissionadd_unatten$wave, emissionadd_unatten$lum)
     lum = addspec(wave_lum,
                   lum,
@@ -342,6 +350,11 @@ SFHfunc = function(massfunc = massfunc_b5,
     )
     lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) *
                                                             lum)
+    
+    if(lumtot_screen < 0){
+      lumtot_screen = 0
+    }
+    
   } else{
     lumtot_screen = 0
   }
@@ -428,6 +441,16 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
   }
   
+  SFR = massvec / speclib$AgeWeights
+  
+  if (!is.null(agemax)) {
+    sel = which(speclib$Age <= agemax)
+    agevec = agevec[sel]
+    massvec = massvec[sel]
+    SFR = SFR[sel]
+    Zvec = Zvec[sel]
+  }
+  
   return(
     list(
       flux = flux,
@@ -440,7 +463,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       lumtot_birth = lumtot_birth,
       lumtot_screen = lumtot_screen,
       agevec = agevec,
-      SFR = massvec / speclib$AgeWeights,
+      SFR = SFR,
       masstot = masstot,
       massvec = massvec,
       M2L = masstot / lumtot_unatten,
@@ -479,31 +502,24 @@ SMstarfunc = function(massfunc = massfunc_b5,
       BC03lr = NULL
       data('BC03lr', envir = environment())
       speclib = BC03lr
-      rm(BC03lr)
     }
-  }
-  if (stellpop == 'BC03hr') {
+  }else if (stellpop == 'BC03hr') {
     if (is.null(speclib)) {
       BC03hr = NULL
       data('BC03hr', envir = environment())
       speclib = BC03hr
-      rm(BC03hr)
     }
-  }
-  if (stellpop == 'EMILES') {
+  }else if (stellpop == 'EMILES') {
     if (is.null(speclib)) {
       EMILES = NULL
       data('EMILES', envir = environment())
       speclib = EMILES
-      rm(EMILES)
     }
-  }
-  if (stellpop == 'BPASS') {
+  }else if (stellpop == 'BPASS') {
     if (is.null(speclib)) {
       BPASS = NULL
       data('BPASS', envir = environment())
       speclib = BPASS
-      rm(BPASS)
     }
   }
   
@@ -707,19 +723,23 @@ SFHburst = function(burstmass = 1e8,
       data('BC03lr', envir = environment())
       speclib = BC03lr
     }
-  }
-  if (stellpop == 'BC03hr') {
+  }else if (stellpop == 'BC03hr') {
     if (is.null(speclib)) {
       BC03hr = NULL
       data('BC03hr', envir = environment())
       speclib = BC03hr
     }
-  }
-  if (stellpop == 'EMILES') {
+  }else if (stellpop == 'EMILES') {
     if (is.null(speclib)) {
       EMILES = NULL
       data('EMILES', envir = environment())
       speclib = EMILES
+    }
+  }else if (stellpop == 'BPASS') {
+    if (is.null(speclib)) {
+      BPASS = NULL
+      data('BPASS', envir = environment())
+      speclib = BPASS
     }
   }
   

@@ -4,7 +4,7 @@ author: "Aaron Robotham"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mock Fitting}
+  %\VignetteIndexEntry{Fake It Until You Make It}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
