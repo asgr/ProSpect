@@ -25,17 +25,21 @@ Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc
   if(missing(massfunc)){
     stop('Need massfunc!')
   }
-  masssum=integrate(massfunc, 0, Zagemax, ...)$value
-  massvec=massfunc(seq(0,Zagemax+1e8,by=1e8), ...)
-  massCDF = 1 - cumsum(massvec*1e8)/masssum
-  massCDF[massCDF<0]=0
-  massCDF[massCDF>1]=1
-  tempfunc=approxfun(seq(0,Zagemax+1e8,by=1e8),massCDF)
-  temp = Zstart + tempfunc(age)*(Zfinal-Zstart)
-  temp[temp<1e-04]=1e-04
-  temp[age>Zagemax]=1e-04
-  temp[is.na(temp)]=1e-04
-  return(temp)
+  masssum = integrate(massfunc, 0, Zagemax, ...)$value
+  if(masssum > 0){
+    massvec = massfunc(seq(0,Zagemax+1e8,by=1e8), ...)
+    massCDF = 1 - cumsum(massvec*1e8)/masssum
+    massCDF[which(massCDF < 0)] = 0
+    massCDF[which(massCDF < 0)] = 1
+    tempfunc = approxfun(seq(0,Zagemax+1e8,by=1e8), massCDF)
+    temp = Zstart + tempfunc(age)*(Zfinal-Zstart)
+    temp[temp<1e-04]=1e-04
+    temp[age>Zagemax]=1e-04
+    temp[is.na(temp)]=1e-04
+    return(temp)
+  }else{
+    return(rep(Zfinal, length(age)))
+  }
 }
 
 Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13.8, massfunc, ...){
@@ -49,14 +53,18 @@ Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13
     stop('Need massfunc!')
   }
   masssum=integrate(massfunc, 0, Zagemax, ...)$value
-  massvec=massfunc(seq(0,Zagemax+1e8,by=1e8), ...)
-  massCDF=(1-cumsum(massvec*1e8)/masssum)*massfrac_final
-  massCDF[massCDF<0]=0
-  massCDF[massCDF>1]=1
-  tempfunc=approxfun(seq(0,Zagemax+1e8,by=1e8),massCDF)
-  temp= -yield*log(1-tempfunc(age))+Zstart
-  temp[temp<1e-04]=1e-04
-  temp[age>Zagemax]=1e-04
-  temp[is.na(temp)]=1e-04
-  return(temp)
+  if(masssum > 0){
+    massvec=massfunc(seq(0,Zagemax+1e8,by=1e8), ...)
+    massCDF=(1-cumsum(massvec*1e8)/masssum)*massfrac_final
+    massCDF[which(massCDF < 0)] = 0
+    massCDF[which(massCDF < 0)] = 1
+    tempfunc=approxfun(seq(0,Zagemax+1e8,by=1e8),massCDF)
+    temp= -yield*log(1-tempfunc(age))+Zstart
+    temp[temp<1e-04]=1e-04
+    temp[age>Zagemax]=1e-04
+    temp[is.na(temp)]=1e-04
+    return(temp)
+  }else{
+    return(rep(Zfinal, length(age)))
+  }
 }
