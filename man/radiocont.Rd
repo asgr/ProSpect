@@ -49,7 +49,7 @@ This radio continuum extension for \code{ProSpect} is mostly based on the work o
 
 The default options closely reproduce the Dale template radio emission. The advantage of using this interface is the user has fine control over the free-free and synchrotron radio emission mixing (which is fixed to 1:9 at 1.4 Ghz in the Dale templates), and also control over the power-law indices (fixed to -0.1 and -0.8 respectively in the Dale templates).
 
-Condon & Yin suggest that \option{ff_frac} is seen to typically span the range 0.05 to 0.2, so it should probably be kept within these limits for generative and fitting purposes.
+Condon & Yin (1990) suggest that \option{ff_frac} is seen to typically span the range 0.05 to 0.2, so it should probably be kept within these limits for generative and fitting purposes.
 }
 \value{
 Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux in the units of \option{flux_out}.
@@ -76,7 +76,7 @@ filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS',
 filtout={}
 for(i in filters){filtout=c(filtout,list(approxfun(getfilt(i))))}
 
-testSED=ProSpectSED(z=0.05, AGNlum=0, tau_birth=1, tau_screen=0.3,
+testSED = ProSpectSED(z=0.05, AGNlum=0, tau_birth=1, tau_screen=0.3,
                     alpha_SF_birth=0.5, alpha_SF_screen=3, speclib=BC03lr, 
                     Dale=Dale_NormTot, AGN=AGN_UnOb_Sparse, filtout=filtout, 
                     Dale_M2L_func=Dale_M2L_func, returnall=TRUE)
