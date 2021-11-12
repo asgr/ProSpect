@@ -29,7 +29,7 @@
 }
 
 radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8,
-                     wavesamp=seq(6,9.4,by=0.01), flux_in='freq', flux_out=flux_in){
+                     wavesamp=seq(6,9.4,by=0.1), flux_in='freq', flux_out=flux_in){
   #z reflects the stretching of the input wave
   wave = wave/(1 + z)
   flux = flux*(1 + z)
@@ -45,10 +45,11 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
     flux = convert_wave2freq(flux, wave)
   }
   #magplot(wave, flux, log='xy',type='l', xlim=range(c(wave,10^wavesamp)))
-  tempfun = approxfun(freq, flux, yleft=0, yright=0)
+  tempfun = approxfun(log10(freq), log10(flux), yleft=-200, yright=-200)
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
   #FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value * 1e-26 OLD LESS ACCURATE FIR
-  FIR = 0.1 * tempfun(1.4e9) / (1.4e10 * (1.4)^(-0.1))
+  #FIR = 0.1 * (10^tempfun(9.146128)) / (1.4e10 * (1.4)^(-0.1))
+  FIR = 7.387284e-12 * 10^tempfun(9.146128) #same as above, just pre-computed
   wavesamp = (10^wavesamp)
   #freqsamp = .c_to_mps / (wavesamp / 1e10)
   selwave = wave > 1e6 #only subtract off FIR and longer
