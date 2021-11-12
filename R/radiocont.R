@@ -7,7 +7,7 @@
 .radioemission_nu = function(freq=1.4e9, FIR=10e-14, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8){
   #freq in Hz, FIR in W/m^2, Te in K
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
-  ff_1p4Ghz = 1.4e10 * FIR * (Te/1e4)^0.45 * (1.4e9)^(ff_power) # Jy at 1.4 Ghz
+  ff_1p4Ghz = 1.4e10 * FIR * (Te/1e4)^0.45 # Jy at 1.4 Ghz
   
   ff_flux = ff_1p4Ghz * (freq/1.4e9)^ff_power
   sy_flux = (ff_1p4Ghz * (1 - ff_frac) / ff_frac)  * (freq/1.4e9)^sy_power
@@ -25,11 +25,14 @@
                               ff_frac=0.1, ff_power=-0.1, sy_power=-0.8){
   #wave in Ang, FIR in W/m^2, Te in K
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
-  return(.radioemission_nu(freq=.c_to_mps/(wave/1e10)/1e9, FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power))
+  return(.radioemission_nu(freq=.c_to_mps/(wave/1e10), FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power))
 }
 
 radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8,
-                     wavesamp=seq(6,9.38,by=0.01), flux_in='freq', flux_out=flux_in){
+                     wavesamp=seq(6,9.4,by=0.01), flux_in='freq', flux_out=flux_in){
+  #z reflects the stretching of the input wave
+  wave = wave/(1 + z)
+  flux = flux*(1 + z)
   #wave in Ang, flux in Jy
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
@@ -37,25 +40,31 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
       wave = wave[,1]
     }
   }
-  #z reflects the stretching of the input wave
-  freq = .c_to_mps/(wave/(1+z)/1e10) # wave in Ang -> freq in Hz
+  freq = .c_to_mps/(wave/1e10) # wave in Ang -> freq in Hz
   if(flux_in == 'wave'){
     flux = convert_wave2freq(flux, wave)
   }
+  #magplot(wave, flux, log='xy',type='l', xlim=range(c(wave,10^wavesamp)))
   tempfun = approxfun(freq, flux, yleft=0, yright=0)
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
-  FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value * 1e-26 
-  wavesamp = (10^wavesamp) * (1+z)
-  freq_samp = .c_to_mps / (wavesamp / 1e10)
-  selwave = wave / (1+z) > 1e6 #only subtract off FIR and longer
-  FIR_sub = 0.1 * tempfun(1.4e9) / (1.4e10 * (1.4)^(-0.1))
-  radio_sub = .radioemission_nu(freq=freq[selwave], FIR=FIR_sub, Te=1e4, ff_frac=0.1)[,'tot_flux']
+  #FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value * 1e-26 OLD LESS ACCURATE FIR
+  FIR = 0.1 * tempfun(1.4e9) / (1.4e10 * (1.4)^(-0.1))
+  wavesamp = (10^wavesamp)
+  #freqsamp = .c_to_mps / (wavesamp / 1e10)
+  selwave = wave > 1e6 #only subtract off FIR and longer
+  radio_sub = .radioemission_nu(freq=freq[selwave], FIR=FIR)[,'tot_flux']
+  #lines(wave[selwave], radio_sub, col='blue',lwd=3)
   flux[selwave] = flux[selwave] - radio_sub
   flux[flux<=0] = 1e-200
-  radio_add = .radioemission_nu(freq=freq_samp, FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power)
+  radio_add = .radioemission_lam(wave=wavesamp, FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power)[,'tot_flux']
+  #lines(wavesamp, radio_add, col='red',lwd=1)
   output = addspec(wave, flux,
-                   wavesamp, radio_add[,'tot_flux'],
+                   wavesamp, radio_add,
                    extrap=0)
+  #lines(output, col='green')
+  #legend('topright', legend=c('in','out',rem','add'), col=c('black','green','blue','red'), lwd=c(1,13,1))
+  output$wave = output$wave*(1 + z)
+  output$flux = output$flux/(1 + z)
   if(flux_out == 'wave'){
     output = data.frame(wave=output$wave, flux=convert_freq2wave(output$flux, output$wave))
   }
