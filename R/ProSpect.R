@@ -208,6 +208,7 @@ ProSpectSED = function(SFH = SFHfunc,
       ff_frac = ff_frac,
       ff_power = ff_power,
       sy_power = sy_power,
+      wavesamp = seq(6, max(waveout), by=0.1),
       flux_in = 'wave',
       flux_out = 'wave'
     )

@@ -81,9 +81,9 @@ testSED = ProSpectSED(z=0.05, AGNlum=0, tau_birth=1, tau_screen=0.3,
                     Dale=Dale_NormTot, AGN=AGN_UnOb_Sparse, filtout=filtout, 
                     Dale_M2L_func=Dale_M2L_func, returnall=TRUE)
 
-# The defaults recreate the Dale template emission:
+# The defaults almost recreate the Dale template emission:
 
-temp = radiocont(testSED$FinalFlux$wave, testSED$FinalFlux$flux)
+temp = radiocont(testSED$FinalFlux$wave, testSED$FinalFlux$flux, z=0.05)
 plot(temp, log='xy', type='l', ylim=c(1e-6,1), xlab='Wave / Ang',
   ylab='Flux Density / Jy', lwd=3)
 lines(testSED$FinalFlux$wave, testSED$FinalFlux$flux, col='red')
