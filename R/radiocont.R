@@ -7,7 +7,7 @@
 .radioemission_nu = function(freq=1.4e9, FIR=10e-14, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8){
   #freq in Hz, FIR in W/m^2, Te in K
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
-  ff_1p4Ghz = 1.4e10 * FIR * (Te/1e4)^0.45 # Jy at 1.4 Ghz
+  ff_1p4Ghz = 13536775000 * FIR * (Te/1e4)^0.45 # Jy at 1.4 Ghz, first part is 1.4e10*(1.4^-0.1) = 13536775000
   
   ff_flux = ff_1p4Ghz * (freq/1.4e9)^ff_power
   sy_flux = (ff_1p4Ghz * (1 - ff_frac) / ff_frac)  * (freq/1.4e9)^sy_power
@@ -44,7 +44,7 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
   if(flux_in == 'wave'){
     flux = convert_wave2freq(flux, wave)
   }
-  #magplot(wave, flux, log='xy',type='l', xlim=range(c(wave,10^wavesamp)))
+  #magplot(wave, flux, log='xy',type='l', xlim=range(c(wave,10^wavesamp)), ylim=c(1e-4,1e-3))
   tempfun = approxfun(log10(freq), log10(flux), yleft=-200, yright=-200)
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
   #FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value * 1e-26 OLD LESS ACCURATE FIR
@@ -63,7 +63,7 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
                    wavesamp, radio_add,
                    extrap=0)
   #lines(output, col='green')
-  #legend('topright', legend=c('in','out',rem','add'), col=c('black','green','blue','red'), lwd=c(1,13,1))
+  #legend('topright', legend=c('in','out','rem','add'), col=c('black','green','blue','red'), lwd=c(1,1,3,1))
   output$wave = output$wave*(1 + z)
   output$flux = output$flux/(1 + z)
   if(flux_out == 'wave'){
