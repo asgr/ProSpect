@@ -41,7 +41,7 @@ Character scalar; specifies the type of photometry computed, must be one of 'mag
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a list of filter responses, or even better (faster) a list of filter functions.
 }
   \item{z}{
-Numeric scalar; cosmological redshift, where z must be > -1.
+Numeric scalar; cosmological redshift. If \option{z} <= 0 then the source will be placed at 10 Parsecs, i.e. this is what you want if you are aiming to compute Absolute Magnitudes.
 }
   \item{H0}{
 Numeric scalar; Hubble constant as defined at z=0 (default is H0=100 (km/s)/Mpc).
