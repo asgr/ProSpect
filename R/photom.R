@@ -62,11 +62,15 @@ Janskycalc=function(wave, flux, filter='r_VST'){
 Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
   # Assuming lum to be converted is in the BC03 Lsol / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Hz flux
-  if(is.null(LumDist_Mpc)){
-    LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+  if(z > 0){
+    if(is.null(LumDist_Mpc)){
+      LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+    }
+    Dl_cm = LumDist_Mpc * .mpc_to_cm
+    factor = .lsol_to_erg/(4*pi*Dl_cm^2)/(1 + z)
+  }else{
+    factor = .lsol_to_absolute
   }
-  Dl_cm = LumDist_Mpc * .mpc_to_cm
-  factor=.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z)
   return(factor)
 }
 
@@ -78,12 +82,16 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
       wave=wave[,1]
     }
   }
-  if(is.null(LumDist_Mpc)){
-    LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+  if(z > 0){
+    if(is.null(LumDist_Mpc)){
+      LumDist_Mpc = cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+    }
+    Dl_cm = LumDist_Mpc * .mpc_to_cm
+    flux = lum*.lsol_to_erg/(4*pi*Dl_cm^2)/(1 + z)
+    wave = wave*(1 + z)
+  }else{
+    flux = lum * .lsol_to_absolute
   }
-  Dl_cm = LumDist_Mpc * .mpc_to_cm
-  flux=lum*.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z)
-  wave=wave*(1+z)
   #output is erg/s/cm^2/Ang (not per Hz! Need to make this final conversion to get to AB mag, but this is the standard way of viewing spectra).
   return(data.frame(wave=wave, flux=flux))
 }
@@ -96,12 +104,16 @@ Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - O
       wave=wave[,1]
     }
   }
-  if(is.null(LumDist_Mpc)){
-    LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+  if(z > 0){
+    if(is.null(LumDist_Mpc)){
+      LumDist_Mpc = cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+    }
+    Dl_cm = LumDist_Mpc * .mpc_to_cm
+    lum = flux/(.lsol_to_erg/(4*pi*Dl_cm^2)/(1 + z))
+    wave = wave/(1 + z)
+  }else{
+    lum = flux/.lsol_to_absolute
   }
-  Dl_cm = LumDist_Mpc * .mpc_to_cm
-  lum=flux/(.lsol_to_erg/(4*pi*Dl_cm^2)/(1+z))
-  wave=wave/(1+z)
   #output is Lsol / Angstrom format
   return(data.frame(wave=wave, lum=lum))
 }
@@ -130,16 +142,12 @@ photom_flux=function(wave, flux, outtype='mag', filters='all'){
     for(i in filters){
       photom=c(photom, magABcalc(wave=wave, flux=flux, filter=i))
     }
-  }
-  
-  if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
+  }else if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
     photom={}
     for(i in filters){
       photom=c(photom, Janskycalc(wave=wave, flux=flux, filter=i))
     }
-  }
-  
-  if(outtype=='cgs' | outtype=='CGS'){
+  }else if(outtype=='cgs' | outtype=='CGS'){
     photom={}
     for(i in filters){
       photom=c(photom, CGScalc(wave=wave, flux=flux, filter=i))
@@ -161,8 +169,6 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
   if(is.matrix(filters) | is.data.frame(filters)){
     filters=list(filters)
   }
-  
-  flux=Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
 
   if((filters=='all')[1]){
     cenwave=NULL
@@ -170,21 +176,19 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
     filters=cenwave$filter
   }
   
+  flux = Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
+    
   if(outtype=='mag' | outtype=='magAB'){
     photom={}
     for(i in filters){
       photom=c(photom, magABcalc(flux, filter=i))
     }
-  }
-  
-  if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
+  }else if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
     photom={}
     for(i in filters){
       photom=c(photom, Janskycalc(flux, filter=i))
     }
-  }
-  
-  if(outtype=='cgs' | outtype=='CGS'){
+  }else if(outtype=='cgs' | outtype=='CGS'){
     photom={}
     for(i in filters){
       photom=c(photom, CGScalc(flux, filter=i))

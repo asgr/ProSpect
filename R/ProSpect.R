@@ -248,8 +248,7 @@ ProSpectSED = function(SFH = SFHfunc,
     )
     Flux$flux = convert_wave2freq(flux_wave = Flux$flux * .cgs_to_jansky,
                                   wave = Flux$wave)
-    photom_out = {
-    }
+    photom_out = {}
     for (i in 1:length(filtout)) {
       photom_out = c(photom_out,
                      bandpass(
@@ -276,6 +275,7 @@ ProSpectSED = function(SFH = SFHfunc,
     Flux = cbind(wave = Final$wave,
                  flux = Final$lum * .lsol_to_absolute)
     photom_out = photom_flux(Flux, outtype = 'magAB', filters = filtout)
+    #photom_out = photom_lum(Final, z=0, outtype = 'magAB', filters = filtout) same as above, but redundant
   } else{
     Flux = NULL
     photom_out = NULL
