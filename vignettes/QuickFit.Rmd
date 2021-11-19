@@ -194,6 +194,15 @@ points(flux_input[,c("pivwave","flux")])
 magerr(flux_input$pivwave, flux_input$flux, ylo=flux_input$fluxerr)
 ```
 
+**ProSpectSED** also provides a couple of high level convenience plotting functions:
+
+```{r, eval=FALSE}
+Data$fit = 'check' #we have to set the fit type to 'check' to get the required outputs
+outputs = ProSpectSEDlike(parm=Highout$parm, Data=Data)
+plot(outputs)
+plot(outputs$SEDout)
+```
+
 ## Fitting a Galaxy for Redshift
 
 In principle if you have a real galaxy to fit and it is already in the required format of **flux_input**, you can start from this point. In this example we will do something very similar to the above, but now also fit for the redshift. It is easy to add redshift as an explored parameter, given access to SED based photo-z. Basically we have to remove it from arglist and add it to parm.names, making sure we give it a reasonable range. Here we explore it in log-space:
@@ -236,7 +245,7 @@ In practice we might want to use something better like CMA to get pretty close p
 
 ```{r, eval=FALSE}
 library(cmaeshpc)
-Data$fit = 'CMA'
+Data_z$fit = 'CMA'
 badpar = (Data_z$intervals$lo + Data_z$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
 CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$intervals$lo,
                   upper=Data_z$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
