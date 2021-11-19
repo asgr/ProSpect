@@ -62,9 +62,9 @@ inpar=c(mSFR = 0, #log-space
 Simple function to view our target SFH:
 
 ```{r}
-plotSFH=function(par,agemax=13.3, add=FALSE,col='black',ylim=NULL,...){
+plotSFH=function(par, magemax=13.3, add=FALSE,col='black',ylim=NULL,...){
  magcurve(massfunc_snorm_trunc(age=x,mSFR=10^par[1],mpeak=10^par[2],mperiod=10^par[3],
-                               mskew=par[4], magemax=agemax),0,13.8e9,add=add,col=col,
+                               mskew=par[4], magemax=magemax),0,13.8e9,add=add,col=col,
                                ylim=ylim,xlab='Age (Yr)', ylab='SFR (Msol / Yr)',...)
 }
 ```
@@ -92,7 +92,8 @@ genSED=ProSpectSED(massfunc=massfunc_snorm_trunc,
                    filtout=filtout,
                    Dale=Dale_NormTot,
                    speclib=BC03lr,
-                   agemax=agemax
+                   agemax=agemax,
+                   magemax=agemax/1e9
 )
 ```
 
@@ -110,12 +111,13 @@ In principle if you have a real galaxy to fit and it is already in the required 
 To speed things up we will also pre-compute the Luminosity distance to our source (since this will be the same for every iteration, and will save some computation time):
 
 ```{r}
-LumDist_Mpc = cosdistLumDist(z=0.1, H0 = 67.8, OmegaM = 0.308)
+LumDist_Mpc = cosdistLumDist(z=0.1, H0=67.8, OmegaM=0.308)
 ```
 
 ```{r}
 Data=list(flux=flux_input,
-          arglist=list(z=0.1, massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin, LumDist_Mpc=LumDist_Mpc),
+          arglist=list(z=0.1, massfunc=massfunc_snorm_trunc, agemax=agemax, magemax=agemax/1e9,
+                       Z=Zfunc_massmap_lin, LumDist_Mpc=LumDist_Mpc),
           speclib=BC03lr, 
           Dale=Dale_NormTot, 
           filtout=filtout, 
@@ -160,6 +162,17 @@ CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data, lower=Data$interval
 print(CMAout$par)
 ```
 
+### There Can Be Only One
+
+Since writing the above example, I have developed the very easy to use **Highlander** package (available on my GitHub as asgr/Highlander). This combines the above CMA and LD steps painlessly, alternating between CMA and LD phases (by default it does both twice, with 100 iterations for each of the 4 phases) and deals with all the limits auto-magically. The above example can be run simply with:
+
+```{r, eval=FALSE}
+library(Highlander)
+Highout = Highlander(badpar, Data=Data, likefunc=ProSpectSEDlike, Niters=c(1e3,1e3))
+```
+
+This should find a better solution faster than just running CMA or LD on their own. The main arguments you might want to play with would be the number of optimisation phases *optim_iters* (where a phase is a CMA followed by LD), the number of iteration steps within each process *Niters* (vector argument specifying CMA followed by LD iterations), and maybe the number of iterations in the very last LD optimisation *NfinalMCMC* (since you might want to use these chains for posterior exploration).
+
 ## Exploring Results
 
 We can check the posterior monitored distribution of stellar mass formed (masstot). This is a derived parameter given the star formation history, hence we have to monitor it as we go. Otherwise we would need to reconstruct the mass formed for all 10^4 combinations of parameters generated (which would take a long time!).
@@ -181,47 +194,15 @@ points(flux_input[,c("pivwave","flux")])
 magerr(flux_input$pivwave, flux_input$flux, ylo=flux_input$fluxerr)
 ```
 
-## Fitting for Redshift
+## Fitting a Galaxy for Redshift
 
-It is easy to add redshift as an explored parameter, given access to SED based photo-z. Basically we have to remove it from arglist and add it to parm.names, making sure we give it a reasonable range. Here we explore it in log-space:
+In principle if you have a real galaxy to fit and it is already in the required format of **flux_input**, you can start from this point. In this example we will do something very similar to the above, but now also fit for the redshift. It is easy to add redshift as an explored parameter, given access to SED based photo-z. Basically we have to remove it from arglist and add it to parm.names, making sure we give it a reasonable range. Here we explore it in log-space:
 
 Note since we are fitting for redshift now we can no longer pass LumDist_Mpc because this will change for every realisation.
 
 ```{r}
 Data_z=list(flux=flux_input,
-           arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin),
-           speclib=BC03lr, 
-           Dale=Dale_NormTot, 
-           filtout=filtout, 
-           SFH=SFHfunc, # the preferred funcitonal form of the SFH (eg either SFHfunc, SFHburst)
-           parm.names=c('z', 'mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen',
-                        'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
-           logged=c(T,T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
-           intervals=list(lo=c(-3, -4,-2,-1,-0.5,-2.5,-2.5,0,0), hi=c(0, 3,1,1,1,1.5,1,4,4)), # fitting range for parameters
-           fit = 'CMA', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
-           mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
-           N=length(filters), # number of observed filters
-           like='norm',
-           verbose=FALSE
-)
-```
-
-A CMA fit returns the expected value (log10(z) = -1) pretty well:
-
-```{r, eval=FALSE}
-badpar_z = (Data_z$intervals$lo + Data_z$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
-CMAout_z = cmaeshpc(par=badpar_z, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$intervals$lo,
-                    upper=Data_z$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
-print(CMAout_z$par)
-```
-
-## Fitting a Galaxy for Redshift
-
-In principle if you have a real galaxy to fit and it is already in the required format of **flux_input**, you can start from this point. In this example we will do something very similar to the above, but now also fit for the redshift.
-
-```{r}
-Data=list(flux=flux_input,
-          arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin), # we remove the explicit z from here
+          arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, magemax=agemax/1e9, Z=Zfunc_massmap_lin), # we remove the explicit z from here
           speclib=BC03lr, 
           Dale=Dale_NormTot, 
           filtout=filtout, 
@@ -241,7 +222,7 @@ Data=list(flux=flux_input,
 Now we can run an MCMC fit using LaplacesDemon (depending on machine, this might take 10-20 minutes):
 
 ```{r eval=FALSE}
-LDout = LaplacesDemon(Model=ProSpectSEDlike, Data=Data,  Initial.Values=c(0.1,inpar),
+LDout = LaplacesDemon(Model=ProSpectSEDlike, Data=Data_z,  Initial.Values=c(0.1,inpar),
                       control=list(abstol=0.1), Iterations=1e4, Algorithm='CHARM', Thinning=1)
 ```
 
@@ -251,14 +232,14 @@ We can see that the redshift, fitted without any prior (or implicitly a uniform 
 magtri(cbind(LDout$Posterior1,SM=LDout$Monitor[5001:1e4,"masstot"]))
 ```
 
-In practice we might want to use something better like CMA to get pretty close pretty quickly (you can get this from my GitHub at asgr/cmaeshpc). Here we set the wall time to 2 minutes (which is usually enough for this many parameters).
+In practice we might want to use something better like CMA to get pretty close pretty quickly. Here we set the wall time to 2 minutes (which is usually enough for this many parameters).
 
 ```{r, eval=FALSE}
 library(cmaeshpc)
 Data$fit = 'CMA'
-badpar = (Data$intervals$lo + Data$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
-CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data, lower=Data$intervals$lo,
-                  upper=Data$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
+badpar = (Data_z$intervals$lo + Data_z$intervals$hi) / 2 #CMA is pretty tolerant of terrible initial guesses, unlike optim and LD.
+CMAout = cmaeshpc(par=badpar, fn=ProSpectSEDlike, Data=Data_z, lower=Data_z$intervals$lo,
+                  upper=Data_z$intervals$hi, control=list(trace=TRUE, maxwalltime=2))
 print(CMAout$par)
 ```
 
@@ -271,8 +252,8 @@ return(dnorm(parm[1], mean=-1, sd=0.02, log=TRUE)) # 10^0.02 gives about 4.7% ph
 ```
 
 ```{r}
-Data=list(flux=flux_input,
-          arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, Z=Zfunc_massmap_lin), # we remove the explicit z from here
+Data_z2=list(flux=flux_input,
+          arglist=list(massfunc=massfunc_snorm_trunc, agemax=agemax, magemax=agemax/1e9, Z=Zfunc_massmap_lin), # we remove the explicit z from here
           speclib=BC03lr, 
           Dale=Dale_NormTot, 
           filtout=filtout, 
@@ -291,6 +272,6 @@ Data=list(flux=flux_input,
 ```
 
 ```{r eval=FALSE}
-LDout_prior = LaplacesDemon(Model=ProSpectSEDlike, Data=Data,  Initial.Values=c(0.1,inpar),
+LDout_prior = LaplacesDemon(Model=ProSpectSEDlike, Data=Data_z2,  Initial.Values=c(0.1,inpar),
                       control=list(abstol=0.1), Iterations=1e4, Algorithm='CHARM', Thinning=1)
 ``` 

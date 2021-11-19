@@ -13,7 +13,7 @@ SFHfunc = function(massfunc = massfunc_b5,
                    veldisp = 50,
                    emission_scale = 'FUV',
                    escape_frac = 1 - emission,
-                   Ly_limit = 911.8,
+                   Ly_limit = 911.75,
                    LKL10 = NULL,
                    z = 0.1,
                    H0 = 67.8,
@@ -30,7 +30,7 @@ SFHfunc = function(massfunc = massfunc_b5,
                    L0 = 2175.8,
                    LFWHM = 470,
                    ...) {
-  #Ly_limit should be 911.8 (the actual ionisation limit) or sometimes 1215.67
+  #Ly_limit should be 911.75 Ang (the actual ionisation limit) or sometimes 1215.67 Ang (Lyman alpha)
   
   dots = list(...)
   massfunc_args = dots[names(dots) %in% names(formals(massfunc))]
@@ -215,8 +215,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       lum = lum + colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
       if (any(escape_frac < 1)) {
         if (length(Ly_limit) == 1) {
-          speclib$Zspec[[Zid]][, wave_lum < Ly_limit] = speclib$Zspec[[Zid]][, wave_lum <
-                                                                               Ly_limit] * escape_frac
+          speclib$Zspec[[Zid]][, wave_lum < Ly_limit] = speclib$Zspec[[Zid]][, wave_lum < Ly_limit] * escape_frac
         } else{
           for (i in 1:(length(Ly_limit) - 1)) {
             sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
@@ -235,8 +234,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     # }
     if (any(escape_frac < 1)) {
       if (length(Ly_limit) == 1) {
-        speclib$Zspec[[Zuse]][, wave_lum < Ly_limit] = speclib$Zspec[[Zuse]][, wave_lum <
-                                                                               Ly_limit] * escape_frac
+        speclib$Zspec[[Zuse]][, wave_lum < Ly_limit] = speclib$Zspec[[Zuse]][, wave_lum < Ly_limit] * escape_frac
       } else{
         for (i in 1:(length(Ly_limit) - 1)) {
           sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
@@ -281,12 +279,10 @@ SFHfunc = function(massfunc = massfunc_b5,
         All_lum = 0
         for (i in 1:(length(Ly_limit) - 1)) {
           sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-          All_lum = All_lum + (1 - escape_frac[i]) * (Ly_limit[i] - Ly_limit[i +
-                                                                               1]) * mean(lum_unatten[sel])
+          All_lum = All_lum + (1 - escape_frac[i]) * (Ly_limit[i] - Ly_limit[i + 1]) * mean(lum_unatten[sel])
         }
         sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-        All_lum = All_lum + (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) *
-                                                                        lum_unatten[sel])
+        All_lum = All_lum + (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel])
       }
       
       emission_input = list(All_lum = All_lum,
@@ -294,7 +290,8 @@ SFHfunc = function(massfunc = massfunc_b5,
                             Z = Zvec[1])
       emissionadd_unatten = emissionLines(All_lum = All_lum,
                                           veldisp = veldisp,
-                                          Z = Zvec[1])
+                                          Z = Zvec[1],
+                                          LKL10 = LKL10)
     } else if (emission_scale == 'SFR') {
       SFRburst_emission = (1 - escape_frac) * do.call('integrate', c(list(
         f = massfunc,
@@ -306,14 +303,14 @@ SFHfunc = function(massfunc = massfunc_b5,
                             Z = Zvec[1])
       emissionadd_unatten = emissionLines(SFR = SFRburst_emission,
                                           veldisp = veldisp,
-                                          Z = Zvec[1])
+                                          Z = Zvec[1],
+                                          LKL10 = LKL10)
     } else{
       stop('emission_scale must be one of SFR or FUV!')
     }
     
     emissionadd_atten = emissionadd_unatten
-    emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau =
-                                                               tau_birth, pow = pow_birth)
+    emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
     
     lumtot_emission_unatten = sum(.qdiff(emissionadd_unatten$wave) * emissionadd_unatten$lum)
     lumtot_emission_atten = sum(.qdiff(emissionadd_atten$wave) * emissionadd_atten$lum)
@@ -321,10 +318,9 @@ SFHfunc = function(massfunc = massfunc_b5,
     lumtot_birth = lumtot_birth - lumtot_emission_unatten + lumtot_emission_atten
     
     if(lumtot_birth < 0){
-      lumtot_birth = 0
+     lumtot_birth = 0
     }
     
-    #lum_unatten=addspec(wave_lum, lum_unatten, emissionadd_unatten$wave, emissionadd_unatten$lum)
     lum = addspec(wave_lum,
                   lum,
                   emissionadd_atten$wave,
@@ -348,8 +344,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       L0 = L0,
       LFWHM = LFWHM
     )
-    lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) *
-                                                            lum)
+    lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) * lum)
     
     if(lumtot_screen < 0){
       lumtot_screen = 0
@@ -402,8 +397,7 @@ SFHfunc = function(massfunc = massfunc_b5,
         } else{
           cenwave = NULL
           data('cenwave', envir = environment())
-          out = data.frame(cenwave[match(filters, cenwave$filter), ], out =
-                             out)
+          out = data.frame(cenwave[match(filters, cenwave$filter), ], out = out)
         }
       } else{
         out = NULL
@@ -432,8 +426,7 @@ SFHfunc = function(massfunc = massfunc_b5,
         } else{
           cenwave = NULL
           data('cenwave', envir = environment())
-          out = data.frame(cenwave[match(filters, cenwave$filter), ], out =
-                             out)
+          out = data.frame(cenwave[match(filters, cenwave$filter), ], out = out)
         }
       } else{
         out = NULL
@@ -701,6 +694,12 @@ SFHburst = function(burstmass = 1e8,
                     pow_screen = -0.7,
                     filters = 'all',
                     Z = 0.02,
+                    emission = FALSE,
+                    veldisp = 50,
+                    emission_scale = 'FUV',
+                    escape_frac = 1 - emission,
+                    Ly_limit = 911.75,
+                    LKL10 = NULL,
                     z = 0.1,
                     H0 = 67.8,
                     OmegaM = 0.308,
@@ -831,6 +830,67 @@ SFHburst = function(burstmass = 1e8,
     lumtot_birth = 0
   }
   
+  if (emission & burstage < 1e7) {
+    if (emission_scale == 'FUV') {
+      if (length(Ly_limit) == 1 | all(escape_frac == escape_frac[1])) {
+        sel = which(wave_lum < Ly_limit[1])
+        All_lum = (1 - escape_frac) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel])
+      } else{
+        All_lum = 0
+        for (i in 1:(length(Ly_limit) - 1)) {
+          sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
+          All_lum = All_lum + (1 - escape_frac[i]) * (Ly_limit[i] - Ly_limit[i + 1]) * mean(lum_unatten[sel])
+        }
+        sel = which(wave_lum < Ly_limit[length(Ly_limit)])
+        All_lum = All_lum + (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel])
+      }
+      
+      emission_input = list(All_lum = All_lum,
+                            veldisp = veldisp,
+                            Z = Z)
+      emissionadd_unatten = emissionLines(All_lum = All_lum,
+                                          veldisp = veldisp,
+                                          Z = Z,
+                                          LKL10 = LKL10)
+    } else if (emission_scale == 'SFR') {
+      SFRburst_emission = (1 - escape_frac) * burstmass / 1e7
+      emission_input = list(SFR = SFRburst_emission,
+                            veldisp = veldisp,
+                            Z = Z)
+      emissionadd_unatten = emissionLines(SFR = SFRburst_emission,
+                                          veldisp = veldisp,
+                                          Z = Z,
+                                          LKL10 = LKL10)
+    } else{
+      stop('emission_scale must be one of SFR or FUV!')
+    }
+    
+    emissionadd_atten = emissionadd_unatten
+    emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
+    
+    lumtot_emission_unatten = sum(.qdiff(emissionadd_unatten$wave) * emissionadd_unatten$lum)
+    lumtot_emission_atten = sum(.qdiff(emissionadd_atten$wave) * emissionadd_atten$lum)
+    
+    lumtot_birth = lumtot_birth - lumtot_emission_unatten + lumtot_emission_atten
+
+    if(lumtot_birth < 0){
+      lumtot_birth = 0
+    }
+    
+    lum = addspec(wave_lum,
+                  lum,
+                  emissionadd_atten$wave,
+                  emissionadd_atten$lum)
+    lum_unatten = approxfun(log10(wave_lum), lum_unatten)(log10(lum$wave))
+    
+    wave_lum = lum$wave
+    lum = lum$flux
+    #wave_lum=lum_unatten$wave
+    #lum_unatten=lum_unatten$flux
+  } else{
+    emission_input = NULL
+  }
+  
   if (tau_screen != 0) {
     lum = lum * CF_screen(
       wave_lum,
@@ -840,8 +900,7 @@ SFHburst = function(burstmass = 1e8,
       L0 = L0,
       LFWHM = LFWHM
     )
-    lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) *
-                                                            lum)
+    lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) * lum)
   } else{
     lumtot_screen = 0
   }
@@ -866,8 +925,13 @@ SFHburst = function(burstmass = 1e8,
         lumtot_atten = lumtot_atten,
         lumtot_birth = lumtot_birth,
         lumtot_screen = lumtot_screen,
-        masstot = masstot,
-        SFRburst = SFRburst
+        agevec = burstage,
+        SFR = burstmass,
+        masstot = burstmass,
+        M2L = burstmass / lumtot_unatten,
+        SFRburst = SFRburst,
+        Zvec = Z,
+        emission_input = emission_input
       )
     ) # returns the minimal luminosity and mass outputs
   }
@@ -885,9 +949,7 @@ SFHburst = function(burstmass = 1e8,
     if (!is.null(outtype)) {
       out = photom_flux(flux, outtype = outtype, filters = filters)
       if (is.list(filters)) {
-        cenout = {
-          
-        }
+        cenout = {}
         for (i in filters) {
           cenout = c(cenout, cenwavefunc(i))
         }
@@ -916,9 +978,7 @@ SFHburst = function(burstmass = 1e8,
     if (!is.null(outtype)) {
       out = photom_flux(flux, outtype = outtype, filters = filters)
       if (is.list(filters)) {
-        cenout = {
-          
-        }
+        cenout = {}
         for (i in filters) {
           cenout = c(cenout, cenwavefunc(i))
         }
@@ -955,10 +1015,13 @@ SFHburst = function(burstmass = 1e8,
       lumtot_atten = lumtot_atten,
       lumtot_birth = lumtot_birth,
       lumtot_screen = lumtot_screen,
-      M2L = masstot / lumtot_unatten,
-      ages = burstage,
+      agevec = burstage,
+      SFR = burstmass,
       masstot = burstmass,
-      SFRburst = SFRburst
+      M2L = burstmass / lumtot_unatten,
+      SFRburst = SFRburst,
+      Zvec = Z,
+      emission_input = emission_input
     )
   )
 }

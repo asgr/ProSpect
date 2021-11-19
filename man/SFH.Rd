@@ -18,7 +18,7 @@ SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3,
  pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 5, emission = FALSE,
  veldisp = 50, emission_scale = "FUV", escape_frac = 1 - emission,
- Ly_limit = 911.8, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
+ Ly_limit = 911.75, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
  OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
  unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
  LFWHM = 470, ...) 
@@ -31,8 +31,9 @@ SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
 
 SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
  tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
- filters = 'all', Z = 0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308,
- OmegaL = 1 - OmegaM, ref, outtype = 'mag', sparse = 5, unimax=  13.8e9,
+ filters = 'all', Z = 0.02, emission = FALSE, veldisp = 50, emission_scale = "FUV",
+ escape_frac = 1 - emission, Ly_limit = 911.75, LKL10 = NULL, z = 0.1, H0 = 67.8,
+ OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = 'mag', sparse = 5, unimax=  13.8e9,
  agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -173,13 +174,13 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{lumtot_atten}{Numeric scalar, total attenuated stellar luminosity in Lsol (i.e. this is power that will be re-radiated).}
 \item{lumtot_birth}{Numeric scalar, total attenuated luminosity in birth cloud in Lsol (i.e. this is power that will be re-radiated by birth clouds).}
 \item{lumtot_screen}{Numeric scalar, total attenuated luminosity in screen cloud in Lsol (i.e. this is power that will be re-radiated by the ISM screen).}
+\item{agevec}{Numeric vector; ages scaled by \option{agescale}. For \code{SFHburst} it is the input \option{burstage}.}
+\item{SFR}{Numeric vector; the star formation rate at all ages (\code{SFHfunc} only).}
 \item{masstot}{Numeric scalar; total mass formed in Msol.}
 \item{massvec}{Numeric vector; the total mass formed in each age window  (\code{SFHfunc} only).}
 \item{M2L}{Numeric scalar; total mass to light ratio.}
-\item{ages}{Numeric scalar; for \code{SFHburst} it is the input \option{burstage}.}
-\item{agevec}{Numeric vector; ages scaled by \option{agescale}.}
-\item{SFR}{Numeric vector; the star formation rate at all ages (\code{SFHfunc} only).}
 \item{SFRburst}{Numeric scalar; the star formation rate over the last 10^8 years.}
+\item{Zvec}{Numeric vector; Z history. For \code{SFHburst} it is the input \option{Z}.}
 \item{emission_input}{List; the inputs sent to \code{\link{emissionLines}} when \option{emission}=TRUE.}
 
 \code{SMstarp4} / \code{SMstarp5} / \code{SMstarfunc} produces both the stellar mass formed (4/5/5 elements) and the stellar mass remaining (a further 4/5/5 elements) for the 5 different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
