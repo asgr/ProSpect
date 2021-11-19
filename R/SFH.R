@@ -68,7 +68,11 @@ SFHfunc = function(massfunc = massfunc_b5,
   }
   
   if (!is.null(filters)) {
-    if (filters[1] == 'all' | filters[1] == 'GAMA') {
+    if (filters[1] == 'all') {
+      cenwave = NULL
+      data('cenwave', envir = environment())
+      filters = cenwave$filter
+    }else if(filters[1] == 'GAMA'){
       filters = c(
         'FUV_GALEX',
         'NUV_GALEX',
