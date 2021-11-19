@@ -219,7 +219,7 @@ ProSpectSED = function(SFH = SFHfunc,
   if (IGMabsorb > 0) {
     sel = which(Final$wave < 1215.67)
     Final$lum[sel] = Final$lum[sel] * (1 - IGMabsorb)
-    sel = which(Final$wave < 911.8)
+    sel = which(Final$wave < 911.75)
     Final$lum[sel] = 0
   }
   
@@ -231,7 +231,7 @@ ProSpectSED = function(SFH = SFHfunc,
     }
     filtout = list()
     for (i in filters) {
-      filtout = c(filtout, list(getfilt(i)))
+      filtout = c(filtout, list(approxfun(getfilt(i))))
     }
   }
   
@@ -310,7 +310,9 @@ ProSpectSED = function(SFH = SFHfunc,
           dustlum_birth, dustlum_screen, dustlum_AGN
         ), na.rm = TRUE)
       ),
-      call = call
+      call = call,
+      z = z,
+      filtout = filtout
     )
     class(output) = 'ProSpectSED'
     return(output)
