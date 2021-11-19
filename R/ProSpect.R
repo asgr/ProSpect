@@ -228,6 +228,29 @@ ProSpectSED = function(SFH = SFHfunc,
       cenwave = NULL
       data('cenwave', envir = environment())
       filters = cenwave$filter
+    }else if(filters[1] == 'GAMA'){
+      filters = c(
+        'FUV_GALEX',
+        'NUV_GALEX',
+        'u_VST',
+        'g_VST',
+        'r_VST',
+        'i_VST',
+        'Z_VISTA',
+        'Y_VISTA',
+        'J_VISTA',
+        'H_VISTA',
+        'K_VISTA',
+        'W1_WISE' ,
+        'W2_WISE',
+        'W3_WISE',
+        'W4_WISE',
+        'P100_Herschel',
+        'P160_Herschel',
+        'S250_Herschel' ,
+        'S350_Herschel',
+        'S500_Herschel'
+      )
     }
     filtout = list()
     for (i in filters) {
