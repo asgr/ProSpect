@@ -335,7 +335,8 @@ ProSpectSED = function(SFH = SFHfunc,
       ),
       call = call,
       z = z,
-      filtout = filtout
+      filtout = filtout,
+      cosmo = list(H0=H0, OmegaM=OmegaM, OmegaL=OmegaL)
     )
     class(output) = 'ProSpectSED'
     return(output)
