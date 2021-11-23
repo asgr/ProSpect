@@ -1,5 +1,6 @@
 \name{kcorr}
 \alias{kcorr}
+\alias{kcorr_evo}
 \alias{Dcorr}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -9,10 +10,13 @@ k and D Corrections
 Functions to compute consistently defined k (spectral shift) and D (dust) corrections.
 }
 \usage{
-kcorr(wave, lum, z = NULL, DistMod = NULL, filters = "all", H0 = 67.8, OmegaM = 0.308,
-  OmegaL = 1 - OmegaM)
+kcorr(wave, lum, z, DistMod = NULL, filters = "all", H0 = 67.8, OmegaM = 0.308,
+  OmegaL = 1 - OmegaM, prospect = NULL)
+  
+kcorr_evo(wave, lum, z = 10^seq(-1,1,by=0.1), DistMod = NULL, filters = 'all', H0 = 67.8,
+  OmegaM = 0.308, OmegaL = 1 - OmegaM, prospect = NULL)
 
-Dcorr(wave, lum_atten, lum_unatten, filters = "all")
+Dcorr(wave, lum_atten, lum_unatten, filters = "all", prospect = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,10 +33,10 @@ Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and 
 Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and EMILES format). This should be the stellar output pre dust attenuation (e.g. \option{StarsUnAtten} output of \code{\link{ProSpectSED}} or \option{lum_unatten} output of \code{\link{SFHfunc}}). 
 }
   \item{z}{
-Numeric scalar; cosmological redshift. This is the redshift you wish to make the k-correction at (need not be the redshift of the actual source, but that is most often what people want to know).
+Numeric scalar/vector; cosmological redshift. This is the redshift you wish to make the k-correction at (need not be the redshift of the actual source, but that is most often what people want to know). For \code{kcorr} this should be a scalar, for \code{kcorr_evo} this should be a vector.
 }
   \item{DistMod}{
-Numeric scalar; distance modulus used where AbsMag_dust = ApMag_dust - DistMod - kcorr, and DistMod = 5log10(LumDist/Mpc) + 25 in units of mag. See below for Details.
+Numeric scalar/vector; distance modulus used where AbsMag_dust = ApMag_dust - DistMod - kcorr, and DistMod = 5log10(LumDist/Mpc) + 25 in units of mag. If provided for speed reasons (because you are repeating the same redshifts and therefore the same \option{DistMod} for a lot of sources) then it must correspond to the distance modulus of \option{z} (if not, wrong results will be returned). See below for Details. For \code{kcorr} this should be a scalar, for \code{kcorr_evo} this should be a vector.
 }
   \item{filters}{
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a list of filter responses, or even better (faster) a list of filter functions.
@@ -46,27 +50,43 @@ Numeric scalar; Omega Matter today (default is 0.3).
   \item{OmegaL}{
 Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1-OmegaM-OmegaR = 0.7).
 }
+  \item{prospect}{
+List; object of class ProSpectSED. This can be passed in for convenience, in which case various inputs above are extracted from the objects structure. Note if you pass this in and specify an argument, the specified argument takes precedent. This way you can easily pass in your \option{prospect} object whilst e.g. modifying the redshift \option{z} (which you might want to do to check for volume limits).
+}
 }
 \details{
-Standard convenience functions for computing survey V maxes etc.
+Standard convenience functions for computing survey V-maxes etc.
 
-A pure k-correction just adjust the SED distortion effects of redshifting an object, therefore:
+A pure k-correction just adjusts the SED distortion effects of redshifting an object, therefore:
 
-AbsMag_dust = ApMag_dust - DistMod - kcorr
+AbsMag_fin = ApMag_fin - DistMod - kcorr
 
-Where in this context AbsMag_dust and ApMag_dust are the SEDs with dust attenuated and dust re-emitted.
+Where in this context AbsMag_fin and ApMag_fin are the SEDs with stellar light both attenuated by dust and re-emitted by dust.
 
 A D-correction takes the above definition of the AbsMag and removes the effect of dust attenuation, taking you all the way to the SED of the pure stellar emission without dust either attenuating or re-emitting:
 
-AbsMag_nodust = AbsMag_dust - Dcorr
+AbsMag_unatten = AbsMag_atten - Dcorr
+
+Where in this context AbsMag_unatten is the intrinsic SED of the stellar light and AbsMag_atten is the absolute magnitude with stellar light attenuated by dust (no re-emission).
+
+This version of the D-correction can only create more flux in AbsMag_unatten compared to AbsMag_atten, i.e. it ignores the role of dust re-emission which can be significant at longer wavelengths. Note it probably does not make much sense to compute D-corrections beyond the K/W1/W2 bands (depending on the SED and dust prescription) since you are starting to become dominated by net dust re-emission not stellar attenuation and meaning of a D-correction becomes ambiguous.
 }
 \value{
 \code{kcorr} returns a list with:
 
+\item{z}{Numeric scalar; the redshift used.}
 \item{DistMod}{Numeric scalar; the distance modulus used.}
 \item{AbsMag}{Numeric vector; the per filter rest frame absolute magnitude (dust attenuated, dust re-emitted).}
 \item{ApMag}{Numeric vector; the per filter obseved frame apparent magnitude (dust attenuated, dust re-emitted).}
-\item{kcorr}{Numeric vector; the implied per filter k-correction, where: kcorr = ApMag - DistMod - AbsMag}
+\item{kcorr}{Numeric vector; the implied per filter k-correction (where kcorr = ApMag - DistMod - AbsMag).}
+
+\code{kcorr_evo} returns a list with:
+
+\item{z}{Numeric vector; the redshift used.}
+\item{DistMod}{Numeric vector; the distance modulus used.}
+\item{AbsMag}{Numeric vector; the per filter rest frame absolute magnitude (dust attenuated, dust re-emitted).}
+\item{ApMag}{Numeric matrix; the per filter obseved frame apparent magnitude (dust attenuated, dust re-emitted) as columns; variation with \option{z} as rows.}
+\item{kcorr}{Numeric matrix; the implied per filter k-correction (where kcorr = ApMag - DistMod - AbsMag) as columns; variation with \option{z} as rows}
 
 \code{Dcorr} returns a list with:
 
@@ -75,7 +95,7 @@ AbsMag_nodust = AbsMag_dust - Dcorr
 \item{Dcorr}{Numeric vector; the implied per filter D-correction, where: Dcorr = AbsMag_atten - AbsMag_unatten. Should always be positive!}
 }
 \references{
-Interested users should check the book "The Structure and Evolution of Galaxies" by Steven Phillipps.
+Interested users should check the book "The Structure and Evolution of Galaxies" by Steven Phillipps (Section 2.7.2).
 }
 \author{
 Aaron Robotham
@@ -95,16 +115,26 @@ filtout={}
 for(i in filters){filtout=c(filtout,list(approxfun(getfilt(i))))}
 
 prospect=ProSpectSED(filtout=filtout, z=0.1)
+
+#For k-corrections we can run:
+
 kcorr(prospect$FinalLum, z=0.1, filters=filtout)
+#or for convenience
+kcorr(prospect=prospect)
+
+#For D-corrections we can run:
 Dcorr(prospect$StarsAtten$wave, prospect$StarsAtten$lum, prospect$StarsUnAtten$lum,
   filters=filtout)
+#or for convenience
+Dcorr(prospect=prospect)
   
 #If you want to know a volume limit then you often want to know z vs the apparent mag:
 
 zvec = seq(0.05,1,by=0.05)
 ap_evo={}
 for(z in zvec){
-  ap_evo = rbind(ap_evo, kcorr(prospect$FinalLum, z=z, filters=filtout)$ApMag)
+  #Below we just vary the observed redshift, all other inputs come from prospect
+  ap_evo = rbind(ap_evo, kcorr(z=z, prospect=prospect)$ApMag)
 }
 colnames(ap_evo) = filters
 

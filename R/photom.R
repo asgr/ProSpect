@@ -131,10 +131,33 @@ photom_flux=function(wave, flux, outtype='mag', filters='all'){
     filters=list(filters)
   }
   
-  if((filters=='all')[1]){
-    cenwave=NULL
+  if (filters[1] == 'all') {
+    cenwave = NULL
     data('cenwave', envir = environment())
-    filters=cenwave$filter
+    filters = cenwave$filter
+  }else if(filters[1] == 'GAMA'){
+    filters = c(
+      'FUV_GALEX',
+      'NUV_GALEX',
+      'u_VST',
+      'g_VST',
+      'r_VST',
+      'i_VST',
+      'Z_VISTA',
+      'Y_VISTA',
+      'J_VISTA',
+      'H_VISTA',
+      'K_VISTA',
+      'W1_WISE' ,
+      'W2_WISE',
+      'W3_WISE',
+      'W4_WISE',
+      'P100_Herschel',
+      'P160_Herschel',
+      'S250_Herschel' ,
+      'S350_Herschel',
+      'S500_Herschel'
+    )
   }
   
   if(outtype=='mag' | outtype=='magAB'){
@@ -170,10 +193,33 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
     filters=list(filters)
   }
 
-  if((filters=='all')[1]){
-    cenwave=NULL
+  if (filters[1] == 'all') {
+    cenwave = NULL
     data('cenwave', envir = environment())
-    filters=cenwave$filter
+    filters = cenwave$filter
+  }else if(filters[1] == 'GAMA'){
+    filters = c(
+      'FUV_GALEX',
+      'NUV_GALEX',
+      'u_VST',
+      'g_VST',
+      'r_VST',
+      'i_VST',
+      'Z_VISTA',
+      'Y_VISTA',
+      'J_VISTA',
+      'H_VISTA',
+      'K_VISTA',
+      'W1_WISE' ,
+      'W2_WISE',
+      'W3_WISE',
+      'W4_WISE',
+      'P100_Herschel',
+      'P160_Herschel',
+      'S250_Herschel' ,
+      'S350_Herschel',
+      'S500_Herschel'
+    )
   }
   
   flux = Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
