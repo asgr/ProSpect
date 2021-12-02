@@ -1,6 +1,7 @@
 \name{kcorr}
 \alias{kcorr}
 \alias{kcorr_evo}
+\alias{Vmax_hunt}
 \alias{Dcorr}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -10,13 +11,16 @@ k and D Corrections
 Functions to compute consistently defined k (spectral shift) and D (dust) corrections.
 }
 \usage{
-kcorr(wave, lum, z, DistMod = NULL, filters = "all", H0 = 67.8, OmegaM = 0.308,
+kcorr(wave, lum, z, DistMod = NULL, filters = "GAMA", H0 = 67.8, OmegaM = 0.308,
   OmegaL = 1 - OmegaM, prospect = NULL)
   
-kcorr_evo(wave, lum, z = 10^seq(-1,1,by=0.1), DistMod = NULL, filters = 'all', H0 = 67.8,
+kcorr_evo(wave, lum, z = 10^seq(-1,1,by=0.1), DistMod = NULL, filters = 'GAMA', H0 = 67.8,
   OmegaM = 0.308, OmegaL = 1 - OmegaM, prospect = NULL)
+  
+Vmax_hunt(wave, lum, ApMag_lim = 19.8, z_range = c(0, 10), area = 41252.96,
+  filter = "r_VST", H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, prospect = NULL)
 
-Dcorr(wave, lum_atten, lum_unatten, filters = "all", prospect = NULL)
+Dcorr(wave, lum_atten, lum_unatten, filters = "GAMA", prospect = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -35,11 +39,23 @@ Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and 
   \item{z}{
 Numeric scalar/vector; cosmological redshift. This is the redshift you wish to make the k-correction at (need not be the redshift of the actual source, but that is most often what people want to know). For \code{kcorr} this should be a scalar, for \code{kcorr_evo} this should be a vector.
 }
+\item{ApMag_lim}{
+Numeric scalar; the apparent magnitude limit to search for. When the ProSpect SED hits this value for the provided \option{filter} the upper limit of \option{z_range} is updated and the VMAX computed based on the combination of the lower/upper limit of \option{z_range} and the \option{area} for the specified cosmology.
+}
+  \item{z_range}{
+Numeric vector; lower and upper redshift limits to search over. The lower automatically becomes the lower limit for Vmax purpose.  
+}
+  \item{area}{
+Numeric scalar; sky area in square degrees (default is all sky).
+}
   \item{DistMod}{
 Numeric scalar/vector; distance modulus used where AbsMag_dust = ApMag_dust - DistMod - kcorr, and DistMod = 5log10(LumDist/Mpc) + 25 in units of mag. If provided for speed reasons (because you are repeating the same redshifts and therefore the same \option{DistMod} for a lot of sources) then it must correspond to the distance modulus of \option{z} (if not, wrong results will be returned). See below for Details. For \code{kcorr} this should be a scalar, for \code{kcorr_evo} this should be a vector.
 }
   \item{filters}{
-Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a list of filter responses, or even better (faster) a list of filter functions.
+Character vector or list; names of filters to use. See \code{\link{filters}} for options. Default 'GAMA' selects GAMA filters. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a list of filter responses, or even better (faster) a list of filter functions.
+}
+  \item{filter}{
+Character scalar or list; name of filter to use. See \code{\link{filters}} for options. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a filter response, or even better (faster) a filter functions.  
 }
   \item{H0}{
 Numeric scalar; Hubble constant as defined at z=0 (default is H0=100 (km/s)/Mpc).
@@ -87,6 +103,11 @@ This version of the D-correction can only create more flux in AbsMag_unatten com
 \item{AbsMag}{Numeric vector; the per filter rest frame absolute magnitude (dust attenuated, dust re-emitted).}
 \item{ApMag}{Numeric matrix; the per filter obseved frame apparent magnitude (dust attenuated, dust re-emitted) as columns; variation with \option{z} as rows.}
 \item{kcorr}{Numeric matrix; the implied per filter k-correction (where kcorr = ApMag - DistMod - AbsMag) as columns; variation with \option{z} as rows}
+
+\code{Vmax_hunt} returns a list with:
+
+\item{z_range}{Numeric vector; lower and upper redshift bounds. The lower comes from the specified input argument, the upper limit will have been updated during the internal Vmax optimisation process when calcuting at what redshift the ProSpect SED hits the \option{ApMag_lim} given the target filter}
+\item{Vmax}{Numeric vector; the output of \code{\link{cosvol}} computed based on the combination of the lower/upper limit of \option{z_range} and the \option{area} for the specified cosmology.}
 
 \code{Dcorr} returns a list with:
 
@@ -136,7 +157,11 @@ abline(v=0.155, lty=2)
 
 #For GAMA we know the total survey area (293.82 sqdeg) so can compute the Vmax:
 
-cosvol(area=293.82, zmax=0.155, zmin=0.02, H0=67.8, OmegaM=0.308)
+cosvol(area=293.82, zmax=0.155, zmin=0.013, H0=67.8, OmegaM=0.308)
+
+#More accurately and easily, we can use the Vmax_hunt function:
+
+Vmax_hunt(area=293.82, z_range=c(0.013,1), prospect=prospect)
 
 #Note we usually apply a lower z limit too because of the large distance errors at low z.
 
