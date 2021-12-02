@@ -237,7 +237,8 @@ If \option{returnall}=TRUE, then we get a list containing:
 \item{dustlum}{Numeric vector; contains dust luminosities for the birth cloud, screen, AGN and total in Lsol (requires \option{Dale_M2L_func})}
 \item{call}{The original function call.}
 \item{z}{Numeric scalar; the input redshift.}
-\item{filtout}{List; the filter list used.}
+\item{filtout}{List; the \option{filtout} list used.}
+\item{filters}{List; the \option{filters} list used.}
 \item{cosmo}{List; the input 'H0', 'OmegaM' and 'OmegaL'.}
 
 For \code{ProSpectSEDlike}: \cr

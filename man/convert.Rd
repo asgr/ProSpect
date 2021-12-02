@@ -15,10 +15,10 @@ convert_freq2wave(flux_freq, wave, wavefac = 1e-10, freqfac = 1)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{flux_wave}{
-Numeric vector; flux in erg/s / cm^2 / Wavelength specral units.
+Numeric vector; flux in erg/s / cm^2 / Wavelength spectral flux density units.
 }
 \item{flux_freq}{
-Numeric vector; flux in erg/s / cm^2 / Frequency specral units.
+Numeric vector; flux in erg/s / cm^2 / Frequency spectral flux density units.
 }
   \item{wave}{
 Numeric vector; wavelength in units of \option{wavefac}.
