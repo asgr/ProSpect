@@ -41,6 +41,11 @@ kcorr_evo = function(wave, lum, z=10^seq(-1,1,by=0.1), DistMod=NULL, filters='al
     kcorr = rbind(kcorr, (apmag[i,] - DistMod[i]) - absmag)
   }
   
+  if(!is.null(names(filters))){
+    colnames(apmag) = names(filters)
+    colnames(kcorr) = names(filters)
+  }
+  
   return(list(z=z, DistMod=DistMod, AbsMag=absmag, ApMag=apmag, kcorr=kcorr))
 }
 

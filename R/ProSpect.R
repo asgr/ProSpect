@@ -256,6 +256,7 @@ ProSpectSED = function(SFH = SFHfunc,
     for (i in filters) {
       filtout = c(filtout, list(approxfun(getfilt(i))))
     }
+    names(filtout) = filters
   }
   
   if (z > 0 & !is.null(filtout)) {
@@ -335,6 +336,7 @@ ProSpectSED = function(SFH = SFHfunc,
       ),
       call = call,
       z = z,
+      filters = filters,
       filtout = filtout,
       cosmo = list(H0=H0, OmegaM=OmegaM, OmegaL=OmegaL)
     )

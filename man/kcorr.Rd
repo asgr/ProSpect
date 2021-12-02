@@ -108,40 +108,29 @@ There can be some ambiguity with k-corrections whether they do or do not fold in
 \code{\link{ProSpectSED}}
 }
 \examples{
-filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA',
-'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE', 'W4_WISE',
-'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel', 'S500_Herschel')
-filtout={}
-for(i in filters){filtout=c(filtout,list(approxfun(getfilt(i))))}
-
-prospect=ProSpectSED(filtout=filtout, z=0.1)
+prospect = ProSpectSED(z=0.1, filters='GAMA')
 
 #For k-corrections we can run:
 
-kcorr(prospect$FinalLum, z=0.1, filters=filtout)
+kcorr(prospect$FinalLum, z=0.1, filters=prospect$filtout)
 #or for convenience
 kcorr(prospect=prospect)
 
 #For D-corrections we can run:
 Dcorr(prospect$StarsAtten$wave, prospect$StarsAtten$lum, prospect$StarsUnAtten$lum,
-  filters=filtout)
+  filters=prospect$filtout)
 #or for convenience
 Dcorr(prospect=prospect)
   
 #If you want to know a volume limit then you often want to know z vs the apparent mag:
 
 zvec = seq(0.05,1,by=0.05)
-ap_evo={}
-for(z in zvec){
-  #Below we just vary the observed redshift, all other inputs come from prospect
-  ap_evo = rbind(ap_evo, kcorr(z=z, prospect=prospect)$ApMag)
-}
-colnames(ap_evo) = filters
+evodata = kcorr_evo(z=zvec, prospect=prospect)
 
 library(magicaxis)
 library(celestial)
 
-magplot(zvec, ap_evo[,'r_SDSS'], type='l', xlab='z', ylab='ap_r', xlim=c(0,1))
+magplot(zvec, evodata$ApMag[,'r_VST'], type='l', xlab='z', ylab='ap_r', xlim=c(0,1))
 abline(h=19.8, lty=2) #the nominal GAMA limit
 abline(v=0.155, lty=2)
 
@@ -157,7 +146,7 @@ cosvol(area=293.82, zmax=0.155, zmin=0.02, H0=67.8, OmegaM=0.308)
 
 DistMod = cosdistDistMod(zvec, H0=67.8, OmegaM=0.308)
 lines(zvec, -19.68021 + DistMod, lty=3) #-19.68021 is the r-band absolute magnitude above
-polygon(c(zvec, rev(zvec)), c(ap_evo[,'r_SDSS'], rev(-19.68021 + DistMod)),
+polygon(c(zvec, rev(zvec)), c(evodata$ApMag[,'r_VST'], rev(-19.68021 + DistMod)),
   col=hsv(alpha=0.2), border=NA)
 }
 
