@@ -107,7 +107,7 @@ This version of the D-correction can only create more flux in AbsMag_unatten com
 \code{Vmax_hunt} returns a list with:
 
 \item{z_range}{Numeric vector; lower and upper redshift bounds. The lower comes from the specified input argument, the upper limit will have been updated during the internal Vmax optimisation process when calcuting at what redshift the ProSpect SED hits the \option{ApMag_lim} given the target filter}
-\item{Vmax}{Numeric vector; the output of \code{\link{cosvol}} computed based on the combination of the lower/upper limit of \option{z_range} and the \option{area} for the specified cosmology.}
+\item{Vmax}{Numeric vector; the output of \code{\link{cosvol}} computed based on the combination of the lower/upper limit of \option{z_range} and the \option{area} for the specified cosmology. This is a 3 element vector. The first element (voltot) specifies the comoving volume of the requested cone segment in Gpc^3, the second element (volmeanz) specifies the mean redshift when mass is uniformly distributed in the volume, the third element (volmedz) specifies the median redshift when mass is uniformly distributed in the volume.}
 
 \code{Dcorr} returns a list with:
 
