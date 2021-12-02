@@ -49,7 +49,7 @@ kcorr_evo = function(wave, lum, z=10^seq(-1,1,by=0.1), DistMod=NULL, filters='GA
   return(list(z=z, DistMod=DistMod, AbsMag=absmag, ApMag=apmag, kcorr=kcorr))
 }
 
-Vmax_hunt = function(wave, lum, ApMag_lim=19.8, z_range=c(0,10), area=41252.96, filter='r_VST',
+Vmax_hunt = function(wave, lum, ApMag_lim=19.65, z_range=c(0,10), area=41252.96, filter='r_VST',
                      H0=67.8, OmegaM=0.308, OmegaL=1-OmegaM, prospect=NULL){
   if(!is.null(prospect)){
     if(! inherits(prospect, "ProSpectSED")){stop('prospect input must be class ProSpectSED')}

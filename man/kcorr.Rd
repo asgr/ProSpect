@@ -17,7 +17,7 @@ kcorr(wave, lum, z, DistMod = NULL, filters = "GAMA", H0 = 67.8, OmegaM = 0.308,
 kcorr_evo(wave, lum, z = 10^seq(-1,1,by=0.1), DistMod = NULL, filters = 'GAMA', H0 = 67.8,
   OmegaM = 0.308, OmegaL = 1 - OmegaM, prospect = NULL)
   
-Vmax_hunt(wave, lum, ApMag_lim = 19.8, z_range = c(0, 10), area = 41252.96,
+Vmax_hunt(wave, lum, ApMag_lim = 19.65, z_range = c(0, 10), area = 41252.96,
   filter = "r_VST", H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, prospect = NULL)
 
 Dcorr(wave, lum_atten, lum_unatten, filters = "GAMA", prospect = NULL)
@@ -40,7 +40,7 @@ Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and 
 Numeric scalar/vector; cosmological redshift. This is the redshift you wish to make the k-correction at (need not be the redshift of the actual source, but that is most often what people want to know). For \code{kcorr} this should be a scalar, for \code{kcorr_evo} this should be a vector.
 }
 \item{ApMag_lim}{
-Numeric scalar; the apparent magnitude limit to search for. When the ProSpect SED hits this value for the provided \option{filter} the upper limit of \option{z_range} is updated and the VMAX computed based on the combination of the lower/upper limit of \option{z_range} and the \option{area} for the specified cosmology.
+Numeric scalar; the apparent magnitude limit to search for. When the ProSpect SED hits this value for the provided \option{filter} the upper limit of \option{z_range} is updated and the VMAX computed based on the combination of the lower/upper limit of \option{z_range} and the \option{area} for the specified cosmology. The default of 19.65 is the 95\% completeness limit using the r_VST imaging with ProFound (GAMA DR4, Driver et al).
 }
   \item{z_range}{
 Numeric vector; lower and upper redshift limits to search over. The lower automatically becomes the lower limit for Vmax purpose.  
@@ -55,7 +55,7 @@ Numeric scalar/vector; distance modulus used where AbsMag_dust = ApMag_dust - Di
 Character vector or list; names of filters to use. See \code{\link{filters}} for options. Default 'GAMA' selects GAMA filters. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a list of filter responses, or even better (faster) a list of filter functions.
 }
   \item{filter}{
-Character scalar or list; name of filter to use. See \code{\link{filters}} for options. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a filter response, or even better (faster) a filter functions.  
+Character scalar or list; name of filter to use. See \code{\link{filters}} for options. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a filter response, or even better (faster) a filter functions. The default 'r_VST' is the updated GAMA ProFound selection band, where the appropriate \option{ApMag_lim} is then 19.65 (GAMA DR4, Driver et al).
 }
   \item{H0}{
 Numeric scalar; Hubble constant as defined at z=0 (default is H0=100 (km/s)/Mpc).
