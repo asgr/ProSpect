@@ -1,9 +1,8 @@
 exportPattern("^[[:alpha:]]+")
 
-importFrom("stats", "approxfun",  "dt", "dchisq", "var", "lm", "runif", "sd")
+importFrom("stats", "approx", "spline", "approxfun", "splinefun", "dt", "dchisq", "var", "lm", "runif", "sd","integrate", "dnorm", "pnorm", "quantile", "median", "optimize")
 importFrom("utils", "data")
 importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWave", "cosplanckLawRadWave", "cosdistDistMod", "cosvol")
-importFrom("stats", "integrate", "dnorm", "pnorm", "splinefun", "approx", "quantile", "optimize")
 importFrom("NISTunits", "kNIST2010PlanckConstant", "kNIST2010speedOfLightInVacuum", "kNIST2010BoltzmannConstant")
 importFrom("pracma", "interp1", "integral")
 importFrom("graphics", "legend", "lines", "plot", "layout", "par", "points", "axis")
