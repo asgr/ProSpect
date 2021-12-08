@@ -9,7 +9,7 @@ It is often useful to rebin spectra to either log binning or linear binning. Thi
 }
 \usage{
 specReBin(wave, flux, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
-  logbin=TRUE, ...)
+  logbin = TRUE, rough = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -33,6 +33,9 @@ Character scalar; The interpolator to use. Either 'approx' (see \code{\link{appr
 }
   \item{logbin}{
 Logical; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced.
+}
+  \item{rough}{
+Logical; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full be pixel integration be done (FALSE). The latter is usually only necessary when degrading the spectrum to coarser resolution because it ensures strong emission line features are correctly integrated over during re-binning. Note the full integration is very slow (takes about a second for a typical spectrum), so you only want to use this option when critically necessary.
 }
   \item{\dots}{
 Extra arguments to pass to either \code{\link{approx}} or \code{\link{spline}} as per \option{interp}.
@@ -59,9 +62,16 @@ library(magicaxis)
 tempflux = ProSpectSED(sparse=1, emission=TRUE)$FinalFlux
 tempflux = tempflux[tempflux$wave>2e3 & tempflux$wave<2e4,]
 
-magplot(tempflux, type='l', log='xy')
-lines(specReBin(tempflux), col='red') #captures the broad features but misses many lines
-lines(specReBin(tempflux, bin=1e-4), col='green') #gets lines, but peaks wrong
+magplot(tempflux, type='l', xlim=c(7e3,8e3))
+lines(specReBin(tempflux), col='red') #works pretty well automatically
+lines(specReBin(tempflux, bin=1e-3), col='green') #mmisses lines
 lines(specReBin(tempflux, bin=1e-5), col='blue') #looks very close to the original
+
+# we can also compare rough and accuracte integration schemes:
+
+magplot(tempflux, type='l', xlim=c(7e3,8e3))
+lines(specReBin(tempflux), col='red') #rough is on by default
+lines(specReBin(tempflux, rough=FALSE), col='blue') #accurate not any better (and slow)
+
 }
 \concept{ rebin }
