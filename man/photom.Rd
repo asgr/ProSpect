@@ -29,7 +29,7 @@ Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
 Numeric vector; the spectral wavelength in Angstroms. For convenience, if a two column matrix or data frame is supplied then the first column is taken to be \option{wave} and the second is taken to be \option{lum}.
 }
   \item{flux}{
-Numeric vector; flux in erg/s / cm^2 / Angstrom specral units.
+Numeric vector; flux density in erg/s / cm^2 / Angstrom spectral units.
 }
   \item{lum}{
 Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and EMILES format).

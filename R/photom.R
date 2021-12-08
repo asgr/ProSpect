@@ -255,16 +255,22 @@ addspec=function(wave1, flux1, wave2, flux2, extrap='constant', waveout=NULL){
   }
   flux1 = log10(flux1)
   flux2 = log10(flux2)
+
   if(is.null(waveout)){
     waveout = sort(unique(c(wave1,wave2)))
   }
+  
   if(extrap=='constant'){
-    flux1 = 10^approxfun(wave1, flux1, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])(waveout)
-    flux2 = 10^approxfun(wave2, flux2, rule=2, yleft=flux2[1], yright=flux2[length(flux2)])(waveout)
+    flux1 = 10^approx(x=wave1, y=flux1, xout=waveout, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])$y
+    flux2 = 10^approx(x=wave2, y=flux2, xout=waveout, rule=2, yleft=flux2[1], yright=flux2[length(flux2)])$y
   }else{
-    flux1 = 10^approxfun(wave1, flux1, rule=2, yleft=log10(extrap), yright=log10(extrap))(waveout)
-    flux2 = 10^approxfun(wave2, flux2, rule=2, yleft=log10(extrap), yright=log10(extrap))(waveout)
+    flux1 = 10^approx(x=wave1, y=flux1, xout=waveout, rule=2, yleft=log10(extrap), yright=log10(extrap))$y
+    flux2 = 10^approx(x=wave2, y=flux2, xout=waveout, rule=2, yleft=log10(extrap), yright=log10(extrap))$y
   }
+
+  # flux1 = 10^spline(x=wave1, y=flux1, xout=waveout)$y This behaves badly as discontinuities, so safer to use approx in general
+  # flux2 = 10^spline(x=wave2, y=flux2, xout=waveout)$y This behaves badly as discontinuities, so safer to use approx in general
+  
   flux1[is.na(flux1)] = 0
   flux2[is.na(flux2)] = 0
   return(data.frame(wave=10^waveout, flux=flux1+flux2))

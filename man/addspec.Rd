@@ -16,26 +16,26 @@ addspec(wave1, flux1, wave2, flux2, extrap = "constant", waveout = NULL)
 Numeric vector; wavelength 1 in in any units (but must be the same as \option{wave2}).
 }
   \item{flux1}{
-Numeric vector; flux 1 in any units (but must be the same as \option{flux2}).
+Numeric vector; flux density 1 in any units (but must be the same as \option{flux2}).
 }
   \item{wave2}{
 Numeric vector; wavelength 2 in in any units (but must be the same as \option{wave1}).
 }
   \item{flux2}{
-Numeric vector; flux 2 in any units (but must be the same as \option{flux1}).
+Numeric vector; flux density 2 in any units (but must be the same as \option{flux1}).
 }
   \item{extrap}{
 If 'constant' then values outside the range inherit the nearest. If a numeric scalar (e.g. 0) then values outside the range inherit this value. 
 }
   \item{waveout}{
-Numeric vector; desired output wavelength grid to use (but must be the same as \option{wave1}/\option{wave2}). If not provided then a sorted vector of \option{wave1} and \option{wave2} is used instead.
+Numeric vector; desired output logged wavelength grid to use. If not provided then a sorted vector of \option{wave1} and \option{wave2} is used instead.
 }
 }
 \details{
 Internally it uses the R \code{\link{approxfun}}, so if more sophisticated interpolation is necessary then other routes might be required.
 }
 \value{
-Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux.
+Data.frame; first column is observed wavelength (Angstroms) and second column is observed flux density.
 }
 \author{
 Aaron Robotham
