@@ -6,19 +6,19 @@ Core package containing all the tools for simple and advanced spectral energy di
 
 ## Getting Started
 
-New to Synthetic Spectra? Then take a look here: [sedfitting.org](http://www.sedfitting.org/Models.html). There's a bunch of useful stuff there, and a lot of dead links :-(. But it is worth exploring in some detail. In particular for the stellar population models have a look at BASTI, BPASS, Galaxev (which is BC03 to most astronomers), MILES, Pegase, SLUG and Starburst99. For dust stuff have a look at Dale+Helou and Draine+Li, for UV-FIR Da Cunha (which is MagPhys), CIGALE and Grasil. Those are the most popular variants of what they do in their respective fields. Caveats abound about which is better, but these days they are all pretty sophisticated in their own way.
+New to Synthetic Spectra? Then take a look here: [sedfitting.org](http://www.sedfitting.org/Models.html). There's a bunch of useful stuff there, and a lot of dead links :-(. But it is worth exploring in some detail. In particular for the stellar population models have a look at BASTI, BPASS, Galaxev (which is BC03 to most astronomers), MILES/EMILES, Pegase, SLUG and Starburst99. For dust stuff have a look at Dale+Helou and Draine+Li, for UV-FIR Da Cunha (which is MagPhys), CIGALE and Grasil. Those are the most popular variants of what they do in their respective fields. Caveats abound about which is better, but these days they are all pretty sophisticated in their own way.
 
 ## A New ProSpect
 
-**ProSpect** is a package that aims to help users explore star formation histories (SFH) and spectral energy distributions (SED). Beneath it all it makes use of the BC03 (?BC03) and EMILES (?EMILES) sythetic stellar population libraries. On top of this it uses the Charlot and Fall model for birth cloud and screen dust attenuation (?CF) and re-emits MIR to FIR flux via the incorporation of the most recent Dale dust templates that model the heating of dust by a radiation field and AGN (?Dale). **ProSpect** can handle general SFHs via arbitrary functional forms (**SFHfunc**).
+**ProSpect** is a package that aims to help users explore star formation histories (SFH) and spectral energy distributions (SED). Beneath it all it makes use of the BC03 (?BC03), EMILES (?EMILES) and BPASS (?BPASS) synthetic stellar population libraries. On top of this it uses the Charlot and Fall model for birth cloud and screen dust attenuation (?CF) and re-emits MIR to FIR flux via the incorporation of the most recent Dale dust templates that model the heating of dust by a radiation field and AGN (?Dale). **ProSpect** can handle general SFHs via arbitrary functional forms (**SFHfunc**).
 
-Conceptually this probably all sounds a bit similar to MagPhys and Cegale, bar the different dust model (Dale rather than greybody, though take a look at ?greybody) and some additional SSP libraries (?EMILES). To a degree this is true, but the main reason for putting it all together is to allow proper generative creation of SEDs via the alteration of user accessible parameters and arbitrary SFHs. MagPhys and similar codes do not allow easy access to the under-the-hood generative functionality which might allow this. Doing this is with a longer term aim of incorporating **ProSpect** into **ProFit** for multiband morphological decomposition of galaxies, revealing their component-wise SFHs. Before the completion of that component of the project **ProSpect** offers a readily accessible interface to multiband fitting of SED in order to measure (e.g.) stellar and dust masses, and it can also applied to arbitary SFHs computed by other codes, e.g. create a realistic SED for a semi-analytic (SAM) model SFH.
+Conceptually this probably all sounds a bit similar to MagPhys and Cegale, bar the different dust model (Dale rather than greybody, though take a look at ?greybody) and some additional SSP libraries (?EMILES). To a degree this is true, but the main reason for putting it all together is to allow proper generative creation of SEDs via the alteration of user accessible parameters and arbitrary SFHs. MagPhys and similar codes do not allow easy access to the under-the-hood generative functionality which might allow this. Doing this is with a longer term aim of incorporating **ProSpect** into **ProFit** for multiband morphological decomposition of galaxies, revealing their component-wise SFHs (addendum for 2022- this now mostly exists as **ProFuse** in prep). Before the completion of that component of the project **ProSpect** offers a readily accessible interface to multiband fitting of SED in order to measure (e.g.) stellar and dust masses, and it can also applied to arbitary SFHs computed by other codes, e.g. create a realistic SED for a semi-analytic (SAM) model SFH.
 
 For most uses getting up and running, having a play with the simplest 5 phase burst star formation (**massfunc_p5**) is probably the best way to start. Have a read of the documentation and Examples in ?SFHfunc. Fitting data is a more complex affair, but users can get a feel for how this works in practice by looking at ?SFHfunc. The basic idea of these likelihood functions is that they allow the user to provide observed Data and can marginalise over various types of SFH and dust models in order to constrain a set of target parameters. It is also a good idea to get acquainted with the main vignettes covering the BC03 and EMILES data compiled into the package (SSPchecks and Comparisons). These give a good idea how to access the data at a low-level, and allows for easy manipulation and potentially user defined functions for processing them.
 
-The 5 phase model (**massfunc_b5**) covers 4 key phases of star formation and models them as having constant star formation in each of these periods. By default they cover 0 - 100 Myr (burst, generally considered the shortest phase that broad band photometry can be sensitive to); 100 Myr - 1 Gyr (young; dominated by hot young stars and violent phases of stellar evolution); 1 Gyr - 5 Gyr (mid), 5 Gyr - 9 Gyr (old), and 9 Gyr - 13 Gyr (ancient). It is not really possible to break the SFH into any more independent phases than this using broad band photometry alone, but a physically motivated functional model (e.g. an exponentially decling SFR, or constant SFR) can be used using the functional interface in **SFHfunc**.
+The 5 phase model (**massfunc_b5**) covers 4 key phases of star formation and models them as having constant star formation in each of these periods. By default they cover 0 - 100 Myr (burst, generally considered the shortest phase that broad band photometry can be sensitive to); 100 Myr - 1 Gyr (young; dominated by hot young stars and violent phases of stellar evolution); 1 Gyr - 5 Gyr (mid), 5 Gyr - 9 Gyr (old), and 9 Gyr - 13 Gyr (ancient). It is not really possible to break the SFH into any more independent phases than this using broad band photometry alone, but a physically motivated functional model (e.g. an exponentially declining SFR, or constant SFR) can be used using the functional interface in **SFHfunc**. Note all recent work form the wider **ProSpect** team has mostly used the Skewed-Normal parameterisation of the SFH (?snorm). **ProSpect** is also novel in offering fitting of the metallicity history too, either independently as a unique function or as a CDF mapping from the SFH (e.g. you form half you metals when you form half your mass, but the Z_final is a free parameter).
 
-For a typical GAMA galaxy using the 21 band photometry from LAMBDAR a full SFH plus dust model fit takes about one minute using the **optim** function with the Nelder-Mead minimisation algorithm. A full MCMC will typically take about ten times longer, but in cases of a reasonable fit this is probably over-kill since the Laplace Approximation can be used.
+For a typical GAMA galaxy using the 21 band photometry from LAMBDAR a full SFH plus dust model fit takes about one minute using the **optim** function with the Nelder-Mead minimisation algorithm. A full MCMC will typically take about ten times longer, but in cases of a reasonable fit this is probably over-kill since the Laplace Approximation can be used. In recent work we nearly always use the **Highlander** package for rapid and well explored fitting.
 
 ## Summary of Things Used
 
@@ -31,6 +31,7 @@ Isochrones | STARS for BPASS |   ?BPASS
 Stellar Atmospheres  |  See relevant text in BC03, EMILES, BPASS papers |   ?BC03, ?EMILES, ?BPASS
 Dust Attenuation Law | Charlot and Fall (2000) for birth cloud and screen   |  ?CF
 Dust Model  |  Dale et al (2014)  |  ?Dale
+AGN Model | Fritz (2006) | ?Fritz, ?AGN_UnOb
 
 ## Installation
 
@@ -78,6 +79,12 @@ remotes::install_github("asgr/ProSpect")
 library(ProSpect)
 ```
 
+One issue people have hit with **install_github** is the *ref* option defaults to the more modern 'HEAD' rather than the older style 'master' that **ProSpect** uses (such is the date of its creation). To avoid this you can explicitly run:
+
+```R
+remotes::install_github("asgr/ProSpect", ref='master')
+```
+
 A few Mac people seem to have issues with the above due to the backend used to download files. A work around seems to be to either use devtools (which I do not use as the default since it has a low more dependencies, and is tricky to install on HPCs):
 
 ```R
@@ -86,14 +93,14 @@ devtools::install_github("asgr/ProSpect")
 library(ProSpect)
 ```
 
-Or try the following:
+or try the following:
 
 ```R
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true”)
 remotes::install_github("asgr/ProSpect")
 ```
 
-I also have these options set by default in my .Rprofile, which seems to help with some of the remote install issues some people face:
+I also have these options set by default in my .Rprofile (Google what that means and where it goes), which seems to help with some of the remote install issues some people face:
 
 ```R
 options(download.file.method = "libcurl")
