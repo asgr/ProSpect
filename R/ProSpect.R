@@ -42,7 +42,7 @@ ProSpectSED = function(SFH = SFHfunc,
                        LFWHM = 470,
                        IGMabsorb = 0,
                        ...) {
-  call = match.call()
+  #call = match.call()
   
   if ('emission' %in% names(list(...))) {
     if (list(...)$emission & missing(waveout)) {
@@ -334,7 +334,7 @@ ProSpectSED = function(SFH = SFHfunc,
           dustlum_birth, dustlum_screen, dustlum_AGN
         ), na.rm = TRUE)
       ),
-      call = call,
+      #call = call,
       z = z,
       filters = filters,
       filtout = filtout,
