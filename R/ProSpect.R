@@ -607,7 +607,8 @@ plot.ProSpectSED = function(x,
         ylab = 'SFR (Msol/Yr)',
         type = 'l',
         lwd = 5,
-        grid = grid
+        grid = grid,
+        majorn = c(5,3)
       )
       par(usr = c(
         par()$usr[1:2],
@@ -618,7 +619,7 @@ plot.ProSpectSED = function(x,
             x$Stars$Zvec,
             col = 'red',
             lwd = 2)
-      magicaxis::magaxis(4, col.axis = 'red', axis.col = 'red')
+      magicaxis::magaxis(4, col.axis = 'red', axis.col = 'red', majorn=3)
       legend(
         'bottomright',
         legend = c('SFR', 'Z'),
