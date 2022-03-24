@@ -26,7 +26,7 @@ interp_quick = function(x, params, log=FALSE){
     return(c(1,1,1,0))
   }
   if(x > max(params)){
-    return(c(max(params),max(params),0,1))
+    return(c(length(params), length(params),0,1))
   }
   if(log){
     params = log(params)
