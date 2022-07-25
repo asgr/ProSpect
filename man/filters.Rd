@@ -87,7 +87,7 @@
 \alias{filt_F560W_JWST}
 \alias{filt_F770W_JWST}
 \alias{filt_F1000W_JWST}
-\alias{filt_F130W_JWST}
+\alias{filt_F1130W_JWST}
 \alias{filt_F1280W_JWST}
 \alias{filt_F1500W_JWST}
 \alias{filt_F1800W_JWST}
