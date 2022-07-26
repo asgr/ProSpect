@@ -172,7 +172,7 @@ SFHfunc = function(massfunc = massfunc_b5,
           massfunc_args
         )),
         silent = TRUE)
-        if (inherits(tempint, "try-error") {
+        if (inherits(tempint, "try-error")) {
           massvec[i] = 0
         } else{
           massvec[i] = tempint
@@ -572,7 +572,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
         massfunc_args
       ))$value,
       silent = TRUE)
-      if (inherits(tempint, "try-error") {
+      if (inherits(tempint, "try-error")) {
         massvec[i] = 0
       } else{
         massvec[i] = tempint
@@ -591,7 +591,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
           massfunc_args
         )),
         silent = TRUE)
-        if (inherits(tempint, "try-error") {
+        if (inherits(tempint, "try-error")) {
           massvec[i] = 0
         } else{
           massvec[i] = tempint
