@@ -75,6 +75,16 @@ getfilt=function(filter){
   if(filter=='F470N_JWST'){filt_F470N_JWST=NULL; data('filt_F470N_JWST', envir = environment()); out = filt_F470N_JWST}
   if(filter=='F480M_JWST'){filt_F480M_JWST=NULL; data('filt_F480M_JWST', envir = environment()); out = filt_F480M_JWST}
   
+  if(filter=='F560W_JWST'){filt_F560W_JWST=NULL; data('filt_F560W_JWST', envir = environment()); out = filt_F560W_JWST}
+  if(filter=='F770W_JWST'){filt_F770W_JWST=NULL; data('filt_F770W_JWST', envir = environment()); out = filt_F770W_JWST}
+  if(filter=='F1000W_JWST'){filt_F1000W_JWST=NULL; data('filt_F1000W_JWST', envir = environment()); out = filt_F1000W_JWST}
+  if(filter=='F1130W_JWST'){filt_F1130W_JWST=NULL; data('filt_F1130W_JWST', envir = environment()); out = filt_F1130W_JWST}
+  if(filter=='F1280W_JWST'){filt_F1280W_JWST=NULL; data('filt_F1280W_JWST', envir = environment()); out = filt_F1280W_JWST}
+  if(filter=='F1500W_JWST'){filt_F1500W_JWST=NULL; data('filt_F1500W_JWST', envir = environment()); out = filt_F1500W_JWST}
+  if(filter=='F1800W_JWST'){filt_F1800W_JWST=NULL; data('filt_F1800W_JWST', envir = environment()); out = filt_F1800W_JWST}
+  if(filter=='F2100W_JWST'){filt_F2100W_JWST=NULL; data('filt_F2100W_JWST', envir = environment()); out = filt_F2100W_JWST}
+  if(filter=='F2550W_JWST'){filt_F2550W_JWST=NULL; data('filt_F2550W_JWST', envir = environment()); out = filt_F2550W_JWST}
+  
   if(filter=='R062_WFIRST'){filt_R062_WFIRST=NULL; data('filt_R062_WFIRST', envir = environment()); out = filt_R062_WFIRST}
   if(filter=='Z087_WFIRST'){filt_Z087_WFIRST=NULL; data('filt_Z087_WFIRST', envir = environment()); out = filt_Z087_WFIRST}
   if(filter=='Y106_WFIRST'){filt_Y106_WFIRST=NULL; data('filt_Y106_WFIRST', envir = environment()); out = filt_Y106_WFIRST}
