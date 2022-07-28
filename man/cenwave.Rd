@@ -31,7 +31,7 @@ library(foreach)
 filt_files=list.files('data/')
 filt_files=filt_files[grep('filt_',filt_files)]
 filter=unlist(strsplit(unlist(strsplit(filt_files,'filt_'))[c(F,T)],'.tab'))
-cenwave=foreach(i=filt_files,.combine='c')%do%{cenwavefunc(fread(paste0('data/',i)))}
+cenwave=foreach(i=filt_files,.combine='c')\%do\%{cenwavefunc(fread(paste0('data/',i)))}
 
 cenwave=data.frame(filter=filter, cenwave=cenwave)
 cenwave=cenwave[order(cenwave$cenwave),]
