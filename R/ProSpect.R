@@ -1,47 +1,52 @@
 ProSpectSED = function(SFH = SFHfunc,
-                       z = 0.1,
-                       tau_birth = 1,
-                       tau_screen = 0.3,
-                       tau_AGN = 1,
-                       pow_birth = -0.7,
-                       pow_screen = -0.7,
-                       pow_AGN = -0.7,
-                       alpha_SF_birth = 1,
-                       alpha_SF_screen = 3,
-                       alpha_SF_AGN = 0,
-                       AGNlum = 0,
-                       sparse = 5,
-                       speclib = NULL,
-                       Dale = NULL,
-                       AGN = NULL,
-                       filtout = NULL,
-                       filters = 'all',
-                       Dale_M2L_func = NULL,
-                       returnall = TRUE,
-                       H0 = 67.8,
-                       OmegaM = 0.308,
-                       OmegaL = 1 - OmegaM,
-                       waveout = seq(2, 9.35, by = 0.01),
-                       ref,
-                       unimax = 13.8e9,
-                       agemax = NULL,
-                       LumDist_Mpc = NULL,
-                       addradio = FALSE,
-                       Te = 1e4,
-                       ff_frac = 0.1,
-                       ff_power = -0.1,
-                       sy_power = -0.8,
-                       AGNct = 60,
-                       AGNal = 4,
-                       AGNbe = -0.5,
-                       AGNta = 1,
-                       AGNrm = 60,
-                       AGNan = 30,
-                       Eb = 0,
-                       L0 = 2175.8,
-                       LFWHM = 470,
-                       IGMabsorb = 0,
-                       ...) {
+                          z = 0.1,
+                          tau_birth = 1,
+                          tau_screen = 0.3,
+                          tau_AGN = 1,
+                          pow_birth = -0.7,
+                          pow_screen = -0.7,
+                          pow_AGN = -0.7,
+                          alpha_SF_birth = 1,
+                          alpha_SF_screen = 3,
+                          alpha_SF_AGN = 0,
+                          AGNlum = 0,
+                          sparse = 5,
+                          speclib = NULL,
+                          Dale = NULL,
+                          AGN = NULL,
+                          filtout = NULL,
+                          filters = 'all',
+                          Dale_M2L_func = NULL,
+                          returnall = TRUE,
+                          H0 = 67.8,
+                          OmegaM = 0.308,
+                          OmegaL = 1 - OmegaM,
+                          waveout = seq(2, 9.35, by = 0.01),
+                          ref,
+                          unimax = 13.8e9,
+                          agemax = NULL,
+                          LumDist_Mpc = NULL,
+                          addradio = FALSE,
+                          AGNradio = FALSE,
+                          Te = 1e4,
+                          ff_frac = 0.1,
+                          ff_power = -0.1,
+                          sy_power = -0.8,
+                          AGNTe = 1e4,
+                          AGNff_frac = 0.1,
+                          AGNff_power = -0.1,
+                          AGNsy_power = -0.8,
+                          AGNct = 60,
+                          AGNal = 4,
+                          AGNbe = -0.5,
+                          AGNta = 1,
+                          AGNrm = 60,
+                          AGNan = 30,
+                          Eb = 0,
+                          L0 = 2175.8,
+                          LFWHM = 470,
+                          IGMabsorb = 0,
+                          ...) {
   #call = match.call()
   
   if ('emission' %in% names(list(...))) {
@@ -103,9 +108,26 @@ ProSpectSED = function(SFH = SFHfunc,
     dustmass_screen = 0
   }
   
+  ## adding radio contribution using just FIR generated from star-formation
+  if (addradio) {
+    Final = radiocont(
+      wave = SED_Stars_Bdust_Sdust$wave,
+      flux = SED_Stars_Bdust_Sdust$flux,
+      z = 0,
+      Te = Te,
+      ff_frac = ff_frac,
+      ff_power = ff_power,
+      sy_power = sy_power,
+      wavesamp = seq(6, max(waveout), by=0.1),
+      flux_in = 'wave',
+      flux_out = 'wave'
+    )
+  } else {
+    Final = SED_Stars_Bdust_Sdust
+  }
   
   if (is.null(AGN) | AGNlum == 0) {
-    Final = SED_Stars_Bdust_Sdust
+    Final = Final
     AGN = NULL
     dustlum_AGN = 0
     dustmass_AGN = 0
@@ -141,9 +163,35 @@ ProSpectSED = function(SFH = SFHfunc,
         dustlum_screen = dustlum_screen + AGN$total_atten
         dustmass_screen = dustmass_screen + AGN$dustmass
       }
+      
+      if(addradio){
+        AGN$final = radiocont(
+          wave = AGN$final$wave,
+          flux = AGN$final$flux,
+          z = 0,
+          Te = AGNTe,
+          ff_frac = AGNff_frac,
+          ff_power = AGNff_power,
+          sy_power = AGNsy_power,
+          wavesamp = seq(6, max(waveout), by=0.1),
+          flux_in = 'wave',
+          flux_out = 'wave',
+          subtractonly = ifelse(AGNradio == T, F, T) ## whether to add AGN radio or just subtract Dale radio
+        )
+      }
+      
       AGN = AGN$final
-      Final = data.frame(wave = SED_Stars_Bdust_Sdust$wave, flux = SED_Stars_Bdust_Sdust$flux +
-                           AGN$flux)
+      if (length(Final$flux) == length(AGN$flux)) {
+        Final = data.frame(wave = Final$wave, flux = Final$flux +
+                             AGN$flux)
+      } else {
+        Final = addspec(
+          wave1 = Final$wave,
+          flux1 = Final$flux,
+          wave2 = AGN$wave,
+          flux2 = AGN$flux
+        )
+      }
       colnames(AGN)[2] = 'lum'
     } else{
       #Use old model
@@ -183,6 +231,23 @@ ProSpectSED = function(SFH = SFHfunc,
         dustlum_AGN = 0
         dustmass_AGN = 0
       }
+      
+      if(addradio){
+        AGN$final = radiocont(
+          wave = AGN$final$wave,
+          flux = AGN$final$flux,
+          z = 0,
+          Te = AGNTe,
+          ff_frac = AGNff_frac,
+          ff_power = AGNff_power,
+          sy_power = AGNsy_power,
+          wavesamp = seq(6, max(waveout), by=0.1),
+          flux_in = 'wave',
+          flux_out = 'wave',
+          subtractonly = ifelse(AGNradio == T, F, T) ## whether to add AGN radio or just subtract Dale radio
+        )
+      }
+      
       AGN = AGN$final
       if (length(SED_Stars_Bdust_Sdust$flux) == length(AGN$flux)) {
         Final = data.frame(wave = SED_Stars_Bdust_Sdust$wave, flux = SED_Stars_Bdust_Sdust$flux +
@@ -198,22 +263,6 @@ ProSpectSED = function(SFH = SFHfunc,
       colnames(AGN)[2] = 'lum'
     }
   }
-  
-  if (addradio) {
-    Final = radiocont(
-      wave = Final$wave,
-      flux = Final$flux,
-      z = 0,
-      Te = Te,
-      ff_frac = ff_frac,
-      ff_power = ff_power,
-      sy_power = sy_power,
-      wavesamp = seq(6, max(waveout), by=0.1),
-      flux_in = 'wave',
-      flux_out = 'wave'
-    )
-  }
-  
   colnames(Final)[2] = 'lum'
   
   if (IGMabsorb > 0) {
