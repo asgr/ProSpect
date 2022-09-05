@@ -29,7 +29,7 @@
 }
 
 radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8,
-                     wavesamp=seq(6,9.4,by=0.1), flux_in='freq', flux_out=flux_in){
+                     wavesamp=seq(6,9.4,by=0.1), flux_in='freq', flux_out=flux_in, subtractonly = F){
   #z reflects the stretching of the input wave
   wave = wave/(1 + z)
   flux = flux*(1 + z)
@@ -57,13 +57,19 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
   #lines(wave[selwave], radio_sub, col='blue',lwd=3)
   flux[selwave] = flux[selwave] - radio_sub
   flux[flux<=0] = 1e-200
-  radio_add = .radioemission_lam(wave=wavesamp, FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power)[,'tot_flux']
-  #lines(wavesamp, radio_add, col='red',lwd=1)
-  output = addspec(wave, flux,
-                   wavesamp, radio_add,
-                   extrap=0)
-  #lines(output, col='green')
-  #legend('topright', legend=c('in','out','rem','add'), col=c('black','green','blue','red'), lwd=c(1,1,3,1))
+  if(subtractonly == F){
+    ## adding new radio in
+    radio_add = .radioemission_lam(wave=wavesamp, FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power)[,'tot_flux']
+    #lines(wavesamp, radio_add, col='red',lwd=1)
+    output = addspec(wave, flux,
+                     wavesamp, radio_add,
+                     extrap=0)
+    #lines(output, col='green')
+    #legend('topright', legend=c('in','out','rem','add'), col=c('black','green','blue','red'), lwd=c(1,1,3,1))
+  } else {
+    ## only using subtract mode
+    output = data.frame(wave = wave, flux = flux)
+  }
   output$wave = output$wave*(1 + z)
   output$flux = output$flux/(1 + z)
   if(flux_out == 'wave'){
