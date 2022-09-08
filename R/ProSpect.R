@@ -32,7 +32,11 @@ ProSpectSED = function(SFH = SFHfunc,
                           ff_frac_SF = 0.1,
                           ff_power_SF = -0.1,
                           sy_power_SF = -0.8,
+<<<<<<< HEAD
                           Te_AGN = 1e4,
+=======
+                          Te_AGN_SF = 1e4,
+>>>>>>> 4eed4b7d924dd2853358b8861d49aa8ca6fc3f33
                           ff_frac_AGN = 0.1,
                           ff_power_AGN = -0.1,
                           sy_power_AGN = -0.8,
