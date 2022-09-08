@@ -18,7 +18,11 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3,
         9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL, 
     LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE, 
     Te_SF = 10000, ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, 
+<<<<<<< HEAD
     Te_AGN = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1, 
+=======
+    Te_AGN_SF = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1, 
+>>>>>>> 4eed4b7d924dd2853358b8861d49aa8ca6fc3f33
     sy_power_AGN = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, 
     AGNta = 1, AGNrm = 60, AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, 
     IGMabsorb = 0, ...) 
