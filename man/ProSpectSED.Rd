@@ -18,7 +18,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3,
         9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL, 
     LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE, 
     Te_SF = 10000, ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, 
-    Te_AGN = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1, 
+    Te_AGN = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1,
     sy_power_AGN = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, 
     AGNta = 1, AGNrm = 60, AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, 
     IGMabsorb = 0, ...) 
@@ -118,7 +118,7 @@ Logical scalar; should free-free and synchrotron radio continuum linked to star-
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}}. Leave as the default (10,000 K), unless you know what you are doing.
 }
   \item{ff_frac_SF}{
-Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 GHz used in \code{\link{radiocont}} (should be between 0.05 and 0.2 typically). By defintion the fraction of radio synchrotron emission assoficated with star-formation at 1.4 GHz will be 1 - \option{ff_frac_SF}.
+Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 GHz used in \code{\link{radiocont}} (should be between 0.05 and 0.2 typically). By definition the fraction of radio synchrotron emission associated with star-formation at 1.4 GHz will be 1 - \option{ff_frac_SF}.
 }
   \item{ff_power_SF}{
 Numeric scalar; power-law slope of the free-free nebular plasma thermal radio emission associated with star-formation used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
@@ -133,7 +133,7 @@ Logical; should separate free-free and synchrotron radio continuum associated wi
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}} for the AGN component. Leave as the default (10,000 K), unless you know what you are doing.
 }
   \item{ff_frac_AGN}{
-Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 GHz used in \code{\link{radiocont}} for the AGN component (should be between 0.05 and 0.2 typically). By defintion the radio synchrotron emission fraction of the AGN component at 1.4 GHz will be 1 - \option{ff_frac_AGN}.
+Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 GHz used in \code{\link{radiocont}} for the AGN component (should be between 0.05 and 0.2 typically). By definition the radio synchrotron emission fraction of the AGN component at 1.4 GHz will be 1 - \option{ff_frac_AGN}.
 }
   \item{ff_power_AGN}{
 Numeric scalar; power-law slope of the free-free nebular plasma thermal radio emission associated with an AGN used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
@@ -182,7 +182,7 @@ All further arguments are passed directly into \option{SFH}, so by this mechanis
 }
 }
 \details{
-This function allows full modelling of quite sophisticated star formation histories, dust attentuation and re-emission, as well as correctly attenuated AGN. It is useful directly, but it is also the workhorse function for the \code{\link{ProSpectSEDlike}} function, that allows us to compute likelihoods against target data and fit models in a generic manner.
+This function allows full modelling of quite sophisticated star formation histories, dust attenuation and re-emission, as well as correctly attenuated AGN. It is useful directly, but it is also the workhorse function for the \code{\link{ProSpectSEDlike}} function, that allows us to compute likelihoods against target data and fit models in a generic manner.
 
 Some more info on the required \option{Data} list inputs:
 
@@ -268,7 +268,7 @@ The 'optim' output returns just the log-posterior value (LP). \cr
 
 The 'LD' output returns the full structure required for \code{LaplacesDemon} and \code{LaplaceApproximation} and should be set as such when using those optimisers. \cr
 
-The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnoistic plot via the \code{plot} method.
+The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnostic plot via the \code{plot} method.
 }
 
 \references{
