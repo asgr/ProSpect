@@ -26,16 +26,16 @@ ProSpectSED = function(SFH = SFHfunc,
                           unimax = 13.8e9,
                           agemax = NULL,
                           LumDist_Mpc = NULL,
-                          addradio = FALSE,
-                          AGNradio = FALSE,
-                          Te = 1e4,
-                          ff_frac = 0.1,
-                          ff_power = -0.1,
-                          sy_power = -0.8,
-                          AGNTe = 1e4,
-                          AGNff_frac = 0.1,
-                          AGNff_power = -0.1,
-                          AGNsy_power = -0.8,
+                          addradio_SF = FALSE,
+                          addradio_AGN = FALSE,
+                          Te_SF = 1e4,
+                          ff_frac_SF = 0.1,
+                          ff_power_SF = -0.1,
+                          sy_power_SF = -0.8,
+                          Te_AGN = 1e4,
+                          ff_frac_AGN = 0.1,
+                          ff_power_AGN = -0.1,
+                          sy_power_AGN = -0.8,
                           AGNct = 60,
                           AGNal = 4,
                           AGNbe = -0.5,
@@ -109,15 +109,15 @@ ProSpectSED = function(SFH = SFHfunc,
   }
   
   ## adding radio contribution using just FIR generated from star-formation
-  if (addradio) {
+  if (addradio_SF) {
     Final = radiocont(
       wave = SED_Stars_Bdust_Sdust$wave,
       flux = SED_Stars_Bdust_Sdust$flux,
       z = 0,
-      Te = Te,
-      ff_frac = ff_frac,
-      ff_power = ff_power,
-      sy_power = sy_power,
+      Te = Te_SF,
+      ff_frac = ff_frac_SF,
+      ff_power = ff_power_SF,
+      sy_power = sy_power_SF,
       wavesamp = seq(6, max(waveout), by=0.1),
       flux_in = 'wave',
       flux_out = 'wave'
@@ -164,21 +164,20 @@ ProSpectSED = function(SFH = SFHfunc,
         dustmass_screen = dustmass_screen + AGN$dustmass
       }
       
-      if(addradio){
+      ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back 
         AGN$final = radiocont(
           wave = AGN$final$wave,
           flux = AGN$final$flux,
           z = 0,
-          Te = AGNTe,
-          ff_frac = AGNff_frac,
-          ff_power = AGNff_power,
-          sy_power = AGNsy_power,
+          Te = Te_AGN,
+          ff_frac = ff_frac_AGN,
+          ff_power = ff_power_AGN,
+          sy_power = sy_power_AGN,
           wavesamp = seq(6, max(waveout), by=0.1),
           flux_in = 'wave',
           flux_out = 'wave',
-          subtractonly = ifelse(AGNradio == T, F, T) ## whether to add AGN radio or just subtract Dale radio
+          subtractonly = ifelse(addradio_AGN == T, F, T) ## whether to add AGN radio or just subtract Dale radio
         )
-      }
       
       AGN = AGN$final
       if (length(Final$flux) == length(AGN$flux)) {
@@ -206,6 +205,7 @@ ProSpectSED = function(SFH = SFHfunc,
         Dale_M2L_func = Dale_M2L_func,
         waveout = waveout
       ) #no bump for the hot torus part
+      
       if (!is.null(Dale_M2L_func) & returnall) {
         dustlum_AGN = AGN$total_atten
         dustmass_AGN = AGN$dustmass
@@ -224,6 +224,7 @@ ProSpectSED = function(SFH = SFHfunc,
         L0 = L0,
         LFWHM = LFWHM
       )
+    
       if (!is.null(Dale_M2L_func) & returnall) {
         dustlum_screen = dustlum_screen + AGN$total_atten
         dustmass_screen = dustmass_screen + AGN$dustmass
@@ -232,21 +233,20 @@ ProSpectSED = function(SFH = SFHfunc,
         dustmass_AGN = 0
       }
       
-      if(addradio){
-        AGN$final = radiocont(
-          wave = AGN$final$wave,
-          flux = AGN$final$flux,
-          z = 0,
-          Te = AGNTe,
-          ff_frac = AGNff_frac,
-          ff_power = AGNff_power,
-          sy_power = AGNsy_power,
-          wavesamp = seq(6, max(waveout), by=0.1),
-          flux_in = 'wave',
-          flux_out = 'wave',
-          subtractonly = ifelse(AGNradio == T, F, T) ## whether to add AGN radio or just subtract Dale radio
-        )
-      }
+      ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back 
+      AGN$final = radiocont(
+        wave = AGN$final$wave,
+        flux = AGN$final$flux,
+        z = 0,
+        Te = Te_AGN,
+        ff_frac = ff_frac_AGN,
+        ff_power = ff_power_AGN,
+        sy_power = sy_power_AGN,
+        wavesamp = seq(6, max(waveout), by=0.1),
+        flux_in = 'wave',
+        flux_out = 'wave',
+        subtractonly = ifelse(addradio_AGN == T, F, T) ## whether to add AGN radio or just subtract Dale radio
+      )
       
       AGN = AGN$final
       if (length(SED_Stars_Bdust_Sdust$flux) == length(AGN$flux)) {
