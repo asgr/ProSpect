@@ -233,9 +233,13 @@ data("filt_Z087_WFIRST")
 }
 \details{
 Note the filter for VISTA is actually Ks (for K-short) which makes it approximately similar to 2MASS. This differs to WFCAM (e.g. UKIDSS) which used a full K filter. Both K_VISTA and Ks_VISTA are provided to prevent silly name convention mistakes, but these response curves are in fact identical (i.e. Ks).
+
+You can get additional (obscure) filters at \url{http://svo2.cab.inta-csic.es/theory/fps/index.php}.
 }
 \source{
-Mostly the relevant websites for various facilities.
+Mostly the relevant websites for various facilities, but in particular:
+
+\url{http://svo2.cab.inta-csic.es/theory/fps/index.php}
 }
 \examples{
 colvec=rev(rainbow(9, end=2/3))

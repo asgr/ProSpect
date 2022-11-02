@@ -9,15 +9,19 @@ Top Level ProSpect SED Functions
 \code{ProSpectSED} computes a fully attenuated and re-emitted SED model incompassing star light (for a number of different star formation history models), dust and AGN. \code{ProSpectSEDlike} is an interface for computing likelihoods, and by extension is the workhorse code that allows model fitting using a number of techniques.
 }
 \usage{
-ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
- pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
- alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
- Dale = NULL, AGN = NULL, filtout = NULL, filters = 'all', Dale_M2L_func = NULL,
- returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
- waveout = seq(2,9.35,by=0.01), ref, unimax = 13.8e9, agemax = NULL, 
- LumDist_Mpc = NULL, addradio = FALSE, Te = 10000, ff_frac = 0.1, ff_power = -0.1,
- sy_power = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, AGNta = 1, AGNrm = 60,
- AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, IGMabsorb = 0, ...)
+ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, 
+    tau_AGN = 1, pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, 
+    alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0, 
+    AGNlum = 0, sparse = 5, speclib = NULL, Dale = NULL, AGN = NULL, 
+    filtout = NULL, filters = "all", Dale_M2L_func = NULL, returnall = TRUE, 
+    H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, waveout = seq(2, 
+        9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL, 
+    LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE, 
+    Te_SF = 10000, ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, 
+    Te_AGN = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1,
+    sy_power_AGN = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, 
+    AGNta = 1, AGNrm = 60, AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, 
+    IGMabsorb = 0, ...) 
  
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -107,20 +111,35 @@ Numeric scalar; maximum allowed age of any stellar population relative to the re
   \item{LumDist_Mpc}{
 Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
 }
-  \item{addradio}{
-Logical scalar; should free-free and synchrotron radio continuum be computed and appended to the spectrum? Extends to 21cm. Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). Note that even with this set to FALSE (default) the output spectrum will still have the radio continuum computed for the \code{\link{Dale}} templates. The default arguments almost perfectly reproduce the  \code{\link{Dale}} results, so it is only necessary to set \option{addradio} = TRUE if you want to change the \option{Te}, \option{ff_frac}, \option{ff_power} and \option{sy_power} parameters to non-default values.
+  \item{addradio_SF}{
+Logical scalar; should free-free and synchrotron radio continuum linked to star-formation be computed and appended to the spectrum? Extends to 21cm. Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). Note that even with this set to FALSE (default) the output spectrum will still have the radio continuum computed for the \code{\link{Dale}} templates. The default arguments almost perfectly reproduce the  \code{\link{Dale}} results, so it is only necessary to set \option{addradio} = TRUE if you want to change the \option{Te}, \option{ff_frac}, \option{ff_power} and \option{sy_power} parameters to non-default values.
 }
-  \item{Te}{
+  \item{Te_SF}{
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}}. Leave as the default (10,000 K), unless you know what you are doing.
 }
-  \item{ff_frac}{
-Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 Ghz used in \code{\link{radiocont}} (should be between 0.05 and 0.2 typically). By defintion the radio synchrotron emission fraction at 1.4 Ghz will be 1 - \option{ff_frac}.
+  \item{ff_frac_SF}{
+Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 GHz used in \code{\link{radiocont}} (should be between 0.05 and 0.2 typically). By definition the fraction of radio synchrotron emission associated with star-formation at 1.4 GHz will be 1 - \option{ff_frac_SF}.
 }
-  \item{ff_power}{
-Numeric scalar; power-law slope of the free-free nebular plasma thermal radio emission used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
+  \item{ff_power_SF}{
+Numeric scalar; power-law slope of the free-free nebular plasma thermal radio emission associated with star-formation used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
 }
-  \item{sy_power}{
-Numeric scalar; power-law slope of the synchrotron radio emission used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
+  \item{sy_power_SF}{
+Numeric scalar; power-law slope of the synchrotron radio emission associated with star-formation used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
+}
+  \item{addradio_AGN}{
+Logical; should separate free-free and synchrotron radio continuum associated with an AGN be added? Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). If FALSE (default) then any radio continuum computed for the AGN component within \code{\link{Dale}} will be subtracted regardless of the value of \option{addradio_SF}.  
+}
+  \item{Te_AGN}{
+Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}} for the AGN component. Leave as the default (10,000 K), unless you know what you are doing.
+}
+  \item{ff_frac_AGN}{
+Numeric scalar; free-free HII nebular plasma thermal radio emission contribution fraction at 1.4 GHz used in \code{\link{radiocont}} for the AGN component (should be between 0.05 and 0.2 typically). By definition the radio synchrotron emission fraction of the AGN component at 1.4 GHz will be 1 - \option{ff_frac_AGN}.
+}
+  \item{ff_power_AGN}{
+Numeric scalar; power-law slope of the free-free nebular plasma thermal radio emission associated with an AGN used in \code{\link{radiocont}}. Leave as the default (-0.1), unless you know what you are doing.
+}
+  \item{sy_power_AGN}{
+Numeric scalar; power-law slope of the synchrotron radio emission associated with an AGN used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
 }
   \item{AGNct}{
 Numeric scalar; opening angle of torus in degrees.
@@ -129,7 +148,7 @@ Numeric scalar; opening angle of torus in degrees.
 Numeric scalar; gamma dust parameter.
 }
   \item{AGNbe}{
-Numeric scalar; bBeta dust parameter.
+Numeric scalar; Beta dust parameter.
 }
   \item{AGNta}{
 Numeric scalar; optical depth tau.
@@ -163,7 +182,7 @@ All further arguments are passed directly into \option{SFH}, so by this mechanis
 }
 }
 \details{
-This function allows full modelling of quite sophisticated star formation histories, dust attentuation and re-emission, as well as correctly attenuated AGN. It is useful directly, but it is also the workhorse function for the \code{\link{ProSpectSEDlike}} function, that allows us to compute likelihoods against target data and fit models in a generic manner.
+This function allows full modelling of quite sophisticated star formation histories, dust attenuation and re-emission, as well as correctly attenuated AGN. It is useful directly, but it is also the workhorse function for the \code{\link{ProSpectSEDlike}} function, that allows us to compute likelihoods against target data and fit models in a generic manner.
 
 Some more info on the required \option{Data} list inputs:
 
@@ -249,7 +268,7 @@ The 'optim' output returns just the log-posterior value (LP). \cr
 
 The 'LD' output returns the full structure required for \code{LaplacesDemon} and \code{LaplaceApproximation} and should be set as such when using those optimisers. \cr
 
-The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnoistic plot via the \code{plot} method.
+The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnostic plot via the \code{plot} method.
 }
 
 \references{

@@ -8,8 +8,9 @@ Radio Emission Extension
 Can take an output \code{ProSpect} spectrum and extend it into the radio regime using a mixture of free-free (thermal) and synchrotron (non-thermal) radio emission. Default values are sensible for typical galaxies, and reproduce the Dale template emission.
 }
 \usage{
-radiocont(wave, flux, z = 0, Te = 10000, ff_frac = 0.1, ff_power = -0.1, sy_power = -0.8,
-wavesamp = seq(6, 9.4, by = 0.1), flux_in = "freq", flux_out = flux_in)
+radiocont(wave, flux, z = 0, Te = 10000, ff_frac = 0.1, ff_power = -0.1, 
+    sy_power = -0.8, wavesamp = seq(6, 9.4, by = 0.1), flux_in = "freq", 
+    flux_out = flux_in, subtractonly = FALSE) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -42,6 +43,9 @@ Character scalar; the input type of flux spectral density used. Should be either
 }
   \item{flux_out}{
 Character scalar; the output type of flux spectral density desired. Should be either 'freq' (default, power per Hz) or 'wave' (power per Ang)
+}
+  \item{subtractonly}{
+Logical; if true then only subtracts the Dale template radio emission, if false also adds on new radio emission. 
 }
 }
 \details{
