@@ -118,9 +118,11 @@ List of 2\cr
 The info component of the list contains the main path of the original filter used, from which it is possible to work out the filter type and telescope etc. This is kept close to the form supplied in EAZY, and in the same order.
 
 The filters list contains the corresponding wavelength (in Angstroms) and the relative throughout response.
+
+You can get additional (obscure) filters at \url{http://svo2.cab.inta-csic.es/theory/fps/index.php}.
 }
 \source{
-https://github.com/gbrammer/eazy-photoz/tree/master/filters
+\url{https://github.com/gbrammer/eazy-photoz/tree/master/filters}
 }
 \references{
 Brammer, van Dokkum & Coppi, 2008, ApJ, 686, 1503
