@@ -176,7 +176,7 @@ ProSpectSED = function(SFH = SFHfunc,
           wavesamp = seq(6, max(waveout), by=0.1),
           flux_in = 'wave',
           flux_out = 'wave',
-          subtractonly = ifelse(addradio_AGN == T, F, T) ## whether to add AGN radio or just subtract Dale radio
+          subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
         )
       
       AGN = AGN$final
@@ -245,7 +245,7 @@ ProSpectSED = function(SFH = SFHfunc,
         wavesamp = seq(6, max(waveout), by=0.1),
         flux_in = 'wave',
         flux_out = 'wave',
-        subtractonly = ifelse(addradio_AGN == T, F, T) ## whether to add AGN radio or just subtract Dale radio
+        subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
       )
       
       AGN = AGN$final
