@@ -245,12 +245,12 @@ If \option{returnall}=FALSE then we get a vector containing the \option{Photom} 
 If \option{returnall}=TRUE, then we get a list containing:
 
 \item{Photom}{Vector; photometry in Jansky. If \option{z} <= 0 and filters are provided via \option{filtout} then the \option{Photom} output returns Absolute AB magnitudes for convenience (i.e. source is placed at a distance of 10 pc).}
-\item{FinalFlux}{Two column data.frame; Wavelength in Ang, Flux in Jansky}
-\item{FinalLum}{Two column data.frame; Wavelength in Ang, Total SED luminosity in Lsol / Ang}
-\item{StarsAtten}{Two column data.frame; Wavelength in Ang, Attenuated stellar SED luminosity in Lsol / Ang}
-\item{StarsUnAtten}{Two column data.frame; Wavelength in Ang, Unattenuated stellar SED luminosity in Lsol / Ang}
-\item{DustEmit}{Two column data.frame; Wavelength in Ang, Re-emitted stellar dust SED luminosity in Lsol / Ang}
-\item{AGN}{Two column data.frame; Wavelength in Ang, Attenuated and re-emitted AGN SED luminosity in Lsol / Ang}
+\item{FinalFlux}{Two column data.frame; Wavelength in Ang (wave), Flux density in Jansky (flux)}
+\item{FinalLum}{Two column data.frame; Wavelength in Ang (wave), Total SED luminosity in Lsol / Ang (lum)}
+\item{StarsAtten}{Two column data.frame; Wavelength in Ang (wave), Attenuated stellar SED luminosity in Lsol / Ang (lum)}
+\item{StarsUnAtten}{Two column data.frame; Wavelength in Ang (wave), Unattenuated stellar SED luminosity in Lsol / Ang (lum)}
+\item{DustEmit}{Two column data.frame; Wavelength in Ang (wave), Re-emitted stellar dust SED luminosity in Lsol / Ang (lum)}
+\item{AGN}{Two column data.frame; Wavelength in Ang (wave), Attenuated and re-emitted AGN SED luminosity in Lsol / Ang (lum)}
 \item{Stars}{List; the full output of the relevant SFH function used. See \code{\link{SFHfunc}}}
 \item{dustmass}{Numeric vector; contains dust mass for the birth cloud, screen, AGN and total in Msol (requires \option{Dale_M2L_func})}
 \item{dustlum}{Numeric vector; contains dust luminosities for the birth cloud, screen, AGN and total in Lsol (requires \option{Dale_M2L_func})}

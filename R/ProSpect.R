@@ -49,6 +49,12 @@ ProSpectSED = function(SFH = SFHfunc,
                           ...) {
   #call = match.call()
   
+  if(!is.null(waveout)){
+    waveout_max = max(waveout)
+  }else{
+    waveout_max = 9.35
+  }
+  
   if ('emission' %in% names(list(...))) {
     if (list(...)$emission & missing(waveout)) {
       waveout = NULL
@@ -118,7 +124,7 @@ ProSpectSED = function(SFH = SFHfunc,
       ff_frac = ff_frac_SF,
       ff_power = ff_power_SF,
       sy_power = sy_power_SF,
-      wavesamp = seq(6, max(waveout), by=0.1),
+      wavesamp = seq(6, waveout_max, by=0.1),
       flux_in = 'wave',
       flux_out = 'wave'
     )
@@ -173,7 +179,7 @@ ProSpectSED = function(SFH = SFHfunc,
           ff_frac = ff_frac_AGN,
           ff_power = ff_power_AGN,
           sy_power = sy_power_AGN,
-          wavesamp = seq(6, max(waveout), by=0.1),
+          wavesamp = seq(6, waveout_max, by=0.1),
           flux_in = 'wave',
           flux_out = 'wave',
           subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
@@ -242,7 +248,7 @@ ProSpectSED = function(SFH = SFHfunc,
         ff_frac = ff_frac_AGN,
         ff_power = ff_power_AGN,
         sy_power = sy_power_AGN,
-        wavesamp = seq(6, max(waveout), by=0.1),
+        wavesamp = seq(6, waveout_max, by=0.1),
         flux_in = 'wave',
         flux_out = 'wave',
         subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
