@@ -35,19 +35,19 @@ emissionLines=function(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL,
   
   if(Zweights[,'wt_lo']>0 & qweights[,'wt_lo']>0){
     linelums=LKL10$Mappings[[Zweights[,'ID_lo']]][,qweights[,'ID_lo']+3]*Zweights[,'wt_lo']*qweights[,'wt_lo']
-    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
+    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelum=linelums[i], wavegrid=wavegrid)}
   }
   if(Zweights[,'wt_lo']>0 & qweights[,'wt_hi']>0){
     linelums=LKL10$Mappings[[Zweights[,'ID_lo']]][,qweights[,'ID_hi']+3]*Zweights[,'wt_lo']*qweights[,'wt_hi']
-    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
+    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelum=linelums[i], wavegrid=wavegrid)}
   }
   if(Zweights[,'wt_hi']>0 & qweights[,'wt_lo']>0){
     linelums=LKL10$Mappings[[Zweights[,'ID_hi']]][,qweights[,'ID_lo']+3]*Zweights[,'wt_hi']*qweights[,'wt_lo']
-    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
+    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelum=linelums[i], wavegrid=wavegrid)}
   }
   if(Zweights[,'wt_hi']>0 & qweights[,'wt_hi']>0){
     linelums=LKL10$Mappings[[Zweights[,'ID_hi']]][,qweights[,'ID_hi']+3]*Zweights[,'wt_hi']*qweights[,'wt_hi']
-    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelums=linelums[i], wavegrid=wavegrid)}
+    for(i in 1:dim(LKL10$Mappings[[1]])[1]){lum=lum+.emissionLine(wavecen[i], veldisp=veldisp, linelum=linelums[i], wavegrid=wavegrid)}
   }
   
   if(!is.null(SFR)){
@@ -73,19 +73,25 @@ SFR2Lum=function(SFR=1, lumscale=21612724){
   return(SFR*lumscale)
 }
 
-.emissionLine=function(wavecen=6562.80 , veldisp=50, linelums=1, wavegrid=NULL, range=5, res=0.5){
-  veldisp=veldisp/(.c_to_mps/1000)
-  wave_sigma=wavecen*veldisp
+.emissionLine=function(wavecen=6562.80 , veldisp=50, linelum=1, wavegrid=NULL, range=5, res=0.5){
+  #ASGR: 09-02-2024 made some changes (using sel). Need to check this works!
+  veldisp = veldisp/(.c_to_mps/1000)
+  wave_sigma = wavecen*veldisp
   if(is.null(wavegrid)){
-    wavegrid=wave_sigma*rep(seq(-range,range,by=res))+wavecen
+    wavegrid = wave_sigma*rep(seq(-range,range,by=res))+wavecen
   }
-  return(dnorm(wavegrid, mean=wavecen, sd=wave_sigma)*linelums)
+  ouput = numeric(length(wavegrid))
+  #this is new
+  sel = which(wavegrid > wavecen - range*wave_sigma & wavegrid < wavecen + range*wave_sigma)
+  ouput[sel] = dnorm(wavegrid[sel], mean=wavecen, sd=wave_sigma)*linelum
+  return(ouput)
 }
 
-.makewavegrid=function(wavecens, veldisp=50, range=5, res=0.2){
-  veldisp=veldisp/(.c_to_mps/1000)
-  grid=rep(seq(-range,range,by=res))
-  temp=outer(wavecens*veldisp, grid) + wavecens
+.makewavegrid=function(wavecens, veldisp=50, range=5, res=0.5){
+  #create high density regions around lines
+  veldisp = veldisp/(.c_to_mps/1000)
+  grid = rep(seq(-range,range,by=res))
+  temp = outer(wavecens*veldisp, grid) + wavecens
   return(sort(unique(temp)))
 }
 
