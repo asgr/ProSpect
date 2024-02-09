@@ -35,29 +35,25 @@ SFHfunc = function(massfunc = massfunc_b5,
   dots = list(...)
   massfunc_args = dots[names(dots) %in% names(formals(massfunc))]
   
-  if (stellpop == 'BC03lr') {
-    if (is.null(speclib)) {
+  if (is.null(speclib)) {
+    if (stellpop == 'BC03lr') {
       BC03lr = NULL
       data('BC03lr', envir = environment())
       speclib = BC03lr
-    }
-  }else if (stellpop == 'BC03hr') {
-    if (is.null(speclib)) {
+    }else if (stellpop == 'BC03hr') {
       BC03hr = NULL
       data('BC03hr', envir = environment())
       speclib = BC03hr
-    }
-  }else if (stellpop == 'EMILES') {
-    if (is.null(speclib)) {
+    }else if (stellpop == 'EMILES') {
       EMILES = NULL
       data('EMILES', envir = environment())
       speclib = EMILES
-    }
-  }else if (stellpop == 'BPASS') {
-    if (is.null(speclib)) {
+    }else if (stellpop == 'BPASS') {
       BPASS = NULL
       data('BPASS', envir = environment())
       speclib = BPASS
+    }else{
+      stop('Need speclib or stellpop!')
     }
   }
   
@@ -94,6 +90,20 @@ SFHfunc = function(massfunc = massfunc_b5,
         'S250_Herschel' ,
         'S350_Herschel',
         'S500_Herschel'
+      )
+    }else if(filters[1] == 'WAVES'){
+      filters = c(
+        'u_VST',
+        'g_VST',
+        'r_VST',
+        'i_VST',
+        'Z_VISTA',
+        'Y_VISTA',
+        'J_VISTA',
+        'H_VISTA',
+        'K_VISTA',
+        'W1_WISE' ,
+        'W2_WISE'
       )
     }
   }

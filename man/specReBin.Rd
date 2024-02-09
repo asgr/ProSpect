@@ -64,14 +64,14 @@ tempflux = tempflux[tempflux$wave>2e3 & tempflux$wave<2e4,]
 
 magplot(tempflux, type='l', xlim=c(7e3,8e3))
 lines(specReBin(tempflux), col='red') #works pretty well automatically
-lines(specReBin(tempflux, bin=1e-3), col='green') #mmisses lines
+lines(specReBin(tempflux, bin=1e-3), col='green') #misses lines
 lines(specReBin(tempflux, bin=1e-5), col='blue') #looks very close to the original
 
 # we can also compare rough and accuracte integration schemes:
 
 magplot(tempflux, type='l', xlim=c(7e3,8e3))
-lines(specReBin(tempflux), col='red') #rough is on by default
-lines(specReBin(tempflux, rough=FALSE), col='blue') #accurate not any better (and slow)
+lines(specReBin(tempflux, bin=1e-3), col='red') #rough and fast
+lines(specReBin(tempflux, bin=1e-3, rough=FALSE), col='blue') #accurate and slow
 
 }
 \concept{ rebin }

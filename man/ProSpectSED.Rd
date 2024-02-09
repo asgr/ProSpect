@@ -70,7 +70,7 @@ Numeric scalar; amount of sparse sampling of the spectra to make.
 Object; optional. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Default of NULL will load the \code{\link{BC03lr}} library, but faster to pass it in if being used for e.g. fitting.
 }
   \item{Dale}{
-Object; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly).Default of NULL will load the \code{\link{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting.
+Object or scalar logical; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly). Default of NULL will load the \code{\link{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting. If FALSE it will not re-emit the attenuated light in the MIR/FIR using Dale templates. This might be desired if the range of interest is purely the UV-NIR.
 }
   \item{AGN}{
 Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}} or \code{\link{Fritz}}. The latter is preferred and uses the parametric Fritz model (see \code{\link{Fritz}}).
@@ -112,7 +112,7 @@ Numeric scalar; maximum allowed age of any stellar population relative to the re
 Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
 }
   \item{addradio_SF}{
-Logical scalar; should free-free and synchrotron radio continuum linked to star-formation be computed and appended to the spectrum? Extends to 21cm. Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). Note that even with this set to FALSE (default) the output spectrum will still have the radio continuum computed for the \code{\link{Dale}} templates. The default arguments almost perfectly reproduce the  \code{\link{Dale}} results, so it is only necessary to set \option{addradio} = TRUE if you want to change the \option{Te}, \option{ff_frac}, \option{ff_power} and \option{sy_power} parameters to non-default values.
+Logical scalar; should free-free and synchrotron radio continuum linked to star-formation be computed and appended to the spectrum? If TRUE, emission range is controlled by \option{waveout}. Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). Note that even with this set to FALSE (default) the output spectrum will still have the radio continuum computed for the \code{\link{Dale}} templates. The default arguments almost perfectly reproduce the  \code{\link{Dale}} results, so it is only necessary to set \option{addradio_SF} = TRUE if you want to change the \option{Te}, \option{ff_frac}, \option{ff_power} and \option{sy_power} parameters to non-default values.
 }
   \item{Te_SF}{
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}}. Leave as the default (10,000 K), unless you know what you are doing.
