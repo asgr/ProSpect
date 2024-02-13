@@ -6,6 +6,7 @@ importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWav
 importFrom("NISTunits", "kNIST2010PlanckConstant", "kNIST2010speedOfLightInVacuum", "kNIST2010BoltzmannConstant")
 importFrom("pracma", "interp1", "integral")
 importFrom("graphics", "legend", "lines", "plot", "layout", "par", "points", "axis")
+importFrom("grDevices", "hsv")
 
 S3method("plot", ProSpectSED)
 S3method("plot", ProSpectSEDlike)

@@ -18,7 +18,7 @@ SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3,
  pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 5, emission = FALSE,
  veldisp = 50, emission_scale = "FUV", escape_frac = 1 - emission,
- Ly_limit = 911.75, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
+ Ly_limit = 911.75, LKL10 = NULL, disp_stars = FALSE, z = 0.1, H0 = 67.8, OmegaM = 0.308,
  OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
  unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
  LFWHM = 470, ...) 
@@ -32,9 +32,10 @@ SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
 SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
  tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
  filters = 'all', Z = 0.02, emission = FALSE, veldisp = 50, emission_scale = "FUV",
- escape_frac = 1 - emission, Ly_limit = 911.75, LKL10 = NULL, z = 0.1, H0 = 67.8,
- OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = 'mag', sparse = 5, unimax=  13.8e9,
- agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
+ escape_frac = 1 - emission, Ly_limit = 911.75, LKL10 = NULL, disp_stars = FALSE, z = 0.1,
+ H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = 'mag', sparse = 5,
+ unimax=  13.8e9, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470,
+ ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -106,6 +107,9 @@ Numeric scalar/vector; the Lyman limit/s to use (Angstroms). Photons with wavele
 }
   \item{LKL10}{
 List; LKL template to use. If \option{LKL10}=NULL then the appropriate template is loaded internally (this is the safest option). To speed things up the user can pass in the appropriate \code{\link{LKL10}} template, but care must be taken to ensure the scaling used makes use of the correct dataset. See \code{\link{emissionLines}}.  
+}
+  \item{disp_stars}{
+Logical; should the star templates also have dispersion (\option{veldisp}) added? This is done distinctly to the emission features (so they will not be dispersed twice!) This is only applied to the attenuated spectrum, so the unattenuated will be the intrinsic (0 km/s dispersion) spectrum.
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).

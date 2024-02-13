@@ -90,7 +90,7 @@ SFR2Lum=function(SFR=1, lumscale=21612724){
 .makewavegrid=function(wavecens, veldisp=50, range=5, res=0.5){
   #create high density regions around lines
   veldisp = veldisp/(.c_to_mps/1000)
-  grid = rep(seq(-range,range,by=res))
+  grid = seq(-range,range,by=res)
   temp = outer(wavecens*veldisp, grid) + wavecens
   return(sort(unique(temp)))
 }
