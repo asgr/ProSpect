@@ -15,6 +15,7 @@ SFHfunc = function(massfunc = massfunc_b5,
                    escape_frac = 1 - emission,
                    Ly_limit = 911.75,
                    LKL10 = NULL,
+                   disp_stars = FALSE,
                    z = 0.1,
                    H0 = 67.8,
                    OmegaM = 0.308,
@@ -223,6 +224,10 @@ SFHfunc = function(massfunc = massfunc_b5,
     masstot = forcemass
   }
   
+  # Here we modify the speclib if we have an escape fraction less than 1.
+  # This is because this will be the first process that occurs, before birth cloud dust or ISM screen dust
+  # This means we also need to track the luminosity of the stars before any UV absorption (lum)
+  
   if (length(Zuse) > 1) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
@@ -261,6 +266,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
   }
   
+  # This should be pre dispersion being added, and birthcloud or ISM attenuation.
   lumtot_unatten = sum(.qdiff(wave_lum) * lum)
   lum_unatten = lum
   
@@ -280,8 +286,37 @@ SFHfunc = function(massfunc = massfunc_b5,
       }
     }
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
-  } else{
+  }else{
     lumtot_birth = 0
+  }
+  
+  if(disp_stars){
+    # Here we optionally disperse the spectrum along our LoS.
+    
+    res = 0.5
+    range = 5
+    grid = seq(-range, range, by=res)
+    z_seq = grid*veldisp/(.c_to_mps/1000)
+    weights = dnorm(grid)
+    wave_lum_log = log10(wave_lum)
+    
+    lum_conv = numeric(length(lum))
+    
+    for(i in seq_along(grid)){
+      if(grid[i] != 0){
+        new_wave = log10(wave_lum*(1 + z_seq[i]))
+        new_lum = log10(lum/(1 + z_seq[i]))
+        new_lum = 10^approx(x=new_wave, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
+      }else{
+        new_lum = lum
+      }
+      
+      new_lum = new_lum*weights[i]
+      lum_conv = lum_conv + new_lum
+    }
+    
+    lum = lum_conv*res
+    rm(lum_conv)
   }
   
   if (emission) {
@@ -714,6 +749,7 @@ SFHburst = function(burstmass = 1e8,
                     escape_frac = 1 - emission,
                     Ly_limit = 911.75,
                     LKL10 = NULL,
+                    disp_stars = FALSE,
                     z = 0.1,
                     H0 = 67.8,
                     OmegaM = 0.308,
@@ -842,6 +878,35 @@ SFHburst = function(burstmass = 1e8,
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
   } else{
     lumtot_birth = 0
+  }
+  
+  if(disp_stars){
+    # Here we optionally disperse the spectrum along our LoS.
+    
+    res = 0.5
+    range = 5
+    grid = seq(-range, range, by=res)
+    z_seq = grid*veldisp/(.c_to_mps/1000)
+    weights = dnorm(grid)
+    wave_lum_log = log10(wave_lum)
+    
+    lum_conv = numeric(length(lum))
+    
+    for(i in seq_along(grid)){
+      if(grid[i] != 0){
+        new_wave = log10(wave_lum*(1 + z_seq[i]))
+        new_lum = log10(lum/(1 + z_seq[i]))
+        new_lum = 10^approx(x=new_wave, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
+      }else{
+        new_lum = lum
+      }
+      
+      new_lum = new_lum*weights[i]
+      lum_conv = lum_conv + new_lum
+    }
+    
+    lum = lum_conv*res
+    rm(lum_conv)
   }
   
   if (emission & burstage < 1e7) {

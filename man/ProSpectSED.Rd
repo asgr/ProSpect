@@ -70,7 +70,7 @@ Numeric scalar; amount of sparse sampling of the spectra to make.
 Object; optional. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Default of NULL will load the \code{\link{BC03lr}} library, but faster to pass it in if being used for e.g. fitting.
 }
   \item{Dale}{
-Object or scalar logical; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly). Default of NULL will load the \code{\link{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting. If FALSE it will not re-emit the attenuated light in the MIR/FIR using Dale templates. This might be desired if the range of interest is purely the UV-NIR.
+Object or scalar logical; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly). Default of NULL will load the \code{\link{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting. If FALSE it will not re-emit the attenuated light in the MIR/FIR using Dale templates. This might be desired if the range of interest is purely the UV-NIR and you want faster generation/fitting (since the re-emitted dust will not be notable until at least the MIR).
 }
   \item{AGN}{
 Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}} or \code{\link{Fritz}}. The latter is preferred and uses the parametric Fritz model (see \code{\link{Fritz}}).

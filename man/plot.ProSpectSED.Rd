@@ -11,7 +11,7 @@ Simple plot of the various luminosity or flux components in a \code{ProSpectSED}
 \usage{
 \method{plot}{ProSpectSED}(x, xlim = c(1e3,1e7), ylim = 'auto',
   xlab = 'Wavelength (Ang)', ylab = 'auto', grid = TRUE, type = 'lum', lwd_main = 5,
-  lwd_comp = 2, ...)
+  lwd_comp = 5, ...)
 \method{plot}{ProSpectSEDlike}(x, xlim=c(1e3,1e7), ylim='auto',
 xlab='Wavelength (Ang)', ylab='auto', grid=TRUE, type='flux', ...)
 }

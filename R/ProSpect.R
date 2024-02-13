@@ -102,6 +102,12 @@ ProSpectSED = function(SFH = SFHfunc,
       extrap = 0,
       waveout = waveout
     )
+  }else{
+    Final = data.frame(wave = Stars$wave_lum, lum = Stars$lum_atten)
+    Dust_Birth = NULL
+    Dust_Screen = NULL
+    SED_Bdust_Sdust = NULL
+    SED_Stars_Bdust_Sdust = NULL
   }
   
   if (!is.null(Dale_M2L_func) & returnall) {
@@ -130,12 +136,12 @@ ProSpectSED = function(SFH = SFHfunc,
       flux_in = 'wave',
       flux_out = 'wave'
     )
-  } else {
+  }else if(!isFALSE(Dale)) {
     Final = SED_Stars_Bdust_Sdust
   }
   
   if (is.null(AGN) | AGNlum == 0) {
-    Final = Final
+    #Final = Final
     AGN = NULL
     dustlum_AGN = 0
     dustmass_AGN = 0
@@ -312,7 +318,22 @@ ProSpectSED = function(SFH = SFHfunc,
         'S350_Herschel',
         'S500_Herschel'
       )
+    }else if(filters[1] == 'WAVES'){
+      filters = c(
+        'u_VST',
+        'g_VST',
+        'r_VST',
+        'i_VST',
+        'Z_VISTA',
+        'Y_VISTA',
+        'J_VISTA',
+        'H_VISTA',
+        'K_VISTA',
+        'W1_WISE' ,
+        'W2_WISE'
+      )
     }
+    
     filtout = list()
     for (i in filters) {
       filtout = c(filtout, list(approxfun(getfilt(i))))
@@ -369,7 +390,13 @@ ProSpectSED = function(SFH = SFHfunc,
   if (returnall) {
     StarsAtten = data.frame(wave = Stars$wave_lum, lum = Stars$lum_atten)
     StarsUnAtten = data.frame(wave = Stars$wave, lum = Stars$lum_unatten)
-    DustEmit = data.frame(wave = Dust_Screen$Wave, lum = SED_Bdust_Sdust)
+    
+    if(!isFALSE(Dale)){
+      DustEmit = data.frame(wave = Dust_Screen$Wave, lum = SED_Bdust_Sdust)
+    }else{
+      DustEmit = NULL
+    }
+    
     output = list(
       Photom = photom_out,
       FinalFlux = Flux,
