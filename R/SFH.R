@@ -123,7 +123,19 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
   }
   
-  agevec = speclib$Age * agescale
+  # if(requireNamespace('Rfast')){
+  #   #this proved to be slower in fact, but leave commented for future tests
+  #   colsum_loc = Rfast::colsums
+  #   formals(colsum_loc)$parallel=TRUE
+  # }else{
+  #   colsum_loc = colSums
+  # }
+  
+  if(agescale != 1){
+    agevec = speclib$Age * agescale
+  }else{
+    agevec = speclib$Age
+  }
   
   if (is.function(Z)) {
     dots = list(...)
@@ -380,7 +392,9 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
     
     emissionadd_atten = emissionadd_unatten
-    emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
+    if(tau_birth != 0){
+      emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
+    }
     
     lumtot_emission_unatten = sum(.qdiff(emissionadd_unatten$wave) * emissionadd_unatten$lum)
     lumtot_emission_atten = sum(.qdiff(emissionadd_atten$wave) * emissionadd_atten$lum)
