@@ -200,7 +200,7 @@ List, optional; named arguments and values that are passed directly into \code{P
 List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
 }
   \item{Data$Dale}{
-List, optional but recommended; pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly).
+List, optional but recommended; pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly). If set to FALSE then there will be no FIR re-emission.
 }
   \item{Data$AGN}{
 Data.frame, optional; pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
@@ -231,6 +231,12 @@ Function, optional; a constraints function that takes in the\option{parm} vector
 }
   \item{Data$mon.names}{
 Character vector, optional; can contain "dustmass.birth", "dustmass.screen", "dustmass.AGN", "dustmass.total" (dust masses in birth cloud, screen, AGN and total), "dustlum.birth", "dustlum.screen", "dustlum.AGN", "dustlum.total" (dust luminosities in birth cloud, screen, AGN and total), "LP" (log posterior), "masstot" (total mass formed) and "SFRburst" (stars formed in the most recent 10^8 years). You can also monitor fluxes via "flux.XXX", where XXX specifies the name of the band as given in Data$flux$filter. Only named monitored variables are returned, in the order specified.
+}
+  \item{Data$logbin}{
+Logical, optional; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced. Passed into \code{\link{specReBin}}. Say you have a wavelength 10 and 20, a linear bin would be at 15 and a log bin would be at 14.1.
+}
+  \item{Data$rough}{
+Logical, otional; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full be pixel integration be done (FALSE). Passed into \code{\link{specReBin}}. 
 }
   \item{Data$verbose}{
 Logical, optional; should verbose messages be shown. If missing it is set to TRUE.
