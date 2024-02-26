@@ -522,7 +522,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       #this means we are in spec-z mode
       Photom = specReBin(wave = SEDout$Photom[,'wave'],
                          flux = SEDout$Photom[,'flux'],
-                         wavegrid = Data$flux[,'wave']
+                         wavegrid = Data$flux[,'wave'],
+                         logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
+                         rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
       )[,'flux']
       SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
                                  flux = Photom)
@@ -562,7 +564,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       #this means we are in spec-z mode
       Photom = specReBin(wave = Photom[,'wave'],
                         flux = Photom[,'flux'],
-                        wavegrid = Data$flux[,'wave']
+                        wavegrid = Data$flux[,'wave'],
+                        logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
+                        rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
                         )[,'flux']
     }
   }
