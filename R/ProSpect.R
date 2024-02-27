@@ -499,8 +499,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     print(parmlist)
   }
   
-  Monitor = {
-  }
+  Monitor = {}
   
   if (returnall) {
     SEDout = do.call(
@@ -609,7 +608,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       Monitor = c(Monitor, LP = LP)
     }
     if (length(Monitor) == 0) {
-      Monitor = NA
+      Monitor = 0L #this needs to be 0L is empty (not NA) Alas cannot return nothing!
     } else{
       Monitor = Monitor[match(Data$mon.names, names(Monitor))]
     }
