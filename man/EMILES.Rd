@@ -132,7 +132,7 @@ http://miles.iac.es/
 }
 \references{
 EMILES: Vazdekis et al, 2016, MNRAS, 463, 3409 \cr
-Padova 1994 isochrones: Bertelli et al., 1994, A\&AS, 106, 275 \cr
+Padova 1994 isochrones: Bertelli et al., 1994, A&AS, 106, 275 \cr
 Chabrier IMF: Chabrier, 2003, PASP, 115, 763
 }
 \examples{
