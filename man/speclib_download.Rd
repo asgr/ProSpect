@@ -36,6 +36,9 @@ Aaron Robotham
 }
 \examples{
 \dontrun{
+# Just check what is there:
+speclib_download()
+
 # This is roughly what loading an additional SSP library will look like:
 speclib_download(stellpop = 'XSL_PC_Kr', destpath = '~/Downloads/')
 load('~/Downloads/XSL_PC_Kr.rda')
