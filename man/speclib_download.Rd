@@ -13,7 +13,7 @@ speclib_download(stellpop = "avail", destpath = "", URL = "https://tinyurl.com/p
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{stellpop}{
-Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL}, or one of (currently): 'BC03lr' / 'BC03hr' / 'E'MILES' / 'BPASS' / 'XSL_PC_Kr'. Note only XSL_PC_Kr is not available in the core package, but all are included for completeness (and in case in future some are removed from the core package).
+Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL}, or one of (currently): 'BC03lr_Pd_Ch' / 'BC03hr_Pd_Ch' / 'EMILES_Bs_Ch' / 'BPASS_St_Ch' / 'XSL_PC_Kr'. Note only XSL_PC_Kr is not available in the core package, but all are included for completeness (and in case in future some are removed from the core package). The equivalent package version are named BC03lr, BC03hr, EMILES and BPASS respectively. 
 }
   \item{destpath}{
 Character scalar; where the target SSP should be downloaded to.
@@ -40,9 +40,9 @@ Aaron Robotham
 speclib_download()
 
 # This is roughly what loading an additional SSP library will look like:
-speclib_download(stellpop = 'XSL_PC_Kr', destpath = '~/Downloads/')
+speclib_download(stellpop='XSL_PC_Kr', destpath='~/Downloads/')
 load('~/Downloads/XSL_PC_Kr.rda')
-temp = ProSpectSED(speclib = XSL_PC_Kr)
+temp = ProSpectSED(speclib=XSL_PC_Kr)
 plot(temp)
 }
 }
