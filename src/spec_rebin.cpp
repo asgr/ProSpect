@@ -1,16 +1,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// This is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp 
-// function (or via the Source button on the editor toolbar). Learn
-// more about Rcpp at:
-//
-//   http://www.rcpp.org/
-//   http://adv-r.had.co.nz/Rcpp.html
-//   http://gallery.rcpp.org/
-//
-
 // [[Rcpp::export(".spec_rebin_cpp")]]
 NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in, NumericVector wave_out, bool logbin_in = false, bool logbin_out = false) {
   NumericVector flux_out(wave_out.length());
@@ -135,27 +125,3 @@ NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in, Numer
   
   return flux_out;
 }
-
-
-// You can include R code blocks in C++ files processed with sourceCpp
-// (useful for testing and development). The R code will be automatically 
-// run after the compilation.
-//
-
-# /*** R
-# wave_in = seq(1e3,9e3, by=5)
-# flux_in = rnorm(length(wave_in), mean=seq(100,200,len=length(wave_in)))
-# wave_out = seq(2e3,6e3, by=20)
-# flux_out = spec_rebin_cpp(wave_in, flux_in, wave_out)
-# 
-# #yay
-# magplot(wave_in, flux_in, type='l')
-# lines(wave_out, flux_out, col='red')
-# 
-# wave_out2 = seq(2e3,6e3, by=2)
-# flux_out2 = spec_rebin_cpp(wave_in, flux_in, wave_out2)
-# 
-# #yay
-# magplot(wave_in, flux_in, type='l')
-# lines(wave_out2, flux_out2, col='red')
-# */
