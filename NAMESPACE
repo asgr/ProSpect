@@ -8,6 +8,7 @@ importFrom("pracma", "interp1", "integral")
 importFrom("graphics", "legend", "lines", "plot", "layout", "par", "points", "axis")
 importFrom("grDevices", "hsv")
 import("Rcpp")
+import("checkmate")
 
 S3method("plot", ProSpectSED)
 S3method("plot", ProSpectSEDlike)
