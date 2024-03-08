@@ -2,6 +2,7 @@
 \alias{speclib_download}
 \alias{speclib_FITSload}
 \alias{speclib_check}
+\alias{speclib}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 ProSpect Stellar Population Library Downloader
