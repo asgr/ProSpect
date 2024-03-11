@@ -102,7 +102,9 @@ speclib_check = function(speclib) {
   
   temp = checkNumeric(speclib$AgeBins,
                       len = Age_len + 1,
-                      any.missing = FALSE)
+                      any.missing = FALSE,
+                      unique = TRUE,
+                      sorted = TRUE)
   
   if (!isTRUE(temp)) {
     all_good = FALSE
