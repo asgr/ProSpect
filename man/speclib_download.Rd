@@ -14,9 +14,14 @@ Simple interface to show all the currently available ProSpect SSPs, and download
 speclib_download(stellpop = "avail", destpath = "", type = 'rda',
   URL = "https://tinyurl.com/prospect-speclib/")
 
-speclib_FITSload(file, check = FALSE)
+speclib_FITSload(file, Labels = list(Zlab = "Metallicity",
+  Agelab = "Time since ZAM / Yrs", Wavelab = "Wavelength / Ang",
+  Lumlab = "Lsun / Ang (for 1 Msun SF)", LumAgelab = "Lsun / Ang (for 1 Msun/Yr SFR)"), 
+  check = FALSE)
 
-speclib_check(speclib)
+speclib_check(speclib, Labels = list(Zlab = "Metallicity",
+  Agelab = "Time since ZAM / Yrs", Wavelab = "Wavelength / Ang",
+  Lumlab = "Lsun / Ang (for 1 Msun SF)", LumAgelab = "Lsun / Ang (for 1 Msun/Yr SFR)"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,6 +39,9 @@ Character scalar; location of the ProSpect SSP libraries. This should not need t
 }
   \item{file}{
 Character scalar; full path and name of target FITS spectral library to load.
+}
+  \item{Labels}{
+List; list of plot labels (probably no reason to alter this from the default). These will either be created as written, or checked.
 }
   \item{check}{
 Logical; should checks be run on the spectral library being returned? Uses \code{speclib_check}. If checks fail the SSP is still returned, and can then be checked and potentially fixed by the user.
@@ -67,6 +75,29 @@ Zspec[1:N_Z]: Extensions containing the spectra in units Lsun / Ang (for 1 Msun 
 Zevo[1:N_Z]: Extensions containing the mean evolutionary tracks of the SSPs (as determined by the route isochrones). The extension must correspond to the 'Z' vector metallicities. Each extension is a data.frame with columns 'SMstar' (fraction of mass in luminous stars) 'SMgas' (fraction of mass in gas) 'SMtot' (fraction of total mass, always 1 in practice) 'SFR' (star formation rate, always 0 in practice) 'SMrem' (fraction of mass in stellar remnants, e.g. black holes etc). Nrow should be equal to the number of age bins (corresponding with 'Age').
 
 Note the "Labels" component of the structure is missing in the FITS version of the spectral library. This is created when processing it with \code{speclib_FITSload}.
+
+The extensions and ordering of the target FITS file should look similar to the included BC03lr example used in the Examples below (e.g. note the extension names and the overall ordering): \cr
+
+\tabular{lllll}{
+ Ext  \tab       Name  \tab      Class  \tab        Dim  \tab Size.MB \cr
+   1  \tab          Z  \tab    numeric  \tab          6  \tab  0.0001 \cr
+   2  \tab        Age  \tab    numeric  \tab        221  \tab  0.0017 \cr
+   3  \tab    AgeBins  \tab    numeric  \tab        221  \tab  0.0017 \cr
+   4  \tab AgeWeights  \tab    numeric  \tab        221  \tab  0.0017 \cr
+   5  \tab       Wave  \tab    numeric  \tab       1221  \tab  0.0094 \cr
+   6  \tab     Zspec1  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+   7  \tab     Zspec2  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+   8  \tab     Zspec3  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+   9  \tab     Zspec4  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+  10  \tab     Zspec5  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+  11  \tab     Zspec6  \tab     matrix  \tab 221 x 1221  \tab  2.0589 \cr
+  12  \tab      Zevo1  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  13  \tab      Zevo2  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  14  \tab      Zevo3  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  15  \tab      Zevo4  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  16  \tab      Zevo5  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+  17  \tab      Zevo6  \tab data.frame  \tab    221 x 5  \tab  0.0096 \cr
+}
 }
 \value{
 \code{speclib_download} If \option{stellpop} = 'avail' then the contents of avail.txt will be displayed (using the default method). Otherwise, nothing is returned by the side effect is the target SSP rda file is downloaded.
