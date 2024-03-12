@@ -71,6 +71,8 @@ If you wish to use the command line version of **R** on Mac (why?!) then you mig
 
 ### Getting ProSpect
 
+As of v1.5.0 **ProSpect** now *depends* on the **ProSpectData** package. This is basically a package containing all the static data that we in practice do not regularly update (the various BC03 and EMILES SSPs etc). You will need to install **ProSpectData** first, using a strategy similar to that of **ProSpect** (outlined below). Note because it is big, sometimes GitHub itself will complain about the package IO via the API interface, in that case you can manually download it (tar.gz, ZIP or clone) and install using the `R CMD install` command discussed below.
+
 Source installation from GitHub should be easy:
 
 ```R
@@ -108,7 +110,7 @@ options(repos="http://cran.rstudio.com/")
 options(rpubs.upload.method = "internal")
 ```
 
-If all of these do not work than the nuclear option is to download (or clone) the GitHub repo, cd to where the tar.gz file is and run in the **console** (or **Terminal** on Mac):
+If all of these do not work than the nuclear option is to download (or clone) the GitHub repo, cd to where the zip or tar.gz file is and run in the **console** (or **Terminal** on Mac):
 
 ```console
 R CMD install ProSpect_X.Y.Z.tar.gz
