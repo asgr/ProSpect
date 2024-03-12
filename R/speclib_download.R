@@ -12,7 +12,12 @@ speclib_download = function(stellpop = 'avail',
   }
 }
 
-speclib_FITSload = function(file, check = FALSE) {
+speclib_FITSload = function(file, Labels = list(Zlab = 'Metallicity', 
+                                                Agelab = 'Time since ZAM / Yrs', 
+                                                Wavelab = 'Wavelength / Ang', 
+                                                Lumlab = 'Lsun / Ang (for 1 Msun SF)',
+                                                LumAgelab = 'Lsun / Ang (for 1 Msun/Yr SFR)'),
+                            check = FALSE) {
   if (!requireNamespace("Rfits", quietly = TRUE)) {
     stop(
       'The Rfits package is needed for stacking to work. Please install from GitHub asgr/Rfits.',
@@ -25,17 +30,13 @@ speclib_FITSload = function(file, check = FALSE) {
                            header = FALSE,
                            pointer = FALSE,
                            data.table = FALSE)
-  output$Z = temp$Z
-  output$Age = temp$Age
-  output$AgeBins = temp$AgeBins
-  output$AgeWeights = temp$AgeWeights
-  output$Wave = temp$Wave
+  output$Z = temp[['Z']]
+  output$Age = temp[['Age']]
+  output$AgeBins = temp[['AgeBins']]
+  output$AgeWeights = temp[['AgeWeights']]
+  output$Wave = temp[['Wave']]
   
-  output$Labels$Zlab = "Metallicity"
-  output$Labels$Agelab = "Time since ZAM / Yrs"
-  output$Labels$Wavelab = "Wavelength / Ang"
-  output$Labels$Lumlab = "Lsun / Ang (for 1 Msun SF)"
-  output$Labels$LumAgelab = "Lsun / Ang (for 1 Msun/Yr SFR)"
+  output$Labels = Labels
   
   Zspec_loc = sort(grep(pattern = 'Zspec', names(temp), value = TRUE))
   Zspec = temp[Zspec_loc]
@@ -59,12 +60,60 @@ speclib_FITSload = function(file, check = FALSE) {
   return(output)
 }
 
-speclib_check = function(speclib) {
+speclib_check = function(speclib, Labels = list(Zlab = 'Metallicity', 
+                                                Agelab = 'Time since ZAM / Yrs', 
+                                                Wavelab = 'Wavelength / Ang', 
+                                                Lumlab = 'Lsun / Ang (for 1 Msun SF)',
+                                                LumAgelab = 'Lsun / Ang (for 1 Msun/Yr SFR)')) {
   all_good = TRUE
   
   message(' - - - - ')
-  message('General skeleton checks:')
+  message('Skeleton checks:')
   message(' - - - - ')
+  
+  temp = checkList(
+    speclib,
+    any.missing = FALSE,
+    unique = TRUE,
+  )
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' speclib list check failed')
+    print(temp)
+  }else{
+    message(' speclib list check passed')
+  }
+  
+  temp = checkNames(
+    names(speclib),
+    identical.to = c("Z", "Age", "AgeBins", "AgeWeights", "Wave", "Labels", "Zspec", "Zevo")
+  )
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' speclib list names check failed')
+    print(temp)
+  }else{
+    message(' speclib list names check passed')
+  }
+  
+  message(' - - - - ')
+  message('General sub-list checks:')
+  message(' - - - - ')
+  
+  temp = checkVector(
+    speclib$Z,
+    strict = TRUE
+  )
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' - Z vector check failed')
+    print(temp)
+  }else{
+    message(' - Z vector check passed')
+  }
   
   temp = checkNumeric(
     speclib$Z,
@@ -75,13 +124,26 @@ speclib_check = function(speclib) {
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - Z check failed')
+    message(' - Z numeric check failed')
     print(temp)
   }else{
-    message(' - Z check passed')
+    message(' - Z numeric check passed')
   }
   
   Z_len = length(speclib$Z)
+  
+  temp = checkVector(
+    speclib$Age,
+    strict = TRUE
+  )
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' - Age vector check failed')
+    print(temp)
+  }else{
+    message(' - Age vector check passed')
+  }
   
   temp = checkNumeric(
     speclib$Age,
@@ -92,13 +154,26 @@ speclib_check = function(speclib) {
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - Age check failed')
+    message(' - Age numeric check failed')
     print(temp)
   }else{
-    message(' - Age check passed')
+    message(' - Age numeric check passed')
   }
   
   Age_len = length(speclib$Age)
+  
+  temp = checkVector(
+    speclib$AgeBins,
+    strict = TRUE
+  )
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' - AgeBins vector check failed')
+    print(temp)
+  }else{
+    message(' - AgeBins vector check passed')
+  }
   
   temp = checkNumeric(speclib$AgeBins,
                       len = Age_len + 1,
@@ -108,10 +183,23 @@ speclib_check = function(speclib) {
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - AgeBins check failed')
+    message(' - AgeBins numeric check failed')
     print(temp)
   }else{
-    message(' - AgeBins check passed')
+    message(' - AgeBins numeric check passed')
+  }
+  
+  temp = checkVector(
+    speclib$AgeWeights,
+    strict = TRUE
+  )
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' - AgeWeights vector check failed')
+    print(temp)
+  }else{
+    message(' - AgeWeights vector check passed')
   }
   
   temp = checkNumeric(speclib$AgeWeights,
@@ -120,10 +208,23 @@ speclib_check = function(speclib) {
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - AgeWeights check failed')
+    message(' - AgeWeights numeric check failed')
     print(temp)
   }else{
-    message(' - AgeWeights check passed')
+    message(' - AgeWeights numeric check passed')
+  }
+  
+  temp = checkVector(
+    speclib$Wave,
+    strict = TRUE
+  )
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' - Wave vector check failed')
+    print(temp)
+  }else{
+    message(' - Wave vector check passed')
   }
   
   temp = checkNumeric(
@@ -135,10 +236,10 @@ speclib_check = function(speclib) {
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - Wave check failed')
+    message(' - Wave numeric check failed')
     print(temp)
   }else{
-    message(' - Wave check passed')
+    message(' - Wave numeric check passed')
   }
   
   Wave_len = length(speclib$Wave)
@@ -161,10 +262,10 @@ speclib_check = function(speclib) {
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - Zspec check failed')
+    message(' - Zspec list check failed')
     print(temp)
   }else{
-    message(' - Zspec check passed')
+    message(' - Zspec list check passed')
   }
   
   temp = checkList(speclib$Zevo,
@@ -173,10 +274,10 @@ speclib_check = function(speclib) {
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - Zevo check failed')
+    message(' - Zevo list check failed')
     print(temp)
   }else{
-    message(' - Zevo check passed')
+    message(' - Zevo list check passed')
   }
   
   message(' - - - - ')
@@ -195,10 +296,10 @@ speclib_check = function(speclib) {
     
     if (!isTRUE(temp)) {
       all_good = FALSE
-      message(' - - Zspec[[',i,']] check failed')
+      message(' - - Zspec[[',i,']] matrix check failed')
       print(temp)
     }else{
-      message(' - - Zspec[[',i,']] check passed')
+      message(' - - Zspec[[',i,']] matrix check passed')
     }
   }
   
@@ -238,13 +339,7 @@ speclib_check = function(speclib) {
   #Check Labels contents
   temp = checkNames(
     unlist(speclib$Labels, use.names = FALSE),
-    identical.to = c(
-      "Metallicity",
-      "Time since ZAM / Yrs",
-      "Wavelength / Ang",
-      "Lsun / Ang (for 1 Msun SF)",
-      "Lsun / Ang (for 1 Msun/Yr SFR)"
-    )
+    identical.to = unlist(Labels, use.names = FALSE)
   )
   
   if (!isTRUE(temp)) {
@@ -257,19 +352,15 @@ speclib_check = function(speclib) {
   
   temp = checkNames(
     names(speclib$Labels),
-    identical.to = c("Zlab",
-                     "Agelab",
-                     "Wavelab",
-                     "Lumlab",
-                     "LumAgelab")
+    identical.to = names(Labels)
   )
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - - Labels list.names check failed')
+    message(' - - Labels list names check failed')
     print(temp)
   }else{
-    message(' - - Labels list.names check passed')
+    message(' - - Labels list names check passed')
   }
   
   message(' - - - - - - - - ')
