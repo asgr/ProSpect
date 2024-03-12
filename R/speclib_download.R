@@ -214,6 +214,16 @@ speclib_check = function(speclib, Labels = list(Zlab = 'Metallicity',
     message(' - AgeWeights numeric check passed')
   }
   
+  temp = all.equal(diff(speclib$AgeBins), speclib$AgeWeights, tolerance=1e-3)
+  
+  if (!isTRUE(temp)) {
+    all_good = FALSE
+    message(' - AgeWeights consistent with AgeBins check failed')
+    print(temp)
+  }else{
+    message(' - AgeWeights consistent with AgeBins check passed')
+  }
+  
   temp = checkVector(
     speclib$Wave,
     strict = TRUE
@@ -250,10 +260,10 @@ speclib_check = function(speclib, Labels = list(Zlab = 'Metallicity',
   
   if (!isTRUE(temp)) {
     all_good = FALSE
-    message(' - Labels check failed')
+    message(' - Labels list check failed')
     print(temp)
   }else{
-    message(' - Labels check passed')
+    message(' - Labels list check passed')
   }
   
   checkList(speclib$Zspec,
@@ -333,6 +343,20 @@ speclib_check = function(speclib, Labels = list(Zlab = 'Metallicity',
       print(temp)
     }else{
       message(' - - Zevo[[',i,']] colnames check passed')
+    }
+    
+    temp = checkNumeric(speclib$Zevo[[i]][,'SMstar'],
+                        lower = 0,
+                        upper = 1,
+                        any.missing = FALSE
+                        )
+    
+    if (!isTRUE(temp)) {
+      all_good = FALSE
+      message(' - - Zevo[[',i,']]$SMstar numeric check failed')
+      print(temp)
+    }else{
+      message(' - - Zevo[[',i,']]$SMstar numeric check passed')
     }
   }
   
