@@ -1,5 +1,9 @@
 exportPattern("^[[:alpha:]]+")
 
+import("ProSpectData")
+import("Rcpp")
+import("checkmate")
+
 importFrom("stats", "approx", "spline", "approxfun", "splinefun", "dt", "dchisq", "var", "lm", "runif", "sd","integrate", "dnorm", "pnorm", "quantile", "median", "optimize")
 importFrom("utils", "data", "download.file", "url.show")
 importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWave", "cosplanckLawRadWave", "cosdistDistMod", "cosvol")
@@ -7,8 +11,6 @@ importFrom("NISTunits", "kNIST2010PlanckConstant", "kNIST2010speedOfLightInVacuu
 importFrom("pracma", "interp1", "integral")
 importFrom("graphics", "legend", "lines", "plot", "layout", "par", "points", "axis")
 importFrom("grDevices", "hsv")
-import("Rcpp")
-import("checkmate")
 
 S3method("plot", ProSpectSED)
 S3method("plot", ProSpectSEDlike)
