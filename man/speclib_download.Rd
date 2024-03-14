@@ -126,7 +126,7 @@ plot(temp)
 # Check the FITS version of the library:
 data(BC03lr)
 BC03lr_file = system.file('BC03lr.fits', package="ProSpectData")
-BC03lr_test = SpecLoad(BC03lr_file)
+BC03lr_test = speclib_FITSload(BC03lr_file)
 
 #The differences should be very small (parts in 1e-5 - 1e-8):
 all.equal(BC03lr, BC03lr_test)
