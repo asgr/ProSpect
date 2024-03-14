@@ -16,7 +16,7 @@ speclib_download(stellpop = "avail", destpath = "", type = 'rda',
 
 speclib_FITSload(file, Labels = list(Zlab = "Metallicity",
   Agelab = "Time since ZAM / Yrs", Wavelab = "Wavelength / Ang",
-  Lumlab = "Lsun / Ang (for 1 Msun SF)", LumAgelab = "Lsun / Ang (for 1 Msun/Yr SFR)"), 
+  Lumlab = "Lsun / Ang (for 1 Msun SF)", LumAgelab = "Lsun / Ang (for 1 Msun/Yr SFR)"),
   check = FALSE)
 
 speclib_check(speclib, Labels = list(Zlab = "Metallicity",
@@ -26,7 +26,7 @@ speclib_check(speclib, Labels = list(Zlab = "Metallicity",
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{stellpop}{
-Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL}, or one of (currently): 'BC03lr_Pd_Ch' / 'BC03hr_Pd_Ch' / 'EMILES_Bs_Ch' / 'BPASS_St_Ch' / 'XSL_PC_Kr'. Note only XSL_PC_Kr is not available in the core package, but all are included for completeness (and in case in future some are removed from the core package). The equivalent package version are named BC03lr, BC03hr, EMILES and BPASS respectively. 
+Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL}, or one of (currently): 'BC03lr_Pd_Ch' / 'BC03hr_Pd_Ch' / 'EMILES_Bs_Ch' / 'BPASS_St_Ch' / 'XSL_PC_Kr'. Note only XSL_PC_Kr is not available in the core package, but all are included for completeness (and in case in future some are removed from the core package). The equivalent package version are named BC03lr, BC03hr, EMILES and BPASS respectively.
 }
   \item{type}{
 Character scalar; type of spectral library to download. Either 'rda' (default) or 'fits'.
@@ -122,6 +122,14 @@ speclib_download(stellpop='XSL_PC_Kr', destpath='~/Downloads/')
 load('~/Downloads/XSL_PC_Kr.rda')
 temp = ProSpectSED(speclib=XSL_PC_Kr)
 plot(temp)
+
+# Check the FITS version of the library:
+data(BC03lr)
+BC03lr_file = system.file('BC03lr.fits', package="ProSpectData")
+BC03lr_test = SpecLoad(BC03lr_file)
+
+#The differences should be very small (parts in 1e-5 - 1e-8):
+all.equal(BC03lr, BC03lr_test)
 }
 }
 
