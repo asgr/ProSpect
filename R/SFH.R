@@ -11,10 +11,14 @@ SFHfunc = function(massfunc = massfunc_b5,
                    Z = 5,
                    emission = FALSE,
                    veldisp = 50,
+                   range = 5,
+                   res = 0.5,
                    emission_scale = 'FUV',
                    escape_frac = 1 - emission,
                    Ly_limit = 911.75,
                    LKL10 = NULL,
+                   disp_stars = FALSE,
+                   LSF = NULL,
                    z = 0.1,
                    H0 = 67.8,
                    OmegaM = 0.308,
@@ -35,29 +39,25 @@ SFHfunc = function(massfunc = massfunc_b5,
   dots = list(...)
   massfunc_args = dots[names(dots) %in% names(formals(massfunc))]
   
-  if (stellpop == 'BC03lr') {
-    if (is.null(speclib)) {
+  if (is.null(speclib)) {
+    if (stellpop == 'BC03lr') {
       BC03lr = NULL
       data('BC03lr', envir = environment())
       speclib = BC03lr
-    }
-  }else if (stellpop == 'BC03hr') {
-    if (is.null(speclib)) {
+    }else if (stellpop == 'BC03hr') {
       BC03hr = NULL
       data('BC03hr', envir = environment())
       speclib = BC03hr
-    }
-  }else if (stellpop == 'EMILES') {
-    if (is.null(speclib)) {
+    }else if (stellpop == 'EMILES') {
       EMILES = NULL
       data('EMILES', envir = environment())
       speclib = EMILES
-    }
-  }else if (stellpop == 'BPASS') {
-    if (is.null(speclib)) {
+    }else if (stellpop == 'BPASS') {
       BPASS = NULL
       data('BPASS', envir = environment())
       speclib = BPASS
+    }else{
+      stop('Need speclib or stellpop!')
     }
   }
   
@@ -95,6 +95,20 @@ SFHfunc = function(massfunc = massfunc_b5,
         'S350_Herschel',
         'S500_Herschel'
       )
+    }else if(filters[1] == 'WAVES'){
+      filters = c(
+        'u_VST',
+        'g_VST',
+        'r_VST',
+        'i_VST',
+        'Z_VISTA',
+        'Y_VISTA',
+        'J_VISTA',
+        'H_VISTA',
+        'K_VISTA',
+        'W1_WISE' ,
+        'W2_WISE'
+      )
     }
   }
   
@@ -109,7 +123,19 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
   }
   
-  agevec = speclib$Age * agescale
+  # if(requireNamespace('Rfast')){
+  #   #this proved to be slower in fact, but leave commented for future tests
+  #   colsum_loc = Rfast::colsums
+  #   formals(colsum_loc)$parallel=TRUE
+  # }else{
+  #   colsum_loc = colSums
+  # }
+  
+  if(agescale != 1){
+    agevec = speclib$Age * agescale
+  }else{
+    agevec = speclib$Age
+  }
   
   if (is.function(Z)) {
     dots = list(...)
@@ -213,6 +239,10 @@ SFHfunc = function(massfunc = massfunc_b5,
     masstot = forcemass
   }
   
+  # Here we modify the speclib if we have an escape fraction less than 1.
+  # This is because this will be the first process that occurs, before birth cloud dust or ISM screen dust
+  # This means we also need to track the luminosity of the stars before any UV absorption (lum)
+  
   if (length(Zuse) > 1) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
@@ -251,6 +281,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
   }
   
+  # This should be pre dispersion being added, and birthcloud or ISM attenuation.
   lumtot_unatten = sum(.qdiff(wave_lum) * lum)
   lum_unatten = lum
   
@@ -270,8 +301,47 @@ SFHfunc = function(massfunc = massfunc_b5,
       }
     }
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
-  } else{
+  }else{
     lumtot_birth = 0
+  }
+  
+  if(disp_stars){
+    # Here we optionally disperse the spectrum along our LoS.
+    # Remember here we are still in instrinsic luminosity space
+    
+    grid = seq(-range, range, by=res)
+    weights = dnorm(grid)
+    wave_lum_log = log10(wave_lum)
+    
+    if(!is.null(LSF)){
+      if(is.function(LSF)){
+        vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z in the oberved frame
+      }else if(is.matrix(LSF) | is.data.frame(LSF)){
+        vel_LSF = approx(x=log10(LSF[,1]), y=LSF[,2], xout=log10(wave_lum*(1 + z)), rule=2)$y
+      }else if(length(LSF == 1)){
+        vel_LSF = rep(LSF, length(wave_lum))
+      }else{
+        stop('LSF is in the wrong format!')
+      }
+    }else{
+      vel_LSF = rep(0, length(wave_lum))
+    }
+    
+    z_disp = sqrt(veldisp^2 + vel_LSF^2)/(.c_to_mps/1000) #this will be a vector of length wave_lum
+    
+    lum_conv = numeric(length(lum))
+    
+    for(i in seq_along(grid)){
+      z_seq = grid[i]*z_disp
+      new_wave = log10(wave_lum*(1 + z_seq))
+      new_lum = log10(lum/(1 + z_seq))
+      new_lum = 10^approx(x=new_wave, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
+      new_lum = new_lum*weights[i]
+      lum_conv = lum_conv + new_lum
+    }
+    
+    lum = lum_conv*res
+    rm(lum_conv)
   }
   
   if (emission) {
@@ -295,7 +365,11 @@ SFHfunc = function(massfunc = massfunc_b5,
       emissionadd_unatten = emissionLines(All_lum = All_lum,
                                           veldisp = veldisp,
                                           Z = Zvec[1],
-                                          LKL10 = LKL10)
+                                          LSF = LSF,
+                                          z_LSF = z,
+                                          LKL10 = LKL10,
+                                          res = res,
+                                          range = range)
     } else if (emission_scale == 'SFR') {
       SFRburst_emission = (1 - escape_frac) * do.call('integrate', c(list(
         f = massfunc,
@@ -308,13 +382,19 @@ SFHfunc = function(massfunc = massfunc_b5,
       emissionadd_unatten = emissionLines(SFR = SFRburst_emission,
                                           veldisp = veldisp,
                                           Z = Zvec[1],
-                                          LKL10 = LKL10)
+                                          LSF = LSF,
+                                          z_LSF = z,
+                                          LKL10 = LKL10,
+                                          res = res,
+                                          range = range)
     } else{
       stop('emission_scale must be one of SFR or FUV!')
     }
     
     emissionadd_atten = emissionadd_unatten
-    emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
+    if(tau_birth != 0){
+      emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
+    }
     
     lumtot_emission_unatten = sum(.qdiff(emissionadd_unatten$wave) * emissionadd_unatten$lum)
     lumtot_emission_atten = sum(.qdiff(emissionadd_atten$wave) * emissionadd_atten$lum)
@@ -700,10 +780,14 @@ SFHburst = function(burstmass = 1e8,
                     Z = 0.02,
                     emission = FALSE,
                     veldisp = 50,
+                    range = 5,
+                    res = 0.5,
                     emission_scale = 'FUV',
                     escape_frac = 1 - emission,
                     Ly_limit = 911.75,
                     LKL10 = NULL,
+                    disp_stars = FALSE,
+                    LSF = NULL,
                     z = 0.1,
                     H0 = 67.8,
                     OmegaM = 0.308,
@@ -834,6 +918,42 @@ SFHburst = function(burstmass = 1e8,
     lumtot_birth = 0
   }
   
+  if(disp_stars){
+    # Here we optionally disperse the spectrum along our LoS.
+    
+    grid = seq(-range, range, by=res)
+    weights = dnorm(grid)
+    wave_lum_log = log10(wave_lum)
+    
+    if(!is.null(LSF)){
+      if(is.function(LSF)){
+        vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z frame
+      }else if(is.matrix(LSF) | is.data.frame(LSF)){
+        vel_LSF = approx(x=log10(LSF[,1]), y=LSF[,2], xout=log10(wave_lum*(1 + z)), rule=2)$y
+      }else{
+        vel_LSF = rep(LSF, length(wave_lum))
+      }
+    }else{
+      vel_LSF = rep(0, length(wave_lum))
+    }
+    
+    z_disp = sqrt(veldisp^2 + vel_LSF^2)/(.c_to_mps/1000) #this will be a vector of length wave_lum
+    
+    lum_conv = numeric(length(lum))
+    
+    for(i in seq_along(grid)){
+      z_seq = grid[i]*z_disp
+      new_wave = log10(wave_lum*(1 + z_seq))
+      new_lum = log10(lum/(1 + z_seq))
+      new_lum = 10^approx(x=new_wave, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
+      new_lum = new_lum*weights[i]
+      lum_conv = lum_conv + new_lum
+    }
+    
+    lum = lum_conv*res
+    rm(lum_conv)
+  }
+  
   if (emission & burstage < 1e7) {
     if (emission_scale == 'FUV') {
       if (length(Ly_limit) == 1 | all(escape_frac == escape_frac[1])) {
@@ -855,7 +975,11 @@ SFHburst = function(burstmass = 1e8,
       emissionadd_unatten = emissionLines(All_lum = All_lum,
                                           veldisp = veldisp,
                                           Z = Z,
-                                          LKL10 = LKL10)
+                                          LSF = LSF,
+                                          z_LSF = z,
+                                          LKL10 = LKL10,
+                                          res = res,
+                                          range = range)
     } else if (emission_scale == 'SFR') {
       SFRburst_emission = (1 - escape_frac) * burstmass / 1e7
       emission_input = list(SFR = SFRburst_emission,
@@ -864,7 +988,11 @@ SFHburst = function(burstmass = 1e8,
       emissionadd_unatten = emissionLines(SFR = SFRburst_emission,
                                           veldisp = veldisp,
                                           Z = Z,
-                                          LKL10 = LKL10)
+                                          LSF = LSF,
+                                          z_LSF = z,
+                                          LKL10 = LKL10,
+                                          res = res,
+                                          range = range)
     } else{
       stop('emission_scale must be one of SFR or FUV!')
     }

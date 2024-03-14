@@ -9,8 +9,9 @@ Plot ProSpect SED Outputs
 Simple plot of the various luminosity or flux components in a \code{ProSpectSED}/\code{ProSpectSEDlike} object.
 }
 \usage{
-\method{plot}{ProSpectSED}(x, xlim=c(1e3,1e7), ylim='auto',
-xlab='Wavelength (Ang)', ylab='auto', grid=TRUE, type='lum', ...)
+\method{plot}{ProSpectSED}(x, xlim = c(1e3,1e7), ylim = 'auto',
+  xlab = 'Wavelength (Ang)', ylab = 'auto', grid = TRUE, type = 'lum', lwd_main = 5,
+  lwd_comp = 5, ...)
 \method{plot}{ProSpectSEDlike}(x, xlim=c(1e3,1e7), ylim='auto',
 xlab='Wavelength (Ang)', ylab='auto', grid=TRUE, type='flux', ...)
 }
@@ -36,6 +37,12 @@ Logical; show background grid?
 }
   \item{type}{
 Character scalar; specifies whether to plot luminosity density (\option{type}='lum') or flux density (\option{type}='flux').
+}
+  \item{lwd_main}{
+Numeric scalar; width for the main spectral line.  
+}
+  \item{lwd_comp}{
+Numeric scalar; width for the sub-component spectral line.  
 }
   \item{\dots}{
 Passed to \code{magplot} or \code{plot}.

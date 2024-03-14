@@ -12,8 +12,8 @@
 \tabular{ll}{
 Package: \tab ProSpect\cr
 Type: \tab Package\cr
-Version: \tab 1.3.4\cr
-Date: \tab 2023-05-22\cr
+Version: \tab 1.4.1\cr
+Date: \tab 2024-02-26\cr
 License: \tab LGPL-3\cr
 Depends: \tab R (>= 3.0)\cr
 Imports:  \tab celestial, NISTunits, pracma\cr

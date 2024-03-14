@@ -88,19 +88,27 @@ ProSpectSED = function(SFH = SFHfunc,
     ...
   )
   
-  Dust_Birth = Dale_interp(alpha_SF = alpha_SF_birth, Dale = Dale)
-  Dust_Screen = Dale_interp(alpha_SF = alpha_SF_screen, Dale = Dale)
-  
-  SED_Bdust_Sdust = Dust_Birth$Aspec * Stars$lumtot_birth + Dust_Screen$Aspec *
-    Stars$lumtot_screen
-  SED_Stars_Bdust_Sdust = addspec(
-    wave1 = Stars$wave_lum,
-    flux1 = Stars$lum_atten,
-    wave2 = Dust_Screen$Wave,
-    flux2 = SED_Bdust_Sdust,
-    extrap = 0,
-    waveout = waveout
-  )
+  if(!isFALSE(Dale)){
+    Dust_Birth = Dale_interp(alpha_SF = alpha_SF_birth, Dale = Dale)
+    Dust_Screen = Dale_interp(alpha_SF = alpha_SF_screen, Dale = Dale)
+    
+    SED_Bdust_Sdust = Dust_Birth$Aspec * Stars$lumtot_birth + Dust_Screen$Aspec *
+      Stars$lumtot_screen
+    SED_Stars_Bdust_Sdust = addspec(
+      wave1 = Stars$wave_lum,
+      flux1 = Stars$lum_atten,
+      wave2 = Dust_Screen$Wave,
+      flux2 = SED_Bdust_Sdust,
+      extrap = 0,
+      waveout = waveout
+    )
+  }else{
+    Final = data.frame(wave = Stars$wave_lum, lum = Stars$lum_atten)
+    Dust_Birth = NULL
+    Dust_Screen = NULL
+    SED_Bdust_Sdust = NULL
+    SED_Stars_Bdust_Sdust = NULL
+  }
   
   if (!is.null(Dale_M2L_func) & returnall) {
     dustlum_birth = Stars$lumtot_birth
@@ -128,16 +136,20 @@ ProSpectSED = function(SFH = SFHfunc,
       flux_in = 'wave',
       flux_out = 'wave'
     )
-  } else {
+  }else if(!isFALSE(Dale)) {
     Final = SED_Stars_Bdust_Sdust
   }
   
   if (is.null(AGN) | AGNlum == 0) {
-    Final = Final
+    #Final = Final
     AGN = NULL
     dustlum_AGN = 0
     dustmass_AGN = 0
   } else{
+    if(isFALSE(Dale)){
+      stop('Dale cannot be FALSE when using an AGN model!')
+    }
+    
     if (inherits(AGN, 'Fritz')) {
       #Use new model
       AGN = AGNinterp(
@@ -306,7 +318,22 @@ ProSpectSED = function(SFH = SFHfunc,
         'S350_Herschel',
         'S500_Herschel'
       )
+    }else if(filters[1] == 'WAVES'){
+      filters = c(
+        'u_VST',
+        'g_VST',
+        'r_VST',
+        'i_VST',
+        'Z_VISTA',
+        'Y_VISTA',
+        'J_VISTA',
+        'H_VISTA',
+        'K_VISTA',
+        'W1_WISE' ,
+        'W2_WISE'
+      )
     }
+    
     filtout = list()
     for (i in filters) {
       filtout = c(filtout, list(approxfun(getfilt(i))))
@@ -349,7 +376,7 @@ ProSpectSED = function(SFH = SFHfunc,
     )
     Flux$flux = convert_wave2freq(flux_wave = Flux$flux * .cgs_to_jansky,
                                   wave = Flux$wave)
-    photom_out = NULL
+    photom_out = Flux
   } else if (z <= 0 & !is.null(filtout)) {
     Flux = cbind(wave = Final$wave,
                  flux = Final$lum * .lsol_to_absolute)
@@ -363,7 +390,13 @@ ProSpectSED = function(SFH = SFHfunc,
   if (returnall) {
     StarsAtten = data.frame(wave = Stars$wave_lum, lum = Stars$lum_atten)
     StarsUnAtten = data.frame(wave = Stars$wave, lum = Stars$lum_unatten)
-    DustEmit = data.frame(wave = Dust_Screen$Wave, lum = SED_Bdust_Sdust)
+    
+    if(!isFALSE(Dale)){
+      DustEmit = data.frame(wave = Dust_Screen$Wave, lum = SED_Bdust_Sdust)
+    }else{
+      DustEmit = NULL
+    }
+    
     output = list(
       Photom = photom_out,
       FinalFlux = Flux,
@@ -466,8 +499,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     print(parmlist)
   }
   
-  Monitor = {
-  }
+  Monitor = {}
   
   if (returnall) {
     SEDout = do.call(
@@ -479,12 +511,25 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(Dale = quote(Data$Dale)),
         list(AGN = quote(Data$AGN)),
         list(filtout = quote(Data$filtout)),
+        list(filters = NULL),
         list(returnall = TRUE),
         list(Dale_M2L_func = quote(Data$Dale_M2L_func)),
         Data$arglist
       )
     )
-    Photom = SEDout$Photom
+    if(is.null(Data$filtout)){
+      #this means we are in spec-z mode
+      Photom = specReBin(wave = SEDout$Photom[,'wave'],
+                         flux = SEDout$Photom[,'flux'],
+                         wavegrid = Data$flux[,'wave'],
+                         logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
+                         rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
+      )[,'flux']
+      SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
+                                 flux = Photom)
+    }else{
+      Photom = SEDout$Photom
+    }
     
     if (length(grep('dustmass', Data$mon.names)) > 0) {
       Monitor = c(dustmass = SEDout$dustmass)
@@ -508,13 +553,24 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(Dale = quote(Data$Dale)),
         list(AGN = quote(Data$AGN)),
         list(filtout = quote(Data$filtout)),
+        list(filters = NULL),
         list(returnall = FALSE),
         Data$arglist
       )
     )
+    
+    if(is.null(Data$filtout)){
+      #this means we are in spec-z mode
+      Photom = specReBin(wave = Photom[,'wave'],
+                        flux = Photom[,'flux'],
+                        wavegrid = Data$flux[,'wave'],
+                        logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
+                        rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
+                        )[,'flux']
+    }
   }
   
-  cutsig = (Data$flux$flux - Photom) / Data$flux$fluxerr
+  cutsig = (Data$flux[,'flux'] - Photom) / Data$flux[,'fluxerr']
   if (Data$like == 'norm') {
     LL = sum(dnorm(x = cutsig, log = TRUE), na.rm = TRUE)
   } else if (Data$like == 'chisq') {
@@ -543,7 +599,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
   
   if (length(grep('flux', Data$mon.names)) > 0) {
-    names(Photom) = Data$flux$filter
+    names(Photom) = Data$flux[,'filter']
     Monitor = c(Monitor, flux = Photom)
   }
   
@@ -552,7 +608,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       Monitor = c(Monitor, LP = LP)
     }
     if (length(Monitor) == 0) {
-      Monitor = NA
+      Monitor = 0L #this needs to be 0L is empty (not NA) Alas cannot return nothing!
     } else{
       Monitor = Monitor[match(Data$mon.names, names(Monitor))]
     }
@@ -594,6 +650,8 @@ plot.ProSpectSED = function(x,
                             ylab = 'auto',
                             grid = TRUE,
                             type = 'lum',
+                            lwd_main = 5,
+                            lwd_comp = 5,
                             ...) {
   if (type == 'lum') {
     if (ylim[1] == 'auto') {
@@ -615,7 +673,7 @@ plot.ProSpectSED = function(x,
         xlab = xlab,
         ylab = ylab,
         type = 'l',
-        lwd = 5,
+        lwd = lwd_main,
         grid = grid,
         ...
       )
@@ -628,17 +686,17 @@ plot.ProSpectSED = function(x,
         xlab = xlab,
         ylab = ylab,
         type = 'l',
-        lwd = 5,
+        lwd = lwd_main,
         ...
       )
     }
     lines(x$StarsUnAtten,
           col = 'blue',
           lty = 2,
-          lwd = 2)
-    lines(x$StarsAtten, col = 'darkgreen', lwd = 2)
-    lines(x$DustEmit, col = 'brown', lwd = 2)
-    lines(x$AGN, col = 'purple', lwd = 2)
+          lwd = lwd_comp)
+    lines(x$StarsAtten, col = 'darkgreen', lwd = lwd_comp)
+    lines(x$DustEmit, col = 'brown', lwd = lwd_comp)
+    lines(x$AGN, col = 'purple', lwd = lwd_comp)
     legend(
       'topright',
       legend = c(
@@ -650,7 +708,7 @@ plot.ProSpectSED = function(x,
       ),
       col = c('black', 'blue', 'darkgreen', 'brown', 'purple'),
       lty = c(1, 2, 1, 1, 1),
-      lwd = c(5, 2, 2, 2, 2)
+      lwd = c(lwd_main, lwd_comp, lwd_comp, lwd_comp, lwd_comp)
     )
     
     par(mar = c(0, 0, 0, 0))
@@ -661,7 +719,7 @@ plot.ProSpectSED = function(x,
         xlab = 'Age (Gyr)',
         ylab = 'SFR (Msol/Yr)',
         type = 'l',
-        lwd = 5,
+        lwd = lwd_main,
         grid = grid,
         majorn = c(5,3)
       )
@@ -680,7 +738,7 @@ plot.ProSpectSED = function(x,
         legend = c('SFR', 'Z'),
         col = c('black', 'red'),
         lty = 1,
-        lwd = c(5, 2)
+        lwd = c(lwd_main, lwd_comp)
       )
     } else{
       plot(
@@ -689,7 +747,7 @@ plot.ProSpectSED = function(x,
         xlab = 'Age (Gyr)',
         ylab = 'SFR (Msol/Yr)',
         type = 'l',
-        lwd = 5
+        lwd = lwd_main
       )
       par(usr = c(
         par()$usr[1:2],
@@ -706,12 +764,12 @@ plot.ProSpectSED = function(x,
         legend = c('SFR', 'Z'),
         col = c('black', 'red'),
         lty = 1,
-        lwd = c(5, 2)
+        lwd = c(lwd_main, lwd_comp)
       )
     }
   } else if (type == 'flux') {
     if (ylim[1] == 'auto') {
-      ylim = quantile(x$FinalFlux[, 2], c(0.1, 1))
+      ylim = quantile(x$FinalFlux[, 'flux'], c(0.1, 1))
     }
     if (ylab[1] == 'auto') {
       ylab = 'Flux Density (Jansky)'
@@ -725,7 +783,7 @@ plot.ProSpectSED = function(x,
         xlab = xlab,
         ylab = ylab,
         type = 'l',
-        lwd = 5,
+        lwd = lwd_main,
         grid = grid,
         ...
       )
@@ -738,7 +796,7 @@ plot.ProSpectSED = function(x,
         xlab = xlab,
         ylab = ylab,
         type = 'l',
-        lwd = 5,
+        lwd = lwd_main,
         ...
       )
     }
@@ -769,20 +827,56 @@ plot.ProSpectSEDlike = function(x,
       type = 'flux',
       ...
     )
-    points(x$Data$flux[, 2:3], pch = 16, col = 'red')
-    if (requireNamespace("magicaxis", quietly = TRUE)) {
-      magicaxis::magerr(x$Data$flux[, 2],
-                        x$Data$flux[, 3],
-                        ylo = x$Data$flux[, 4],
-                        col = 'red')
+    
+    if(is.null(x$Data$filtout)){
+      data_mode = 'spec'
+      photom = x$SEDout$Photom[,'flux']
+      comp_type = 'l'
+    }else{
+      data_mode = 'photom'
+      photom = x$SEDout$Photom
+      comp_type = 'p'
     }
+    
+    input_names = colnames(x$Data$flux)
+    if('pivwave' %in% input_names){
+      wavename = 'pivwave'
+    }else if('cenwave' %in% input_names){
+      wavename = 'cenwave'
+    }else if('wave' %in% input_names){
+      wavename = 'wave'
+    }else{
+      stop('wavelength column name not recognised, must')
+    }
+    
+    if(data_mode == 'photom'){
+      points(x$Data$flux[, c(wavename, 'flux')], pch = 16, col = 'red')
+    }
+    
+    if (requireNamespace("magicaxis", quietly = TRUE)) {
+      if(data_mode == 'photom'){
+        magicaxis::magerr(x$Data$flux[, wavename],
+                          x$Data$flux[, 'flux'],
+                          ylo = x$Data$flux[, 'fluxerr'],
+                          col = 'red')
+      }else{
+        magicaxis::magerr(x$Data$flux[, wavename],
+                          x$Data$flux[, 'flux'],
+                          ylo = x$Data$flux[, 'fluxerr'],
+                          col =  hsv(alpha=0.5),
+                          poly = TRUE,
+                          border = NA)
+      }
+    }
+    
     legend('topleft', legend = paste('LP =', round(x$LP, 3)))
     
     par(mar = c(0, 0, 0, 0))
     if (requireNamespace("magicaxis", quietly = TRUE)) {
       magicaxis::magplot(
-        x$Data$flux[, 2],
-        (x$Data$flux[, 3] - x$SEDout$Photom) / x$Data$flux[, 4],
+        x$Data$flux[, wavename],
+        (x$Data$flux[, 'flux'] - photom) / x$Data$flux[, 'fluxerr'],
+        type = comp_type,
         pch = 16,
         col = 'red',
         grid = grid,
@@ -790,19 +884,20 @@ plot.ProSpectSEDlike = function(x,
         xlim = xlim,
         ylim = c(-4, 4),
         xlab = xlab,
-        ylab = '(Data-Model)/Error'
+        ylab = '(Data - Model)/Error'
       )
     } else{
       plot(
-        x$Data$flux[, 2],
-        x$Data$flux[, 3] - x$SEDout$Photom,
+        x$Data$flux[, wavename],
+        x$Data$flux[, 'flux'] - photom,
+        type = comp_type,
         pch = 16,
         col = 'red',
         log = 'x',
         xlim = xlim,
         ylim = c(-4, 4),
         xlab = xlab,
-        ylab = '(Data-Model)/Error'
+        ylab = '(Data - Model)/Error'
       )
     }
   } else if (type == 'lum') {

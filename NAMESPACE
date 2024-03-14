@@ -1,11 +1,18 @@
 exportPattern("^[[:alpha:]]+")
 
+import("ProSpectData")
+import("Rcpp")
+import("checkmate")
+
 importFrom("stats", "approx", "spline", "approxfun", "splinefun", "dt", "dchisq", "var", "lm", "runif", "sd","integrate", "dnorm", "pnorm", "quantile", "median", "optimize")
-importFrom("utils", "data")
+importFrom("utils", "data", "download.file", "url.show")
 importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWave", "cosplanckLawRadWave", "cosdistDistMod", "cosvol")
 importFrom("NISTunits", "kNIST2010PlanckConstant", "kNIST2010speedOfLightInVacuum", "kNIST2010BoltzmannConstant")
 importFrom("pracma", "interp1", "integral")
 importFrom("graphics", "legend", "lines", "plot", "layout", "par", "points", "axis")
+importFrom("grDevices", "hsv")
 
 S3method("plot", ProSpectSED)
 S3method("plot", ProSpectSEDlike)
+
+useDynLib(ProSpect, .registration=TRUE)

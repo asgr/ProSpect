@@ -42,7 +42,7 @@ filtout=foreach(i = filters)%do%{approxfun(getfilt(i))}
 
 temppiv=pivwave[pivwave$filter %in% filters,]
 
-agemax = 13.3e9-cosdistTravelTime(z=redshift, H0 = 67.8, OmegaM = 0.308)*1e9
+agemax = 13.3e9 - cosdistTravelTime(z=redshift, H0 = 67.8, OmegaM = 0.308)*1e9
 ```
 
 Create our model galaxy We will be using a snorm_trunc SFH function and a massmap_lin metallicity with the following parameters:
@@ -87,7 +87,7 @@ genSED=ProSpectSED(massfunc=massfunc_snorm_trunc,
                    tau_screen=10^inpar[6], 
                    alpha_SF_birth=inpar[7], 
                    alpha_SF_screen=inpar[8],
-                   z=0.1,
+                   z=redshift,
                    Z=Zfunc_massmap_lin,
                    filtout=filtout,
                    Dale=Dale_NormTot,
@@ -111,12 +111,12 @@ In principle if you have a real galaxy to fit and it is already in the required 
 To speed things up we will also pre-compute the Luminosity distance to our source (since this will be the same for every iteration, and will save some computation time):
 
 ```{r}
-LumDist_Mpc = cosdistLumDist(z=0.1, H0=67.8, OmegaM=0.308)
+LumDist_Mpc = cosdistLumDist(z=redshift, H0=67.8, OmegaM=0.308)
 ```
 
 ```{r}
 Data=list(flux=flux_input,
-          arglist=list(z=0.1, massfunc=massfunc_snorm_trunc, agemax=agemax, magemax=agemax/1e9,
+          arglist=list(z=redshift, massfunc=massfunc_snorm_trunc, agemax=agemax, magemax=agemax/1e9,
                        Z=Zfunc_massmap_lin, LumDist_Mpc=LumDist_Mpc),
           speclib=BC03lr, 
           Dale=Dale_NormTot, 

@@ -9,8 +9,8 @@ Code to generate emission line specra based on Levesque, Kewley & Larson (2010).
 }
 \usage{
 emissionLines(Ha_lum=NULL, Hb_lum=NULL, Hlines_lum=NULL, All_lum=NULL, SFR=NULL,
-Z = 0.02, q = NULL, veldisp = 50, lumscale = 21612724, log = TRUE, range = 5,
-res = 0.5, LKL10 = NULL)
+  Z = 0.02, q = NULL, veldisp = 50, LSF = NULL, z_LSF = 0, lumscale = 21612724,
+  log = TRUE, range = 5, res = 0.5, LKL10 = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -37,6 +37,12 @@ Numeric scalar; radiation field. If \option{log}=TRUE this will be interpolated 
 }
   \item{veldisp}{
 Numeric scalar; velocity dispersion (km/s).
+}
+  \item{LSF}{
+Function, numeric matrix/data.frame, numeric scalar; describes the instrumental line spread function is km/s. This should either scalar (constant throughout), a two column matrix/data.frame (wavelength in Ang, LSF in km/s) or a function that take wavelength (Ang) as an input and returns LSF in km/s. NULL means this is ignored (effectively same as setting to 0, but more efficient).
+}
+  \item{z_LSF}{
+Numeric scalar; the redshift the LSF is effectively provided at. This is because instruments provide and observed frame LSF, so to compute what it is in our intrinsic frame we need to know the redshift we are working at. If \option{LSF} is NULL, this is not required.  
 }
   \item{lumscale}{
 Numeric scalar; luminosity scaling to use in \code{\link{SFR2Lum}}. Unless you know what you are doing, leave at the default.

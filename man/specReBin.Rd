@@ -20,10 +20,10 @@ Numeric vector; the input spectral wavelength in any linear units. For convenien
 Numeric vector; the input flux density in any linear units.
 }
   \item{wavegrid}{
-Numeric vector; the target spectral wavelength grid in any linear units (must be same as \option{wave}).
+Numeric vector; the target spectral wavelength grid in any linear units (must be same as \option{wave}). If this is missing then it will be computed automatically using \option{bin}. See also \option{binfunc}.
 }
   \item{bin}{
-Numeric scalar; the bin size to use in either liner units (same as \option{wave}) or log units (i.e. dex). If not provided this will be automatically computed.
+Numeric scalar; the bin size to use in either liner units (same as \option{wave}) or log units (i.e. dex). If not provided this will be automatically computed. If this is provided and \option{wavegrid} is missing, then internally \option{wavegrid} is computed to be \code{seq(floor(wave), ceiling(wave), by = bin)}. See also \option{binfunc}.
 }
   \item{binfunc}{
 Function; if \option{bin} is not provived this function will be run on either the linear or logged wavelength (as per \option{logbin}) to choose a reasonable constant bin size.
@@ -32,10 +32,10 @@ Function; if \option{bin} is not provived this function will be run on either th
 Character scalar; The interpolator to use. Either 'approx' (see \code{\link{approx}}) or 'spline' (see \code{\link{spline}}). The former is better behaved with discrete spectrum features, but the latter might work better when the spectrum is sufficiently smooth.
 }
   \item{logbin}{
-Logical; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced.
+Logical; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced. Say you have a wavelength 10 and 20, a linear bin would be at 15 and a log bin would be at 14.1.
 }
   \item{rough}{
-Logical; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full be pixel integration be done (FALSE). The latter is usually only necessary when degrading the spectrum to coarser resolution because it ensures strong emission line features are correctly integrated over during re-binning. Note the full integration is very slow (takes about a second for a typical spectrum), so you only want to use this option when critically necessary.
+Logical; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full be pixel integration be done (FALSE). As of \code{ProSpect} v1.4.1 \option{rough} is just as fast (if not faster) than the coarse interpolation method. For spectral fitting you certainly might want the more accurate integration, but it can cause discontinuities when moving from very coarse model data to quite fine resolution observed data.
 }
   \item{\dots}{
 Extra arguments to pass to either \code{\link{approx}} or \code{\link{spline}} as per \option{interp}.
@@ -59,19 +59,19 @@ Aaron Robotham
 }
 \examples{
 library(magicaxis)
-tempflux = ProSpectSED(sparse=1, emission=TRUE)$FinalFlux
+tempflux = ProSpectSED(sparse=1, emission=TRUE, stellpop = "BC03hr")$FinalFlux
 tempflux = tempflux[tempflux$wave>2e3 & tempflux$wave<2e4,]
 
 magplot(tempflux, type='l', xlim=c(7e3,8e3))
-lines(specReBin(tempflux), col='red') #works pretty well automatically
-lines(specReBin(tempflux, bin=1e-3), col='green') #mmisses lines
-lines(specReBin(tempflux, bin=1e-5), col='blue') #looks very close to the original
+lines(specReBin(tempflux, rough=TRUE), col='red') #works pretty well automatically
+lines(specReBin(tempflux, bin=1e-3, rough=TRUE), col='green') #misses lines
+lines(specReBin(tempflux, bin=1e-5, rough=TRUE), col='blue') #very close to the original
 
 # we can also compare rough and accuracte integration schemes:
 
 magplot(tempflux, type='l', xlim=c(7e3,8e3))
-lines(specReBin(tempflux), col='red') #rough is on by default
-lines(specReBin(tempflux, rough=FALSE), col='blue') #accurate not any better (and slow)
+lines(specReBin(tempflux, bin=1e-3, rough=TRUE), col='red') #rough and fast
+lines(specReBin(tempflux, bin=1e-3, rough=FALSE), col='blue') #conserves flux
 
 }
 \concept{ rebin }

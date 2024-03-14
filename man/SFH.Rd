@@ -17,9 +17,9 @@ The star formation history functions discussed here compute output galaxy spectr
 SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3,
  pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 5, emission = FALSE,
- veldisp = 50, emission_scale = "FUV", escape_frac = 1 - emission,
- Ly_limit = 911.75, LKL10 = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308,
- OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
+ veldisp = 50, range = 5, res = 0.5, emission_scale = "FUV", escape_frac = 1 - emission,
+ Ly_limit = 911.75, LKL10 = NULL, disp_stars = FALSE, LSF = NULL, z = 0.1, H0 = 67.8,
+ OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
  unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
  LFWHM = 470, ...) 
 
@@ -31,10 +31,11 @@ SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
 
 SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
  tau_birth = 1.0, tau_screen = 0.3, pow_birth = -0.7, pow_screen = -0.7,
- filters = 'all', Z = 0.02, emission = FALSE, veldisp = 50, emission_scale = "FUV",
- escape_frac = 1 - emission, Ly_limit = 911.75, LKL10 = NULL, z = 0.1, H0 = 67.8,
- OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = 'mag', sparse = 5, unimax=  13.8e9,
- agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
+ filters = 'all', Z = 0.02, emission = FALSE, veldisp = 50, range = 5, res = 0.5,
+ emission_scale = "FUV", escape_frac = 1 - emission, Ly_limit = 911.75, LKL10 = NULL,
+ disp_stars = FALSE, LSF = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+ ref, outtype = 'mag', sparse = 5, unimax=  13.8e9, agemax = NULL, LumDist_Mpc = NULL,
+ Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -95,6 +96,12 @@ Logical; should emission features be added to the spectrum? This will be done us
   \item{veldisp}{
 Numeric scalar; velocity dispersion (km/s) of emission features. See \code{\link{emissionLines}}. 
 }
+  \item{range}{
+Numeric scalar; how many sigma either side of the line should the dispersion spread flux be evaluated (starts to become inaccurate if lower than 5).  
+}
+  \item{res}{
+Numeric scalar; the relative resolution of the dispersion evaluation in fractions of sigma. Should not be more than 0.5, but might need to be lower if dispersion is much larger than the effective spectral resolution (a few thousand km/s usually, in which case set to 0.1-0.2).
+}
   \item{emission_scale}{
 Character; one of 'FUV' or 'SFR'. 'FUV' scales the emission features via an energy balance, absorbing all unattenuated flux below \option{Ly_limit} by a factor (1-\option{escape_frac}) and re-emitting as lines. 'SFR' scales Halpha from Kennicutt (1998), but still absorbs flux below \option{Ly_limit} by a factor (1-\option{escape_frac}). If providing \option{LKL10} to speed code up then it must be \option{LKL10}=\code{\link{LKL10_NormAll}} when \option{emission_scale}='FUV', and \option{LKL10}=\code{\link{LKL10_NormHalpha}} when \option{emission_scale}='SFR'. Otherwise these are loaded internally as appropriate.
 }
@@ -106,6 +113,12 @@ Numeric scalar/vector; the Lyman limit/s to use (Angstroms). Photons with wavele
 }
   \item{LKL10}{
 List; LKL template to use. If \option{LKL10}=NULL then the appropriate template is loaded internally (this is the safest option). To speed things up the user can pass in the appropriate \code{\link{LKL10}} template, but care must be taken to ensure the scaling used makes use of the correct dataset. See \code{\link{emissionLines}}.  
+}
+  \item{disp_stars}{
+Logical; should the star templates also have dispersion (\option{veldisp}) added? This is done distinctly to the emission features (so they will not be dispersed twice!) This is only applied to the attenuated spectrum, so the unattenuated will be the intrinsic (0 km/s dispersion) spectrum.
+}
+  \item{LSF}{
+Function, numeric matrix/data.frame, numeric scalar; describes the instrumental line spread function is km/s. This should either scalar (constant throughout), a two column matrix/data.frame (wavelength in Ang, LSF in km/s) or a function that take wavelength (Ang) as an input and returns LSF in km/s. NULL means this is ignored (effectively same as setting to 0, but more efficient).
 }
   \item{z}{
 Numeric scalar; cosmological redshift of the source. If the provided \option{z}=0 then the returned fluxes will be absolute, i.e. absolute magnitudes if \option{outtype}='mag'. If \option{z}<0 then only luminosities are computed (flux parts are skipped).
