@@ -19,17 +19,17 @@ speclib_FITSload(file, Labels = list(Zlab = "Metallicity",
   Lumlab = "Lsun / Ang (for 1 Msun SF)", LumAgelab = "Lsun / Ang (for 1 Msun/Yr SFR)"),
   check = FALSE)
 
-speclib_check(speclib, Labels = list(Zlab = "Metallicity",
-  Agelab = "Time since ZAM / Yrs", Wavelab = "Wavelength / Ang",
+speclib_check(speclib, structure = TRUE, coverage = TRUE, Labels = list(
+  Zlab = "Metallicity", Agelab = "Time since ZAM / Yrs", Wavelab = "Wavelength / Ang",
   Lumlab = "Lsun / Ang (for 1 Msun SF)", LumAgelab = "Lsun / Ang (for 1 Msun/Yr SFR)"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{stellpop}{
-Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL}, or one of (currently): 'BC03lr_Pd_Ch' / 'BC03hr_Pd_Ch' / 'EMILES_Bs_Ch' / 'BPASS_St_Ch' / 'XSL_PC_Kr'. Note only XSL_PC_Kr is not available in the core package, but all are included for completeness (and in case in future some are removed from the core package). The equivalent package version are named BC03lr, BC03hr, EMILES and BPASS respectively.
+Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL} and other key information. Note BC03lr_Pd_Ch / BC03hr_Pd_Ch / EMILES_Bs_Ch / BPASS_St_Ch are in the core \code{ProSpectData} package, but they are also included here for completeness (and in case in future some are removed from the core package). The equivalent package version are named BC03lr, BC03hr, EMILES and BPASS respectively.
 }
   \item{type}{
-Character scalar; type of spectral library to download. Either 'rda' (default) or 'fits'.
+Character scalar; type of spectral library to download. Either 'rda' (default) or 'fits'. Note in future perhaps only one of the rda/fits SSP type will be available for a given SSP. This should be clear from checking the \option{stellpop} = 'avail' information.
 }
   \item{destpath}{
 Character scalar; where the target SSP should be downloaded to.
@@ -48,6 +48,12 @@ Logical; should checks be run on the spectral library being returned? Uses \code
 }
   \item{speclib}{
 List; spectral library to path through \code{ProSpect} format checks.
+}
+  \item{structure}{
+Logical; should the structure of \option{speclib} be checked. If TRUE, results are printed to screen.
+}
+  \item{coverage}{
+Logical; should the coverage (Z, Age, Wave) of \option{speclib} be checked? If TRUE, results are printed to screen.
 }
 }
 \details{
@@ -100,7 +106,7 @@ The extensions and ordering of the target FITS file should look similar to the i
 }
 }
 \value{
-\code{speclib_download} If \option{stellpop} = 'avail' then the contents of avail.txt will be displayed (using the default method). Otherwise, nothing is returned by the side effect is the target SSP rda file is downloaded.
+\code{speclib_download} If \option{stellpop} = 'avail' then the contents of avail.txt will be displayed (using the default method). Otherwise, the target SSP rda/FITS file is downloaded and the destination path (+ filename) is returned.
 
 \code{speclib_FITSload} Returns the target SSP in \code{ProSpect} compatible format. Note this needs to be assigned to a larget object, i.e. \code{newlib = speclib_FITSload('newlib.fits')}.
 
@@ -123,8 +129,11 @@ load('~/Downloads/XSL_PC_Kr.rda')
 temp = ProSpectSED(speclib=XSL_PC_Kr)
 plot(temp)
 
-# Check the FITS version of the library:
+# Check an SSP:
 data(BC03lr)
+speclib_check(BC03lr)
+
+# Check the FITS version of the library:
 BC03lr_file = system.file('BC03lr.fits', package="ProSpectData")
 BC03lr_test = speclib_FITSload(BC03lr_file)
 
