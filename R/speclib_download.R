@@ -401,11 +401,15 @@ speclib_check = function(speclib,
     }else{
       message('Oh dear - not all speclib checks are passing :-(')
     }
+
+    message(' - - - - - - - - \n')
   }else{
     all_good = NULL
   }
 
   if(coverage){
+    message(' - - - - - - - - ')
+
     Zinfo = c(min(speclib$Z), median(speclib$Z), max(speclib$Z))
     message('Z min / med / max: ',Zinfo[1],' ',Zinfo[2],' ',Zinfo[3],' [',length(speclib$Z),']')
 
@@ -418,6 +422,8 @@ speclib_check = function(speclib,
     WaveBin = diff(speclib$Wave)
     WaveBininfo = c(min(WaveBin), median(WaveBin), max(WaveBin))
     message('Wave Bin min / med / max: ',WaveBininfo[1],' ',WaveBininfo[2],' ',WaveBininfo[3])
+
+    message(' - - - - - - - - \n')
   }
 
   return(invisible(all_good))
