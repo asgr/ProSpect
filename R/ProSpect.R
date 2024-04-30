@@ -471,6 +471,36 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   
   names(parm) = Data$parm.names
   
+  ## Implement Photoz fitting mode 
+  if("z" %in% Data$parm.names & Data$arglist$photoz){
+    
+    ztest = parm["z"]
+    if(Data$logged[Data$parm.names == "z"]){
+      ztest = 10^ztest
+    }
+    
+    # z_genSF = Data$arglist$z_genSF
+    
+    if (!requireNamespace("celestial", quietly = TRUE)) {
+      stop("The celestial package is needed for this function to work. Please install it from GitHub/ASGR", call. = FALSE)
+    }
+    
+    agemax_new = (celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
+    magemax_new = agemax_new/1e9 ## need to be in Gyr
+    Zagemax_new = agemax_new/1e9
+    LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
+    
+    ## Now update the args in Data
+    Data$arglist$agemax = unname(agemax_new)
+    Data$arglist$magemax = unname(magemax_new)
+    Data$arglist$Zagemax = unname(Zagemax_new)
+    Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
+    
+    if("mpeak" %in% Data$parm.names){
+      parm["mpeak"] = ifelse(parm["mpeak"] > magemax_new, magemax_new, parm["mpeak"])
+    }
+  }
+  
   if (!is.null(Data$constraints)) {
     parm = Data$constraints(parm)
   }
@@ -498,34 +528,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   if (Data$verbose) {
     print(parmlist)
   }
-  
-  ## Implement Photoz fitting mode 
-  sink_file_for_annoying_pracma_messages = tempfile()
-  sink(sink_file_for_annoying_pracma_messages)
-  if("z" %in% Data$parm.names & Data$arglist$photoz){
-    
-    ztest = parm["z"]
-    if(Data$logged[Data$parm.names == "z"]){
-      ztest = 10^ztest
-    }
-    
-    if (!requireNamespace("celestial", quietly = TRUE)) {
-      stop("The celestial package is needed for this function to work. Please install it from GitHub/ASGR", call. = FALSE)
-    }
-    
-    agemax_new = celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref)*1e9 ##need to be in years 
-    magemax_new = agemax_new/1e9 ## need to be in Gyr
-    Zagemax_new = agemax_new/1e9
-    LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
-    
-    ## Now update the args in Data
-    Data$arglist$agemax = unname(agemax_new)
-    Data$arglist$magemax = unname(magemax_new)
-    Data$arglist$Zagemax = unname(Zagemax_new)
-    Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
-  }
-  sink()
-  unlink(sink_file_for_annoying_pracma_messages, recursive = T)
   
   Monitor = {}
   
