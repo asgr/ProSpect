@@ -472,32 +472,41 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   names(parm) = Data$parm.names
   
   ## Implement Photoz fitting mode 
-  if("z" %in% Data$parm.names & Data$arglist$photoz){
-    
-    ztest = parm["z"]
-    if(Data$logged[Data$parm.names == "z"]){
-      ztest = 10^ztest
-    }
-    
-    # z_genSF = Data$arglist$z_genSF
-    
+  if(("photoz" %in% names(Data$arglist)) & ("z" %in% Data$parm.names)) {
     if (!requireNamespace("celestial", quietly = TRUE)) {
-      stop("The celestial package is needed for this function to work. Please install it from GitHub/ASGR", call. = FALSE)
+      stop("The celestial package is needed for this to work. Please install it from GitHub/ASGR", call. = FALSE)
     }
-    
-    agemax_new = (celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
-    magemax_new = agemax_new/1e9 ## need to be in Gyr
-    Zagemax_new = agemax_new/1e9
-    LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
-    
-    ## Now update the args in Data
-    Data$arglist$agemax = unname(agemax_new)
-    Data$arglist$magemax = unname(magemax_new)
-    Data$arglist$Zagemax = unname(Zagemax_new)
-    Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
-    
-    if("mpeak" %in% Data$parm.names){
-      parm["mpeak"] = ifelse(parm["mpeak"] > magemax_new, magemax_new, parm["mpeak"])
+    if(Data$arglist$photoz){
+      
+      if(!("z_genSF" %in% names(Data$arglist))){
+        stop("z_genSF not defined. Use z_genSF = NULL or set maximum redshift \n to start star formation.")
+      }
+      
+      ztest = parm["z"]
+      if(Data$logged[Data$parm.names == "z"]){
+        ztest = 10^ztest
+      }
+      
+      z_genSF = Data$arglist$z_genSF
+
+      agemax_new = (celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
+      if(!is.null(z_genSF)){
+        agemax_new = 1e9*(celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z = z_genSF, ref = Data$arglist$ref))
+      }
+
+      magemax_new = agemax_new/1e9 ## need to be in Gyr
+      Zagemax_new = agemax_new/1e9
+      LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
+      
+      ## Now update the args in Data
+      Data$arglist$agemax = unname(agemax_new)
+      Data$arglist$magemax = unname(magemax_new)
+      Data$arglist$Zagemax = unname(Zagemax_new)
+      Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
+      
+      if("mpeak" %in% Data$parm.names){
+        parm["mpeak"] = ifelse(parm["mpeak"] > magemax_new, magemax_new, parm["mpeak"])
+      }
     }
   }
   
