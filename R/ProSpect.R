@@ -477,18 +477,22 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       stop("The celestial package is needed for this to work. Please install it from GitHub/ASGR", call. = FALSE)
     }
     if(Data$arglist$photoz){
-      
-      if(!("z_genSF" %in% names(Data$arglist))){
-        stop("z_genSF not defined. Use z_genSF = NULL or set maximum redshift \n to start star formation.")
-      }
-      
+
+      z_genSF = Data$arglist$z_genSF
+
       ztest = parm["z"]
       if(Data$logged[Data$parm.names == "z"]){
         ztest = 10^ztest
       }
       
-      z_genSF = Data$arglist$z_genSF
-
+      if(Data$arglist$emission){
+        if(is.null(Data$arglist$IGMfunc)){
+          Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2) ## Default IGM absorption function
+        }else{
+          Data$arglist$IGMabsorb = Data$arglist$IGMfunc(ztest)
+        }
+      }
+      
       agemax_new = (celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
       if(!is.null(z_genSF)){
         agemax_new = 1e9*(celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z = z_genSF, ref = Data$arglist$ref))
