@@ -35,10 +35,10 @@ SFHfunc = function(massfunc = massfunc_b5,
                    LFWHM = 470,
                    ...) {
   #Ly_limit should be 911.75 Ang (the actual ionisation limit) or sometimes 1215.67 Ang (Lyman alpha)
-  
+
   dots = list(...)
   massfunc_args = dots[names(dots) %in% names(formals(massfunc))]
-  
+
   if (is.null(speclib)) {
     if (stellpop == 'BC03lr') {
       BC03lr = NULL
@@ -60,13 +60,13 @@ SFHfunc = function(massfunc = massfunc_b5,
       stop('Need speclib or stellpop!')
     }
   }
-  
+
   if (any(speclib$Age <= 1e7)) {
     birthcloud = max(which(speclib$Age <= 1e7))
   } else{
     birthcloud = 1
   }
-  
+
   if (!is.null(filters)) {
     if (filters[1] == 'all') {
       cenwave = NULL
@@ -111,7 +111,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       )
     }
   }
-  
+
   if (!is.function(Z)) {
     if (Z %% 1 != 0) {
       #Check if the Z is non integer, if so then convert to a function
@@ -122,7 +122,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       Z = tempZfunc
     }
   }
-  
+
   # if(requireNamespace('Rfast')){
   #   #this proved to be slower in fact, but leave commented for future tests
   #   colsum_loc = Rfast::colsums
@@ -130,13 +130,13 @@ SFHfunc = function(massfunc = massfunc_b5,
   # }else{
   #   colsum_loc = colSums
   # }
-  
+
   if(agescale != 1){
     agevec = speclib$Age * agescale
   }else{
     agevec = speclib$Age
   }
-  
+
   if (is.function(Z)) {
     dots = list(...)
     Z_args = dots[names(dots) %in% names(formals(Z))]
@@ -157,7 +157,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     Zvec = rep(speclib$Z[Zuse], length(speclib$Age))
     Zdoweight = FALSE
   }
-  
+
   wave_lum = speclib$Wave
   if (sparse > 1) {
     sparse = seq(1, dim(speclib$Zspec[[1]])[2], by = sparse)
@@ -166,7 +166,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
     wave_lum = wave_lum[sparse]
   }
-  
+
   if (intSFR) {
     massvec = rep(0, length(agevec))
     for (i in 1:length(agevec)) {
@@ -208,7 +208,7 @@ SFHfunc = function(massfunc = massfunc_b5,
   } else{
     massvec = do.call('massfunc', c(list(agevec), massfunc_args)) * speclib$AgeWeights
   }
-  
+
   if (unimax != FALSE) {
     if (is.null(agemax)) {
       agemax = unimax - cosdistTravelTime(
@@ -220,15 +220,15 @@ SFHfunc = function(massfunc = massfunc_b5,
       ) * 1e9
     }
   }
-  
+
   if (!is.null(agemax)) {
     massvec[speclib$Age > agemax] = 0
   }
-  
+
   if (any(massvec < 0)) {
     stop('Supplied massfunc cannot create negative SFR!')
   }
-  
+
   if (forcemass == FALSE) {
     forcescale = 1
     masstot = sum(massvec)
@@ -238,15 +238,17 @@ SFHfunc = function(massfunc = massfunc_b5,
     massvec = massvec * forcescale
     masstot = forcemass
   }
-  
+
   # Here we modify the speclib if we have an escape fraction less than 1.
   # This is because this will be the first process that occurs, before birth cloud dust or ISM screen dust
   # This means we also need to track the luminosity of the stars before any UV absorption (lum)
-  
+
   if (length(Zuse) > 1) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
-      lum = lum + colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
+      toadd = colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
+      #toadd[which(is.na(toadd) | (toadd < 0))] = 0 #since some spectral libraries have negative flux (noisy empirical data)
+      lum = lum + toadd
       if (any(escape_frac < 1)) {
         if (length(Ly_limit) == 1) {
           speclib$Zspec[[Zid]][, wave_lum < Ly_limit] = speclib$Zspec[[Zid]][, wave_lum < Ly_limit] * escape_frac
@@ -280,11 +282,11 @@ SFHfunc = function(massfunc = massfunc_b5,
       }
     }
   }
-  
+
   # This should be pre dispersion being added, and birthcloud or ISM attenuation.
   lumtot_unatten = sum(.qdiff(wave_lum) * lum)
   lum_unatten = lum
-  
+
   if (tau_birth != 0) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
@@ -304,15 +306,15 @@ SFHfunc = function(massfunc = massfunc_b5,
   }else{
     lumtot_birth = 0
   }
-  
+
   if(disp_stars){
     # Here we optionally disperse the spectrum along our LoS.
     # Remember here we are still in instrinsic luminosity space
-    
+
     grid = seq(-range, range, by=res)
     weights = dnorm(grid)
     wave_lum_log = log10(wave_lum)
-    
+
     if(!is.null(LSF)){
       if(is.function(LSF)){
         vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z in the oberved frame
@@ -326,11 +328,11 @@ SFHfunc = function(massfunc = massfunc_b5,
     }else{
       vel_LSF = rep(0, length(wave_lum))
     }
-    
+
     z_disp = sqrt(veldisp^2 + vel_LSF^2)/(.c_to_mps/1000) #this will be a vector of length wave_lum
-    
+
     lum_conv = numeric(length(lum))
-    
+
     for(i in seq_along(grid)){
       z_seq = grid[i]*z_disp
       new_wave = log10(wave_lum*(1 + z_seq))
@@ -339,11 +341,11 @@ SFHfunc = function(massfunc = massfunc_b5,
       new_lum = new_lum*weights[i]
       lum_conv = lum_conv + new_lum
     }
-    
+
     lum = lum_conv*res
     rm(lum_conv)
   }
-  
+
   if (emission) {
     if (emission_scale == 'FUV') {
       if (length(Ly_limit) == 1 | all(escape_frac == escape_frac[1])) {
@@ -358,7 +360,7 @@ SFHfunc = function(massfunc = massfunc_b5,
         sel = which(wave_lum < Ly_limit[length(Ly_limit)])
         All_lum = All_lum + (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel])
       }
-      
+
       emission_input = list(All_lum = All_lum,
                             veldisp = veldisp,
                             Z = Zvec[1])
@@ -390,27 +392,27 @@ SFHfunc = function(massfunc = massfunc_b5,
     } else{
       stop('emission_scale must be one of SFR or FUV!')
     }
-    
+
     emissionadd_atten = emissionadd_unatten
     if(tau_birth != 0){
       emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
     }
-    
+
     lumtot_emission_unatten = sum(.qdiff(emissionadd_unatten$wave) * emissionadd_unatten$lum)
     lumtot_emission_atten = sum(.qdiff(emissionadd_atten$wave) * emissionadd_atten$lum)
-    
+
     lumtot_birth = lumtot_birth - lumtot_emission_unatten + lumtot_emission_atten
-    
+
     if(lumtot_birth < 0){
      lumtot_birth = 0
     }
-    
+
     lum = addspec(wave_lum,
                   lum,
                   emissionadd_atten$wave,
                   emissionadd_atten$lum)
     lum_unatten = approxfun(log10(wave_lum), lum_unatten)(log10(lum$wave))
-    
+
     wave_lum = lum$wave
     lum = lum$flux
     #wave_lum=lum_unatten$wave
@@ -418,7 +420,7 @@ SFHfunc = function(massfunc = massfunc_b5,
   } else{
     emission_input = NULL
   }
-  
+
   if (tau_screen != 0) {
     lum = lum * CF_screen(
       wave_lum,
@@ -429,21 +431,21 @@ SFHfunc = function(massfunc = massfunc_b5,
       LFWHM = LFWHM
     )
     lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) * lum)
-    
+
     if(lumtot_screen < 0){
       lumtot_screen = 0
     }
-    
+
   } else{
     lumtot_screen = 0
   }
-  
+
   SFRburst = do.call('integrate', c(list(
     f = massfunc, lower = 0, upper = 1e8
   ), massfunc_args))$value * forcescale / 1e8
-  
+
   lumtot_atten = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
-  
+
   if (z < 0 | is.null(filters)) {
     out = NULL
     flux = NULL
@@ -517,9 +519,9 @@ SFHfunc = function(massfunc = massfunc_b5,
       }
     }
   }
-  
+
   SFR = massvec / speclib$AgeWeights
-  
+
   if (!is.null(agemax)) {
     sel = which(speclib$Age <= agemax)
     agevec = agevec[sel]
@@ -527,7 +529,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     SFR = SFR[sel]
     Zvec = Zvec[sel]
   }
-  
+
   return(
     list(
       flux = flux,
@@ -573,7 +575,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
                       ...) {
   dots = list(...)
   massfunc_args = dots[names(dots) %in% names(formals(massfunc))]
-  
+
   if (stellpop == 'BC03lr') {
     if (is.null(speclib)) {
       BC03lr = NULL
@@ -599,13 +601,13 @@ SMstarfunc = function(massfunc = massfunc_b5,
       speclib = BPASS
     }
   }
-  
+
   if (any(speclib$Age <= 1e7)) {
     birthcloud = max(which(speclib$Age <= 1e7))
   } else{
     birthcloud = 1
   }
-  
+
   if (!is.function(Z)) {
     if (Z %% 1 != 0) {
       #Check if the Z is non integer, if so then convert to a function
@@ -616,9 +618,9 @@ SMstarfunc = function(massfunc = massfunc_b5,
       Z = tempZfunc
     }
   }
-  
+
   agevec = speclib$Age * agescale
-  
+
   if (is.function(Z)) {
     dots = list(...)
     Z_args = dots[names(dots) %in% names(formals(Z))]
@@ -639,7 +641,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
     Zvec = rep(speclib$Z[Zuse], length(speclib$Age))
     Zdoweight = FALSE
   }
-  
+
   if (intSFR) {
     massvec = rep(0, length(agevec))
     for (i in 1:length(agevec)) {
@@ -681,7 +683,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
   } else{
     massvec = do.call('massfunc', c(list(agevec), massfunc_args)) * speclib$AgeWeights
   }
-  
+
   if (unimax != FALSE) {
     if (is.null(agemax)) {
       agemax = unimax - cosdistTravelTime(
@@ -693,11 +695,11 @@ SMstarfunc = function(massfunc = massfunc_b5,
       ) * 1e9
     }
   }
-  
+
   if (!is.null(agemax)) {
     massvec[speclib$Age > agemax] = 0
   }
-  
+
   if (forcemass == FALSE) {
     forcescale = 1
   } else{
@@ -705,9 +707,9 @@ SMstarfunc = function(massfunc = massfunc_b5,
     forcescale = forcemass / masstot
     massvec = massvec * forcescale
   }
-  
+
   totstar = rep(0, length(massvec))
-  
+
   for (Zid in Zuse) {
     if (Zdoweight) {
       totstar = totstar + speclib$Zevo[[Zid]][, 'SMstar'] * massvec * Zwmat[, Zid]
@@ -715,7 +717,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
       totstar = speclib$Zevo[[Zid]][, 'SMstar'] * massvec
     }
   }
-  
+
   burstageloc = c(min(which(speclib$Age - burstage[1] > 0)),
                   max(which(speclib$Age - burstage[2] < 0)))
   youngageloc = c(min(which(speclib$Age - youngage[1] > 0)),
@@ -731,13 +733,13 @@ SMstarfunc = function(massfunc = massfunc_b5,
   #midageloc=c(which.min(abs(speclib$Age-midage[1])),which.min(abs(speclib$Age-midage[2])))
   #oldageloc=c(which.min(abs(speclib$Age-oldage[1])),which.min(abs(speclib$Age-oldage[2])))
   #ancientageloc=c(which.min(abs(speclib$Age-ancientage[1])),which.min(abs(speclib$Age-ancientage[2])))
-  
+
   burstrescale = (burstage[2] - burstage[1]) / sum(speclib$AgeWeights[burstageloc[1]:burstageloc[2]])
   youngrescale = (youngage[2] - youngage[1]) / sum(speclib$AgeWeights[youngageloc[1]:youngageloc[2]])
   midrescale = (midage[2] - midage[1]) / sum(speclib$AgeWeights[midageloc[1]:midageloc[2]])
   oldrescale = (oldage[2] - oldage[1]) / sum(speclib$AgeWeights[oldageloc[1]:oldageloc[2]])
   ancientrescale = (ancientage[2] - ancientage[1]) / sum(speclib$AgeWeights[ancientageloc[1]:ancientageloc[2]])
-  
+
   burstform = sum(massvec[burstageloc[1]:burstageloc[2]]) * burstrescale
   burststar = sum(totstar[burstageloc[1]:burstageloc[2]]) * burstrescale
   youngform = sum(massvec[youngageloc[1]:youngageloc[2]]) * youngrescale
@@ -748,8 +750,8 @@ SMstarfunc = function(massfunc = massfunc_b5,
   oldstar = sum(totstar[oldageloc[1]:oldageloc[2]]) * oldrescale
   ancientform = sum(massvec[ancientageloc[1]:ancientageloc[2]]) * ancientrescale
   ancientstar = sum(totstar[ancientageloc[1]:ancientageloc[2]]) * ancientrescale
-  
-  
+
+
   return(
     c(
       BurstSMform = burstform,
@@ -803,7 +805,7 @@ SFHburst = function(burstmass = 1e8,
                     LFWHM = 470,
                     ...) {
   burstmass = .interval(burstmass, 0, Inf, reflect = FALSE)
-  
+
   if (stellpop == 'BC03lr') {
     if (is.null(speclib)) {
       BC03lr = NULL
@@ -829,13 +831,13 @@ SFHburst = function(burstmass = 1e8,
       speclib = BPASS
     }
   }
-  
+
   if (any(speclib$Age <= 1e7)) {
     birthcloud = max(which(speclib$Age <= 1e7))
   } else{
     birthcloud = 1
   }
-  
+
   wave_lum = speclib$Wave
   if (sparse > 1) {
     sparse = seq(1, dim(speclib$Zspec[[1]])[2], by = sparse)
@@ -843,7 +845,7 @@ SFHburst = function(burstmass = 1e8,
   } else{
     sparse = TRUE
   }
-  
+
   if (!is.null(filters)) {
     if (filters[1] == 'all' | filters[1] == 'GAMA') {
       filters = c(
@@ -870,7 +872,7 @@ SFHburst = function(burstmass = 1e8,
       )
     }
   }
-  
+
   if (unimax != FALSE) {
     if (is.null(agemax)) {
       agemax = unimax - cosdistTravelTime(
@@ -882,13 +884,13 @@ SFHburst = function(burstmass = 1e8,
       ) * 1e9
     }
   }
-  
+
   if (!is.null(agemax)) {
     if (burstage > agemax) {
       burstmass = 0
     }
   }
-  
+
   metal_interp = interp_quick(Z, speclib$Z, log = TRUE)
   age_interp = interp_quick(burstage, speclib$Age)
   if (metal_interp['wt_lo'] == 1) {
@@ -906,25 +908,25 @@ SFHburst = function(burstmass = 1e8,
       speclib$Zspec[[metal_interp['ID_hi']]][age_interp['ID_hi'], sparse] *
       age_interp['wt_hi'] * metal_interp['wt_hi']
   }
-  
+
   lum_unatten = lum_unatten * burstmass
   lum = lum_unatten
   lumtot_unatten = sum(.qdiff(wave_lum) * lum)
-  
+
   if (tau_birth != 0 & burstage <= 1e7) {
     lum = lum * CF_birth(wave_lum, tau = tau_birth, pow = pow_birth)
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
   } else{
     lumtot_birth = 0
   }
-  
+
   if(disp_stars){
     # Here we optionally disperse the spectrum along our LoS.
-    
+
     grid = seq(-range, range, by=res)
     weights = dnorm(grid)
     wave_lum_log = log10(wave_lum)
-    
+
     if(!is.null(LSF)){
       if(is.function(LSF)){
         vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z frame
@@ -936,11 +938,11 @@ SFHburst = function(burstmass = 1e8,
     }else{
       vel_LSF = rep(0, length(wave_lum))
     }
-    
+
     z_disp = sqrt(veldisp^2 + vel_LSF^2)/(.c_to_mps/1000) #this will be a vector of length wave_lum
-    
+
     lum_conv = numeric(length(lum))
-    
+
     for(i in seq_along(grid)){
       z_seq = grid[i]*z_disp
       new_wave = log10(wave_lum*(1 + z_seq))
@@ -949,11 +951,11 @@ SFHburst = function(burstmass = 1e8,
       new_lum = new_lum*weights[i]
       lum_conv = lum_conv + new_lum
     }
-    
+
     lum = lum_conv*res
     rm(lum_conv)
   }
-  
+
   if (emission & burstage < 1e7) {
     if (emission_scale == 'FUV') {
       if (length(Ly_limit) == 1 | all(escape_frac == escape_frac[1])) {
@@ -968,7 +970,7 @@ SFHburst = function(burstmass = 1e8,
         sel = which(wave_lum < Ly_limit[length(Ly_limit)])
         All_lum = All_lum + (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel])
       }
-      
+
       emission_input = list(All_lum = All_lum,
                             veldisp = veldisp,
                             Z = Z)
@@ -996,25 +998,25 @@ SFHburst = function(burstmass = 1e8,
     } else{
       stop('emission_scale must be one of SFR or FUV!')
     }
-    
+
     emissionadd_atten = emissionadd_unatten
     emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
-    
+
     lumtot_emission_unatten = sum(.qdiff(emissionadd_unatten$wave) * emissionadd_unatten$lum)
     lumtot_emission_atten = sum(.qdiff(emissionadd_atten$wave) * emissionadd_atten$lum)
-    
+
     lumtot_birth = lumtot_birth - lumtot_emission_unatten + lumtot_emission_atten
 
     if(lumtot_birth < 0){
       lumtot_birth = 0
     }
-    
+
     lum = addspec(wave_lum,
                   lum,
                   emissionadd_atten$wave,
                   emissionadd_atten$lum)
     lum_unatten = approxfun(log10(wave_lum), lum_unatten)(log10(lum$wave))
-    
+
     wave_lum = lum$wave
     lum = lum$flux
     #wave_lum=lum_unatten$wave
@@ -1022,7 +1024,7 @@ SFHburst = function(burstmass = 1e8,
   } else{
     emission_input = NULL
   }
-  
+
   if (tau_screen != 0) {
     lum = lum * CF_screen(
       wave_lum,
@@ -1036,17 +1038,17 @@ SFHburst = function(burstmass = 1e8,
   } else{
     lumtot_screen = 0
   }
-  
+
   lumtot_atten = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
-  
+
   masstot = burstmass
-  
+
   if (burstage <= 1e8) {
     SFRburst = masstot / 1e8
   } else{
     SFRburst = 0
   }
-  
+
   if (z < 0 | is.null(filters)) {
     return(
       list(
@@ -1135,7 +1137,7 @@ SFHburst = function(burstmass = 1e8,
       out = NULL
     }
   }
-  
+
   return(
     list(
       flux = flux,

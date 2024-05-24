@@ -48,19 +48,19 @@ ProSpectSED = function(SFH = SFHfunc,
                           IGMabsorb = 0,
                           ...) {
   #call = match.call()
-  
+
   if(!is.null(waveout)){
     waveout_max = max(waveout)
   }else{
     waveout_max = 9.35
   }
-  
+
   if ('emission' %in% names(list(...))) {
     if (list(...)$emission & missing(waveout)) {
       waveout = NULL
     }
   }
-  
+
   tau_birth = .interval(tau_birth, 0, 10, reflect = FALSE)
   tau_screen = .interval(tau_screen, 0, 10, reflect = FALSE)
   tau_AGN = .interval(tau_AGN, 0, 10, reflect = FALSE)
@@ -70,7 +70,7 @@ ProSpectSED = function(SFH = SFHfunc,
   alpha_SF_birth = .interval(alpha_SF_birth, 0.0625, 4, reflect = FALSE)
   alpha_SF_screen = .interval(alpha_SF_screen, 0.0625, 4, reflect = FALSE)
   alpha_SF_AGN = .interval(alpha_SF_AGN, 0.0625, 4, reflect = FALSE)
-  
+
   Stars = SFH(
     z = z,
     tau_birth = tau_birth,
@@ -87,11 +87,11 @@ ProSpectSED = function(SFH = SFHfunc,
     LFWHM = LFWHM,
     ...
   )
-  
+
   if(!isFALSE(Dale)){
     Dust_Birth = Dale_interp(alpha_SF = alpha_SF_birth, Dale = Dale)
     Dust_Screen = Dale_interp(alpha_SF = alpha_SF_screen, Dale = Dale)
-    
+
     SED_Bdust_Sdust = Dust_Birth$Aspec * Stars$lumtot_birth + Dust_Screen$Aspec *
       Stars$lumtot_screen
     SED_Stars_Bdust_Sdust = addspec(
@@ -109,7 +109,7 @@ ProSpectSED = function(SFH = SFHfunc,
     SED_Bdust_Sdust = NULL
     SED_Stars_Bdust_Sdust = NULL
   }
-  
+
   if (!is.null(Dale_M2L_func) & returnall) {
     dustlum_birth = Stars$lumtot_birth
     dustlum_screen = Stars$lumtot_screen
@@ -121,7 +121,7 @@ ProSpectSED = function(SFH = SFHfunc,
     dustmass_birth = 0
     dustmass_screen = 0
   }
-  
+
   ## adding radio contribution using just FIR generated from star-formation
   if (addradio_SF) {
     Final = radiocont(
@@ -139,7 +139,7 @@ ProSpectSED = function(SFH = SFHfunc,
   }else if(!isFALSE(Dale)) {
     Final = SED_Stars_Bdust_Sdust
   }
-  
+
   if (is.null(AGN) | AGNlum == 0) {
     #Final = Final
     AGN = NULL
@@ -149,7 +149,7 @@ ProSpectSED = function(SFH = SFHfunc,
     if(isFALSE(Dale)){
       stop('Dale cannot be FALSE when using an AGN model!')
     }
-    
+
     if (inherits(AGN, 'Fritz')) {
       #Use new model
       AGN = AGNinterp(
@@ -181,8 +181,8 @@ ProSpectSED = function(SFH = SFHfunc,
         dustlum_screen = dustlum_screen + AGN$total_atten
         dustmass_screen = dustmass_screen + AGN$dustmass
       }
-      
-      ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back 
+
+      ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back
         AGN$final = radiocont(
           wave = AGN$final$wave,
           flux = AGN$final$flux,
@@ -196,7 +196,7 @@ ProSpectSED = function(SFH = SFHfunc,
           flux_out = 'wave',
           subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
         )
-      
+
       AGN = AGN$final
       if (length(Final$flux) == length(AGN$flux)) {
         Final = data.frame(wave = Final$wave, flux = Final$flux +
@@ -223,7 +223,7 @@ ProSpectSED = function(SFH = SFHfunc,
         Dale_M2L_func = Dale_M2L_func,
         waveout = waveout
       ) #no bump for the hot torus part
-      
+
       if (!is.null(Dale_M2L_func) & returnall) {
         dustlum_AGN = AGN$total_atten
         dustmass_AGN = AGN$dustmass
@@ -242,7 +242,7 @@ ProSpectSED = function(SFH = SFHfunc,
         L0 = L0,
         LFWHM = LFWHM
       )
-    
+
       if (!is.null(Dale_M2L_func) & returnall) {
         dustlum_screen = dustlum_screen + AGN$total_atten
         dustmass_screen = dustmass_screen + AGN$dustmass
@@ -250,8 +250,8 @@ ProSpectSED = function(SFH = SFHfunc,
         dustlum_AGN = 0
         dustmass_AGN = 0
       }
-      
-      ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back 
+
+      ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back
       AGN$final = radiocont(
         wave = AGN$final$wave,
         flux = AGN$final$flux,
@@ -265,7 +265,7 @@ ProSpectSED = function(SFH = SFHfunc,
         flux_out = 'wave',
         subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
       )
-      
+
       AGN = AGN$final
       if (length(SED_Stars_Bdust_Sdust$flux) == length(AGN$flux)) {
         Final = data.frame(wave = SED_Stars_Bdust_Sdust$wave, flux = SED_Stars_Bdust_Sdust$flux +
@@ -282,14 +282,14 @@ ProSpectSED = function(SFH = SFHfunc,
     }
   }
   colnames(Final)[2] = 'lum'
-  
+
   if (IGMabsorb > 0) {
     sel = which(Final$wave < 1215.67)
     Final$lum[sel] = Final$lum[sel] * (1 - IGMabsorb)
     sel = which(Final$wave < 911.75)
     Final$lum[sel] = 0
   }
-  
+
   if (is.null(filtout) & !is.null(filters)) {
     if (filters[1] == 'all') {
       cenwave = NULL
@@ -333,14 +333,14 @@ ProSpectSED = function(SFH = SFHfunc,
         'W2_WISE'
       )
     }
-    
+
     filtout = list()
     for (i in filters) {
       filtout = c(filtout, list(approxfun(getfilt(i))))
     }
     names(filtout) = filters
   }
-  
+
   if (z > 0 & !is.null(filtout)) {
     Flux = Lum2Flux(
       wave = Final$wave,
@@ -386,17 +386,17 @@ ProSpectSED = function(SFH = SFHfunc,
     Flux = NULL
     photom_out = NULL
   }
-  
+
   if (returnall) {
     StarsAtten = data.frame(wave = Stars$wave_lum, lum = Stars$lum_atten)
     StarsUnAtten = data.frame(wave = Stars$wave, lum = Stars$lum_unatten)
-    
+
     if(!isFALSE(Dale)){
       DustEmit = data.frame(wave = Dust_Screen$Wave, lum = SED_Bdust_Sdust)
     }else{
       DustEmit = NULL
     }
-    
+
     output = list(
       Photom = photom_out,
       FinalFlux = Flux,
@@ -449,7 +449,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   if (is.null(Data$verbose)) {
     Data$verbose = FALSE
   }
-  
+
   if (Data$fit == 'optim' | Data$fit == 'cma') {
     returnall = FALSE #fastest first!
   } else if (Data$fit == 'check') {
@@ -468,18 +468,18 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   } else{
     returnall = FALSE #just to be safe!
   }
-  
+
   names(parm) = Data$parm.names
-  
+
   if (!is.null(Data$constraints)) {
     parm = Data$constraints(parm)
   }
-  
+
   if (!is.null(Data$intervals)) {
     parm[parm < Data$intervals$lo] = Data$intervals$lo[parm < Data$intervals$lo]
     parm[parm > Data$intervals$hi] = Data$intervals$hi[parm > Data$intervals$hi]
   }
-  
+
   if (!is.null(Data$logged)) {
     if (length(Data$logged) == 1) {
       if (Data$logged) {
@@ -494,13 +494,13 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   } else{
     parmlist = parm
   }
-  
+
   if (Data$verbose) {
     print(parmlist)
   }
-  
+
   Monitor = {}
-  
+
   if (returnall) {
     SEDout = do.call(
       'ProSpectSED',
@@ -530,12 +530,12 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     }else{
       Photom = SEDout$Photom
     }
-    
+
     if (length(grep('dustmass', Data$mon.names)) > 0) {
-      Monitor = c(dustmass = SEDout$dustmass)
+      Monitor = c(dustmass = SEDout$dustmass['total'])
     }
     if (length(grep('dustlum', Data$mon.names)) > 0) {
-      Monitor = c(Monitor, dustlum = SEDout$dustlum)
+      Monitor = c(Monitor, dustlum = SEDout$dustlum['total'])
     }
     if ('masstot' %in% Data$mon.names) {
       Monitor = c(Monitor, masstot = SEDout$Stars$masstot)
@@ -558,7 +558,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         Data$arglist
       )
     )
-    
+
     if(is.null(Data$filtout)){
       #this means we are in spec-z mode
       Photom = specReBin(wave = Photom[,'wave'],
@@ -569,7 +569,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
                         )[,'flux']
     }
   }
-  
+
   cutsig = (Data$flux[,'flux'] - Photom) / Data$flux[,'fluxerr']
   if (Data$like == 'norm') {
     LL = sum(dnorm(x = cutsig, log = TRUE), na.rm = TRUE)
@@ -588,7 +588,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   } else{
     stop('Bad like option!')
   }
-  
+
   if (is.null(Data$prior)) {
     LP = LL
   } else{
@@ -597,12 +597,12 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   if (Data$verbose) {
     print(LP)
   }
-  
+
   if (length(grep('flux', Data$mon.names)) > 0) {
     names(Photom) = Data$flux[,'filter']
     Monitor = c(Monitor, flux = Photom)
   }
-  
+
   if (Data$fit == 'ld' | Data$fit == 'la' | Data$fit == 'check') {
     if ('LP' %in% Data$mon.names) {
       Monitor = c(Monitor, LP = LP)
@@ -613,9 +613,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       Monitor = Monitor[match(Data$mon.names, names(Monitor))]
     }
   }
-  
+
   # Various returns:
-  
+
   if (Data$fit == 'optim' | Data$fit == 'cma') {
     return(-LP)
   } else if (Data$fit == 'ld' | Data$fit == 'la') {
@@ -710,7 +710,7 @@ plot.ProSpectSED = function(x,
       lty = c(1, 2, 1, 1, 1),
       lwd = c(lwd_main, lwd_comp, lwd_comp, lwd_comp, lwd_comp)
     )
-    
+
     par(mar = c(0, 0, 0, 0))
     if (requireNamespace("magicaxis", quietly = TRUE)) {
       magicaxis::magplot(
@@ -827,7 +827,7 @@ plot.ProSpectSEDlike = function(x,
       type = 'flux',
       ...
     )
-    
+
     if(is.null(x$Data$filtout)){
       data_mode = 'spec'
       photom = x$SEDout$Photom[,'flux']
@@ -837,7 +837,7 @@ plot.ProSpectSEDlike = function(x,
       photom = x$SEDout$Photom
       comp_type = 'p'
     }
-    
+
     input_names = colnames(x$Data$flux)
     if('pivwave' %in% input_names){
       wavename = 'pivwave'
@@ -848,11 +848,11 @@ plot.ProSpectSEDlike = function(x,
     }else{
       stop('wavelength column name not recognised, must')
     }
-    
+
     if(data_mode == 'photom'){
       points(x$Data$flux[, c(wavename, 'flux')], pch = 16, col = 'red')
     }
-    
+
     if (requireNamespace("magicaxis", quietly = TRUE)) {
       if(data_mode == 'photom'){
         magicaxis::magerr(x$Data$flux[, wavename],
@@ -868,9 +868,9 @@ plot.ProSpectSEDlike = function(x,
                           border = NA)
       }
     }
-    
+
     legend('topleft', legend = paste('LP =', round(x$LP, 3)))
-    
+
     par(mar = c(0, 0, 0, 0))
     if (requireNamespace("magicaxis", quietly = TRUE)) {
       magicaxis::magplot(
