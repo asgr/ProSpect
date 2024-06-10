@@ -1,15 +1,19 @@
 \name{specReBin}
 \alias{specReBin}
+\alias{speclibReBin}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Spectral Re-Binner
 }
 \description{
-It is often useful to rebin spectra to either log binning or linear binning. This function does just that.
+It is often useful to rebin spectra to either log binning or linear binning. This function does just that. Also allows an entire SSP library to be rebinned (useful is using a very high resolution SSP for broad-band work etc).
 }
 \usage{
 specReBin(wave, flux, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
   logbin = TRUE, rough = TRUE, ...)
+
+speclibReBin(speclib, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
+  logbin = TRUE, rough = TRUE, cores = 1L, check = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,6 +22,9 @@ Numeric vector; the input spectral wavelength in any linear units. For convenien
 }
   \item{flux}{
 Numeric vector; the input flux density in any linear units.
+}
+  \item{speclib}{
+List; the spectral library (e.g. BC03hr).
 }
   \item{wavegrid}{
 Numeric vector; the target spectral wavelength grid in any linear units (must be same as \option{wave}). If this is missing then it will be computed automatically using \option{bin}. See also \option{binfunc}.
@@ -35,7 +42,13 @@ Character scalar; The interpolator to use. Either 'approx' (see \code{\link{appr
 Logical; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced. Say you have a wavelength 10 and 20, a linear bin would be at 15 and a log bin would be at 14.1.
 }
   \item{rough}{
-Logical; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full be pixel integration be done (FALSE). As of \code{ProSpect} v1.4.1 \option{rough} is just as fast (if not faster) than the coarse interpolation method. For spectral fitting you certainly might want the more accurate integration, but it can cause discontinuities when moving from very coarse model data to quite fine resolution observed data.
+Logical; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full pixel integration be done (FALSE). As of \code{ProSpect} v1.4.1 \option{rough} = FALSE is just as fast (if not faster) than the coarse interpolation method. For spectral fitting you certainly might want the more accurate integration, but it can cause discontinuities when moving from very coarse model data to quite fine resolution observed data.
+}
+  \item{cores}{
+Integer scalar; the number of cores to use.
+}
+  \item{check}{
+Logical; should checks be run on the spectral library being returned? Uses \code{speclib_check}. If checks fail the SSP is still returned, and can then be checked and potentially fixed by the user.
 }
   \item{\dots}{
 Extra arguments to pass to either \code{\link{approx}} or \code{\link{spline}} as per \option{interp}.
@@ -47,7 +60,9 @@ It is often useful to rebin spectra to either log binning or linear binning. Thi
 Note you need to be careful the resolution is high enough to not lose flux. This function just interpolates the flux density, it does not integrate over bins and reditribute flux. To do a more accurate job you would rebin at very high resolution and then integrate that spectrum down into coarser bins.
 }
 \value{
-Data.frame; first column is wavelength and second column is observed flux density.
+\code{specReBin} Data.frame; first column is wavelength and second column is observed flux density.
+
+\code{speclibReBin} List; the rebinnned SSP spectral library.
 }
 
 \author{
@@ -67,11 +82,22 @@ lines(specReBin(tempflux, rough=TRUE), col='red') #works pretty well automatical
 lines(specReBin(tempflux, bin=1e-3, rough=TRUE), col='green') #misses lines
 lines(specReBin(tempflux, bin=1e-5, rough=TRUE), col='blue') #very close to the original
 
-# we can also compare rough and accuracte integration schemes:
+# We can also compare rough and accuracte integration schemes:
 
 magplot(tempflux, type='l', xlim=c(7e3,8e3))
 lines(specReBin(tempflux, bin=1e-3, rough=TRUE), col='red') #rough and fast
 lines(specReBin(tempflux, bin=1e-3, rough=FALSE), col='blue') #conserves flux
 
+# And now a whole spectral library:
+
+data(BC03hr)
+data(BC03lr)
+speclib_rebin = speclibReBin(BC03hr, BC03lr$Wave, rough=FALSE)
+
+# Note the ProSpect library re-bin seems to be more accurate than the official BC03 one!
+
+magplot(BC03hr$Wave, BC03hr$Zspec[[1]][100,], type='l', log='xy', xlim=c(1e3,1e4))
+lines(BC03lr$Wave, BC03lr$Zspec[[1]][100,], col='red')
+lines(speclib_rebin$Wave, speclib_rebin$Zspec[[1]][100,], col='blue')
 }
 \concept{ rebin }
