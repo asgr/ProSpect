@@ -532,10 +532,10 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     }
 
     if (length(grep('dustmass', Data$mon.names)) > 0) {
-      Monitor = c(dustmass = SEDout$dustmass['total'])
+      Monitor = c(dustmass = SEDout$dustmass)
     }
     if (length(grep('dustlum', Data$mon.names)) > 0) {
-      Monitor = c(Monitor, dustlum = SEDout$dustlum['total'])
+      Monitor = c(Monitor, dustlum = SEDout$dustlum)
     }
     if ('masstot' %in% Data$mon.names) {
       Monitor = c(Monitor, masstot = SEDout$Stars$masstot)
