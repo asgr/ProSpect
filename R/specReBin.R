@@ -1,5 +1,5 @@
 specReBin = function(wave, flux, wavegrid=NULL, bin=NULL, binfunc=median,
-                     interp='approx', logbin=TRUE, rough=TRUE, ...){
+                     interp='approx', logbin=TRUE, rough=FALSE, ...){
   #Does not actually matter what units wave and flux are in as long as they are linear.
 
   if(!is.vector(wave)){
@@ -61,7 +61,7 @@ specReBin = function(wave, flux, wavegrid=NULL, bin=NULL, binfunc=median,
 }
 
 speclibReBin = function(speclib, wavegrid=NULL, bin=NULL, binfunc=median,
-                        interp='approx', logbin=TRUE, rough=TRUE, cores=1L, check=FALSE, ...){
+                        interp='approx', logbin=TRUE, rough=FALSE, cores=1L, check=FALSE, ...){
 
   doParallel::registerDoParallel(cores=cores)
 

@@ -10,10 +10,10 @@ It is often useful to rebin spectra to either log binning or linear binning. Thi
 }
 \usage{
 specReBin(wave, flux, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
-  logbin = TRUE, rough = TRUE, ...)
+  logbin = TRUE, rough = FALSE, ...)
 
 speclibReBin(speclib, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
-  logbin = TRUE, rough = TRUE, cores = 1L, check = FALSE, ...)
+  logbin = TRUE, rough = FALSE, cores = 1L, check = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -42,7 +42,7 @@ Character scalar; The interpolator to use. Either 'approx' (see \code{\link{appr
 Logical; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced. Say you have a wavelength 10 and 20, a linear bin would be at 15 and a log bin would be at 14.1.
 }
   \item{rough}{
-Logical; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full pixel integration be done (FALSE). As of \code{ProSpect} v1.4.1 \option{rough} = FALSE is just as fast (if not faster) than the coarse interpolation method. For spectral fitting you certainly might want the more accurate integration, but it can cause discontinuities when moving from very coarse model data to quite fine resolution observed data.
+Logical; should rough interpolation be used to rebin the spectrum (TRUE) or should full pixel integration be done (FALSE, default). As of \code{ProSpect} v1.4.1 \option{rough} = FALSE is just as fast (if not faster) than the coarse interpolation method. For spectral fitting you certainly might want the more accurate integration, but it can cause discontinuities when moving from very coarse model data to quite fine resolution observed data.
 }
   \item{cores}{
 Integer scalar; the number of cores to use.
