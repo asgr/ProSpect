@@ -22,7 +22,7 @@ NumericVector wave_rebin_cpp(NumericVector wave, NumericVector wave_bin, Numeric
   // fix the extremes to be sensible values
   if(logbin){
     wave_bin_lo(0) = pow(wave(0),2) / wave_bin_lo(1);
-    wave_bin_hi(wave_N - 1) = pow(wave(wave_N - 1),2) / wave_bin(wave_N - 2);
+    wave_bin_hi(wave_N - 1) = pow(wave(wave_N - 1),2) / wave_bin_lo(wave_N - 2);
   }else{
     wave_bin_lo(0) = 2*wave(0) - wave_bin_lo(1);
     wave_bin_hi(wave_N - 1) = 2*wave(wave_N - 1) - wave_bin_lo(wave_N - 2);
@@ -72,7 +72,7 @@ NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in, Numer
       }else if(wave_bin_in_lo(j) >= wave_bin_out_hi(i)){
         j = wave_in_N;
       }else if(wave_bin_in_lo(j) <= wave_bin_out_lo(i)){ // left edge of wave_in lower than wave_out
-        if(wave_bin_in_hi(j) <= wave_bin_out_hi(i)){ // right edge of wave_in lower than wave_out
+        if(wave_bin_in_hi(j) < wave_bin_out_hi(i)){ // right edge of wave_in lower than wave_out
           // 2 wave_in bin cross the lower edge of the wave_out bin but not upper, so some flux is contributed
           temp_weight = (wave_bin_in_hi(j) - wave_bin_out_lo(i))/wave_bin_in(j);
           flux_out(i) = flux_out(i) + flux_in(j)*temp_weight;
@@ -101,7 +101,9 @@ NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in, Numer
       // }
     }
     // Rcpp::Rcout << temp_weight << "\n";
-    flux_out(i) = flux_out(i) / flux_out_weight(i);
+    if(flux_out_weight(i) > 0){
+      flux_out(i) = flux_out(i) / flux_out_weight(i);
+    }
   }
 
   return flux_out;
