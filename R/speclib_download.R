@@ -54,6 +54,11 @@ speclib_FITSload = function(file, Labels = list(Zlab = 'Metallicity',
   }
   output$Zevo = Zevo
 
+  for(i in 1:length(output$Zspec)){
+    loc = which(output$Zspec[[i]] < 0)
+    output$Zspec[[i]][loc] = 0
+  }
+
   if(check){
     speclib_check(output)
   }
@@ -317,6 +322,18 @@ speclib_check = function(speclib,
         print(temp)
       }else{
         message(' - - Zspec[[',i,']] matrix check passed')
+      }
+    }
+
+    for (i in 1:Z_len) {
+      temp = all(speclib$Zspec[[i]] >= 0)
+
+      if (!isTRUE(temp)) {
+        all_good = FALSE
+        message(' - - Zspec[[',i,']] +ve flux check failed')
+        print(temp)
+      }else{
+        message(' - - Zspec[[',i,']] +ve flux check passed')
       }
     }
 

@@ -28,7 +28,7 @@ Maintainer: \packageMaintainer{ProSpect}
 }
 \references{
 Akhlaghi et al, 2015, ApJSS, 220, 1 \cr
-Bertelli et al., 1994, A\&AS, 106, 275 \cr
+Bertelli et al., 1994, A&AS, 106, 275 \cr
 Brammer, van Dokkum & Coppi, 2008, ApJ, 686, 1503 \cr
 Bruzual and Charlot, 2003, MNRAS, 344, 1000 \cr
 Chabrier, 2003, PASP, 115, 763 \cr

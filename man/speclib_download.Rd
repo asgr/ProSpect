@@ -47,7 +47,7 @@ List; list of plot labels (probably no reason to alter this from the default). T
 Logical; should checks be run on the spectral library being returned? Uses \code{speclib_check}. If checks fail the SSP is still returned, and can then be checked and potentially fixed by the user.
 }
   \item{speclib}{
-List; spectral library to path through \code{ProSpect} format checks.
+List; spectral library to pass through \code{ProSpect} format checks.
 }
   \item{structure}{
 Logical; should the structure of \option{speclib} be checked. If TRUE, results are printed to screen.
