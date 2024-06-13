@@ -10,6 +10,21 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// wave_rebin_cpp
+NumericVector wave_rebin_cpp(NumericVector wave, NumericVector wave_bin, NumericVector wave_bin_lo, NumericVector wave_bin_hi, bool logbin);
+RcppExport SEXP _ProSpect_wave_rebin_cpp(SEXP waveSEXP, SEXP wave_binSEXP, SEXP wave_bin_loSEXP, SEXP wave_bin_hiSEXP, SEXP logbinSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type wave(waveSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wave_bin(wave_binSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wave_bin_lo(wave_bin_loSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wave_bin_hi(wave_bin_hiSEXP);
+    Rcpp::traits::input_parameter< bool >::type logbin(logbinSEXP);
+    rcpp_result_gen = Rcpp::wrap(wave_rebin_cpp(wave, wave_bin, wave_bin_lo, wave_bin_hi, logbin));
+    return rcpp_result_gen;
+END_RCPP
+}
 // spec_rebin_cpp
 NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in, NumericVector wave_out, bool logbin_in, bool logbin_out);
 RcppExport SEXP _ProSpect_spec_rebin_cpp(SEXP wave_inSEXP, SEXP flux_inSEXP, SEXP wave_outSEXP, SEXP logbin_inSEXP, SEXP logbin_outSEXP) {
@@ -27,6 +42,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_ProSpect_wave_rebin_cpp", (DL_FUNC) &_ProSpect_wave_rebin_cpp, 5},
     {"_ProSpect_spec_rebin_cpp", (DL_FUNC) &_ProSpect_spec_rebin_cpp, 5},
     {NULL, NULL, 0}
 };
