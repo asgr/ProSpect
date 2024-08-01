@@ -39,13 +39,13 @@ speclib_FITSload = function(file, Labels = list(Zlab = 'Metallicity',
 
   output$Labels = Labels
 
-  Zspec_loc = sort(grep(pattern = 'Zspec', names(temp), value = TRUE))
+  Zspec_loc = grep(pattern = 'Zspec', names(temp), value = TRUE)
   Zspec = temp[Zspec_loc]
   names(Zspec) = NULL
   lapply(Zspec, as.matrix)
   output$Zspec = Zspec
 
-  Zevo_loc = sort(grep(pattern = 'Zevo', names(temp), value = TRUE))
+  Zevo_loc = grep(pattern = 'Zevo', names(temp), value = TRUE)
   Zevo = temp[Zevo_loc]
   names(Zevo) = NULL
   lapply(Zevo, as.data.frame)

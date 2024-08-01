@@ -26,13 +26,13 @@ speclib_check(speclib, structure = TRUE, coverage = TRUE, Labels = list(
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{stellpop}{
-Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL} and other key information. Note BC03lr_Pd_Ch / BC03hr_Pd_Ch / EMILES_Bs_Ch / BPASS_St_Ch are in the core \code{ProSpectData} package, but they are also included here for completeness (and in case in future some are removed from the core package). The equivalent package version are named BC03lr, BC03hr, EMILES and BPASS respectively.
+Character scalar; either 'avail' which will then display all the SSPs currently available at \option{URL} and other key information, or the name of the target SSP (that must be available!). Note BC03lr_Pd_Ch / BC03hr_Pd_Ch / EMILES_Bs_Ch / BPASS_St_Ch are in the core \code{ProSpectData} package, but they are also included here for completeness (and in case in future some are removed from the core package). The equivalent package version are named BC03lr, BC03hr, EMILES and BPASS respectively.
 }
   \item{type}{
 Character scalar; type of spectral library to download. Either 'rda' (default) or 'fits'. Note in future perhaps only one of the rda/fits SSP type will be available for a given SSP. This should be clear from checking the \option{stellpop} = 'avail' information.
 }
   \item{destpath}{
-Character scalar; where the target SSP should be downloaded to.
+Character scalar; where the target ProSpect SSP should be downloaded to.
 }
   \item{URL}{
 Character scalar; location of the ProSpect SSP libraries. This should not need to be altered by the user.
