@@ -2,6 +2,7 @@
 \alias{IMF}
 \alias{IMF_Chabrier}
 \alias{IMF_Kroupa}
+\alias{IMF_Salpeter}
 \alias{binlims}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -17,6 +18,9 @@ IMF_Chabrier(mass, alpha = 2.3, a = 0.08, b = 0.69, masslow = 0.01, massmax = 15
 IMF_Kroupa(mass, alpha1 = 0.3, alpha2 = 1.3, alpha3 = 2.3, masslow = 0.01, mass1 = 0.08,
   mass2 = 0.5, massmax = 150, massform = 1, massmult = FALSE,
   rel.tol = .Machine$double.eps^0.25)
+
+IMF_Salpeter(mass, alpha = 2.35, masslow = 0.1, massmax = 150, massform = 1,
+  massmult = FALSE, rel.tol = .Machine$double.eps^0.25)
 
 binlims(input, log = FALSE)
 }
@@ -38,7 +42,7 @@ Numeric scalar; controls the gradient of the low mass slope close to mass = 1 Ms
 Numeric scalar; controls the curvature of the low mass slope for the Chabrier IMF (lower is more curved).
 }
   \item{masslow}{
-Numeric scalar; the extreme low mass limit (Msol), where mass < masslow = 0. \option{massform} is then the mass formed between \option{masslow} and \option{massmax}.
+Numeric scalar; the extreme low mass limit (Msol), where mass < masslow = 0. \option{massform} is then the mass formed between \option{masslow} and \option{massmax}. The lower default mass limit of Salpeter (0.1 Msol) is deliberate since the lack of low mass turn over would make it far too bottom (low mass star) heavy otherwise.
 }
   \item{massmax}{
 Numeric scalar; the max mass limit (Msol), where mass > massmax = 0. \option{massform} is then the mass formed between \option{masslow} and \option{massmax}.
@@ -88,8 +92,11 @@ Aaron Robotham
 }
 
 \examples{
-curve(IMF_Chabrier, 0.01, 150, log='xy', xlab='Mass / Msol', ylab='PDF')
+curve(IMF_Salpeter, 0.01, 150, log='xy', xlab='Star Mass / Msol', ylab='dN/dM (1 Msol)')
 curve(IMF_Kroupa, 0.01, 150, add=TRUE, col='red')
+curve(IMF_Chabrier, 0.01, 150, add=TRUE, col='blue')
+legend('topright', legend=c('Salpeter', 'Kroupa', 'Chabrier'),
+  col=c('black', 'red', 'blue'), lty=1)
 
 #Check the fraction of mass that will go SNII (around 20\%) and rapidly enrich:
 

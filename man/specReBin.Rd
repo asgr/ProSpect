@@ -60,7 +60,7 @@ It is often useful to rebin spectra to either log binning or linear binning. Thi
 Note you need to be careful the resolution is high enough to not lose flux. This function just interpolates the flux density, it does not integrate over bins and reditribute flux. To do a more accurate job you would rebin at very high resolution and then integrate that spectrum down into coarser bins.
 }
 \value{
-\code{specReBin} Data.frame; first column is wavelength and second column is observed flux density.
+\code{specReBin} Data.frame; first column is wavelength [wave] and second column is observed flux density [flux].
 
 \code{speclibReBin} List; the rebinnned SSP spectral library.
 }

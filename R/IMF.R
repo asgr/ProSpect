@@ -1,12 +1,16 @@
 .Chabrier_shape=function(mass, alpha = 2.3, a = 0.08, b = 0.69, masslow = 0.01, massmax = 150, massmult = FALSE){
   #for singles a=0.08 and b=0.69
   #for binaries a=0.22 and b=0.57
-  k=(1/(log(10)*1))*exp(-(log10(1)-log10(a))^2/(2*b^2))
-  out=ifelse(mass<1, (1/(log(10)*mass))*exp(-(log10(mass)-log10(a))^2/(2*b^2)),
-    k*(mass^-alpha)
+  out = ifelse(mass<1,
+    (1/(log(10)*mass))*exp(-(log10(mass)-log10(a))^2/(2*b^2)),
+    (1/(log(10)))*exp(-(log10(a))^2/(2*b^2))*(mass^-alpha)
   )
-  out[mass<masslow | mass>massmax]=0
-  if(massmult){out=out*mass}
+  out[mass < masslow | mass > massmax] = 0
+
+  if(massmult){
+    out = out*mass
+  }
+
   return(out)
 }
 
@@ -35,9 +39,9 @@ IMF_Chabrier = function(mass, alpha = 2.3, a = 0.08, b = 0.69, masslow = 0.01, m
 }
 
 .Kroupa_shape=function(mass, alpha1 = 0.3, alpha2 = 1.3, alpha3 = 2.3, masslow = 0.01, mass1 = 0.08, mass2=0.5, massmax=150, massmult = FALSE){
-  k2=(mass1^-alpha1)/(mass1^-alpha2)
-  k3=k2*(mass2^-alpha2)/(mass2^-alpha3)
-  out=ifelse(mass<mass1, mass^-alpha1,
+  k2 = (mass1^-alpha1)/(mass1^-alpha2)
+  k3 = k2*(mass2^-alpha2)/(mass2^-alpha3)
+  out = ifelse(mass<mass1, mass^-alpha1,
     ifelse(mass<mass2, k2*mass^-alpha2,
       k3*mass^-alpha3
     )
@@ -66,6 +70,37 @@ IMF_Kroupa = function(mass, alpha1 = 0.3, alpha2 = 1.3, alpha3 = 2.3, masslow = 
     tempout = rep(0,length(mass$lo))
     for(i in 1:length(mass$lo)){
       tempout[i] = integrate(.Kroupa_shape, lower=mass$lo[i], upper=mass$hi[i], alpha1 = alpha1, alpha2 = alpha2, alpha3 = alpha3, masslow = masslow, mass1 = mass1, mass2=mass2, massmax=massmax, massmult=massmult, rel.tol=rel.tol)$value
+    }
+    return(massform*tempout/norm)
+  }
+}
+
+.Salpeter_shape=function(mass, alpha = 2.35, masslow = 0.1, massmax=150, massmult = FALSE){
+  out = mass^-alpha
+  out[mass<masslow | mass>massmax]=0
+  if(massmult){out=out*mass}
+  return(out)
+}
+
+IMF_Salpeter = function(mass, alpha = 2.35, masslow = 0.1, massmax = 150, massform = 1, massmult = FALSE, rel.tol = .Machine$double.eps^0.25){
+  norm=integrate(.Salpeter_shape, lower=masslow, upper=massmax, alpha = alpha, masslow = masslow, massmax=massmax, massmult=TRUE, rel.tol=rel.tol)$value
+
+  if(is.numeric(mass)){
+    return(massform*.Salpeter_shape(mass=mass, alpha = alpha, masslow = masslow, massmax=massmax, massmult=massmult)/norm)
+  }else if(is.list(mass)){
+    if(is.null(mass$lo) | is.null(mass$hi)){
+      stop('lo and hi list elements must be present!')
+    }
+    if(length(mass$lo) != length(mass$hi)){
+      stop('lo and hi must be the same length!')
+    }
+    if(any(mass$lo > mass$hi)){
+      stop('some lo > hi')
+    }
+    i = NULL
+    tempout = rep(0,length(mass$lo))
+    for(i in 1:length(mass$lo)){
+      tempout[i] = integrate(.Salpeter_shape, lower=mass$lo[i], upper=mass$hi[i], alpha = alpha, masslow = masslow, massmax=massmax, massmult=massmult, rel.tol=rel.tol)$value
     }
     return(massform*tempout/norm)
   }

@@ -1,16 +1,15 @@
-speclib_download = function(stellpop = 'avail',
-                            destpath = '',
-                            type = 'rda',
-                            URL = 'https://tinyurl.com/prospect-speclib/') {
-  if (stellpop == 'avail') {
-    url.show(paste0(URL, 'avail.txt?raw=1'))
-  } else{
-    speclib = paste0(stellpop, '.',tolower(type))
-
-    download.file(paste0(URL, speclib, '?raw=1'),
-                  destfile = paste0(destpath, speclib))
-    return(paste0(destpath, speclib))
-  }
+speclib_download = function(URL = 'https://tinyurl.com/prospect-speclib/', ...) {
+  # if (stellpop == 'avail') {
+  #   #url.show(paste0(URL, 'avail.txt?raw=1'))
+  #   browseURL('https://www.dropbox.com/scl/fi/dlbknfgte58jhha8xg4q0/avail.txt?rlkey=2hctmseeyxprbt90b05lpnzhc&st=2nre8nss&dl=0')
+  # } else{
+  #   speclib = paste0(stellpop, '.',tolower(type))
+  #
+  #   download.file(paste0(URL, speclib, '?raw=1'),
+  #                 destfile = paste0(destpath, speclib))
+  #   return(paste0(destpath, speclib))
+  # }
+  browseURL(URL, ...)
 }
 
 speclib_FITSload = function(file, Labels = list(Zlab = 'Metallicity',

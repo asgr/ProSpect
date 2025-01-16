@@ -7,7 +7,7 @@ import("foreach")
 import("doParallel")
 
 importFrom("stats", "approx", "spline", "approxfun", "splinefun", "dt", "dchisq", "var", "lm", "runif", "sd","integrate", "dnorm", "pnorm", "quantile", "median", "optimize")
-importFrom("utils", "data", "download.file", "url.show")
+importFrom("utils", "data", "download.file", "url.show", "browseURL")
 importFrom("celestial", "cosdistTravelTime", "cosdistLumDist", "cosplanckPeakWave", "cosplanckLawRadWave", "cosdistDistMod", "cosvol")
 importFrom("NISTunits", "kNIST2010PlanckConstant", "kNIST2010speedOfLightInVacuum", "kNIST2010BoltzmannConstant")
 importFrom("pracma", "interp1", "integral")

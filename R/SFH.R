@@ -62,9 +62,9 @@ SFHfunc = function(massfunc = massfunc_b5,
   }
 
   if (any(speclib$Age <= 1e7)) {
-    birthcloud = max(which(speclib$Age <= 1e7))
+    birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
-    birthcloud = 1
+    birthcloud_len = 1
   }
 
   if (!is.null(filters)) {
@@ -270,15 +270,16 @@ SFHfunc = function(massfunc = massfunc_b5,
     # }
     if (any(escape_frac < 1)) {
       if (length(Ly_limit) == 1) {
-        speclib$Zspec[[Zuse]][, wave_lum < Ly_limit] = speclib$Zspec[[Zuse]][, wave_lum < Ly_limit] * escape_frac
+        wave_lum_sel = wave_lum < Ly_limit
+        speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac
       } else{
         for (i in 1:(length(Ly_limit) - 1)) {
-          sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-          speclib$Zspec[[Zuse]][, sel] = speclib$Zspec[[Zuse]][, sel] *
+          wave_lum_sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
+          speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] *
             escape_frac[i]
         }
-        sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-        speclib$Zspec[[Zuse]][, sel] = speclib$Zspec[[Zuse]][, sel] * escape_frac[length(Ly_limit)]
+        wave_lum_sel = which(wave_lum < Ly_limit[length(Ly_limit)])
+        speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac[length(Ly_limit)]
       }
     }
   }
@@ -291,10 +292,9 @@ SFHfunc = function(massfunc = massfunc_b5,
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
       if (tau_birth != 0) {
-        #speclib$Zspec[[Zid]][1:birthcloud,]=t(t(speclib$Zspec[[Zid]][1:birthcloud,])*CF_birth(wave_lum, tau=tau_birth, pow=pow_birth))
-        speclib$Zspec[[Zid]][1:birthcloud, ] = speclib$Zspec[[Zid]][1:birthcloud, ] *
-          rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth),
-              each = birthcloud)
+        #speclib$Zspec[[Zid]][1:birthcloud_len,]=t(t(speclib$Zspec[[Zid]][1:birthcloud_len,])*CF_birth(wave_lum, tau=tau_birth, pow=pow_birth))
+        speclib$Zspec[[Zid]][1:birthcloud_len, ] = speclib$Zspec[[Zid]][1:birthcloud_len, ] *
+          rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), each = birthcloud_len)
       }
       if (Zdoweight) {
         lum = lum + colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
@@ -603,9 +603,9 @@ SMstarfunc = function(massfunc = massfunc_b5,
   }
 
   if (any(speclib$Age <= 1e7)) {
-    birthcloud = max(which(speclib$Age <= 1e7))
+    birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
-    birthcloud = 1
+    birthcloud_len = 1
   }
 
   if (!is.function(Z)) {
@@ -833,9 +833,9 @@ SFHburst = function(burstmass = 1e8,
   }
 
   if (any(speclib$Age <= 1e7)) {
-    birthcloud = max(which(speclib$Age <= 1e7))
+    birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
-    birthcloud = 1
+    birthcloud_len = 1
   }
 
   wave_lum = speclib$Wave
