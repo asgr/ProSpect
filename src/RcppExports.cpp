@@ -10,6 +10,40 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// colSums_wt_cpp
+NumericVector colSums_wt_cpp(NumericMatrix mat, NumericVector vec_wt);
+RcppExport SEXP _ProSpect_colSums_wt_cpp(SEXP matSEXP, SEXP vec_wtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vec_wt(vec_wtSEXP);
+    rcpp_result_gen = Rcpp::wrap(colSums_wt_cpp(mat, vec_wt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vec_add_cpp
+void vec_add_cpp(NumericVector vec_base, NumericVector vec_add);
+RcppExport SEXP _ProSpect_vec_add_cpp(SEXP vec_baseSEXP, SEXP vec_addSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type vec_base(vec_baseSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vec_add(vec_addSEXP);
+    vec_add_cpp(vec_base, vec_add);
+    return R_NilValue;
+END_RCPP
+}
+// vec_mult_cpp
+void vec_mult_cpp(NumericVector vec_base, NumericVector vec_mult);
+RcppExport SEXP _ProSpect_vec_mult_cpp(SEXP vec_baseSEXP, SEXP vec_multSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type vec_base(vec_baseSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vec_mult(vec_multSEXP);
+    vec_mult_cpp(vec_base, vec_mult);
+    return R_NilValue;
+END_RCPP
+}
 // wave_rebin_cpp
 NumericVector wave_rebin_cpp(NumericVector wave, NumericVector wave_bin, NumericVector wave_bin_lo, NumericVector wave_bin_hi, bool logbin);
 RcppExport SEXP _ProSpect_wave_rebin_cpp(SEXP waveSEXP, SEXP wave_binSEXP, SEXP wave_bin_loSEXP, SEXP wave_bin_hiSEXP, SEXP logbinSEXP) {
@@ -42,6 +76,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_ProSpect_colSums_wt_cpp", (DL_FUNC) &_ProSpect_colSums_wt_cpp, 2},
+    {"_ProSpect_vec_add_cpp", (DL_FUNC) &_ProSpect_vec_add_cpp, 2},
+    {"_ProSpect_vec_mult_cpp", (DL_FUNC) &_ProSpect_vec_mult_cpp, 2},
     {"_ProSpect_wave_rebin_cpp", (DL_FUNC) &_ProSpect_wave_rebin_cpp, 5},
     {"_ProSpect_spec_rebin_cpp", (DL_FUNC) &_ProSpect_spec_rebin_cpp, 5},
     {NULL, NULL, 0}

@@ -9,20 +9,20 @@ Top Level ProSpect SED Functions
 \code{ProSpectSED} computes a fully attenuated and re-emitted SED model incompassing star light (for a number of different star formation history models), dust and AGN. \code{ProSpectSEDlike} is an interface for computing likelihoods, and by extension is the workhorse code that allows model fitting using a number of techniques.
 }
 \usage{
-ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, 
-    tau_AGN = 1, pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, 
-    alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0, 
-    AGNlum = 0, sparse = 5, speclib = NULL, Dale = NULL, AGN = NULL, 
-    filtout = NULL, filters = "all", Dale_M2L_func = NULL, returnall = TRUE, 
-    H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, waveout = seq(2, 
-        9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL, 
-    LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE, 
-    Te_SF = 10000, ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, 
+ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3,
+    tau_AGN = 1, pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7,
+    alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0,
+    AGNlum = 0, sparse = 5, speclib = NULL, Dale = NULL, AGN = NULL,
+    filtout = NULL, filters = "all", Dale_M2L_func = NULL, returnall = TRUE,
+    H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, waveout = seq(2,
+        9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL,
+    LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE,
+    Te_SF = 10000, ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8,
     Te_AGN = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1,
-    sy_power_AGN = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5, 
-    AGNta = 1, AGNrm = 60, AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470, 
-    IGMabsorb = 0, ...) 
- 
+    sy_power_AGN = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5,
+    AGNta = 1, AGNrm = 60, AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470,
+    IGMabsorb = 0, ...)
+
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -127,7 +127,7 @@ Numeric scalar; power-law slope of the free-free nebular plasma thermal radio em
 Numeric scalar; power-law slope of the synchrotron radio emission associated with star-formation used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
 }
   \item{addradio_AGN}{
-Logical; should separate free-free and synchrotron radio continuum associated with an AGN be added? Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). If FALSE (default) then any radio continuum computed for the AGN component within \code{\link{Dale}} will be subtracted regardless of the value of \option{addradio_SF}.  
+Logical; should separate free-free and synchrotron radio continuum associated with an AGN be added? Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). If FALSE (default) then any radio continuum computed for the AGN component within \code{\link{Dale}} will be subtracted regardless of the value of \option{addradio_SF}.
 }
   \item{Te_AGN}{
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}} for the AGN component. Leave as the default (10,000 K), unless you know what you are doing.
@@ -163,16 +163,16 @@ Numeric scalar; angle of observation in degrees, where 0 is edge on with torus, 
 Numeric vector; arguments to be passed to \code{ProSpectSED}.
 }
   \item{Data}{
-Object; data object containing everything else needs. See Details.  
+Object; data object containing everything else needs. See Details.
 }
   \item{Eb}{
 Numeric scalar; Additional attenuation at the 2175.8 Ang dust bump. The default of 0 means this has no effect, MW is near 3.3, and typical galaxies are around \option{Eb}=1.
 }
   \item{L0}{
-Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
 }
   \item{LFWHM}{
-Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
 }
   \item{IGMabsorb}{
 Numeric scalar; absorbing fraction for the intervening IGM. This should be thought of as absorption due to material between the galaxy of interest an the observer. This suppressing fraction is applied to wavelength in the Lyman regime (911.8 - 1215.7 Angstrom). Based on Songaila (2004) a resonable approximation for this is given by \option{IGMabsorb} = pnorm(z, mean=3.8, sd=1.2), meaning it is almost 0 (complete transmission) at low redshift and almost 1 (complete absorption) by redshift 8.
@@ -224,19 +224,19 @@ Logical vector, optional; match length of \option{parm} in \code{ProSpectSEDlike
 Function, optional; a prior function that takes in the \option{parm} vector and returns a log-likelihood to be added to LL to form LP. If not provided then it is ignored internally. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
 }
   \item{Data$intervals}{
-List, optional; has elements \option{lo} and \option{hi} which if provided must be the same length as \option{parm} in \code{ProSpectSEDlike}. These specify the lower and upper limits in the same linear/log space as \option{parm}, i.e. set \option{lo} to -1 if you do not want to logged unit to go below 0.1. 
+List, optional; has elements \option{lo} and \option{hi} which if provided must be the same length as \option{parm} in \code{ProSpectSEDlike}. These specify the lower and upper limits in the same linear/log space as \option{parm}, i.e. set \option{lo} to -1 if you do not want to logged unit to go below 0.1.
 }
   \item{Data$constraints}{
 Function, optional; a constraints function that takes in the\option{parm} vector and modifies it as required, updating with the new \option{parm} which is passed out. Using this you can control physical relationships between certain parameters if required. \option{Data$intervals} is passed after this, and always over-ride the constraints if there is a conflict. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
 }
   \item{Data$mon.names}{
-Character vector, optional; can contain "dustmass.birth", "dustmass.screen", "dustmass.AGN", "dustmass.total" (dust masses in birth cloud, screen, AGN and total), "dustlum.birth", "dustlum.screen", "dustlum.AGN", "dustlum.total" (dust luminosities in birth cloud, screen, AGN and total), "LP" (log posterior), "masstot" (total mass formed) and "SFRburst" (stars formed in the most recent 10^8 years). You can also monitor fluxes via "flux.XXX", where XXX specifies the name of the band as given in Data$flux$filter. Only named monitored variables are returned, in the order specified.
+Character vector, optional; "LP" (log posterior), "masstot" (total stellar mass formed), "massrem" (total stellar mass remaining) and "SFRburst" (stars formed in the most recent 1e8 years). For dust can contain "dustmass.birth", "dustmass.screen", "dustmass.AGN", "dustmass.total" (dust masses in birth cloud, screen, AGN and total), "dustlum.birth", "dustlum.screen", "dustlum.AGN", "dustlum.total" (dust luminosities in birth cloud, screen, AGN and total). You can also monitor fluxes via "flux.XXX", where XXX specifies the name of the band as given in Data$flux$filter. Only named monitored variables are returned, in the order specified.
 }
   \item{Data$logbin}{
 Logical, optional; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced. Passed into \code{\link{specReBin}}. Say you have a wavelength 10 and 20, a linear bin would be at 15 and a log bin would be at 14.1.
 }
   \item{Data$rough}{
-Logical, otional; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full be pixel integration be done (FALSE). Passed into \code{\link{specReBin}}. 
+Logical, otional; should rough interpolation be used to rebin the spectrum (default is TRUE) or should full be pixel integration be done (FALSE). Passed into \code{\link{specReBin}}.
 }
   \item{Data$verbose}{
 Logical, optional; should verbose messages be shown. If missing it is set to TRUE.
@@ -274,7 +274,9 @@ The 'optim' output returns just the log-posterior value (LP). \cr
 
 The 'LD' output returns the full structure required for \code{LaplacesDemon} and \code{LaplaceApproximation} and should be set as such when using those optimisers. \cr
 
-The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnostic plot via the \code{plot} method.
+The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. If you have the \code{ParmOff} package (on Github asgr/ParmOff, required for correct argument matching between the various functions used) it will also output the various stellar mass calculations of \code{\link{SMstarfunc}} including stellar mass remaining (TotSMstar) which is the reason this function is usually run.
+
+In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnostic plot via the \code{plot} method.
 }
 
 \references{
