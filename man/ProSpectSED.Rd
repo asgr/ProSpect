@@ -274,7 +274,7 @@ The 'optim' output returns just the log-posterior value (LP). \cr
 
 The 'LD' output returns the full structure required for \code{LaplacesDemon} and \code{LaplaceApproximation} and should be set as such when using those optimisers. \cr
 
-The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. If you have the \code{ParmOff} package (on Github asgr/ParmOff, required for correct argument matching between the various functions used) it will also output the various stellar mass calculations of \code{\link{SMstarfunc}} including stellar mass remaining (TotSMstar) which is the reason this function is usually run.
+The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'.
 
 In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnostic plot via the \code{plot} method.
 }

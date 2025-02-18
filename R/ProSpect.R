@@ -515,6 +515,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(filters = NULL),
         list(returnall = TRUE),
         list(Dale_M2L_func = quote(Data$Dale_M2L_func)),
+        list(SMstar = TRUE),
         Data$arglist
       )
     )
@@ -542,17 +543,17 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       Monitor = c(Monitor, masstot = SEDout$Stars$masstot)
     }
     if ('massrem' %in% Data$mon.names) {
-      if (requireNamespace("ParmOff", quietly = TRUE)) {
-        SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
-                                  .args = c(as.list(parm), Data$arglist), #the superset of potential matching parameters
-                                  .logged = Data$parm.names[Data$logged], #parameters we want to log
-                                  speclib = Data$speclib,
-                                  Z = Data$arglist$Z
-        )
-        Monitor = c(Monitor, massrem = as.numeric(SMstar['TotSMstar']))
-      }else{
-        Monitor = c(Monitor, massrem = NA)
-      }
+      # if (requireNamespace("ParmOff", quietly = TRUE)) {
+      #   SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
+      #                             .args = c(as.list(parm), Data$arglist), #the superset of potential matching parameters
+      #                             .logged = Data$parm.names[Data$logged], #parameters we want to log
+      #                             speclib = Data$speclib,
+      #                             Z = Data$arglist$Z
+      #   )
+        Monitor = c(Monitor, massrem = as.numeric(SEDout$Stars$SMstar['TotSMstar']))
+      # } else{
+      #   Monitor = c(Monitor, massrem = NA)
+      # }
     }
     if ('SFRburst' %in% Data$mon.names) {
       Monitor = c(Monitor, SFRburst = SEDout$Stars$SFRburst)
@@ -569,6 +570,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(filtout = quote(Data$filtout)),
         list(filters = NULL),
         list(returnall = FALSE),
+        list(SMstar = FALSE),
         Data$arglist
       )
     )
@@ -641,17 +643,17 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       parm = parm
     ))
   } else if (Data$fit == 'check') {
-    names(parm) = Data$parm.names
-    if (requireNamespace("ParmOff", quietly = TRUE)) {
-      SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
-                      .args = c(as.list(parm), Data$arglist), #the superset of potential matching parameters
-                      .logged = Data$parm.names[Data$logged], #parameters we want to log
-                      speclib = Data$speclib,
-                      Z = Data$arglist$Z
-      )
-    }else{
-      SMstar = 'Need ParmOff package to compute! See GitHub asgr/ParmOff.'
-    }
+    # names(parm) = Data$parm.names
+    # if (requireNamespace("ParmOff", quietly = TRUE)) {
+    #   SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
+    #                   .args = c(as.list(parm), Data$arglist), #the superset of potential matching parameters
+    #                   .logged = Data$parm.names[Data$logged], #parameters we want to log
+    #                   speclib = Data$speclib,
+    #                   Z = Data$arglist$Z
+    #   )
+    # }else{
+    #   SMstar = 'Need ParmOff package to compute! See GitHub asgr/ParmOff.'
+    # }
 
     output = list(
       LP = LP,
@@ -660,8 +662,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       yhat = 1,
       parm = parm,
       SEDout = SEDout,
-      Data = Data,
-      SMstar = SMstar
+      Data = Data
     )
     class(output) = 'ProSpectSEDlike'
     return(output)

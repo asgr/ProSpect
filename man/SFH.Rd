@@ -162,6 +162,9 @@ Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do n
   \item{LFWHM}{
 Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
 }
+  \item{SMstar}{
+Logical; if you have the \code{ParmOff} package (on Github asgr/ParmOff, required for correct argument matching between the various functions used) setting this to TRUE will also compute the various stellar mass calculations of \code{\link{SMstarfunc}} including stellar mass remaining (TotSMstar) which is the reason this function is usually run. The output appears in the list object 'SMstar'.
+}
   \item{\dots}{
 Further arguments to be passed to \code{massfunc} or \code{Z} functions, as appropriate (this is achieved by formals matching, so be careful to used unique names).
 }
@@ -191,6 +194,7 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{SFR}{Numeric vector; the star formation rate at all ages (\code{SFHfunc} only).}
 \item{masstot}{Numeric scalar; total mass formed in Msol.}
 \item{massvec}{Numeric vector; the total mass formed in each age window  (\code{SFHfunc} only).}
+\item{SMstar}{Numeric vector; if the argument \option{SMstar} is TRUE then this will contain the output of \code{\link{SMstarfunc}}, else NA.}
 \item{M2L}{Numeric scalar; total mass to light ratio.}
 \item{SFRburst}{Numeric scalar; the star formation rate over the last 10^8 years.}
 \item{Zvec}{Numeric vector; Z history. For \code{SFHburst} it is the input \option{Z}.}

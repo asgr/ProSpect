@@ -33,6 +33,7 @@ SFHfunc = function(massfunc = massfunc_b5,
                    Eb = 0,
                    L0 = 2175.8,
                    LFWHM = 470,
+                   SMstar = FALSE,
                    ...) {
   #Ly_limit should be 911.75 Ang (the actual ionisation limit) or sometimes 1215.67 Ang (Lyman alpha)
 
@@ -547,6 +548,17 @@ SFHfunc = function(massfunc = massfunc_b5,
     Zvec = Zvec[sel]
   }
 
+  if (SMstar & requireNamespace("ParmOff", quietly = TRUE)) {
+    SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
+                              .args = dots, #the superset of potential matching parameters
+                              massfunc = massfunc,
+                              speclib = speclib,
+                              Z = Z
+    )
+  }else{
+    SMstar = NA
+  }
+
   return(
     list(
       flux = flux,
@@ -562,6 +574,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       SFR = SFR,
       masstot = masstot,
       massvec = massvec,
+      SMstar = SMstar,
       M2L = masstot / lumtot_unatten,
       SFRburst = SFRburst,
       Zvec = Zvec,
