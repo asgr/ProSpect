@@ -1,15 +1,15 @@
 Package: ProSpect
 Type: Package
 Title: Professional Spectral Analysis Package
-Version: 1.5.7
-Date: 2024-06-13
+Version: 1.6.5
+Date: 2025-02-18
 Author: Aaron Robotham
 Maintainer: Aaron Robotham <aaron.robotham@uwa.edu.au>
 Description: A high level interface to the BC03 (low and high resolution), BPASS and EMILES libraries, as well as the Dale 2014 dust emission templates. This package allows for complex star formation and metallicity histories to be specified, and can be used in a generative or fitting (Bayesian) mode.
 License: LGPL-3
 Depends: R (>= 3.5.0), ProSpectData (>= 1.0.0), Rcpp (>= 1.0.0)
 Imports: celestial, NISTunits, pracma, checkmate, foreach, doParallel
-Suggests: shiny, magicaxis, knitr, data.table, DT, Rfits, rmarkdown, LaplacesDemon, cmaeshpc, Highlander, hyper.fit, ProFit
+Suggests: shiny, magicaxis, knitr, data.table, DT, Rfits, rmarkdown, LaplacesDemon, cmaeshpc, Highlander, hyper.fit, ProFit, ParmOff
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: gzip

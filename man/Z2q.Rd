@@ -5,7 +5,7 @@
 Metal to Ionisation Conversion
 }
 \description{
-Uses the Z[gas] to ionisation conversion function suggested in Orsi 2014/
+Uses the Z[gas] to ionisation conversion function suggested in Orsi (2014).
 }
 \usage{
 Z2q(Zgas = 0.02, q0 = 2.8e+07, g0 = -1.3, Z0 = 0.012)

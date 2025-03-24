@@ -67,9 +67,10 @@ blackbody_norm=function(wave, Temp = 50, z=0, norm=1){
     if(length(norm)==1){norm=rep(norm,length(Temp))}
   }
   for(i in 1:length(Temp)){
-    lims=cosplanckPeakWave(Temp=Temp[i])*c(1e-3,1e3)*1e10
-    scale=integrate(blackbody, lims[1], lims[2], Temp=Temp[i])$value
-    output=output+blackbody(wave=wave/(1+z), Temp=Temp[i])*norm[i]/scale
+    lims = cosplanckPeakWave(Temp=Temp[i])*c(1e-3,1e3)*1e10
+    scale = integrate(blackbody, lims[1], lims[2], Temp=Temp[i])$value
+    #need the (1 + z) so norm works when band stretching
+    output = output+blackbody(wave=wave/(1 + z), Temp=Temp[i])*norm[i]/scale/(1 + z)
   }
   return(output)
 }
@@ -85,9 +86,10 @@ greybody_norm=function(wave, Temp = 50, beta=1.5, z=0, norm=1){
     if(length(norm)==1){norm=rep(norm,length(Temp))}
   }
   for(i in 1:length(Temp)){
-    lims=cosplanckPeakWave(Temp=Temp[i])*c(1e-3,1e3)*1e10
-    scale=integrate(greybody, lims[1], lims[2], Temp=Temp[i], beta=beta[i])$value
-    output=output+greybody(wave=wave/(1+z), Temp=Temp[i], beta=beta[i])*norm[i]/scale
+    lims = cosplanckPeakWave(Temp=Temp[i])*c(1e-3,1e3)*1e10
+    scale = integrate(greybody, lims[1], lims[2], Temp=Temp[i], beta=beta[i])$value
+    #need the (1 + z) so norm works when band stretching
+    output = output + greybody(wave=wave/(1 + z), Temp=Temp[i], beta=beta[i])*norm[i]/scale/(1 + z)
   }
   return(output)
 }
@@ -126,14 +128,14 @@ Dale_interp=function(alpha_SF=1.5, AGNfrac=0, type='NormTot', Dale=NULL){
       Dale=Dale_NormSFR
     }
   }
-  
+
   if(AGNfrac>0 & AGNfrac<1){
     AGNinterp=interp_quick(x=AGNfrac, Dale$AGNfrac)
   }
   if(AGNfrac<1){
     SFinterp=interp_quick(x=alpha_SF, Dale$alpha_SF)
   }
-  
+
   if(AGNfrac==0){
     output=rep(0,1496)
     output=output+Dale$Aspec[[1]][SFinterp['ID_lo'],]*SFinterp['wt_lo']
@@ -161,11 +163,11 @@ Dale_scale=function(alpha_SF=1.5, AGNfrac=0.5, Dale_in){
   }
   tempapproxSF=approxfun(Dale_in$Wave/1e4, Dale_in$Aspec)
   tempSFint=integrate(tempapproxSF, lower=5, upper=20)$value
-  
+
   tempAGNint=3.39296e-05 #This is always the same, by definition
-  
+
   AGNscale=tempSFint/(tempAGNint+tempSFint)
-  
+
   NormScale=(AGNfrac*AGNscale+(1-AGNfrac)*(1-AGNscale))
   AGNfrac=(AGNfrac*AGNscale)/NormScale
   return(c(Dustfrac_bol=1-AGNfrac, AGNfrac_bol=AGNfrac))

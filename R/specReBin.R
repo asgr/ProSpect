@@ -30,7 +30,7 @@ specReBin = function(wave, flux, wavegrid=NULL, bin=NULL, binfunc=median,
     flux = log10(flux)
 
     if(interp == 'approx'){
-      tempflux = approx(x=wave, y=flux, xout=wavegrid_log, yleft=NA, yright=NA, ...)$y
+      tempflux = approx(x=wave, y=flux, xout=wavegrid_log, ...)$y
     }else if(interp == 'spline'){
       tempflux = spline(x=wave, y=flux, xout=wavegrid_log, ...)$y
     }

@@ -33,6 +33,7 @@ SFHfunc = function(massfunc = massfunc_b5,
                    Eb = 0,
                    L0 = 2175.8,
                    LFWHM = 470,
+                   SMstar = FALSE,
                    ...) {
   #Ly_limit should be 911.75 Ang (the actual ionisation limit) or sometimes 1215.67 Ang (Lyman alpha)
 
@@ -62,9 +63,9 @@ SFHfunc = function(massfunc = massfunc_b5,
   }
 
   if (any(speclib$Age <= 1e7)) {
-    birthcloud = max(which(speclib$Age <= 1e7))
+    birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
-    birthcloud = 1
+    birthcloud_len = 1
   }
 
   if (!is.null(filters)) {
@@ -150,7 +151,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     Zwmat = matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age), Zlist[, 'ID_hi'])] = Zlist[, 'wt_hi']
     Zwmat[cbind(1:length(speclib$Age), Zlist[, 'ID_lo'])] = Zlist[, 'wt_lo']
-    Zuse = which(colSums(Zwmat) > 0)
+    Zuse = which(.colSums(Zwmat, dim(Zwmat)[1], dim(Zwmat)[2]) > 0)
     Zdoweight = TRUE
   } else{
     Zuse = Z
@@ -246,12 +247,15 @@ SFHfunc = function(massfunc = massfunc_b5,
   if (length(Zuse) > 1) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
-      toadd = colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
+      #toadd = colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
       #toadd[which(is.na(toadd) | (toadd < 0))] = 0 #since some spectral libraries have negative flux (noisy empirical data)
-      lum = lum + toadd
+      #lum = lum + toadd
+      #.vec_add_cpp(lum, .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid]))
+      .vec_add_cpp(lum, crossprod(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid])) #factor of about 2-3 faster
       if (any(escape_frac < 1)) {
         if (length(Ly_limit) == 1) {
-          speclib$Zspec[[Zid]][, wave_lum < Ly_limit] = speclib$Zspec[[Zid]][, wave_lum < Ly_limit] * escape_frac
+          sel = which(wave_lum < Ly_limit)
+          speclib$Zspec[[Zid]][, sel] = speclib$Zspec[[Zid]][, sel] * escape_frac
         } else{
           for (i in 1:(length(Ly_limit) - 1)) {
             sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
@@ -264,21 +268,26 @@ SFHfunc = function(massfunc = massfunc_b5,
       }
     }
   } else{
-    lum = colSums(speclib$Zspec[[Zuse]] * massvec)
+    #lum = colSums(speclib$Zspec[[Zuse]] * massvec)
+    #lum = .colSums_wt_cpp(speclib$Zspec[[Zuse]], massvec)
+    lum = crossprod(speclib$Zspec[[Zuse]], massvec) #factor of about 2-3 faster
     # if(any(escape_frac<1)){
     #   speclib$Zspec[[Zuse]][,wave_lum<Ly_limit]=speclib$Zspec[[Zuse]][,wave_lum<Ly_limit]*escape_frac
     # }
     if (any(escape_frac < 1)) {
       if (length(Ly_limit) == 1) {
-        speclib$Zspec[[Zuse]][, wave_lum < Ly_limit] = speclib$Zspec[[Zuse]][, wave_lum < Ly_limit] * escape_frac
+        wave_lum_sel = wave_lum < Ly_limit
+        speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac
+        #.vec_mult_cpp(speclib$Zspec[[Zuse]][, wave_lum_sel], escape_frac)
       } else{
         for (i in 1:(length(Ly_limit) - 1)) {
-          sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-          speclib$Zspec[[Zuse]][, sel] = speclib$Zspec[[Zuse]][, sel] *
-            escape_frac[i]
+          wave_lum_sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
+          speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac[i]
+          #.vec_mult_cpp(speclib$Zspec[[Zuse]][, wave_lum_sel], escape_frac[i])
         }
-        sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-        speclib$Zspec[[Zuse]][, sel] = speclib$Zspec[[Zuse]][, sel] * escape_frac[length(Ly_limit)]
+        wave_lum_sel = which(wave_lum < Ly_limit[length(Ly_limit)])
+        speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac[length(Ly_limit)]
+        #.vec_mult_cpp(speclib$Zspec[[Zuse]][, wave_lum_sel], escape_frac[length(Ly_limit)])
       }
     }
   }
@@ -291,15 +300,19 @@ SFHfunc = function(massfunc = massfunc_b5,
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
       if (tau_birth != 0) {
-        #speclib$Zspec[[Zid]][1:birthcloud,]=t(t(speclib$Zspec[[Zid]][1:birthcloud,])*CF_birth(wave_lum, tau=tau_birth, pow=pow_birth))
-        speclib$Zspec[[Zid]][1:birthcloud, ] = speclib$Zspec[[Zid]][1:birthcloud, ] *
-          rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth),
-              each = birthcloud)
+        #speclib$Zspec[[Zid]][1:birthcloud_len,]=t(t(speclib$Zspec[[Zid]][1:birthcloud_len,])*CF_birth(wave_lum, tau=tau_birth, pow=pow_birth))
+        speclib$Zspec[[Zid]][1:birthcloud_len, ] = speclib$Zspec[[Zid]][1:birthcloud_len, ] *
+          rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), each = birthcloud_len)
       }
       if (Zdoweight) {
-        lum = lum + colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
+        #lum = lum + colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
+        #lum = lum + .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid])
+        #.vec_add_cpp(lum, .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid]))
+        .vec_add_cpp(lum, crossprod(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid])) #factor of about 2-3 faster
       } else{
-        lum = colSums(speclib$Zspec[[Zid]] * massvec)
+        #lum = colSums(speclib$Zspec[[Zid]] * massvec)
+        #.vec_add_cpp(lum, .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec))
+        .vec_add_cpp(lum, crossprod(speclib$Zspec[[Zid]], massvec)) #factor of about 2-3 faster
       }
     }
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
@@ -339,7 +352,8 @@ SFHfunc = function(massfunc = massfunc_b5,
       new_lum = log10(lum/(1 + z_seq))
       new_lum = 10^approx(x=new_wave, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
       new_lum = new_lum*weights[i]
-      lum_conv = lum_conv + new_lum
+      #lum_conv = lum_conv + new_lum
+      .vec_add_cpp(lum_conv, new_lum)
     }
 
     lum = lum_conv*res
@@ -355,10 +369,12 @@ SFHfunc = function(massfunc = massfunc_b5,
         All_lum = 0
         for (i in 1:(length(Ly_limit) - 1)) {
           sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-          All_lum = All_lum + (1 - escape_frac[i]) * (Ly_limit[i] - Ly_limit[i + 1]) * mean(lum_unatten[sel])
+          #All_lum = All_lum + (1 - escape_frac[i]) * (Ly_limit[i] - Ly_limit[i + 1]) * mean(lum_unatten[sel])
+          .vec_add_cpp(All_lum, (1 - escape_frac[i]) * (Ly_limit[i] - Ly_limit[i + 1]) * mean(lum_unatten[sel]))
         }
         sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-        All_lum = All_lum + (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel])
+        #All_lum = All_lum + (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel])
+        .vec_add_cpp(All_lum, (1 - escape_frac[length(Ly_limit)]) * sum(.qdiff(wave_lum[sel]) * lum_unatten[sel]))
       }
 
       emission_input = list(All_lum = All_lum,
@@ -395,13 +411,15 @@ SFHfunc = function(massfunc = massfunc_b5,
 
     emissionadd_atten = emissionadd_unatten
     if(tau_birth != 0){
-      emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
+      #emissionadd_atten$lum = emissionadd_atten$lum * CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth)
+      .vec_mult_cpp(emissionadd_atten$lum, CF_birth(emissionadd_atten$wave, tau = tau_birth, pow = pow_birth))
     }
 
     lumtot_emission_unatten = sum(.qdiff(emissionadd_unatten$wave) * emissionadd_unatten$lum)
     lumtot_emission_atten = sum(.qdiff(emissionadd_atten$wave) * emissionadd_atten$lum)
 
-    lumtot_birth = lumtot_birth - lumtot_emission_unatten + lumtot_emission_atten
+    #lumtot_birth = lumtot_birth - lumtot_emission_unatten + lumtot_emission_atten
+    .vec_add_cpp(lumtot_birth, lumtot_emission_atten - lumtot_emission_unatten)
 
     if(lumtot_birth < 0){
      lumtot_birth = 0
@@ -530,6 +548,17 @@ SFHfunc = function(massfunc = massfunc_b5,
     Zvec = Zvec[sel]
   }
 
+  if (SMstar & requireNamespace("ParmOff", quietly = TRUE)) {
+    SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
+                              .args = dots, #the superset of potential matching parameters
+                              massfunc = massfunc,
+                              speclib = speclib,
+                              Z = Z
+    )
+  }else{
+    SMstar = NA
+  }
+
   return(
     list(
       flux = flux,
@@ -545,6 +574,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       SFR = SFR,
       masstot = masstot,
       massvec = massvec,
+      SMstar = SMstar,
       M2L = masstot / lumtot_unatten,
       SFRburst = SFRburst,
       Zvec = Zvec,
@@ -603,9 +633,9 @@ SMstarfunc = function(massfunc = massfunc_b5,
   }
 
   if (any(speclib$Age <= 1e7)) {
-    birthcloud = max(which(speclib$Age <= 1e7))
+    birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
-    birthcloud = 1
+    birthcloud_len = 1
   }
 
   if (!is.function(Z)) {
@@ -634,7 +664,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
     Zwmat = matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age), Zlist[, 'ID_hi'])] = Zlist[, 'wt_hi']
     Zwmat[cbind(1:length(speclib$Age), Zlist[, 'ID_lo'])] = Zlist[, 'wt_lo']
-    Zuse = which(colSums(Zwmat) > 0)
+    Zuse = which(.colSums(Zwmat, dim(Zwmat)[1], dim(Zwmat)[2]) > 0)
     Zdoweight = TRUE
   } else{
     Zuse = Z
@@ -833,9 +863,9 @@ SFHburst = function(burstmass = 1e8,
   }
 
   if (any(speclib$Age <= 1e7)) {
-    birthcloud = max(which(speclib$Age <= 1e7))
+    birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
-    birthcloud = 1
+    birthcloud_len = 1
   }
 
   wave_lum = speclib$Wave

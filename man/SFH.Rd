@@ -21,7 +21,7 @@ SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  Ly_limit = 911.75, LKL10 = NULL, disp_stars = FALSE, LSF = NULL, z = 0.1, H0 = 67.8,
  OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
  unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
- LFWHM = 470, ...) 
+ LFWHM = 470, ...)
 
 SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
@@ -91,13 +91,13 @@ Character vector; names of filters to use. See \code{\link{filters}} for options
 Numeric scalar (\code{SFHburst}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Z (so 0.02 for solar). \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. For convenience, if a non-integer value is provided then this is interpreted as the desired metallicity value (so Z=0.02 for solar etc), and converted into the appropriate function internally, e.g. \option{Z}=5 and \option{Z}=0.02 will give the same outputs for \code{\link{BC03}}.
 }
   \item{emission}{
-Logical; should emission features be added to the spectrum? This will be done using \code{\link{emissionLines}}. 
+Logical; should emission features be added to the spectrum? This will be done using \code{\link{emissionLines}}.
 }
   \item{veldisp}{
-Numeric scalar; velocity dispersion (km/s) of emission features. See \code{\link{emissionLines}}. 
+Numeric scalar; velocity dispersion (km/s) of emission features. See \code{\link{emissionLines}}.
 }
   \item{range}{
-Numeric scalar; how many sigma either side of the line should the dispersion spread flux be evaluated (starts to become inaccurate if lower than 5).  
+Numeric scalar; how many sigma either side of the line should the dispersion spread flux be evaluated (starts to become inaccurate if lower than 5).
 }
   \item{res}{
 Numeric scalar; the relative resolution of the dispersion evaluation in fractions of sigma. Should not be more than 0.5, but might need to be lower if dispersion is much larger than the effective spectral resolution (a few thousand km/s usually, in which case set to 0.1-0.2).
@@ -112,7 +112,7 @@ Numeric scalar/vector; the fraction of photons allows to escape when the wavelen
 Numeric scalar/vector; the Lyman limit/s to use (Angstroms). Photons with wavelengths shorted than the \option{Ly_limit}[i] are absorbed by a factor 1-\option{escape_frac}[i]. If \option{emission}=TRUE and \option{emission_scale}='FUV' then the absorbed flux (1-\option{escape_frac}) is re-emitted as lines. We expect absorption short of Ly alpha (1215.7 A), Ly beta (1025.7 A), Lyman gamma (972.5 A), and the Lyman series limit (911.8 A), where a different \option{escape_frac} can be specified for each. Generally aborption gets stronger as the wavelength gets shorter, creating a characteristic saw-tooth absorption spectrum with a jump at each Lyman series level. Users can specify more Lyman limits (e.g. delta etc), but generally this is not needed. The escape fraction short of the Lyman series limit (911.8 A) should generally be 0 if not known otherwise. A single crude \option{Ly_limit} should generally be 911.8 (the actual ionisation limit n=Inf of 13.6 eV) since this represents all ionising UV flux (energetic enough to fully ionise an hydrogen atom, regardless of its energy state).
 }
   \item{LKL10}{
-List; LKL template to use. If \option{LKL10}=NULL then the appropriate template is loaded internally (this is the safest option). To speed things up the user can pass in the appropriate \code{\link{LKL10}} template, but care must be taken to ensure the scaling used makes use of the correct dataset. See \code{\link{emissionLines}}.  
+List; LKL template to use. If \option{LKL10}=NULL then the appropriate template is loaded internally (this is the safest option). To speed things up the user can pass in the appropriate \code{\link{LKL10}} template, but care must be taken to ensure the scaling used makes use of the correct dataset. See \code{\link{emissionLines}}.
 }
   \item{disp_stars}{
 Logical; should the star templates also have dispersion (\option{veldisp}) added? This is done distinctly to the emission features (so they will not be dispersed twice!) This is only applied to the attenuated spectrum, so the unattenuated will be the intrinsic (0 km/s dispersion) spectrum.
@@ -148,7 +148,7 @@ Character scalar; specifies the type of photometry computed, must be one of 'mag
 Numeric scalar; amount of sparse sampling of the spectra to make. Higher values mean coarser spectra is processed, which means less accurate photometry, but faster processing. Generally done when computing higher resolution libraries for AB mags.
 }
   \item{intSFR}{
-Boolean scalar; should the \option{massfunc} be intergrated between ages? This might be necessary if the SFH is quite bursty (FWHM of burst < 250 Myrs), but it is more expensive to compute (a few 10s\% typically) and not required if the SFH is quite smooth.  
+Boolean scalar; should the \option{massfunc} be intergrated between ages? This might be necessary if the SFH is quite bursty (FWHM of burst < 250 Myrs), but it is more expensive to compute (a few 10s\% typically) and not required if the SFH is quite smooth.
 }
   \item{LumDist_Mpc}{
 Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
@@ -157,10 +157,13 @@ Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. Th
 Numeric scalar; Additional attenuation at the 2175.8 Ang dust bump. The default of 0 means this has no effect, MW is near 3.3, and typical galaxies are around \option{Eb}=1.
 }
   \item{L0}{
-Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
 }
   \item{LFWHM}{
-Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
+Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
+}
+  \item{SMstar}{
+Logical; if you have the \code{ParmOff} package (on Github asgr/ParmOff, required for correct argument matching between the various functions used) setting this to TRUE will also compute the various stellar mass calculations of \code{\link{SMstarfunc}} including stellar mass remaining (TotSMstar) which is the reason this function is usually run. The output appears in the list object 'SMstar'.
 }
   \item{\dots}{
 Further arguments to be passed to \code{massfunc} or \code{Z} functions, as appropriate (this is achieved by formals matching, so be careful to used unique names).
@@ -191,12 +194,15 @@ The defaults should be reasonable in the regime they are used over, where birth 
 \item{SFR}{Numeric vector; the star formation rate at all ages (\code{SFHfunc} only).}
 \item{masstot}{Numeric scalar; total mass formed in Msol.}
 \item{massvec}{Numeric vector; the total mass formed in each age window  (\code{SFHfunc} only).}
+\item{SMstar}{Numeric vector; if the argument \option{SMstar} is TRUE then this will contain the output of \code{\link{SMstarfunc}}, else NA.}
 \item{M2L}{Numeric scalar; total mass to light ratio.}
 \item{SFRburst}{Numeric scalar; the star formation rate over the last 10^8 years.}
 \item{Zvec}{Numeric vector; Z history. For \code{SFHburst} it is the input \option{Z}.}
 \item{emission_input}{List; the inputs sent to \code{\link{emissionLines}} when \option{emission}=TRUE.}
 
-\code{SMstarp4} / \code{SMstarp5} / \code{SMstarfunc} produces both the stellar mass formed (4/5/5 elements) and the stellar mass remaining (a further 4/5/5 elements) for the 5 different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
+\code{SMstarfunc} produces both the stellar mass formed and the stellar mass remaining for the different time phases provided in the arguments. Finally it produces the total stellar mass formed, and the total stellar mass remaining (not formed- this is the last element listed).
+
+\code{SMburst} is a more limited function that just computes the mass remaining from a true instantaneous burst. This is rarely (ever) how ProSpect is used in fitting mode, so most users will not want to use this function to compute stellar masses from ProSpect outputs.
 }
 \author{
 Aaron Robotham
@@ -251,18 +257,18 @@ plot(bursty$agevec, bursty$SFR, type='l', col='purple', xlim=c(0,1e10), ylim=c(0
 lines(constant$agevec, constant$SFR, col='blue')
 lines(young$agevec, young$SFR, col='darkgreen')
 lines(old$agevec, old$SFR, col='red')
-legend('top', legend=c('bursty', 'constant', 'young', 'old'), lty=1, 
+legend('top', legend=c('bursty', 'constant', 'young', 'old'), lty=1,
   col=c('purple', 'blue', 'darkgreen', 'red'))
 
 #Luminosities with default dust attenuation:
 
 wave=bursty$wave_lum
-plot(wave, bursty$lum_atten, log='xy', type='l', col='purple', ylim=c(1e-1,1e8), 
+plot(wave, bursty$lum_atten, log='xy', type='l', col='purple', ylim=c(1e-1,1e8),
   xlab='Wavelength / Ang', ylab='Lsol / Ang')
 lines(wave, constant$lum_atten, col='blue')
 lines(wave, young$lum_atten, col='darkgreen')
 lines(wave, old$lum_atten, col='red')
-legend('topright', legend=c('bursty', 'constant', 'young', 'old'), lty=1, 
+legend('topright', legend=c('bursty', 'constant', 'young', 'old'), lty=1,
   col=c('purple', 'blue', 'darkgreen', 'red'))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

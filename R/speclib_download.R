@@ -1,16 +1,15 @@
-speclib_download = function(stellpop = 'avail',
-                            destpath = '',
-                            type = 'rda',
-                            URL = 'https://tinyurl.com/prospect-speclib/') {
-  if (stellpop == 'avail') {
-    url.show(paste0(URL, 'avail.txt?raw=1'))
-  } else{
-    speclib = paste0(stellpop, '.',tolower(type))
-
-    download.file(paste0(URL, speclib, '?raw=1'),
-                  destfile = paste0(destpath, speclib))
-    return(paste0(destpath, speclib))
-  }
+speclib_download = function(URL = 'https://tinyurl.com/prospect-speclib/', ...) {
+  # if (stellpop == 'avail') {
+  #   #url.show(paste0(URL, 'avail.txt?raw=1'))
+  #   browseURL('https://www.dropbox.com/scl/fi/dlbknfgte58jhha8xg4q0/avail.txt?rlkey=2hctmseeyxprbt90b05lpnzhc&st=2nre8nss&dl=0')
+  # } else{
+  #   speclib = paste0(stellpop, '.',tolower(type))
+  #
+  #   download.file(paste0(URL, speclib, '?raw=1'),
+  #                 destfile = paste0(destpath, speclib))
+  #   return(paste0(destpath, speclib))
+  # }
+  browseURL(URL, ...)
 }
 
 speclib_FITSload = function(file, Labels = list(Zlab = 'Metallicity',
@@ -39,13 +38,13 @@ speclib_FITSload = function(file, Labels = list(Zlab = 'Metallicity',
 
   output$Labels = Labels
 
-  Zspec_loc = sort(grep(pattern = 'Zspec', names(temp), value = TRUE))
+  Zspec_loc = grep(pattern = 'Zspec', names(temp), value = TRUE)
   Zspec = temp[Zspec_loc]
   names(Zspec) = NULL
   lapply(Zspec, as.matrix)
   output$Zspec = Zspec
 
-  Zevo_loc = sort(grep(pattern = 'Zevo', names(temp), value = TRUE))
+  Zevo_loc = grep(pattern = 'Zevo', names(temp), value = TRUE)
   Zevo = temp[Zevo_loc]
   names(Zevo) = NULL
   lapply(Zevo, as.data.frame)
