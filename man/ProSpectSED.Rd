@@ -175,7 +175,8 @@ Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do n
 Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
 }
   \item{IGMabsorb}{
-Numeric scalar; absorbing fraction for the intervening IGM. This should be thought of as absorption due to material between the galaxy of interest an the observer. This suppressing fraction is applied to wavelength in the Lyman regime (911.8 - 1215.7 Angstrom). Based on Songaila (2004) a resonable approximation for this is given by \option{IGMabsorb} = pnorm(z, mean=3.8, sd=1.2), meaning it is almost 0 (complete transmission) at low redshift and almost 1 (complete absorption) by redshift 8.
+Absorbing fraction for the intervening IGM. This should be thought of as absorption due to material between the galaxy of interest an the observer. This suppressing fraction is applied to wavelength in the Lyman regime (911.8 - 1215.7 Angstrom). Based on Songaila (2004) a resonable approximation for this is given by \option{IGMabsorb} = pnorm(z, mean=3.8, sd=1.2), meaning it is almost 0 (complete transmission) at low redshift and almost 1 (complete absorption) by redshift 8.
+Alternatively, you can pass "Inoue14" and it will apply the wavelength dependent IGM absorption from Inoue (2014). 
 }
   \item{\dots}{
 All further arguments are passed directly into \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
@@ -195,6 +196,7 @@ Function, required; the star formation history function to use. Must be one of \
 }
   \item{Data$arglist}{
 List, optional; named arguments and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
+There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', function of redshift/NULL/'Inoue14', if NULL use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then this will be the age of the Universe at the observation epoch.
 }
   \item{Data$speclib}{
 List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
