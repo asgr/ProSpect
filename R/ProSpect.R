@@ -500,7 +500,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     }
     if(Data$arglist$photoz){
 
-      z_genSF = Data$arglist$z_genSF
+      z_genSF = Data$arglist$z_genSF ## What redshift should we start star formation?
 
       ztest = parm["z"]
       if(Data$logged[Data$parm.names == "z"]){
@@ -515,9 +515,19 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         Data$arglist$IGMabsorb = Data$arglist$IGMfunc(ztest)
       }
       
-      agemax_new = (celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
+      # agemax_new = (celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref))*1e9 ##need to be in years
+      # if(!is.null(z_genSF)){
+      #   agemax_new = 1e9*(celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z = z_genSF, ref = Data$arglist$ref))
+      # }
+      
+      ## pracma integral inside of UniAgeAtz has annoying cat messages 
+      ## Just use UniAgeAtz at very large z=5e9 (~1 second after Big Bang)
+      UniAgeAtz_simple = function(z){
+        celestial::cosdistTravelTime(z = 5e9, ref = Data$arglist$ref) - celestial::cosdistTravelTime(z = z, ref = Data$arglist$ref)
+      }
+      agemax_new = (UniAgeAtz_simple(ztest))*1e9 ##need to be in years 
       if(!is.null(z_genSF)){
-        agemax_new = 1e9*(celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z = z_genSF, ref = Data$arglist$ref))
+        agemax_new = (UniAgeAtz_simple(ztest) - UniAgeAtz_simple(z_genSF))*1e9 ##need to be in years 
       }
 
       magemax_new = agemax_new/1e9 ## need to be in Gyr
