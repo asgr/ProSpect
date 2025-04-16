@@ -521,9 +521,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       # }
       
       ## pracma integral inside of UniAgeAtz has annoying cat messages 
-      ## Just use UniAgeAtz at very large z=5e9 (~1 second after Big Bang)
+      ## Just use UniAgeAtz at recombination z=1100, this means in ProSpect you cant fit 'galaxies' with photoz>1100
       UniAgeAtz_simple = function(z){
-        celestial::cosdistTravelTime(z = 5e9, ref = Data$arglist$ref) - celestial::cosdistTravelTime(z = z, ref = Data$arglist$ref)
+        celestial::cosdistTravelTime(z = 1100, ref = Data$arglist$ref) - celestial::cosdistTravelTime(z = z, ref = Data$arglist$ref)
       }
       agemax_new = (UniAgeAtz_simple(ztest))*1e9 ##need to be in years 
       if(!is.null(z_genSF)){
