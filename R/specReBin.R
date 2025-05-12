@@ -91,3 +91,99 @@ speclibReBin = function(speclib, wavegrid=NULL, bin=NULL, binfunc=median,
 
   return(speclib)
 }
+
+speclibReGrid = function(speclib, logAge_steps = NULL, logZ_steps = NULL, Zsol=0.02, cores=8){
+  #SSP_logAge_steps = log10(speclib$Age)
+  #SSP_logZ_steps = log10(speclib$Z/Zsol)
+
+  if(is.null(logAge_steps)){
+    message('Using logAge grid from speclib!')
+    logAge_steps = log10(speclib$Age)
+    SSP_logAge_steps = logAge_steps
+  }else{
+    message('Interpolating onto logAge grid different to speclib!')
+    SSP_logAge_steps = log10(speclib$Age)
+    if(min(logAge_steps) < min(SSP_logAge_steps)){
+      stop('logAge_steps minimum is less than minimum logAge present in the provided speclib!')
+    }
+    if(max(logAge_steps) > max(SSP_logAge_steps)){
+      stop('logAge_steps maximum is more than maximum logAge present in the provided speclib!')
+    }
+    interp = TRUE
+  }
+
+  SSP_logAge_steps[SSP_logAge_steps == -Inf] = -100
+  logAge_steps[logAge_steps == -Inf] = -100
+
+  if(is.null(logZ_steps)){
+    message('Using logZ grid from speclib!')
+    logZ_steps = log10(speclib$Z/Zsol)
+    SSP_logZ_steps = logZ_steps
+  }else{
+    message('Interpolating onto logZ grid different to speclib!')
+    SSP_logZ_steps = log10(speclib$Z/Zsol)
+    if(min(logZ_steps) < min(SSP_logZ_steps)){
+      stop('logZ_steps minimum is less than minimum logZ present in the provided speclib!')
+    }
+    if(max(logZ_steps) > max(SSP_logZ_steps)){
+      stop('logZ_steps maximum is more than maximum logZ present in the provided speclib!')
+    }
+    interp = TRUE
+  }
+
+  cores = min(cores, length(logZ_steps), detectCores())
+  registerDoParallel(cores=cores)
+  #
+  logAge_step = NULL
+  logZ_step = NULL
+
+  Zspec = foreach(logZ_step = logZ_steps)%dopar%{
+    message('  ',logZ_step)
+    temp_Z = interp_quick(logZ_step, SSP_logZ_steps)
+    output = foreach(logAge_step = logAge_steps)%do%{
+      #message('    ',logAge_step)
+      temp_Age = interp_quick(logAge_step, SSP_logAge_steps)
+      spec_Zlo_Alo = speclib$Zspec[[temp_Z['ID_lo']]][temp_Age['ID_lo'],]*temp_Z['wt_lo']*temp_Age['wt_lo']
+      spec_Zlo_Ahi = speclib$Zspec[[temp_Z['ID_lo']]][temp_Age['ID_hi'],]*temp_Z['wt_lo']*temp_Age['wt_hi']
+      spec_Zhi_Alo = speclib$Zspec[[temp_Z['ID_hi']]][temp_Age['ID_lo'],]*temp_Z['wt_hi']*temp_Age['wt_lo']
+      spec_Zhi_Ahi = speclib$Zspec[[temp_Z['ID_hi']]][temp_Age['ID_hi'],]*temp_Z['wt_hi']*temp_Age['wt_hi']
+      return(spec_Zlo_Alo + spec_Zlo_Ahi + spec_Zhi_Alo + spec_Zhi_Ahi)
+    }
+    output = do.call(rbind, output)
+    return(as.matrix(output))
+  }
+
+  Zevo = foreach(logZ_step = logZ_steps)%dopar%{
+    message('  ',logZ_step)
+    temp_Z = interp_quick(logZ_step, SSP_logZ_steps)
+    output = foreach(logAge_step = logAge_steps)%do%{
+      #message('    ',logAge_step)
+      temp_Age = interp_quick(logAge_step, SSP_logAge_steps)
+      evo_Zlo_Alo = speclib$Zevo[[temp_Z['ID_lo']]][temp_Age['ID_lo'],]*temp_Z['wt_lo']*temp_Age['wt_lo']
+      evo_Zlo_Ahi = speclib$Zevo[[temp_Z['ID_lo']]][temp_Age['ID_hi'],]*temp_Z['wt_lo']*temp_Age['wt_hi']
+      evo_Zhi_Alo = speclib$Zevo[[temp_Z['ID_hi']]][temp_Age['ID_lo'],]*temp_Z['wt_hi']*temp_Age['wt_lo']
+      evo_Zhi_Ahi = speclib$Zevo[[temp_Z['ID_hi']]][temp_Age['ID_hi'],]*temp_Z['wt_hi']*temp_Age['wt_hi']
+      return(evo_Zlo_Alo + evo_Zlo_Ahi + evo_Zhi_Alo + evo_Zhi_Ahi)
+    }
+    output = as.data.frame(do.call(rbind, output))
+    colnames(output) = colnames(speclib$Zevo[[1]])
+    return(output)
+  }
+
+  Age_lims = .binlims(10^logAge_steps, log=T)
+  AgeBins = c(Age_lims$lo[1], Age_lims$hi)
+  AgeWeights = diff(AgeBins)
+
+  logAge_steps[logAge_steps == -100] = -Inf
+
+  SSP = list(
+    Z = Zsol * 10^logZ_steps,
+    Age = 10^logAge_steps,
+    AgeBins = AgeBins,
+    AgeWeights = AgeWeights,
+    Wave = speclib$Wave,
+    Labels = speclib$Labels,
+    Zspec = Zspec,
+    Zevo = Zevo
+  )
+}

@@ -41,11 +41,11 @@ interp_quick = function(x, params, log=FALSE){
 
 #This is a direct copy of the interval function from LaplacesDemon. Since I only use this one function I didn't want to add the whole LD dependency
 
-.interval=function (x, a = -Inf, b = Inf, reflect = TRUE) 
+.interval=function (x, a = -Inf, b = Inf, reflect = TRUE)
 {
-    if (missing(x)) 
+    if (missing(x))
         stop("The x argument is required.")
-    if (a > b) 
+    if (a > b)
         stop("a > b.")
     if (reflect & is.finite(a) & is.finite(b) & any(!is.finite(x))) {
         if (is.array(x)) {
@@ -54,22 +54,22 @@ interp_quick = function(x, params, log=FALSE){
         }
         x.inf.pos <- !is.finite(x)
         x[x.inf.pos] <- .interval(x[x.inf.pos], a, b, reflect = FALSE)
-        if (is.array(x)) 
+        if (is.array(x))
             x <- array(x, dim = d)
     }
     if (is.vector(x) & {
         length(x) == 1
     }) {
-        if (reflect == FALSE) 
+        if (reflect == FALSE)
             x <- max(a, min(b, x))
         else if (x < a | x > b) {
             out <- TRUE
             while (out) {
-                if (x < a) 
+                if (x < a)
                   x <- a + a - x
-                if (x > b) 
+                if (x > b)
                   x <- b + b - x
-                if (x >= a & x <= b) 
+                if (x >= a & x <= b)
                   out <- FALSE
             }
         }
@@ -90,7 +90,7 @@ interp_quick = function(x, params, log=FALSE){
                 x[x.num] <- a + a - x[x.num]
                 x.num <- which(x > b)
                 x[x.num] <- b + b - x[x.num]
-                if (all(x >= a) & all(x <= b)) 
+                if (all(x >= a) & all(x <= b))
                   out <- FALSE
             }
         }
@@ -111,7 +111,7 @@ interp_quick = function(x, params, log=FALSE){
                 x[x.num] <- a + a - x[x.num]
                 x.num <- which(x > b)
                 x[x.num] <- b + b - x[x.num]
-                if (all(x >= a) & all(x <= b)) 
+                if (all(x >= a) & all(x <= b))
                   out <- FALSE
             }
         }
@@ -126,4 +126,26 @@ interp_quick = function(x, params, log=FALSE){
   }else{
     return(vec[2:length(vec)]-vec[1:(length(vec)-1)])
   }
+}
+
+.binlims = function(input, log=FALSE){
+  N_in = length(input)
+
+  if(log){
+    input = log10(input)
+  }
+
+  in_diff = diff(input)
+
+  bins = input[1:(N_in - 1L)] + in_diff/2
+  bins = c(input[1] - in_diff[1]/2, bins, input[N_in] + in_diff[N_in - 1L]/2)
+
+  if(log){
+    bins = 10^bins
+  }
+
+  bin_lo = bins[1:N_in]
+  bin_hi = bins[2:(N_in + 1L)]
+
+  return(list(lo = bin_lo, hi = bin_hi))
 }

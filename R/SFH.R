@@ -8,7 +8,7 @@ SFHfunc = function(massfunc = massfunc_b5,
                    pow_birth = -0.7,
                    pow_screen = -0.7,
                    filters = 'all',
-                   Z = 5,
+                   Z = 0.02,
                    emission = FALSE,
                    veldisp = 50,
                    range = 5,
@@ -301,8 +301,8 @@ SFHfunc = function(massfunc = massfunc_b5,
     for (Zid in Zuse) {
       if (tau_birth != 0) {
         #speclib$Zspec[[Zid]][1:birthcloud_len,]=t(t(speclib$Zspec[[Zid]][1:birthcloud_len,])*CF_birth(wave_lum, tau=tau_birth, pow=pow_birth))
-        speclib$Zspec[[Zid]][1:birthcloud_len, ] = speclib$Zspec[[Zid]][1:birthcloud_len, ] *
-          rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), each = birthcloud_len)
+        #speclib$Zspec[[Zid]][1:birthcloud_len, ] = speclib$Zspec[[Zid]][1:birthcloud_len, ] * rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), each = birthcloud_len)
+        speclib$Zspec[[Zid]] = .mat_vec_mult_row_cpp(speclib$Zspec[[Zid]], CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), birthcloud_len)
       }
       if (Zdoweight) {
         #lum = lum + colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
@@ -327,6 +327,7 @@ SFHfunc = function(massfunc = massfunc_b5,
     grid = seq(-range, range, by=res)
     weights = dnorm(grid)
     wave_lum_log = log10(wave_lum)
+    lum_log = log10(lum)
 
     if(!is.null(LSF)){
       if(is.function(LSF)){
@@ -348,9 +349,9 @@ SFHfunc = function(massfunc = massfunc_b5,
 
     for(i in seq_along(grid)){
       z_seq = grid[i]*z_disp
-      new_wave = log10(wave_lum*(1 + z_seq))
-      new_lum = log10(lum/(1 + z_seq))
-      new_lum = 10^approx(x=new_wave, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
+      new_wave_log = wave_lum_log + log10(1 + z_seq)
+      new_lum = lum_log - log10(1 + z_seq)
+      new_lum = 10^approx(x=new_wave_log, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
       new_lum = new_lum*weights[i]
       #lum_conv = lum_conv + new_lum
       .vec_add_cpp(lum_conv, new_lum)
@@ -593,7 +594,7 @@ SMstarfunc = function(massfunc = massfunc_b5,
                       ancientage = c(9e9, 1.3e10),
                       stellpop = 'BC03lr',
                       speclib = NULL,
-                      Z = 5,
+                      Z = 0.02,
                       z = 0.1,
                       H0 = 67.8,
                       OmegaM = 0.308,
@@ -952,18 +953,22 @@ SFHburst = function(burstmass = 1e8,
 
   if(disp_stars){
     # Here we optionally disperse the spectrum along our LoS.
+    # Remember here we are still in instrinsic luminosity space
 
     grid = seq(-range, range, by=res)
     weights = dnorm(grid)
     wave_lum_log = log10(wave_lum)
+    lum_log = log10(lum)
 
     if(!is.null(LSF)){
       if(is.function(LSF)){
-        vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z frame
+        vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z in the oberved frame
       }else if(is.matrix(LSF) | is.data.frame(LSF)){
         vel_LSF = approx(x=log10(LSF[,1]), y=LSF[,2], xout=log10(wave_lum*(1 + z)), rule=2)$y
-      }else{
+      }else if(length(LSF == 1)){
         vel_LSF = rep(LSF, length(wave_lum))
+      }else{
+        stop('LSF is in the wrong format!')
       }
     }else{
       vel_LSF = rep(0, length(wave_lum))
@@ -975,11 +980,12 @@ SFHburst = function(burstmass = 1e8,
 
     for(i in seq_along(grid)){
       z_seq = grid[i]*z_disp
-      new_wave = log10(wave_lum*(1 + z_seq))
-      new_lum = log10(lum/(1 + z_seq))
-      new_lum = 10^approx(x=new_wave, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
+      new_wave_log = wave_lum_log + log10(1 + z_seq)
+      new_lum = lum_log - log10(1 + z_seq)
+      new_lum = 10^approx(x=new_wave_log, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
       new_lum = new_lum*weights[i]
-      lum_conv = lum_conv + new_lum
+      #lum_conv = lum_conv + new_lum
+      .vec_add_cpp(lum_conv, new_lum)
     }
 
     lum = lum_conv*res

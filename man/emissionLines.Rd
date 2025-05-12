@@ -65,6 +65,7 @@ Can be used by users directly (perhaps to generate your own line features to add
 }
 \value{
 Data.frame with two columns:
+
 \item{wave }{Wavelength (Angstroms).}
 \item{lum }{Emission features scaled as requested (Lum/Ang).}
 }
