@@ -147,7 +147,7 @@ SFHfunc = function(massfunc = massfunc_b5,
       Z_args,
       massfunc_args
     ))
-    Zlist = interp_param(Zvec, speclib$Z, log = TRUE)
+    Zlist = interp_param(Zvec, speclib$Z, log = TRUE) #log-space interpolation works best for Age and Z
     Zwmat = matrix(0, length(speclib$Age), length(speclib$Z))
     Zwmat[cbind(1:length(speclib$Age), Zlist[, 'ID_hi'])] = Zlist[, 'wt_hi']
     Zwmat[cbind(1:length(speclib$Age), Zlist[, 'ID_lo'])] = Zlist[, 'wt_lo']

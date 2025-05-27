@@ -22,7 +22,7 @@ Numeric scalar; opening angle of torus in degrees.
 Numeric scalar; gamma dust parameter.
 }
   \item{be}{
-Numeric scalar; bBeta dust parameter.
+Numeric scalar; beta dust parameter.
 }
   \item{ta}{
 Numeric scalar; optical depth tau.
@@ -38,13 +38,13 @@ The \option{Fritz} data. Providing this directly reduces disk IO since it will u
 }
 }
 \details{
-The below is taken directly from the included documentation:
+The below is taken directly from the included Fritz AGN documentation:
 
-A composition of power-laws, with different spectral indexes as a function of the wavelength, was used to model the primary source (i.e. accretion disk SED) SED taken from the file pwlbb05.dat.                                          
+A composition of power-laws, with different spectral indexes as a function of the wavelength, was used to model the primary source (i.e. accretion disk SED) SED taken from the file pwlbb05.dat.
 
-Standard, Galactic composition of dust, with graphite and astronomical silicates. The grain size distribution is a power law with index -3.5. Scattering and absorption coefficients taken from Laor and Draine (1993). Number of different species: 2 (Graphite and Silicate only).                      
+Standard, Galactic composition of dust, with graphite and astronomical silicates. The grain size distribution is a power law with index -3.5. Scattering and absorption coefficients taken from Laor and Draine (1993). Number of different species: 2 (Graphite and Silicate only).
 
-The inner radius is set by the sublimation temperature of graphite grains: T = 1500 K. The dust sublimation radius is Rmin = 1.3*L46^0.5*T^(-2.8) pc [Barvainis (1987)] where L46=L/(1e46 erg/s), and T is the sublimation temperature. The dust density throughout the torus is expressed by the following: rho(r,theta)=A*r^(beta)exp(-gamma*cos(theta)), where A is a normalization costant, beta and gamma are, in the name of the model, be and al, respectively.
+The inner radius is set by the sublimation temperature of graphite grains: T = 1500 K. The dust sublimation radius is Rmin = 1.3*L46^0.5*T^(-2.8) pc [Barvainis (1987)] where L46=L/(1e46 erg/s), and T is the sublimation temperature. The dust density throughout the torus is expressed by the following: rho(r,theta)=A*r^(beta)exp(-gamma*cos(theta)), where A is a normalization constant, beta and gamma are, in the name of the model, be and al, respectively.
 }
 \value{
 Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed luminosity (erg/s/Ang).
