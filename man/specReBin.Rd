@@ -1,9 +1,10 @@
 \name{specReBin}
 \alias{specReBin}
 \alias{speclibReBin}
+\alias{speclibReGrid}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Spectral Re-Binner
+SSP Spectral Re-Binner and SSP Re-Gridder Functions
 }
 \description{
 It is often useful to rebin spectra to either log binning or linear binning. This function does just that. Also allows an entire SSP library to be rebinned (useful is using a very high resolution SSP for broad-band work etc).
@@ -14,6 +15,8 @@ specReBin(wave, flux, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'a
 
 speclibReBin(speclib, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
   logbin = TRUE, rough = FALSE, cores = 1L, check = FALSE, ...)
+
+speclibReGrid(speclib, logAge_steps = NULL, logZ_steps = NULL, Zsol = 0.02, cores = 8)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -50,6 +53,15 @@ Integer scalar; the number of cores to use.
   \item{check}{
 Logical; should checks be run on the spectral library being returned? Uses \code{speclib_check}. If checks fail the SSP is still returned, and can then be checked and potentially fixed by the user.
 }
+  \item{logAge_steps}{
+Numeric vector; if provided it is the log10(Age/yr) values that you want the output SSP to be interpolated at. If this argument is NULL we use the sorted unique log10(Age) values from the \option{speclib} provided (the default). This means you can generate SSPs with fairly arbitrary age grids, with the caveat the \option{logAge_steps} must be fully inside the logAge extremes in the provided \option{speclib} (we can only interpolate, not extrapolate).
+}
+  \item{logZ_steps}{
+Numeric vector; if provided it is the log10(Z/Zsol) values that you want the output SSP to be interpolated at. If this argument is NULL we use the sorted unique logZ values from the \option{speclib} provided (the default). This means you can generate SSPs with fairly arbitrary metallicity grids, with the caveat the \option{logZ_steps} must be fully inside the logZ extremes in the provided \option{speclib} (we can only interpolate, not extrapolate).
+}
+  \item{Zsol}{
+Numeric scalar; value of the Sun's solar metallicity (to convert logZ to Z).
+}
   \item{\dots}{
 Extra arguments to pass to either \code{\link{approx}} or \code{\link{spline}} as per \option{interp}.
 }
@@ -62,7 +74,9 @@ Note you need to be careful the resolution is high enough to not lose flux. This
 \value{
 \code{specReBin} Data.frame; first column is wavelength [wave] and second column is observed flux density [flux].
 
-\code{speclibReBin} List; the rebinnned SSP spectral library.
+\code{speclibReBin} List; the re-binnned SSP spectral library.
+
+\code{speclibReGrid} List; the re-gridded (to different Age and Z values) SSP spectral library.
 }
 
 \author{

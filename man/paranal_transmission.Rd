@@ -18,35 +18,35 @@ Paranal sky transmission curve that comes with EAZY as downloaded on 20/11/2018.
 \details{
 Settings used:
 
-Altitude :  65.38
+Altitude :  65.38 \cr
 Airmass  :   1.10
 
-Season      : Entire Year
+Season      : Entire Year \cr
 Time Period : Entire Night
 
-PWV         : Seasonal Average
+PWV         : Seasonal Average \cr
 Monthly Averaged Solar Flux : 130.00 s.f.u
- 
+
 Components included in the radiance model:
 
 Scattered Moon Light:
-separation of Sun and Moon       :  90.00 degrees
-separation of Moon and object    :  45.00 degrees
-altitude of Moon above horizon   :  45.00 degrees
+separation of Sun and Moon       :  90.00 degrees \cr
+separation of Moon and object    :  45.00 degrees \cr
+altitude of Moon above horizon   :  45.00 degrees \cr
 distance to Moon                 :   1.0000
- 
+
 Star Light
- 
+
 Zodiacal Light:
-ecliptic longitude of object : 135.00 degrees
+ecliptic longitude of object : 135.00 degrees \cr
 ecliptic latiude of object   :  90.00 degrees
 
-Molecular Emission of Lower Atmosphere
-Emission Lines of Upper Atmosphere
+Molecular Emission of Lower Atmosphere \cr
+Emission Lines of Upper Atmosphere \cr
 Airglow Continuum
 
-Wavelength grid:
-Range: 300.00 nm - 3000.00 nm
+Wavelength grid: \cr
+Range: 300.00 nm - 3000.00 nm \cr
 Fixed spectral resolution R=5000
 
 LSF convolution kernel: none

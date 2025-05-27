@@ -5,6 +5,14 @@
     .Call(`_ProSpect_colSums_wt_cpp`, mat, vec_wt)
 }
 
+.mat_vec_mult_col_cpp <- function(mat, vec = 1L, col_lim = 0L) {
+    .Call(`_ProSpect_mat_vec_mult_col`, mat, vec, col_lim)
+}
+
+.mat_vec_mult_row_cpp <- function(mat, vec = 1L, row_lim = 0L) {
+    .Call(`_ProSpect_mat_vec_mult_row`, mat, vec, row_lim)
+}
+
 .vec_add_cpp <- function(vec_base, vec_add = 0L) {
     invisible(.Call(`_ProSpect_vec_add_cpp`, vec_base, vec_add))
 }

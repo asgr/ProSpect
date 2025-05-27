@@ -22,6 +22,32 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mat_vec_mult_col
+NumericMatrix mat_vec_mult_col(NumericMatrix mat, NumericVector vec, int col_lim);
+RcppExport SEXP _ProSpect_mat_vec_mult_col(SEXP matSEXP, SEXP vecSEXP, SEXP col_limSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< int >::type col_lim(col_limSEXP);
+    rcpp_result_gen = Rcpp::wrap(mat_vec_mult_col(mat, vec, col_lim));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mat_vec_mult_row
+NumericMatrix mat_vec_mult_row(NumericMatrix mat, NumericVector vec, int row_lim);
+RcppExport SEXP _ProSpect_mat_vec_mult_row(SEXP matSEXP, SEXP vecSEXP, SEXP row_limSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< int >::type row_lim(row_limSEXP);
+    rcpp_result_gen = Rcpp::wrap(mat_vec_mult_row(mat, vec, row_lim));
+    return rcpp_result_gen;
+END_RCPP
+}
 // vec_add_cpp
 void vec_add_cpp(NumericVector vec_base, NumericVector vec_add);
 RcppExport SEXP _ProSpect_vec_add_cpp(SEXP vec_baseSEXP, SEXP vec_addSEXP) {
@@ -77,6 +103,8 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ProSpect_colSums_wt_cpp", (DL_FUNC) &_ProSpect_colSums_wt_cpp, 2},
+    {"_ProSpect_mat_vec_mult_col", (DL_FUNC) &_ProSpect_mat_vec_mult_col, 3},
+    {"_ProSpect_mat_vec_mult_row", (DL_FUNC) &_ProSpect_mat_vec_mult_row, 3},
     {"_ProSpect_vec_add_cpp", (DL_FUNC) &_ProSpect_vec_add_cpp, 2},
     {"_ProSpect_vec_mult_cpp", (DL_FUNC) &_ProSpect_vec_mult_cpp, 2},
     {"_ProSpect_wave_rebin_cpp", (DL_FUNC) &_ProSpect_wave_rebin_cpp, 5},

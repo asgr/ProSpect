@@ -13,6 +13,7 @@ importFrom("NISTunits", "kNIST2010PlanckConstant", "kNIST2010speedOfLightInVacuu
 importFrom("pracma", "interp1", "integral")
 importFrom("graphics", "legend", "lines", "plot", "layout", "par", "points", "axis")
 importFrom("grDevices", "hsv")
+importFrom("parallel", "detectCores")
 
 S3method("plot", ProSpectSED)
 S3method("plot", ProSpectSEDlike)

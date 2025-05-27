@@ -16,17 +16,17 @@ The star formation history functions discussed here compute output galaxy spectr
 \usage{
 SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  stellpop = "BC03lr", speclib = NULL, tau_birth = 1, tau_screen = 0.3,
- pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 5, emission = FALSE,
+ pow_birth = -0.7, pow_screen = -0.7, filters = "all", Z = 0.02, emission = FALSE,
  veldisp = 50, range = 5, res = 0.5, emission_scale = "FUV", escape_frac = 1 - emission,
  Ly_limit = 911.75, LKL10 = NULL, disp_stars = FALSE, LSF = NULL, z = 0.1, H0 = 67.8,
  OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
  unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
- LFWHM = 470, ...)
+ LFWHM = 470, SMstar = FALSE, ...)
 
 SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
  oldage = c(5e+09, 9e+09), ancientage = c(9e+09, 1.3e+10), stellpop = "BC03lr",
- speclib = NULL, Z = 5, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+ speclib = NULL, Z = 0.02, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
  ref, unimax = 1.38e+10, agemax = NULL, intSFR = FALSE, ...)
 
 SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
@@ -88,7 +88,7 @@ Numeric scalar; power to further raise the dust attenuation of the dust screen. 
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters, 'GAMA' returns just the classic GAMA survey filters. Can also be a list of matrices or functions to pass into \code{\link{bandpass}}. This creates increasingly faster code, but requires more user effort. Setting to NULL will not process the spectrum through filters at all, which is useful if you just want some of the other output which are quicker to produce.
 }
   \item{Z}{
-Numeric scalar (\code{SFHburst}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. The metallicity is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the default of 5 for BC03lr is close to solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Z (so 0.02 for solar). \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. For convenience, if a non-integer value is provided then this is interpreted as the desired metallicity value (so Z=0.02 for solar etc), and converted into the appropriate function internally, e.g. \option{Z}=5 and \option{Z}=0.02 will give the same outputs for \code{\link{BC03}}.
+Numeric integer/scalar (\code{SFHfunc}, \code{SFHburst}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. If integer \option{Z} is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the index 5 for BC03lr is solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Z (so 0.02 for solar). \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. For convenience, if a non-integer value is provided then this is interpreted as the desired metallicity value (so Z=0.02 for solar etc), and converted into the appropriate function internally, e.g. \option{Z}=5 and \option{Z}=0.02 will give the same outputs for \code{\link{BC03}}. Now we are using a wider variety of SPLs and SSPs, \option{Z} = 0.02 is the default (so output should be close to solar).
 }
   \item{emission}{
 Logical; should emission features be added to the spectrum? This will be done using \code{\link{emissionLines}}.

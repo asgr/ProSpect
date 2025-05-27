@@ -12,6 +12,7 @@ using namespace Rcpp;
 //
 
 // the below seems slower than base R crossprod(matrix, vector), but worth a try
+
 // [[Rcpp::export(".colSums_wt_cpp")]]
 NumericVector colSums_wt_cpp(NumericMatrix mat, NumericVector vec_wt=1) {
   int nrow = mat.nrow(), ncol = mat.ncol();
@@ -27,7 +28,7 @@ NumericVector colSums_wt_cpp(NumericMatrix mat, NumericVector vec_wt=1) {
       for (int j = 0; j < ncol; j++) {
         double sum = 0.0;
         for (int i = 0; i < nrow; i++) {
-          sum += mat(i, j)*vec_wt(i);
+          sum += mat(i, j)*vec_wt(0);
         }
         output(j) = sum;
       }
@@ -42,6 +43,90 @@ NumericVector colSums_wt_cpp(NumericMatrix mat, NumericVector vec_wt=1) {
     }
   }
   return output;
+}
+
+// [[Rcpp::export(".mat_vec_mult_col_cpp")]]
+NumericMatrix mat_vec_mult_col(NumericMatrix mat, NumericVector vec=1, int col_lim=0) {
+  int nrow = mat.nrow(), ncol = mat.ncol();
+
+  NumericMatrix output(nrow, ncol);
+
+  if(vec.length() != nrow && vec.length() != 1){
+    throw std::range_error("Vec length error!");
+  }
+
+  if(vec.length() == 1){
+    if(vec(0) == 1){
+      for (int j = 0; j < ncol; j++) {
+        for (int i = 0; i < nrow; i++) {
+          output(i, j) = mat(i, j);
+        }
+      }
+    }else{
+      for (int j = 0; j < ncol; j++) {
+        for (int i = 0; i < nrow; i++) {
+          if(j < col_lim){
+            output(i, j) = mat(i, j) * vec(0);
+          }else{
+            output(i, j) = mat(i, j);
+          }
+        }
+      }
+    }
+  }else{
+    for (int j = 0; j < ncol; j++) {
+      for (int i = 0; i < nrow; i++) {
+        if(j < col_lim){
+          output(i, j) = mat(i, j) * vec(i);
+        }else{
+          output(i, j) = mat(i, j);
+        }
+      }
+    }
+  }
+  return(output);
+}
+
+// [[Rcpp::export(".mat_vec_mult_row_cpp")]]
+NumericMatrix mat_vec_mult_row(NumericMatrix mat, NumericVector vec=1, int row_lim=0) {
+  int nrow = mat.nrow(), ncol = mat.ncol();
+
+  NumericMatrix output(nrow, ncol);
+
+  if(vec.length() != ncol && vec.length() != 1){
+    throw std::range_error("Vec length error!");
+  }
+
+  if(vec.length() == 1){
+    if(vec(0) == 1){
+      for (int j = 0; j < ncol; j++) {
+        for (int i = 0; i < nrow; i++) {
+          output(i, j) = mat(i, j);
+        }
+      }
+    }else{
+      for (int j = 0; j < ncol; j++) {
+        for (int i = 0; i < nrow; i++) {
+          if(i < row_lim){
+            output(i, j) = mat(i, j) * vec(0);
+          }else{
+            output(i, j) = mat(i, j);
+          }
+        }
+      }
+    }
+  }else{
+    for (int j = 0; j < ncol; j++) {
+      for (int i = 0; i < nrow; i++) {
+        if(i < row_lim){
+          output(i, j) = mat(i, j) * vec(i);
+        }else{
+          output(i, j) = mat(i, j);
+        }
+      }
+    }
+  }
+  return(output);
 }
 
 // [[Rcpp::export(".vec_add_cpp")]]
