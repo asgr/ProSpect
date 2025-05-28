@@ -36,7 +36,7 @@ Inoue14_IGM(l_obs, z)
 The light emitted at the source redshift is attenuated by intervening neutral hydrogen clouds between the source and the observer. Inoue (2014) connects the optical depth of the IGM to the distribution of absorbers as a function of redshift and hydrogen column density. The model includes opacity from Lyman continuum and Lyman series line absorption in the Lyman alpha forest (LAF, log(N_H / cm^-2) < 17.2), Lyman limit systems (LLS, 17.2 < log(N_H / cm^-2) <= 20.3) and damped Lyman systems (DLA, log(N_H / cm^-2) > 20.3). 
 Eqs. 21-29 in Inoue (2014). 
 
-The model is only valid for observed wavelengths are longer than 911.75 Angstrom. Shorter observed wavelengths are hence not attenuated. 
+The model is only valid for observed wavelengths longer than 911.75 Angstrom. Shorter observed wavelengths are hence not attenuated. 
 
 The observed spectrum will be attenuated as F_obs = F_emit * Inoue14_IGM(l_obs, z). 
 }

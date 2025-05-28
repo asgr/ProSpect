@@ -196,7 +196,7 @@ Function, required; the star formation history function to use. Must be one of \
 }
   \item{Data$arglist}{
 List, optional; named arguments and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
-There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', function of redshift/NULL/'Inoue14', if NULL use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then this will be the age of the Universe at the observation epoch.
+There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', function of z/NULL/'Inoue14', if NULL use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then stars start forming at the beginning of the Universe. 
 }
   \item{Data$speclib}{
 List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
