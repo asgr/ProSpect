@@ -507,19 +507,16 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         ztest = 10^ztest
       }
       
-      if(is.null(Data$arglist$IGMfunc)){
-        Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2) ## Default IGM absorption function
-      }else if(Data$arglist$IGMfunc == "Inoue14"){
-        Data$arglist$IGMabsorb = "Inoue14"
-      }else{
+      if(is.function(Data$arglist$IGMfunc)){
         Data$arglist$IGMabsorb = Data$arglist$IGMfunc(ztest)
+      }else{
+        if(is.null(Data$arglist$IGMfunc)){
+          Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2) ## Default IGM absorption function
+        }else{
+          Data$arglist$IGMabsorb = "Inoue14"
+        }
       }
-      
-      # agemax_new = (celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref))*1e9 ##need to be in years
-      # if(!is.null(z_genSF)){
-      #   agemax_new = 1e9*(celestial::cosdistUniAgeAtz(z = ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z = z_genSF, ref = Data$arglist$ref))
-      # }
-      
+
       ## pracma integral inside of UniAgeAtz has annoying cat messages 
       ## Just use UniAgeAtz at recombination z=1100, this means in ProSpect you cant fit 'galaxies' with photoz>1100
       UniAgeAtz_simple = function(z){
