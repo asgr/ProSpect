@@ -14,16 +14,16 @@ IGM absorption model from Inoue (2014).
 Compute the optical depth and attenuation as a function of observed wavelengths using the Inoue (2014) model.
 }
 \usage{
-tau_IGM_LSLAF(l_obs, z)
-tau_IGM_LSDLA(l_obs, z)
-tau_IGM_LCLAF(l_obs, z)
-tau_IGM_LCDLA(l_obs, z)
-tau_IGM_Tot(l_obs, z)
-Inoue14_IGM(l_obs, z)
+tau_IGM_LSLAF(wave, z)
+tau_IGM_LSDLA(wave, z)
+tau_IGM_LCLAF(wave, z)
+tau_IGM_LCDLA(wave, z)
+tau_IGM_Tot(wave, z)
+Inoue14_IGM(wave, z)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{l_obs}{
+  \item{wave}{
 %%     ~~Describe \code{x} here~~
   Numeric vector; observed wavelengths in Angstrom.
   }
@@ -38,7 +38,7 @@ Eqs. 21-29 in Inoue (2014).
 
 The model is only valid for observed wavelengths longer than 911.75 Angstrom. Shorter observed wavelengths are hence not attenuated. 
 
-The observed spectrum will be attenuated as F_obs = F_emit * Inoue14_IGM(l_obs, z). 
+The observed spectrum will be attenuated as F_obs = F_emit * Inoue14_IGM(wave, z). 
 }
 \value{
 For \code{tau_IGM_LSLAF}, \code{tau_IGM_LSDLA}, \code{tau_IGM_LCLAF}, \code{tau_IGM_LCDLA}, \code{tau_IGM_Tot}: 
@@ -68,35 +68,35 @@ Aaron Robotham
 \code{\link{ProSpectSED}}
 }
 \examples{
-l_obs = seq(1000, 50000, 100)
+wave = seq(1000, 50000, 100)
 z = 6
 
 plot(
-  l_obs, 
-  tau_IGM_Tot(l_obs,z), 
+  wave, 
+  tau_IGM_Tot(wave,z), 
   log = "xy", 
   type = "l", 
   xlab = "Observed wavelength [Angstrom]", 
   ylab = "tau"
 )
 lines(
-  l_obs, 
-  tau_IGM_LSLAF(l_obs,z), 
+  wave, 
+  tau_IGM_LSLAF(wave,z), 
   col = "blue"
 )
 lines(
-  l_obs, 
-  tau_IGM_LSDLA(l_obs,z), 
+  wave, 
+  tau_IGM_LSDLA(wave,z), 
   col = "cornflowerblue"
 )
 lines(
-  l_obs, 
-  tau_IGM_LCLAF(l_obs,z), 
+  wave, 
+  tau_IGM_LCLAF(wave,z), 
   col = "red"
 )
 lines(
-  l_obs, 
-  tau_IGM_LCDLA(l_obs,z), 
+  wave, 
+  tau_IGM_LCDLA(wave,z), 
   col = "purple"
 )
 legend(
@@ -111,8 +111,8 @@ legend(
 )
 
 plot(
-  l_obs, 
-  Inoue14_IGM(l_obs, 6),
+  wave, 
+  Inoue14_IGM(wave, 6),
   log = "x", 
   type = "l", 
   col = "blue", 
@@ -120,8 +120,8 @@ plot(
   ylab = "exp(-1*tau)"
 )
 lines(
-  l_obs, 
-  Inoue14_IGM(l_obs, 2), 
+  wave, 
+  Inoue14_IGM(wave, 2), 
   col = "red"
 )
 legend(

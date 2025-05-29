@@ -6,7 +6,7 @@
 ## Load in Lyman series coefficients for Eqs, 21-22
 ## Data obtained from https://github.com/gbrammer/eazy-py/tree/master/eazy/data
 
-tau_IGM_LSLAF = function(l_obs, z){
+tau_IGM_LSLAF = function(wave, z){
  
    ##Lyman alpha forest lines
   Inoue14_LAFcoef = data.frame(
@@ -17,18 +17,18 @@ tau_IGM_LSLAF = function(l_obs, z){
     AJ3 = c(0.000102611, 2.8494e-05, 1.35962e-05, 8.00974e-06, 5.28707e-06, 3.75186e-06, 2.79897e-06, 2.1672e-06, 1.72628e-06, 1.40743e-06, 1.16804e-06, 9.84689e-07, 8.41033e-07, 7.2634e-07, 6.33446e-07, 5.57091e-07, 4.93564e-07, 4.40299e-07, 3.95047e-07, 3.56345e-07, 3.23008e-07, 2.94068e-07, 2.68854e-07, 2.46733e-07, 2.27003e-07, 2.09731e-07, 1.94255e-07, 1.80421e-07, 1.67987e-07, 1.56779e-07, 1.46638e-07, 1.3745e-07, 1.29081e-07, 1.2143e-07, 1.14452e-07, 1.08047e-07, 1.02153e-07, 9.67268e-08, 9.16925e-08)
   )
     
-  tau_LAF_mat = matrix(0, ncol = length(l_obs),nrow = dim(Inoue14_LAFcoef)[1])
+  tau_LAF_mat = matrix(0, ncol = length(wave),nrow = dim(Inoue14_LAFcoef)[1])
   for(i in 1:dim(Inoue14_LAFcoef)[1]){
     
     LJ = Inoue14_LAFcoef$lambda[i]
     
-    ttau = rep(0, length(l_obs))
-    idx1 = l_obs < 2.2*LJ & l_obs > LJ & l_obs < LJ*(1+z)
-    ttau[idx1] = Inoue14_LAFcoef$AJ1[i] * (l_obs[idx1] / LJ)^1.2
-    idx2 = l_obs >= 2.2*LJ & l_obs < 5.7*LJ & l_obs > LJ & l_obs < LJ*(1+z)
-    ttau[idx2] = Inoue14_LAFcoef$AJ2[i] * (l_obs[idx2] / LJ)^3.7
-    idx3 = l_obs >= 5.7*LJ & l_obs > LJ & l_obs < LJ*(1+z)
-    ttau[idx3] = Inoue14_LAFcoef$AJ3[i] * (l_obs[idx3] / LJ)^5.5
+    ttau = rep(0, length(wave))
+    idx1 = wave < 2.2*LJ & wave > LJ & wave < LJ*(1+z)
+    ttau[idx1] = Inoue14_LAFcoef$AJ1[i] * (wave[idx1] / LJ)^1.2
+    idx2 = wave >= 2.2*LJ & wave < 5.7*LJ & wave > LJ & wave < LJ*(1+z)
+    ttau[idx2] = Inoue14_LAFcoef$AJ2[i] * (wave[idx2] / LJ)^3.7
+    idx3 = wave >= 5.7*LJ & wave > LJ & wave < LJ*(1+z)
+    ttau[idx3] = Inoue14_LAFcoef$AJ3[i] * (wave[idx3] / LJ)^5.5
     
     tau_LAF_mat[i,] = ttau
   }
@@ -36,7 +36,7 @@ tau_IGM_LSLAF = function(l_obs, z){
 
   return(tau_LAF)
 }
-tau_IGM_LSDLA = function(l_obs, z){
+tau_IGM_LSDLA = function(wave, z){
   
   ##Damped Lyman alpha lines
   Inoue14_DLAcoef <- data.frame(
@@ -46,23 +46,23 @@ tau_IGM_LSDLA = function(l_obs, z){
     AJ2 = c(5.38995e-05, 5.15129e-05, 4.99222e-05, 4.86769e-05, 4.76312e-05, 4.67196e-05, 4.59048e-05, 4.5165e-05, 4.44841e-05, 4.38536e-05, 4.32617e-05, 4.27056e-05, 4.21799e-05, 4.16804e-05, 4.12046e-05, 4.07494e-05, 4.03127e-05, 3.98938e-05, 3.94896e-05, 3.90995e-05, 3.87225e-05, 3.83572e-05, 3.80037e-05, 3.76609e-05, 3.73241e-05, 3.70005e-05, 3.66836e-05, 3.63749e-05, 3.60734e-05, 3.57789e-05, 3.54909e-05, 3.52096e-05, 3.4934e-05, 3.46636e-05, 3.43994e-05, 3.41402e-05, 3.38856e-05, 3.36359e-05, 3.33895e-05)
   ) 
   
-  tau_DLA_mat = matrix(0, ncol = length(l_obs),nrow = dim(Inoue14_DLAcoef)[1])
+  tau_DLA_mat = matrix(0, ncol = length(wave),nrow = dim(Inoue14_DLAcoef)[1])
   for(i in 1:dim(Inoue14_DLAcoef)[1]){
     
     LJ = Inoue14_DLAcoef$lambda[i]
     
-    ttau = rep(0, length(l_obs))
-    idx1 = l_obs < 3.0*LJ & l_obs > LJ & l_obs < LJ*(1+z)
-    ttau[idx1] = Inoue14_DLAcoef$AJ1[i] * (l_obs[idx1] / LJ)^2.0
-    idx2 = l_obs >= 3.0*LJ & l_obs > LJ & l_obs < LJ*(1+z)
-    ttau[idx2] = Inoue14_DLAcoef$AJ2[i] * (l_obs[idx2] / LJ)^3.0
+    ttau = rep(0, length(wave))
+    idx1 = wave < 3.0*LJ & wave > LJ & wave < LJ*(1+z)
+    ttau[idx1] = Inoue14_DLAcoef$AJ1[i] * (wave[idx1] / LJ)^2.0
+    idx2 = wave >= 3.0*LJ & wave > LJ & wave < LJ*(1+z)
+    ttau[idx2] = Inoue14_DLAcoef$AJ2[i] * (wave[idx2] / LJ)^3.0
     tau_DLA_mat[i,] = ttau
   }
   tau_DLA = colSums(tau_DLA_mat)
 
   return(tau_DLA)
 }
-tau_IGM_LCLAF = function(l_obs, z){
+tau_IGM_LCLAF = function(wave, z){
   
   ## Lyman continuum from Lyman alpha forest
   
@@ -73,25 +73,25 @@ tau_IGM_LCLAF = function(l_obs, z){
   zLAF2 = 4.7
   
   ## z < 1.2
-  tau_LAF1 = rep(0, length(l_obs))
-  LAF1_idx_1 = l_obs < zshift_LL & l_obs > LL
-  tau_LAF1[LAF1_idx_1] = 0.325 * ((l_obs[LAF1_idx_1]/LL)^1.2 - (1+z)^(-0.9) * (l_obs[LAF1_idx_1]/LL)^2.1)
+  tau_LAF1 = rep(0, length(wave))
+  LAF1_idx_1 = wave < zshift_LL & wave > LL
+  tau_LAF1[LAF1_idx_1] = 0.325 * ((wave[LAF1_idx_1]/LL)^1.2 - (1+z)^(-0.9) * (wave[LAF1_idx_1]/LL)^2.1)
   
   ## 1.2 <= z < 4.7
-  tau_LAF2 = rep(0, length(l_obs))
-  LAF2_idx_1 = l_obs < 2.2*LL & l_obs > LL
-  tau_LAF2[LAF2_idx_1] = 2.55e-2 * (1+z)^1.6 * (l_obs[LAF2_idx_1]/LL)^2.1 + 0.325*(l_obs[LAF2_idx_1]/LL)^1.2 - 0.250*(l_obs[LAF2_idx_1]/LL)^2.1
-  LAF2_idx_2 = l_obs >= 2.2*LL & l_obs < zshift_LL
-  tau_LAF2[LAF2_idx_2] = 2.55e-2 * ((1+z)^1.6 * (l_obs[LAF2_idx_2]/LL)^2.1 - (l_obs[LAF2_idx_2]/LL)^3.7)
+  tau_LAF2 = rep(0, length(wave))
+  LAF2_idx_1 = wave < 2.2*LL & wave > LL
+  tau_LAF2[LAF2_idx_1] = 2.55e-2 * (1+z)^1.6 * (wave[LAF2_idx_1]/LL)^2.1 + 0.325*(wave[LAF2_idx_1]/LL)^1.2 - 0.250*(wave[LAF2_idx_1]/LL)^2.1
+  LAF2_idx_2 = wave >= 2.2*LL & wave < zshift_LL
+  tau_LAF2[LAF2_idx_2] = 2.55e-2 * ((1+z)^1.6 * (wave[LAF2_idx_2]/LL)^2.1 - (wave[LAF2_idx_2]/LL)^3.7)
   
   ## z >= 4.7
-  tau_LAF3 = rep(0, length(l_obs)) 
-  LAF3_idx_1 = l_obs < 2.2*LL & l_obs > LL
-  tau_LAF3[LAF3_idx_1] = 5.22e-4 * (1+z)^3.4 * (l_obs[LAF3_idx_1]/LL)^2.1 + 0.325*(l_obs[LAF3_idx_1]/LL)^1.2 - 3.14e-2*(l_obs[LAF3_idx_1]/LL)^2.1
-  LAF3_idx_2 = l_obs >= 2.2*LL & l_obs < 5.7*LL
-  tau_LAF3[LAF3_idx_2] = 5.22e-4 * (1+z)^3.4 * (l_obs[LAF3_idx_2]/LL)^2.1 + 0.218*(l_obs[LAF3_idx_2]/LL)^2.1 - 2.55e-2*(l_obs[LAF3_idx_2]/LL)^3.7
-  LAF3_idx_3 = l_obs >= 5.7*LL & l_obs < zshift_LL
-  tau_LAF3[LAF3_idx_3] = 5.22e-4 * ((1+z)^3.4 * (l_obs[LAF3_idx_3]/LL)^2.1 - (l_obs[LAF3_idx_3]/LL)^5.5)
+  tau_LAF3 = rep(0, length(wave)) 
+  LAF3_idx_1 = wave < 2.2*LL & wave > LL
+  tau_LAF3[LAF3_idx_1] = 5.22e-4 * (1+z)^3.4 * (wave[LAF3_idx_1]/LL)^2.1 + 0.325*(wave[LAF3_idx_1]/LL)^1.2 - 3.14e-2*(wave[LAF3_idx_1]/LL)^2.1
+  LAF3_idx_2 = wave >= 2.2*LL & wave < 5.7*LL
+  tau_LAF3[LAF3_idx_2] = 5.22e-4 * (1+z)^3.4 * (wave[LAF3_idx_2]/LL)^2.1 + 0.218*(wave[LAF3_idx_2]/LL)^2.1 - 2.55e-2*(wave[LAF3_idx_2]/LL)^3.7
+  LAF3_idx_3 = wave >= 5.7*LL & wave < zshift_LL
+  tau_LAF3[LAF3_idx_3] = 5.22e-4 * ((1+z)^3.4 * (wave[LAF3_idx_3]/LL)^2.1 - (wave[LAF3_idx_3]/LL)^5.5)
   
   if(z < zLAF1){
     tau_LAF = tau_LAF1
@@ -103,7 +103,7 @@ tau_IGM_LCLAF = function(l_obs, z){
   
   return(tau_LAF)
 }
-tau_IGM_LCDLA = function(l_obs, z){
+tau_IGM_LCDLA = function(wave, z){
   
   ## Lyman continuum from damped lyman systems
   
@@ -113,16 +113,16 @@ tau_IGM_LCDLA = function(l_obs, z){
   zDLA = 2.0
   
   ## z < 2.0
-  tau_DLA1 = rep(0, length(l_obs))
-  DLA1_idx_1 = l_obs < zshift_LL & l_obs > LL
-  tau_DLA1[DLA1_idx_1] = 0.211*(1+z)^2.0 - 7.66e-2 * (1+z)^2.3 * (l_obs[DLA1_idx_1]/LL)^-0.3 - 0.135*(l_obs[DLA1_idx_1]/LL)^2.0
+  tau_DLA1 = rep(0, length(wave))
+  DLA1_idx_1 = wave < zshift_LL & wave > LL
+  tau_DLA1[DLA1_idx_1] = 0.211*(1+z)^2.0 - 7.66e-2 * (1+z)^2.3 * (wave[DLA1_idx_1]/LL)^-0.3 - 0.135*(wave[DLA1_idx_1]/LL)^2.0
   
   ## z >= 2.0
-  tau_DLA2 = rep(0, length(l_obs))
-  DLA2_idx_1 = l_obs < 3.0*LL & l_obs > LL
-  tau_DLA2[DLA2_idx_1] = 0.634 + 4.7e-2*(1+z)^3 - 1.78e-2*(1+z)^3.3*(l_obs[DLA2_idx_1]/LL)^-0.3 - 0.135*(l_obs[DLA2_idx_1]/LL)^2.0 - 0.291*(l_obs[DLA2_idx_1]/LL)^-0.3
-  DLA2_idx_2 = l_obs >= 3.0*LL & l_obs < zshift_LL & l_obs > LL
-  tau_DLA2[DLA2_idx_2] = 4.7e-2*(1+z)^3 - 1.78e-2*(1+z)^3.3*(l_obs[DLA2_idx_2]/LL)^-0.3 - 2.92e-2*(l_obs[DLA2_idx_2]/LL)^3.0
+  tau_DLA2 = rep(0, length(wave))
+  DLA2_idx_1 = wave < 3.0*LL & wave > LL
+  tau_DLA2[DLA2_idx_1] = 0.634 + 4.7e-2*(1+z)^3 - 1.78e-2*(1+z)^3.3*(wave[DLA2_idx_1]/LL)^-0.3 - 0.135*(wave[DLA2_idx_1]/LL)^2.0 - 0.291*(wave[DLA2_idx_1]/LL)^-0.3
+  DLA2_idx_2 = wave >= 3.0*LL & wave < zshift_LL & wave > LL
+  tau_DLA2[DLA2_idx_2] = 4.7e-2*(1+z)^3 - 1.78e-2*(1+z)^3.3*(wave[DLA2_idx_2]/LL)^-0.3 - 2.92e-2*(wave[DLA2_idx_2]/LL)^3.0
   
   if(z < zDLA){
     tau_DLA = tau_DLA1
@@ -132,13 +132,13 @@ tau_IGM_LCDLA = function(l_obs, z){
   
   return(tau_DLA)
 }
-tau_IGM_Tot = function(l_obs, z){
-  tau_IGM_LSLAF(l_obs, z) +
-    tau_IGM_LSDLA(l_obs, z) + 
-    tau_IGM_LCLAF(l_obs, z) + 
-    tau_IGM_LCDLA(l_obs, z)
+tau_IGM_Tot = function(wave, z){
+  tau_IGM_LSLAF(wave, z) +
+    tau_IGM_LSDLA(wave, z) + 
+    tau_IGM_LCLAF(wave, z) + 
+    tau_IGM_LCDLA(wave, z)
 }
-Inoue14_IGM = function(l_obs, z){
-  # pmin(1.0, exp(-1 * tIGM(l_obs, z)))
-  exp(-1 * tau_IGM_Tot(l_obs, z))
+Inoue14_IGM = function(wave, z){
+  # pmin(1.0, exp(-1 * tIGM(wave, z)))
+  exp(-1 * tau_IGM_Tot(wave, z))
 }

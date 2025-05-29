@@ -498,6 +498,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     if (!requireNamespace("celestial", quietly = TRUE)) {
       stop("The celestial package is needed for this to work. Please install it from GitHub/ASGR", call. = FALSE)
     }
+    if (!("ref" %in% names(Data$arglist))){
+      stop("Cosmology must be specified for photo-z")
+    }
     if(Data$arglist$photoz){
 
       z_genSF = Data$arglist$z_genSF ## What redshift should we start star formation?
@@ -512,8 +515,12 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       }else{
         if(is.null(Data$arglist$IGMfunc)){
           Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2) ## Default IGM absorption function
-        }else{
+        }else if (Data$arglist$IGMfunc == "Inoue14"){
           Data$arglist$IGMabsorb = "Inoue14"
+        }else if (is.numeric(Data$arglist$IGMfunc)){
+          Data$arglist$IGMabsorb = Data$arglist$IGMfunc
+        }else{
+          stop("IGMfunc not valid type.")
         }
       }
 
