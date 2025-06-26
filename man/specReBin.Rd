@@ -54,10 +54,10 @@ Integer scalar; the number of cores to use.
 Logical; should checks be run on the spectral library being returned? Uses \code{speclib_check}. If checks fail the SSP is still returned, and can then be checked and potentially fixed by the user.
 }
   \item{logAge_steps}{
-Numeric vector; if provided it is the log10(Age/yr) values that you want the output SSP to be interpolated at. If this argument is NULL we use the sorted unique log10(Age) values from the \option{speclib} provided (the default). This means you can generate SSPs with fairly arbitrary age grids, with the caveat the \option{logAge_steps} must be fully inside the logAge extremes in the provided \option{speclib} (we can only interpolate, not extrapolate).
+Numeric vector; if provided it is the log10(Age/yr) values that you want the output SSP to be interpolated at. If this argument is NULL we use the sorted unique log10(Age) values from the \option{speclib} provided (the default). This means you can generate SSPs with fairly arbitrary age grids, with the caveat the \option{logAge_steps} must be fully inside the logAge extremes in the provided \option{speclib} (we can only interpolate, not extrapolate). If length 1 and \option{logZ_steps} is also length 1 then just the interpolated spectrum is returned (see Value below).
 }
   \item{logZ_steps}{
-Numeric vector; if provided it is the log10(Z/Zsol) values that you want the output SSP to be interpolated at. If this argument is NULL we use the sorted unique logZ values from the \option{speclib} provided (the default). This means you can generate SSPs with fairly arbitrary metallicity grids, with the caveat the \option{logZ_steps} must be fully inside the logZ extremes in the provided \option{speclib} (we can only interpolate, not extrapolate).
+Numeric vector; if provided it is the log10(Z/Zsol) values that you want the output SSP to be interpolated at. If this argument is NULL we use the sorted unique logZ values from the \option{speclib} provided (the default). This means you can generate SSPs with fairly arbitrary metallicity grids, with the caveat the \option{logZ_steps} must be fully inside the logZ extremes in the provided \option{speclib} (we can only interpolate, not extrapolate). If length 1 and \option{logAge_steps} is also length 1 then just the interpolated spectrum is returned (see Value below).
 }
   \item{Zsol}{
 Numeric scalar; value of the Sun's solar metallicity (to convert logZ to Z).
@@ -76,7 +76,7 @@ Note you need to be careful the resolution is high enough to not lose flux. This
 
 \code{speclibReBin} List; the re-binnned SSP spectral library.
 
-\code{speclibReGrid} List; the re-gridded (to different Age and Z values) SSP spectral library.
+\code{speclibReGrid} List; the re-gridded (to different Age and Z values) SSP spectral library. If the input \option{logAge_steps} and \option{logZ_steps} are both length 1 then as a convenience feature just the interpolated spectrum is returned in a data.frame with columns 'wave' (Ang) and 'lum' (Lsol/Ang).
 }
 
 \author{

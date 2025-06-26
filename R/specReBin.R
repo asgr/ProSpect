@@ -101,7 +101,9 @@ speclibReGrid = function(speclib, logAge_steps = NULL, logZ_steps = NULL, Zsol=0
     logAge_steps = log10(speclib$Age)
     SSP_logAge_steps = logAge_steps
   }else{
-    message('Interpolating onto logAge grid different to speclib!')
+    if(length(logAge_steps) > 1){
+      message('Interpolating onto logAge grid different to speclib!')
+    }
     SSP_logAge_steps = log10(speclib$Age)
     if(min(logAge_steps) < min(SSP_logAge_steps)){
       stop('logAge_steps minimum is less than minimum logAge present in the provided speclib!')
@@ -109,7 +111,6 @@ speclibReGrid = function(speclib, logAge_steps = NULL, logZ_steps = NULL, Zsol=0
     if(max(logAge_steps) > max(SSP_logAge_steps)){
       stop('logAge_steps maximum is more than maximum logAge present in the provided speclib!')
     }
-    interp = TRUE
   }
 
   SSP_logAge_steps[SSP_logAge_steps == -Inf] = -100
@@ -120,7 +121,9 @@ speclibReGrid = function(speclib, logAge_steps = NULL, logZ_steps = NULL, Zsol=0
     logZ_steps = log10(speclib$Z/Zsol)
     SSP_logZ_steps = logZ_steps
   }else{
-    message('Interpolating onto logZ grid different to speclib!')
+    if(length(logZ_steps) > 1){
+      message('Interpolating onto logZ grid different to speclib!')
+    }
     SSP_logZ_steps = log10(speclib$Z/Zsol)
     if(min(logZ_steps) < min(SSP_logZ_steps)){
       stop('logZ_steps minimum is less than minimum logZ present in the provided speclib!')
@@ -128,14 +131,26 @@ speclibReGrid = function(speclib, logAge_steps = NULL, logZ_steps = NULL, Zsol=0
     if(max(logZ_steps) > max(SSP_logZ_steps)){
       stop('logZ_steps maximum is more than maximum logZ present in the provided speclib!')
     }
-    interp = TRUE
   }
 
-  cores = min(cores, length(logZ_steps), detectCores())
-  registerDoParallel(cores=cores)
   #
   logAge_step = NULL
   logZ_step = NULL
+
+  if(length(logAge_steps) == 1 & length(logZ_steps) == 1){
+    temp_Z = interp_quick(logZ_steps, SSP_logZ_steps)
+    temp_Age = interp_quick(logAge_steps, SSP_logAge_steps)
+
+    spec_Zlo_Alo = speclib$Zspec[[temp_Z['ID_lo']]][temp_Age['ID_lo'],]*temp_Z['wt_lo']*temp_Age['wt_lo']
+    spec_Zlo_Ahi = speclib$Zspec[[temp_Z['ID_lo']]][temp_Age['ID_hi'],]*temp_Z['wt_lo']*temp_Age['wt_hi']
+    spec_Zhi_Alo = speclib$Zspec[[temp_Z['ID_hi']]][temp_Age['ID_lo'],]*temp_Z['wt_hi']*temp_Age['wt_lo']
+    spec_Zhi_Ahi = speclib$Zspec[[temp_Z['ID_hi']]][temp_Age['ID_hi'],]*temp_Z['wt_hi']*temp_Age['wt_hi']
+    spec_out = spec_Zlo_Alo + spec_Zlo_Ahi + spec_Zhi_Alo + spec_Zhi_Ahi
+    return(data.frame(wave = speclib$Wave, lum = spec_out))
+  }else{
+    cores = min(cores, length(logZ_steps), detectCores())
+    registerDoParallel(cores=cores)
+  }
 
   Zspec = foreach(logZ_step = logZ_steps)%dopar%{
     message('  ',logZ_step)
