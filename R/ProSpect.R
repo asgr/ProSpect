@@ -42,17 +42,12 @@ ProSpectSED = function(SFH = SFHfunc,
                           AGNta = 1,
                           AGNrm = 60,
                           AGNan = 30,
+                          AGNp = 1,
+                          AGNq = 1,
                           Eb = 0,
                           L0 = 2175.8,
                           LFWHM = 470,
                           IGMabsorb = 0,
-                          AGNp = 1,
-                          AGNq = 1,
-                          dataLum = NULL,
-                          AGNSKIRTOR = NULL,
-                          lumerrs = NULL,
-                          AGNFritz = NULL,
-                       
                           ...) {
   #call = match.call()
 
@@ -157,80 +152,32 @@ ProSpectSED = function(SFH = SFHfunc,
       stop('Dale cannot be FALSE when using an AGN model!')
     }
 
- else if (inherits(AGN, 'Fritz')) {
+ if(inherits(AGN, 'Fritz') | inherits(AGN, 'SKIRTOR')){
       #Use new model
-      AGN = AGNinterp(
-        Fritz = AGNFritz,
+   if(inherits(AGN, 'Fritz')){
+      AGN = Fritz_interp(
         lum = AGNlum,
         ct = AGNct,
         al = AGNal,
         be = AGNbe,
         ta = AGNta,
         rm = AGNrm,
-        an = AGNan
-      )
-      dustlum_AGN = NA
-      dustmass_AGN = NA
-      AGN = atten_emit(
-        wave = AGN$wave,
-        flux = AGN$lum * .erg_to_lsol,
-        tau = tau_screen,
-        pow = pow_screen,
-        alpha_SF = alpha_SF_screen,
-        Dale = Dale,
-        Dale_M2L_func = Dale_M2L_func,
-        waveout = waveout,
-        Eb = Eb,
-        L0 = L0,
-        LFWHM = LFWHM
-      )
-      if (!is.null(Dale_M2L_func) & returnall) {
-        dustlum_screen = dustlum_screen + AGN$total_atten
-        dustmass_screen = dustmass_screen + AGN$dustmass
-      }
-      
-      ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back
-      AGN$final = radiocont(
-        wave = AGN$final$wave,
-        flux = AGN$final$flux,
-        z = 0,
-        Te = Te_AGN,
-        ff_frac = ff_frac_AGN,
-        ff_power = ff_power_AGN,
-        sy_power = sy_power_AGN,
-        wavesamp = seq(6, waveout_max, by=0.1),
-        flux_in = 'wave',
-        flux_out = 'wave',
-        subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
-      )
-      
-      AGN = AGN$final
-      if (length(Final$flux) == length(AGN$flux)) {
-        Final = data.frame(wave = Final$wave, flux = Final$flux +
-                             AGN$flux)
-      } else {
-        Final = addspec(
-          wave1 = Final$wave,
-          flux1 = Final$flux,
-          wave2 = AGN$wave,
-          flux2 = AGN$flux
-        )
-      }
-      colnames(AGN)[2] = 'lum'
-      
-    } else if (inherits(AGN, 'SKIRTOR')) {
-      #Use new model
-      AGN = SKIRTOR_interp(
-        lum = AGNlum,
-        ta = AGNta,
-        p = AGNp,
-        q = AGNq,
-        ct = AGNct,
-        rm = AGNrm,
         an = AGNan,
-        SKIRTOR = AGNSKIRTOR
-        
+        Fritz = AGN
       )
+   }else if(inherits(AGN, 'SKIRTOR')){
+     AGN = SKIRTOR_interp(
+       lum = AGNlum,
+       ta = AGNta,
+       p = AGNp,
+       q = AGNq,
+       ct = AGNct,
+       rm = AGNrm,
+       an = AGNan,
+       SKIRTOR = AGN
+     )
+   }
+
       dustlum_AGN = NA
       dustmass_AGN = NA
       AGN = atten_emit(
@@ -250,7 +197,7 @@ ProSpectSED = function(SFH = SFHfunc,
         dustlum_screen = dustlum_screen + AGN$total_atten
         dustmass_screen = dustmass_screen + AGN$dustmass
       }
-      
+
       ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back
       AGN$final = radiocont(
         wave = AGN$final$wave,
@@ -265,7 +212,7 @@ ProSpectSED = function(SFH = SFHfunc,
         flux_out = 'wave',
         subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
       )
-      
+
       AGN = AGN$final
       if (length(Final$flux) == length(AGN$flux)) {
         Final = data.frame(wave = Final$wave, flux = Final$flux +
@@ -279,7 +226,6 @@ ProSpectSED = function(SFH = SFHfunc,
         )
       }
       colnames(AGN)[2] = 'lum'
-    
     }else{
       #Use old model
       #First we attenuate by the hot torus
@@ -496,8 +442,7 @@ ProSpectSED = function(SFH = SFHfunc,
       z = z,
       filters = filters,
       filtout = filtout,
-      cosmo = list(H0=H0, OmegaM=OmegaM, OmegaL=OmegaL),
-      dataLum = dataLum
+      cosmo = list(H0=H0, OmegaM=OmegaM, OmegaL=OmegaL)
     )
     class(output) = 'ProSpectSED'
     return(output)
@@ -769,8 +714,6 @@ plot.ProSpectSED = function(x,
     lines(x$StarsAtten, col = 'darkgreen', lwd = lwd_comp)
     lines(x$DustEmit, col = 'brown', lwd = lwd_comp)
     lines(x$AGN, col = 'purple', lwd = lwd_comp)
-    points(x$dataLum, col='red', pch=16)
-    #arrows(x$dataLum$wave-5, x$dataLum$lum-lumerrs, x$dataLum$wave+5, x$dataLum$lum+lumerrs, angle = 90, code = 3, length = 0.1, col = "red")
     legend(
       'topright',
       legend = c(
