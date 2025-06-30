@@ -1,4 +1,4 @@
-SKIRTOR_interp = function(lum = 1e+44, ta = 1, p = 1, q = 1, ct = 60, rm = 60,
+SKIRTOR_interp = function(lum = 1e+44, ta = 1, p = 1, q = 1, ct = 40, rm = 60,
                              an=30, SKIRTOR = NULL){
   
   if(is.null(SKIRTOR)){
