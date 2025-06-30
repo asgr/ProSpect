@@ -9,19 +9,17 @@ Top Level ProSpect SED Functions
 \code{ProSpectSED} computes a fully attenuated and re-emitted SED model incompassing star light (for a number of different star formation history models), dust and AGN. \code{ProSpectSEDlike} is an interface for computing likelihoods, and by extension is the workhorse code that allows model fitting using a number of techniques.
 }
 \usage{
-ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3,
-    tau_AGN = 1, pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7,
-    alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0,
-    AGNlum = 0, sparse = 5, speclib = NULL, Dale = NULL, AGN = NULL,
-    filtout = NULL, filters = "all", Dale_M2L_func = NULL, returnall = TRUE,
-    H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, waveout = seq(2,
-        9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL,
-    LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE,
-    Te_SF = 10000, ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8,
-    Te_AGN = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1,
-    sy_power_AGN = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5,
-    AGNta = 1, AGNrm = 60, AGNan = 30, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
-    LFWHM = 470, IGMabsorb = 0, ...)
+ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
+  pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
+  alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
+  Dale = NULL, AGN = NULL, filtout = NULL, filters = "all", Dale_M2L_func = NULL,
+  returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+  waveout = seq(2, 9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL,
+  LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE, Te_SF = 10000,
+  ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, Te_AGN = 10000,
+  ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
+  AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
+  LFWHM = 470, IGMabsorb = 0, ...)
 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -73,7 +71,7 @@ Object; optional. Pass in the spectral library directly. Must be one of \code{\l
 Object or scalar logical; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly). Default of NULL will load the \code{\link{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting. If FALSE it will not re-emit the attenuated light in the MIR/FIR using Dale templates. This might be desired if the range of interest is purely the UV-NIR and you want faster generation/fitting (since the re-emitted dust will not be notable until at least the MIR).
 }
   \item{AGN}{
-Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}} or \code{\link{Fritz}}, SKIRTOR.
+Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link{Fritz}}, or \code{\link{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
 }
 
   \item{filtout}{
@@ -145,20 +143,20 @@ Numeric scalar; power-law slope of the synchrotron radio emission associated wit
   \item{AGNct}{
 Numeric scalar; opening angle of torus in degrees in the AGN Fritz/SKIRTOR models.
 }
-  \item{AGNal}{
-Numeric scalar; gamma dust parameter in the AGN Fritz model.
-}
-  \item{AGNbe}{
-Numeric scalar; Beta dust parameter in the AGN Fritz model.
-}
-  \item{AGNta}{
-Numeric scalar; optical depth tau in the AGN Fritz/SKIRTOR model.
-}
   \item{AGNrm}{
 Numeric scalar; outer to inner torus radius ratio in the AGN Fritz/SKIRTOR models.
 }
   \item{AGNan}{
 Numeric scalar; angle of observation in degrees, where 0 is edge on with torus, and 90 is polar aligned in the AGN Fritz/SKIRTOR model.
+}
+  \item{AGNta}{
+Numeric scalar; optical depth tau in the AGN Fritz/SKIRTOR model.
+}
+  \item{AGNal}{
+Numeric scalar; gamma dust parameter in the AGN Fritz model.
+}
+  \item{AGNbe}{
+Numeric scalar; Beta dust parameter in the AGN Fritz model.
 }
   \item{AGNp}{
 Numeric scalar; Index for the radial density gradient in the SKIRTOR AGN model.
