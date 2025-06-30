@@ -86,7 +86,7 @@ plot(Fritz_interp(), type='l', log='xy', xlab='Wave / Ang', ylab='Lum / erg/s/A'
 lines(Fritz_interp(an=0), col='blue')
 lines(Fritz_interp(an=90), col='red')
 
-lines(SKIRTOR_interp(an=0), col='black', lty=2)
+lines(SKIRTOR_interp(), col='black', lty=2)
 lines(SKIRTOR_interp(an=0), col='blue', lty=2)
 lines(SKIRTOR_interp(an=90), col='red', lty=2)
 }
