@@ -9,19 +9,17 @@ Top Level ProSpect SED Functions
 \code{ProSpectSED} computes a fully attenuated and re-emitted SED model incompassing star light (for a number of different star formation history models), dust and AGN. \code{ProSpectSEDlike} is an interface for computing likelihoods, and by extension is the workhorse code that allows model fitting using a number of techniques.
 }
 \usage{
-ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3,
-    tau_AGN = 1, pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7,
-    alpha_SF_birth = 1, alpha_SF_screen = 3, alpha_SF_AGN = 0,
-    AGNlum = 0, sparse = 5, speclib = NULL, Dale = NULL, AGN = NULL,
-    filtout = NULL, filters = "all", Dale_M2L_func = NULL, returnall = TRUE,
-    H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, waveout = seq(2,
-        9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL,
-    LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE,
-    Te_SF = 10000, ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8,
-    Te_AGN = 10000, ff_frac_AGN = 0.1, ff_power_AGN = -0.1,
-    sy_power_AGN = -0.8, AGNct = 60, AGNal = 4, AGNbe = -0.5,
-    AGNta = 1, AGNrm = 60, AGNan = 30, Eb = 0, L0 = 2175.8, LFWHM = 470,
-    IGMabsorb = 0, ...)
+ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1,
+  pow_birth = -0.7, pow_screen = -0.7, pow_AGN = -0.7, alpha_SF_birth = 1,
+  alpha_SF_screen = 3, alpha_SF_AGN = 0, AGNlum = 0, sparse = 5, speclib = NULL,
+  Dale = NULL, AGN = NULL, filtout = NULL, filters = "all", Dale_M2L_func = NULL,
+  returnall = TRUE, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
+  waveout = seq(2, 9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL,
+  LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE, Te_SF = 10000,
+  ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, Te_AGN = 10000,
+  ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
+  AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
+  LFWHM = 470, IGMabsorb = 0, ...)
 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -61,7 +59,7 @@ Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. S
 Numeric scalar; alpha slope of the AGN torus dust. Lower values mean hotter dust. See \code{\link{Dale}}.
 }
   \item{AGNlum}{
-Numeric scalar; AGN bolometric luminosity in erg/s.
+Numeric scalar; AGN bolometric luminosity in erg/s for both the Fritz and SKIRTOR.
 }
   \item{sparse}{
 Numeric scalar; amount of sparse sampling of the spectra to make.
@@ -73,8 +71,9 @@ Object; optional. Pass in the spectral library directly. Must be one of \code{\l
 Object or scalar logical; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly). Default of NULL will load the \code{\link{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting. If FALSE it will not re-emit the attenuated light in the MIR/FIR using Dale templates. This might be desired if the range of interest is purely the UV-NIR and you want faster generation/fitting (since the re-emitted dust will not be notable until at least the MIR).
 }
   \item{AGN}{
-Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}} or \code{\link{Fritz}}. The latter is preferred and uses the parametric Fritz model (see \code{\link{Fritz}}).
+Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link{Fritz}}, or \code{\link{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
 }
+
   \item{filtout}{
 Object; required. Pass in the photometric filters directly (either matrices of functions). If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
 }
@@ -142,23 +141,29 @@ Numeric scalar; power-law slope of the free-free nebular plasma thermal radio em
 Numeric scalar; power-law slope of the synchrotron radio emission associated with an AGN used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
 }
   \item{AGNct}{
-Numeric scalar; opening angle of torus in degrees.
-}
-  \item{AGNal}{
-Numeric scalar; gamma dust parameter.
-}
-  \item{AGNbe}{
-Numeric scalar; Beta dust parameter.
-}
-  \item{AGNta}{
-Numeric scalar; optical depth tau.
+Numeric scalar; opening angle of torus in degrees in the AGN Fritz/SKIRTOR models.
 }
   \item{AGNrm}{
-Numeric scalar; outer to inner torus radius ratio.
+Numeric scalar; outer to inner torus radius ratio in the AGN Fritz/SKIRTOR models.
 }
   \item{AGNan}{
-Numeric scalar; angle of observation in degrees, where 0 is edge on with torus, and 90 is polar aligned.
+Numeric scalar; angle of observation in degrees, where 0 is edge on with torus, and 90 is polar aligned in the AGN Fritz/SKIRTOR model.
 }
+  \item{AGNta}{
+Numeric scalar; optical depth tau in the AGN Fritz/SKIRTOR model.
+}
+  \item{AGNal}{
+Numeric scalar; gamma dust parameter in the AGN Fritz model.
+}
+  \item{AGNbe}{
+Numeric scalar; Beta dust parameter in the AGN Fritz model.
+}
+  \item{AGNp}{
+Numeric scalar; Index for the radial density gradient in the SKIRTOR AGN model.
+  }
+  \item{AGNq}{
+Numeric scalar; Index for the angular density gradient in the SKIRTOR AGN model.
+  }
   \item{parm}{
 Numeric vector; arguments to be passed to \code{ProSpectSED}.
 }
@@ -230,7 +235,7 @@ List, optional; has elements \option{lo} and \option{hi} which if provided must 
 Function, optional; a constraints function that takes in the\option{parm} vector and modifies it as required, updating with the new \option{parm} which is passed out. Using this you can control physical relationships between certain parameters if required. \option{Data$intervals} is passed after this, and always over-ride the constraints if there is a conflict. The user can expect the vector \option{parm} to have elements specified by \option{Data$parm.names} for ease.
 }
   \item{Data$mon.names}{
-Character vector, optional; "LP" (log posterior), "masstot" (total stellar mass formed), "massrem" (total stellar mass remaining) and "SFRburst" (stars formed in the most recent 1e8 years). For dust can contain "dustmass.birth", "dustmass.screen", "dustmass.AGN", "dustmass.total" (dust masses in birth cloud, screen, AGN and total), "dustlum.birth", "dustlum.screen", "dustlum.AGN", "dustlum.total" (dust luminosities in birth cloud, screen, AGN and total). You can also monitor fluxes via "flux.XXX", where XXX specifies the name of the band as given in Data$flux$filter. Only named monitored variables are returned, in the order specified.
+Character vector, optional; can contain "dustmass.birth", "dustmass.screen", "dustmass.AGN", "dustmass.total" (dust masses in birth cloud, screen, AGN and total), "dustlum.birth", "dustlum.screen", "dustlum.AGN", "dustlum.total" (dust luminosities in birth cloud, screen, AGN and total), "LP" (log posterior), "masstot" (total mass formed) and "SFRburst" (stars formed in the most recent 10^8 years). You can also monitor fluxes via "flux.XXX", where XXX specifies the name of the band as given in Data$flux$filter. Only named monitored variables are returned, in the order specified.
 }
   \item{Data$logbin}{
 Logical, optional; should the automatic wavelength grid be evenly log spaced? If TRUE it will be evenly log spaced, if FALSE it will be evenly linearly spaced. Passed into \code{\link{specReBin}}. Say you have a wavelength 10 and 20, a linear bin would be at 15 and a log bin would be at 14.1.
@@ -274,9 +279,7 @@ The 'optim' output returns just the log-posterior value (LP). \cr
 
 The 'LD' output returns the full structure required for \code{LaplacesDemon} and \code{LaplaceApproximation} and should be set as such when using those optimisers. \cr
 
-The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'.
-
-In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnostic plot via the \code{plot} method.
+The 'check' output return all the outputs for \code{LaplacesDemon} and \code{LaplaceApproximation} but additionally the full output of \code{ProSpectSED} with \option{returnall}=TRUE set as list item 'SEDout', and the input \option{Data} object as list item 'Data'. In the last case of \option{Data$fit}='check' it will be returned with class 'ProSpectSEDlike', which allows you to create a quick diagnostic plot via the \code{plot} method.
 }
 
 \references{

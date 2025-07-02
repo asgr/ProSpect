@@ -36,12 +36,14 @@ ProSpectSED = function(SFH = SFHfunc,
                           ff_frac_AGN = 0.1,
                           ff_power_AGN = -0.1,
                           sy_power_AGN = -0.8,
-                          AGNct = 60,
-                          AGNal = 4,
-                          AGNbe = -0.5,
-                          AGNta = 1,
+                          AGNct = 40,
                           AGNrm = 60,
                           AGNan = 30,
+                          AGNta = 1,
+                          AGNal = 4,
+                          AGNbe = -0.5,
+                          AGNp = 1,
+                          AGNq = 1,
                           Eb = 0,
                           L0 = 2175.8,
                           LFWHM = 470,
@@ -150,9 +152,10 @@ ProSpectSED = function(SFH = SFHfunc,
       stop('Dale cannot be FALSE when using an AGN model!')
     }
 
-    if (inherits(AGN, 'Fritz')) {
+ if(inherits(AGN, 'Fritz') | inherits(AGN, 'SKIRTOR')){
       #Use new model
-      AGN = AGNinterp(
+   if(inherits(AGN, 'Fritz')){
+      AGN = Fritz_interp(
         lum = AGNlum,
         ct = AGNct,
         al = AGNal,
@@ -162,6 +165,19 @@ ProSpectSED = function(SFH = SFHfunc,
         an = AGNan,
         Fritz = AGN
       )
+   }else if(inherits(AGN, 'SKIRTOR')){
+     AGN = SKIRTOR_interp(
+       lum = AGNlum,
+       ta = AGNta,
+       p = AGNp,
+       q = AGNq,
+       ct = AGNct,
+       rm = AGNrm,
+       an = AGNan,
+       SKIRTOR = AGN
+     )
+   }
+
       dustlum_AGN = NA
       dustmass_AGN = NA
       AGN = atten_emit(
@@ -183,19 +199,19 @@ ProSpectSED = function(SFH = SFHfunc,
       }
 
       ## subtracts off AGN contribution to the radio continuum unless you specifically request to add it back
-        AGN$final = radiocont(
-          wave = AGN$final$wave,
-          flux = AGN$final$flux,
-          z = 0,
-          Te = Te_AGN,
-          ff_frac = ff_frac_AGN,
-          ff_power = ff_power_AGN,
-          sy_power = sy_power_AGN,
-          wavesamp = seq(6, waveout_max, by=0.1),
-          flux_in = 'wave',
-          flux_out = 'wave',
-          subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
-        )
+      AGN$final = radiocont(
+        wave = AGN$final$wave,
+        flux = AGN$final$flux,
+        z = 0,
+        Te = Te_AGN,
+        ff_frac = ff_frac_AGN,
+        ff_power = ff_power_AGN,
+        sy_power = sy_power_AGN,
+        wavesamp = seq(6, waveout_max, by=0.1),
+        flux_in = 'wave',
+        flux_out = 'wave',
+        subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
+      )
 
       AGN = AGN$final
       if (length(Final$flux) == length(AGN$flux)) {
@@ -210,7 +226,7 @@ ProSpectSED = function(SFH = SFHfunc,
         )
       }
       colnames(AGN)[2] = 'lum'
-    } else{
+    }else{
       #Use old model
       #First we attenuate by the hot torus
       AGN = atten_emit(
@@ -456,7 +472,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     returnall = TRUE
   } else if ((
     'masstot' %in% Data$mon.names |
-    'massrem' %in% Data$mon.names |
     'SFRburst' %in% Data$mon.names |
     (length(grep(
       'dustmass', Data$mon.names
@@ -515,7 +530,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(filters = NULL),
         list(returnall = TRUE),
         list(Dale_M2L_func = quote(Data$Dale_M2L_func)),
-        list(SMstar = TRUE),
         Data$arglist
       )
     )
@@ -542,19 +556,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     if ('masstot' %in% Data$mon.names) {
       Monitor = c(Monitor, masstot = SEDout$Stars$masstot)
     }
-    if ('massrem' %in% Data$mon.names) {
-      # if (requireNamespace("ParmOff", quietly = TRUE)) {
-      #   SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
-      #                             .args = c(as.list(parm), Data$arglist), #the superset of potential matching parameters
-      #                             .logged = Data$parm.names[Data$logged], #parameters we want to log
-      #                             speclib = Data$speclib,
-      #                             Z = Data$arglist$Z
-      #   )
-        Monitor = c(Monitor, massrem = as.numeric(SEDout$Stars$SMstar['TotSMstar']))
-      # } else{
-      #   Monitor = c(Monitor, massrem = NA)
-      # }
-    }
     if ('SFRburst' %in% Data$mon.names) {
       Monitor = c(Monitor, SFRburst = SEDout$Stars$SFRburst)
     }
@@ -570,7 +571,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(filtout = quote(Data$filtout)),
         list(filters = NULL),
         list(returnall = FALSE),
-        list(SMstar = FALSE),
         Data$arglist
       )
     )
@@ -643,18 +643,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       parm = parm
     ))
   } else if (Data$fit == 'check') {
-    # names(parm) = Data$parm.names
-    # if (requireNamespace("ParmOff", quietly = TRUE)) {
-    #   SMstar = ParmOff::ParmOff(.func = SMstarfunc, #the function we want to run
-    #                   .args = c(as.list(parm), Data$arglist), #the superset of potential matching parameters
-    #                   .logged = Data$parm.names[Data$logged], #parameters we want to log
-    #                   speclib = Data$speclib,
-    #                   Z = Data$arglist$Z
-    #   )
-    # }else{
-    #   SMstar = 'Need ParmOff package to compute! See GitHub asgr/ParmOff.'
-    # }
-
     output = list(
       LP = LP,
       Dev = -2 * LL,
@@ -717,6 +705,7 @@ plot.ProSpectSED = function(x,
         lwd = lwd_main,
         ...
       )
+      points(x$Data, col='red', pch=16)
     }
     lines(x$StarsUnAtten,
           col = 'blue',
