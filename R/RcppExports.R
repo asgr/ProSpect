@@ -10,7 +10,7 @@
 }
 
 .mat_vec_mult_row_cpp <- function(mat, vec = 1L, row_lim = 0L) {
-    .Call(`_ProSpect_mat_vec_mult_row`, mat, vec, row_lim)
+    invisible(.Call(`_ProSpect_mat_vec_mult_row`, mat, vec, row_lim))
 }
 
 .vec_add_cpp <- function(vec_base, vec_add = 0L) {
