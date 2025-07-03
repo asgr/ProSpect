@@ -168,6 +168,10 @@ SFHfunc = function(massfunc = massfunc_b5,
       Zspec[[i]] = Zspec[[i]][, sparse]
     }
     wave_lum = wave_lum[sparse]
+  }else if(sparse == 1 & tau_birth != 0){
+    for (i in Zuse) {
+      Zspec[[i]] = Zspec[[i]]*1.0 #this is to trigger a copy
+    }
   }
 
   if (intSFR) {
@@ -299,9 +303,6 @@ SFHfunc = function(massfunc = massfunc_b5,
   lum_unatten = lum
 
   if (tau_birth != 0) {
-    #Zspec[[1]][1,1] = 0 #looks daft, but this is to trigger a full copy of Zspec
-    #THIS SEEMS TO BE WORKING WITH DUPLICATE, BUT NEED TO CHECK (02/07/2025)
-    Zspec = rlang::duplicate(Zspec)
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
       if (tau_birth != 0) {
