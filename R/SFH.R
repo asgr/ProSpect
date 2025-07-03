@@ -169,9 +169,10 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
     wave_lum = wave_lum[sparse]
   }else if(sparse == 1 & tau_birth != 0){
-    for (i in Zuse) {
-      Zspec[[i]] = Zspec[[i]]*1.0 #this is to trigger a copy
-    }
+     # don't need now int theory
+     # for (i in Zuse) {
+     #   Zspec[[i]] = Zspec[[i]]*1.0 #this is to trigger a copy
+     # }
   }
 
   if (intSFR) {
@@ -302,24 +303,33 @@ SFHfunc = function(massfunc = massfunc_b5,
   lumtot_unatten = sum(.qdiff(wave_lum) * lum)
   lum_unatten = lum
 
+  birth_sel = 1:birthcloud_len
+  old_sel = (birthcloud_len + 1L):length(massvec)
+  CF_birth_vec = CF_birth(wave_lum, tau = tau_birth, pow = pow_birth)
+  
   if (tau_birth != 0) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
       if (tau_birth != 0) {
         #Zspec[[Zid]][1:birthcloud_len,]=t(t(Zspec[[Zid]][1:birthcloud_len,])*CF_birth(wave_lum, tau=tau_birth, pow=pow_birth))
         #Zspec[[Zid]][1:birthcloud_len, ] = Zspec[[Zid]][1:birthcloud_len, ] * rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), each = birthcloud_len)
-        .mat_vec_mult_row_cpp(Zspec[[Zid]], CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), birthcloud_len)
         #Zspec[[Zid]] = .mat_vec_mult_row_cpp(Zspec[[Zid]], CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), birthcloud_len)
+        #Don't need the below now (in theory)
+        #.mat_vec_mult_row_cpp(Zspec[[Zid]], CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), birthcloud_len)
       }
       if (Zdoweight) {
         #lum = lum + colSums(Zspec[[Zid]] * massvec * Zwmat[, Zid])
         #lum = lum + .colSums_wt_cpp(Zspec[[Zid]], massvec * Zwmat[, Zid])
         #.vec_add_cpp(lum, .colSums_wt_cpp(Zspec[[Zid]], massvec * Zwmat[, Zid]))
-        .vec_add_cpp(lum, crossprod(Zspec[[Zid]], massvec * Zwmat[, Zid])) #factor of about 2-3 faster
+        #Not quite giving identical results. Need to figure out why!
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][birth_sel,], massvec[birth_sel] * Zwmat[birth_sel, Zid])*CF_birth_vec) #factor of about 2-3 faster
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][old_sel,], massvec[old_sel] * Zwmat[old_sel, Zid])) #factor of about 2-3 faster
       } else{
         #lum = colSums(Zspec[[Zid]] * massvec)
         #.vec_add_cpp(lum, .colSums_wt_cpp(Zspec[[Zid]], massvec))
-        .vec_add_cpp(lum, crossprod(Zspec[[Zid]], massvec)) #factor of about 2-3 faster
+        #.vec_add_cpp(lum, crossprod(Zspec[[Zid]], massvec)) #factor of about 2-3 faster
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][birth_sel,], massvec[birth_sel])*CF_birth_vec) #factor of about 2-3 faster
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][old_sel,], massvec[old_sel])) #factor of about 2-3 faster
       }
     }
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
