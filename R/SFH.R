@@ -62,6 +62,8 @@ SFHfunc = function(massfunc = massfunc_b5,
     }
   }
 
+  Zspec = speclib$Zspec
+
   if (any(speclib$Age <= 1e7)) {
     birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
@@ -161,11 +163,16 @@ SFHfunc = function(massfunc = massfunc_b5,
 
   wave_lum = speclib$Wave
   if (sparse > 1) {
-    sparse = seq(1, dim(speclib$Zspec[[1]])[2], by = sparse)
+    sparse = seq(1, dim(Zspec[[1]])[2], by = sparse)
     for (i in Zuse) {
-      speclib$Zspec[[i]] = speclib$Zspec[[i]][, sparse]
+      Zspec[[i]] = Zspec[[i]][, sparse]
     }
     wave_lum = wave_lum[sparse]
+  }else if(sparse == 1 & tau_birth != 0){
+     # don't need now int theory
+     # for (i in Zuse) {
+     #   Zspec[[i]] = Zspec[[i]]*1.0 #this is to trigger a copy
+     # }
   }
 
   if (intSFR) {
@@ -247,47 +254,47 @@ SFHfunc = function(massfunc = massfunc_b5,
   if (length(Zuse) > 1) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
-      #toadd = colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
+      #toadd = colSums(Zspec[[Zid]] * massvec * Zwmat[, Zid])
       #toadd[which(is.na(toadd) | (toadd < 0))] = 0 #since some spectral libraries have negative flux (noisy empirical data)
       #lum = lum + toadd
-      #.vec_add_cpp(lum, .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid]))
-      .vec_add_cpp(lum, crossprod(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid])) #factor of about 2-3 faster
+      #.vec_add_cpp(lum, .colSums_wt_cpp(Zspec[[Zid]], massvec * Zwmat[, Zid]))
+      .vec_add_cpp(lum, crossprod(Zspec[[Zid]], massvec * Zwmat[, Zid])) #factor of about 2-3 faster
       if (any(escape_frac < 1)) {
         if (length(Ly_limit) == 1) {
           sel = which(wave_lum < Ly_limit)
-          speclib$Zspec[[Zid]][, sel] = speclib$Zspec[[Zid]][, sel] * escape_frac
+          Zspec[[Zid]][, sel] = Zspec[[Zid]][, sel] * escape_frac
         } else{
           for (i in 1:(length(Ly_limit) - 1)) {
             sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-            speclib$Zspec[[Zid]][, sel] = speclib$Zspec[[Zid]][, sel] *
+            Zspec[[Zid]][, sel] = Zspec[[Zid]][, sel] *
               escape_frac[i]
           }
           sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-          speclib$Zspec[[Zid]][, sel] = speclib$Zspec[[Zid]][, sel] * escape_frac[length(Ly_limit)]
+          Zspec[[Zid]][, sel] = Zspec[[Zid]][, sel] * escape_frac[length(Ly_limit)]
         }
       }
     }
   } else{
-    #lum = colSums(speclib$Zspec[[Zuse]] * massvec)
-    #lum = .colSums_wt_cpp(speclib$Zspec[[Zuse]], massvec)
-    lum = crossprod(speclib$Zspec[[Zuse]], massvec) #factor of about 2-3 faster
+    #lum = colSums(Zspec[[Zuse]] * massvec)
+    #lum = .colSums_wt_cpp(Zspec[[Zuse]], massvec)
+    lum = crossprod(Zspec[[Zuse]], massvec) #factor of about 2-3 faster
     # if(any(escape_frac<1)){
-    #   speclib$Zspec[[Zuse]][,wave_lum<Ly_limit]=speclib$Zspec[[Zuse]][,wave_lum<Ly_limit]*escape_frac
+    #   Zspec[[Zuse]][,wave_lum<Ly_limit]=Zspec[[Zuse]][,wave_lum<Ly_limit]*escape_frac
     # }
     if (any(escape_frac < 1)) {
       if (length(Ly_limit) == 1) {
         wave_lum_sel = wave_lum < Ly_limit
-        speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac
-        #.vec_mult_cpp(speclib$Zspec[[Zuse]][, wave_lum_sel], escape_frac)
+        Zspec[[Zuse]][, wave_lum_sel] = Zspec[[Zuse]][, wave_lum_sel] * escape_frac
+        #.vec_mult_cpp(Zspec[[Zuse]][, wave_lum_sel], escape_frac)
       } else{
         for (i in 1:(length(Ly_limit) - 1)) {
           wave_lum_sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-          speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac[i]
-          #.vec_mult_cpp(speclib$Zspec[[Zuse]][, wave_lum_sel], escape_frac[i])
+          Zspec[[Zuse]][, wave_lum_sel] = Zspec[[Zuse]][, wave_lum_sel] * escape_frac[i]
+          #.vec_mult_cpp(Zspec[[Zuse]][, wave_lum_sel], escape_frac[i])
         }
         wave_lum_sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-        speclib$Zspec[[Zuse]][, wave_lum_sel] = speclib$Zspec[[Zuse]][, wave_lum_sel] * escape_frac[length(Ly_limit)]
-        #.vec_mult_cpp(speclib$Zspec[[Zuse]][, wave_lum_sel], escape_frac[length(Ly_limit)])
+        Zspec[[Zuse]][, wave_lum_sel] = Zspec[[Zuse]][, wave_lum_sel] * escape_frac[length(Ly_limit)]
+        #.vec_mult_cpp(Zspec[[Zuse]][, wave_lum_sel], escape_frac[length(Ly_limit)])
       }
     }
   }
@@ -297,22 +304,19 @@ SFHfunc = function(massfunc = massfunc_b5,
   lum_unatten = lum
 
   if (tau_birth != 0) {
+    birth_sel = 1:birthcloud_len
+    old_sel = (birthcloud_len + 1L):length(massvec)
+    CF_birth_vec = CF_birth(wave_lum, tau = tau_birth, pow = pow_birth)
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
-      if (tau_birth != 0) {
-        #speclib$Zspec[[Zid]][1:birthcloud_len,]=t(t(speclib$Zspec[[Zid]][1:birthcloud_len,])*CF_birth(wave_lum, tau=tau_birth, pow=pow_birth))
-        #speclib$Zspec[[Zid]][1:birthcloud_len, ] = speclib$Zspec[[Zid]][1:birthcloud_len, ] * rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), each = birthcloud_len)
-        speclib$Zspec[[Zid]] = .mat_vec_mult_row_cpp(speclib$Zspec[[Zid]], CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), birthcloud_len)
-      }
       if (Zdoweight) {
-        #lum = lum + colSums(speclib$Zspec[[Zid]] * massvec * Zwmat[, Zid])
-        #lum = lum + .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid])
-        #.vec_add_cpp(lum, .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid]))
-        .vec_add_cpp(lum, crossprod(speclib$Zspec[[Zid]], massvec * Zwmat[, Zid])) #factor of about 2-3 faster
+        #We need two blocks so we correctly so we attenuate the birthcloud
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][birth_sel,,drop=FALSE], massvec[birth_sel] * Zwmat[birth_sel, Zid])*CF_birth_vec)
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][old_sel,,drop=FALSE], massvec[old_sel] * Zwmat[old_sel, Zid]))
       } else{
-        #lum = colSums(speclib$Zspec[[Zid]] * massvec)
-        #.vec_add_cpp(lum, .colSums_wt_cpp(speclib$Zspec[[Zid]], massvec))
-        .vec_add_cpp(lum, crossprod(speclib$Zspec[[Zid]], massvec)) #factor of about 2-3 faster
+        #We need two blocks so we correctly so we attenuate the birthcloud
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][birth_sel,,drop=FALSE], massvec[birth_sel])*CF_birth_vec)
+        .vec_add_cpp(lum, crossprod(Zspec[[Zid]][old_sel,,drop=FALSE], massvec[old_sel]))
       }
     }
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
@@ -633,6 +637,8 @@ SMstarfunc = function(massfunc = massfunc_b5,
     }
   }
 
+  Zspec = speclib$Zspec
+
   if (any(speclib$Age <= 1e7)) {
     birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
@@ -871,7 +877,7 @@ SFHburst = function(burstmass = 1e8,
 
   wave_lum = speclib$Wave
   if (sparse > 1) {
-    sparse = seq(1, dim(speclib$Zspec[[1]])[2], by = sparse)
+    sparse = seq(1, dim(Zspec[[1]])[2], by = sparse)
     wave_lum = wave_lum[sparse]
   } else{
     sparse = TRUE
@@ -925,18 +931,18 @@ SFHburst = function(burstmass = 1e8,
   metal_interp = interp_quick(Z, speclib$Z, log = TRUE)
   age_interp = interp_quick(burstage, speclib$Age)
   if (metal_interp['wt_lo'] == 1) {
-    lum_unatten = speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_lo'], sparse] *
+    lum_unatten = Zspec[[metal_interp['ID_lo']]][age_interp['ID_lo'], sparse] *
       age_interp['wt_lo'] +
-      speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_hi'], sparse] *
+      Zspec[[metal_interp['ID_lo']]][age_interp['ID_hi'], sparse] *
       age_interp['wt_hi']
   } else{
-    lum_unatten = speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_lo'], sparse] *
+    lum_unatten = Zspec[[metal_interp['ID_lo']]][age_interp['ID_lo'], sparse] *
       age_interp['wt_lo'] * metal_interp['wt_lo'] +
-      speclib$Zspec[[metal_interp['ID_lo']]][age_interp['ID_hi'], sparse] *
+      Zspec[[metal_interp['ID_lo']]][age_interp['ID_hi'], sparse] *
       age_interp['wt_hi'] * metal_interp['wt_lo'] +
-      speclib$Zspec[[metal_interp['ID_hi']]][age_interp['ID_lo'], sparse] *
+      Zspec[[metal_interp['ID_hi']]][age_interp['ID_lo'], sparse] *
       age_interp['wt_lo'] * metal_interp['wt_hi'] +
-      speclib$Zspec[[metal_interp['ID_hi']]][age_interp['ID_hi'], sparse] *
+      Zspec[[metal_interp['ID_hi']]][age_interp['ID_hi'], sparse] *
       age_interp['wt_hi'] * metal_interp['wt_hi']
   }
 

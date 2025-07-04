@@ -87,11 +87,48 @@ NumericMatrix mat_vec_mult_col(NumericMatrix mat, NumericVector vec=1, int col_l
   return(output);
 }
 
-// [[Rcpp::export(".mat_vec_mult_row_cpp")]]
-NumericMatrix mat_vec_mult_row(NumericMatrix mat, NumericVector vec=1, int row_lim=0) {
-  int nrow = mat.nrow(), ncol = mat.ncol();
+// NumericMatrix mat_vec_mult_row(NumericMatrix mat, NumericVector vec=1, int row_lim=0) {
+//   int nrow = mat.nrow(), ncol = mat.ncol();
+//
+//   NumericMatrix output(nrow, ncol);
+//
+//   if(vec.length() != ncol && vec.length() != 1){
+//     throw std::range_error("Vec length error!");
+//   }
+//
+//   if(vec.length() == 1){
+//     if(vec(0) == 1){
+//       for (int j = 0; j < ncol; j++) {
+//         for (int i = 0; i < nrow; i++) {
+//           output(i, j) = mat(i, j);
+//         }
+//       }
+//     } else {
+//       for (int j = 0; j < ncol; j++) {
+//         for (int i = 0; i < row_lim; i++) {
+//           output(i, j) = mat(i, j) * vec(0);
+//         }
+//         for (int i = row_lim; i < nrow; i++) {
+//           output(i, j) = mat(i, j);
+//         }
+//       }
+//     }
+//   } else {
+//     for (int j = 0; j < ncol; j++) {
+//       for (int i = 0; i < row_lim; i++) {
+//         output(i, j) = mat(i, j) * vec(j);
+//       }
+//       for (int i = row_lim; i < nrow; i++) {
+//         output(i, j) = mat(i, j);
+//       }
+//     }
+//   }
+//   return(output);
+// }
 
-  NumericMatrix output(nrow, ncol);
+// [[Rcpp::export(".mat_vec_mult_row_cpp")]]
+void mat_vec_mult_row(NumericMatrix mat, NumericVector vec=1, int row_lim=0) {
+  int ncol = mat.ncol();
 
   if(vec.length() != ncol && vec.length() != 1){
     throw std::range_error("Vec length error!");
@@ -99,34 +136,21 @@ NumericMatrix mat_vec_mult_row(NumericMatrix mat, NumericVector vec=1, int row_l
 
   if(vec.length() == 1){
     if(vec(0) == 1){
+      // No need to modify as vec(0) == 1 means no change
+    } else {
       for (int j = 0; j < ncol; j++) {
-        for (int i = 0; i < nrow; i++) {
-          output(i, j) = mat(i, j);
-        }
-      }
-    }else{
-      for (int j = 0; j < ncol; j++) {
-        for (int i = 0; i < nrow; i++) {
-          if(i < row_lim){
-            output(i, j) = mat(i, j) * vec(0);
-          }else{
-            output(i, j) = mat(i, j);
-          }
+        for (int i = 0; i < row_lim; i++) {
+          mat(i, j) = mat(i, j) * vec(0);
         }
       }
     }
-  }else{
+  } else {
     for (int j = 0; j < ncol; j++) {
-      for (int i = 0; i < nrow; i++) {
-        if(i < row_lim){
-          output(i, j) = mat(i, j) * vec(i);
-        }else{
-          output(i, j) = mat(i, j);
-        }
+      for (int i = 0; i < row_lim; i++) {
+        mat(i, j) = mat(i, j) * vec(j);
       }
     }
   }
-  return(output);
 }
 
 // [[Rcpp::export(".vec_add_cpp")]]
