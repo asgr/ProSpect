@@ -306,7 +306,7 @@ SFHfunc = function(massfunc = massfunc_b5,
   birth_sel = 1:birthcloud_len
   old_sel = (birthcloud_len + 1L):length(massvec)
   CF_birth_vec = CF_birth(wave_lum, tau = tau_birth, pow = pow_birth)
-  
+
   if (tau_birth != 0) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
@@ -315,9 +315,12 @@ SFHfunc = function(massfunc = massfunc_b5,
         #Zspec[[Zid]][1:birthcloud_len, ] = Zspec[[Zid]][1:birthcloud_len, ] * rep(CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), each = birthcloud_len)
         #Zspec[[Zid]] = .mat_vec_mult_row_cpp(Zspec[[Zid]], CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), birthcloud_len)
         #Don't need the below now (in theory)
-        #.mat_vec_mult_row_cpp(Zspec[[Zid]], CF_birth(wave_lum, tau = tau_birth, pow = pow_birth), birthcloud_len)
+        #.mat_vec_mult_row_cpp(Zspec[[Zid]], CF_birth_vec, birthcloud_len)
       }
       if (Zdoweight) {
+        if(Zid == 13){
+          browser()
+        }
         #lum = lum + colSums(Zspec[[Zid]] * massvec * Zwmat[, Zid])
         #lum = lum + .colSums_wt_cpp(Zspec[[Zid]], massvec * Zwmat[, Zid])
         #.vec_add_cpp(lum, .colSums_wt_cpp(Zspec[[Zid]], massvec * Zwmat[, Zid]))

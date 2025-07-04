@@ -116,7 +116,7 @@ NumericMatrix mat_vec_mult_col(NumericMatrix mat, NumericVector vec=1, int col_l
 //   } else {
 //     for (int j = 0; j < ncol; j++) {
 //       for (int i = 0; i < row_lim; i++) {
-//         output(i, j) = mat(i, j) * vec(i);
+//         output(i, j) = mat(i, j) * vec(j);
 //       }
 //       for (int i = row_lim; i < nrow; i++) {
 //         output(i, j) = mat(i, j);
@@ -147,7 +147,7 @@ void mat_vec_mult_row(NumericMatrix mat, NumericVector vec=1, int row_lim=0) {
   } else {
     for (int j = 0; j < ncol; j++) {
       for (int i = 0; i < row_lim; i++) {
-        mat(i, j) = mat(i, j) * vec(i);
+        mat(i, j) = mat(i, j) * vec(j);
       }
     }
   }
