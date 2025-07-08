@@ -36,16 +36,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // mat_vec_mult_row
-NumericMatrix mat_vec_mult_row(NumericMatrix mat, NumericVector vec, int row_lim);
+void mat_vec_mult_row(NumericMatrix mat, NumericVector vec, int row_lim);
 RcppExport SEXP _ProSpect_mat_vec_mult_row(SEXP matSEXP, SEXP vecSEXP, SEXP row_limSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
     Rcpp::traits::input_parameter< int >::type row_lim(row_limSEXP);
-    rcpp_result_gen = Rcpp::wrap(mat_vec_mult_row(mat, vec, row_lim));
-    return rcpp_result_gen;
+    mat_vec_mult_row(mat, vec, row_lim);
+    return R_NilValue;
 END_RCPP
 }
 // vec_add_cpp
