@@ -27,7 +27,7 @@ Numeric scalar; opening angle of torus in degrees.
 Numeric scalar; outer to inner torus radius ratio.
 }
   \item{an}{
-Numeric scalar; angle of observation in degrees, where 0 is edge on with torus, and 90 is polar aligned.
+Numeric scalar; angle of observation in degrees, where 0 is edge on with torus, and 90 is polar aligned. See Notes.
 }
   \item{ta}{
 Numeric scalar; optical depth tau.
@@ -66,6 +66,9 @@ We modeled the distribution of the dust in the torus as a two-phase medium, cons
 
 Previously, we have found that an advantageous property of such two-phase medium is that it can produce attenuated silicate features, while at the same time have a pronounced NIR emission, which is challenging for both smooth and clumpy models alone.
 }
+\note{
+If \option{an} this is larger then \option{ct}/2 then by definition a significant component of the AGN accretion disk light is being attenuated by the torus (AKA type II AGN). If \option{an} is less then \option{ct}/2 then we have a direct line-of-sight to the AGN accretion disk and will observe much more UV flux in particular (AKA type I AGN, including blazars and quasars).
+}
 \value{
 Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed luminosity (erg/s/Ang).
 }
@@ -76,19 +79,26 @@ Stalevski et al, 2012, MNRAS, 420, 2756 \cr
 Stalevski et al, 2016, MNRAS, 458, 2288
 }
 \author{
-Aaron Robotham
+Aaron Robotham & Adam Marshall
 }
 \seealso{
-\code{\link{Fritz}}
+\code{\link{Fritz}}, \code{\link{SKIRTOR}}
 }
 \examples{
-plot(Fritz_interp(), type='l', log='xy', xlab='Wave / Ang', ylab='Lum / erg/s/A')
-lines(Fritz_interp(an=0), col='blue')
-lines(Fritz_interp(an=90), col='red')
+\dontrun{
+library(magicaxis)
+colvec = hcl.colors(10, 'hawaii')
 
-lines(SKIRTOR_interp(), col='black', lty=2)
-lines(SKIRTOR_interp(an=0), col='blue', lty=2)
-lines(SKIRTOR_interp(an=90), col='red', lty=2)
+magplot(NA, NA, log='xy', xlab='Wave / Ang', ylab='Lum / erg/s/A',
+        xlim=c(1e2,1e7), ylim=c(1e30,1e42))
+for(i in 1:10){
+  lines(Fritz_interp(an=(i-1)*10), col=colvec[i], lty=2, lwd=2)
+  lines(SKIRTOR_interp(an=(i-1)*10), col=colvec[i], lwd=2)
+}
+
+magbar('topright', range=c(0,90), col=colvec, labN=3, prettybase=30, title='an (Deg)')
+legend('bottomleft', legend=c('SKIRTOR', 'Fritz'), lty=c(1,2))
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

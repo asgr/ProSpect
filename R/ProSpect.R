@@ -299,12 +299,14 @@ ProSpectSED = function(SFH = SFHfunc,
   }
   colnames(Final)[2] = 'lum'
 
-  if (IGMabsorb > 0) {
-    sel = which(Final$wave < 1215.67)
-    Final$lum[sel] = Final$lum[sel] * (1 - IGMabsorb)
-    sel = which(Final$wave < 911.75)
-    Final$lum[sel] = 0
-  }
+  ## Previous ProSpect had IGM absorb done on the rest frame
+  ## Now do to the observer frame later on
+  # if (IGMabsorb > 0) {
+  #   sel = which(Final$wave < 1215.67)
+  #   Final$lum[sel] = Final$lum[sel] * (1 - IGMabsorb)
+  #   sel = which(Final$wave < 911.75)
+  #   Final$lum[sel] = 0
+  # }
 
   if (is.null(filtout) & !is.null(filters)) {
     if (filters[1] == 'all') {
@@ -370,6 +372,16 @@ ProSpectSED = function(SFH = SFHfunc,
     )
     Flux$flux = convert_wave2freq(flux_wave = Flux$flux * .cgs_to_jansky,
                                   wave = Flux$wave)
+    
+    if (IGMabsorb > 0 & is.numeric(IGMabsorb)){
+      sel = which(Flux$wave/(1+z) < 1215.67)
+      Flux$flux[sel] = Flux$flux[sel] * (1 - IGMabsorb)
+      sel = which(Flux$wave/(1+z) < 911.75)
+      Flux$flux[sel] = 0
+    }else if (IGMabsorb == "Inoue14"){
+      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z)
+    }
+      
     photom_out = {}
     for (i in 1:length(filtout)) {
       photom_out = c(photom_out,
@@ -392,6 +404,15 @@ ProSpectSED = function(SFH = SFHfunc,
     )
     Flux$flux = convert_wave2freq(flux_wave = Flux$flux * .cgs_to_jansky,
                                   wave = Flux$wave)
+    if (IGMabsorb > 0 & is.numeric(IGMabsorb)){
+      sel = which(Flux$wave/(1+z) < 1215.67)
+      Flux$flux[sel] = Flux$flux[sel] * (1 - IGMabsorb)
+      sel = which(Flux$wave/(1+z) < 911.75)
+      Flux$flux[sel] = 0
+    }else if (IGMabsorb == "Inoue14"){
+      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z)
+    }
+    
     photom_out = Flux
   } else if (z <= 0 & !is.null(filtout)) {
     Flux = cbind(wave = Final$wave,
@@ -486,7 +507,64 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   names(parm) = Data$parm.names
+  
+  ## Implement Photoz fitting mode 
+  if(("photoz" %in% names(Data$arglist)) & ("z" %in% Data$parm.names)) {
+    if (!requireNamespace("celestial", quietly = TRUE)) {
+      stop("The celestial package is needed for this to work. Please install it from GitHub/ASGR", call. = FALSE)
+    }
+    if (!("ref" %in% names(Data$arglist))){
+      stop("Cosmology must be specified for photo-z")
+    }
+    if(Data$arglist$photoz){
 
+      z_genSF = Data$arglist$z_genSF ## What redshift should we start star formation?
+
+      ztest = parm["z"]
+      if(Data$logged[Data$parm.names == "z"]){
+        ztest = 10^ztest
+      }
+      
+      if(is.function(Data$arglist$IGMfunc)){
+        Data$arglist$IGMabsorb = Data$arglist$IGMfunc(ztest)
+      }else{
+        if(is.null(Data$arglist$IGMfunc)){
+          Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2) ## Default IGM absorption function
+        }else if (Data$arglist$IGMfunc == "Inoue14"){
+          Data$arglist$IGMabsorb = "Inoue14"
+        }else if (is.numeric(Data$arglist$IGMfunc)){
+          Data$arglist$IGMabsorb = Data$arglist$IGMfunc
+        }else{
+          stop("IGMfunc not valid type.")
+        }
+      }
+
+      ## pracma integral inside of UniAgeAtz has annoying cat messages 
+      ## Just use UniAgeAtz at recombination z=1100, this means in ProSpect you cant fit 'galaxies' with photoz>1100
+      UniAgeAtz_simple = function(z){
+        celestial::cosdistTravelTime(z = 1100, ref = Data$arglist$ref) - celestial::cosdistTravelTime(z = z, ref = Data$arglist$ref)
+      }
+      agemax_new = (UniAgeAtz_simple(ztest))*1e9 ##need to be in years 
+      if(!is.null(z_genSF)){
+        agemax_new = (UniAgeAtz_simple(ztest) - UniAgeAtz_simple(z_genSF))*1e9 ##need to be in years 
+      }
+
+      magemax_new = agemax_new/1e9 ## need to be in Gyr
+      Zagemax_new = agemax_new/1e9
+      LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
+      
+      ## Now update the args in Data
+      Data$arglist$agemax = unname(agemax_new)
+      Data$arglist$magemax = unname(magemax_new)
+      Data$arglist$Zagemax = unname(Zagemax_new)
+      Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
+      
+      if("mpeak" %in% Data$parm.names){
+        parm["mpeak"] = ifelse(parm["mpeak"] > magemax_new, magemax_new, parm["mpeak"])
+      }
+    }
+  }
+  
   if (!is.null(Data$constraints)) {
     parm = Data$constraints(parm)
   }
