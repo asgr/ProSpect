@@ -14,12 +14,12 @@ IGM absorption model from Inoue (2014).
 Compute the optical depth and attenuation as a function of observed wavelengths using the Inoue (2014) model.
 }
 \usage{
-tau_IGM_LSLAF(wave, z)
-tau_IGM_LSDLA(wave, z)
+tau_IGM_LSLAF(wave, z, Inoue14_LAFcoef = NULL)
+tau_IGM_LSDLA(wave, z, Inoue14_DLAcoef = NULL)
 tau_IGM_LCLAF(wave, z)
 tau_IGM_LCDLA(wave, z)
-tau_IGM_Tot(wave, z)
-Inoue14_IGM(wave, z)
+tau_IGM_Tot(wave, z, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL)
+Inoue14_IGM(wave, z, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,6 +29,12 @@ Inoue14_IGM(wave, z)
   }
   \item{z}{
   Numeric scalar; source redshift. 
+  }
+  \item{Inoue14_LAFcoef}{
+  Data frame; Coefficients in model. If NULL will read from the relevant data file.
+  }
+  \item{Inoue14_DLAcoef}{
+  Data frame; Coefficients in model. If NULL will read from the relevant data file.
   }
 }
 \details{
@@ -65,7 +71,9 @@ Aaron Robotham
 
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
-\code{\link{ProSpectSED}}
+\code{\link{ProSpectSED}}, 
+\code{\link{Inoue14_LAFcoef}}, 
+\code{\link{Inoue14_DLAcoef}}
 }
 \examples{
 wave = seq(1000, 50000, 100)

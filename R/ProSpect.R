@@ -48,6 +48,8 @@ ProSpectSED = function(SFH = SFHfunc,
                           L0 = 2175.8,
                           LFWHM = 470,
                           IGMabsorb = 0,
+                          Inoue14_LAFcoef = NULL,
+                          Inoue14_DLAcoef = NULL,
                           ...) {
   #call = match.call()
 
@@ -403,7 +405,7 @@ ProSpectSED = function(SFH = SFHfunc,
       sel = which(Flux$wave/(1+z) < 911.75)
       Flux$flux[sel] = 0
     }else if (IGMabsorb == "Inoue14"){
-      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z)
+      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef)
     }
       
     photom_out = {}
@@ -434,7 +436,7 @@ ProSpectSED = function(SFH = SFHfunc,
       sel = which(Flux$wave/(1+z) < 911.75)
       Flux$flux[sel] = 0
     }else if (IGMabsorb == "Inoue14"){
-      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z)
+      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef)
     }
     
     photom_out = Flux
@@ -537,8 +539,10 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     if (!requireNamespace("celestial", quietly = TRUE)) {
       stop("The celestial package is needed for this to work. Please install it from GitHub/ASGR", call. = FALSE)
     }
-    if (!("ref" %in% names(Data$arglist))){
-      stop("Cosmology must be specified for photo-z")
+    if (!(c("ref") %in% names(Data$arglist))){
+      if (!all(c("H0", "OmegaM", "OmegaL") %in% names(Data$arglist))){
+        stop("Cosmology must be specified for photo-z")
+      }
     }
     if(Data$arglist$photoz){
 
@@ -553,7 +557,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         Data$arglist$IGMabsorb = Data$arglist$IGMfunc(ztest)
       }else{
         if(is.null(Data$arglist$IGMfunc)){
-          Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2) ## Default IGM absorption function
+          Data$arglist$IGMabsorb = 0 ## Default IGM absorption function
+        }else if (Data$arglist$IGMfunc == "Songaila04"){
+          Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2)
         }else if (Data$arglist$IGMfunc == "Inoue14"){
           Data$arglist$IGMabsorb = "Inoue14"
         }else if (is.numeric(Data$arglist$IGMfunc)){
@@ -562,20 +568,23 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
           stop("IGMfunc not valid type.")
         }
       }
-
-      ## pracma integral inside of UniAgeAtz has annoying cat messages 
-      ## Just use UniAgeAtz at recombination z=1100, this means in ProSpect you cant fit 'galaxies' with photoz>1100
-      UniAgeAtz_simple = function(z){
-        celestial::cosdistTravelTime(z = 1100, ref = Data$arglist$ref) - celestial::cosdistTravelTime(z = z, ref = Data$arglist$ref)
+      
+      if(is.null(Data$arglist$ref)){
+        agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years 
+        if(!is.null(z_genSF)){
+          agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL) - celestial::cosdistUniAgeAtz(z_genSF, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years 
+        }
+        LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL)
+      }else{
+        agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
+        if(!is.null(z_genSF)){
+          agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z_genSF, ref = Data$arglist$ref))*1e9 ##need to be in years 
+        }
+        LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
       }
-      agemax_new = (UniAgeAtz_simple(ztest))*1e9 ##need to be in years 
-      if(!is.null(z_genSF)){
-        agemax_new = (UniAgeAtz_simple(ztest) - UniAgeAtz_simple(z_genSF))*1e9 ##need to be in years 
-      }
-
+      
       magemax_new = agemax_new/1e9 ## need to be in Gyr
       Zagemax_new = agemax_new/1e9
-      LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
       
       ## Now update the args in Data
       Data$arglist$agemax = unname(agemax_new)
