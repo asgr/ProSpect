@@ -139,12 +139,18 @@ tau_IGM_LCDLA = function(wave, z){
   return(tau_DLA)
 }
 tau_IGM_Tot = function(wave, z, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL){
-  tau_IGM_LSLAF(wave, z, Inoue14_LAFcoef) +
+  tau = tau_IGM_LSLAF(wave, z, Inoue14_LAFcoef) +
     tau_IGM_LSDLA(wave, z, Inoue14_DLAcoef) + 
     tau_IGM_LCLAF(wave, z) + 
     tau_IGM_LCDLA(wave, z)
+  return(tau)
 }
 Inoue14_IGM = function(wave, z, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL){
-  # pmin(1.0, exp(-1 * tIGM(wave, z)))
-  exp(-1 * tau_IGM_Tot(wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef))
+  ## Below wave_observed<911.75 is unconstrained, manually set to 0
+  igm = ifelse(
+    wave<911.75,
+    0,
+    exp(-1 * tau_IGM_Tot(wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef))
+  )
+  return(igm)
 }
