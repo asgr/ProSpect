@@ -591,10 +591,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       Data$arglist$magemax = unname(magemax_new)
       Data$arglist$Zagemax = unname(Zagemax_new)
       Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
-      
-      if("mpeak" %in% Data$parm.names){
-        parm["mpeak"] = ifelse(parm["mpeak"] > magemax_new, magemax_new, parm["mpeak"])
-      }
     }
   }
   
