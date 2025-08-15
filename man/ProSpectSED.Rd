@@ -19,7 +19,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
   ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, Te_AGN = 10000,
   ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
   AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
-  LFWHM = 470, IGMabsorb = 0, ...)
+  LFWHM = 470, IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL, ...)
 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -183,6 +183,12 @@ Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not 
 Absorbing fraction for the intervening IGM. This should be thought of as absorption due to material between the galaxy of interest an the observer. This suppressing fraction is applied to wavelength in the Lyman regime (911.8 - 1215.7 Angstrom). Based on Songaila (2004) a resonable approximation for this is given by \option{IGMabsorb} = pnorm(z, mean=3.8, sd=1.2), meaning it is almost 0 (complete transmission) at low redshift and almost 1 (complete absorption) by redshift 8.
 Alternatively, you can pass "Inoue14" and it will apply the wavelength dependent IGM absorption from Inoue (2014). 
 }
+  \item{Inoue14_LAFcoef}{
+Data frame with LAF coefficients needed for the Inoue (2014) IGM absorption model. If NULL, will read from relevant data file. Only necessary for IGMabsorb="Inoue14".
+}
+  \item{Inoue14_DLAcoef}{
+Data frame with DLA coefficients needed for the Inoue (2014) IGM absorption model. If NULL, will read from relevant data file. Only necessary for IGMabsorb="Inoue14".
+}
   \item{\dots}{
 All further arguments are passed directly into \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history etc.
 }
@@ -201,7 +207,7 @@ Function, required; the star formation history function to use. Must be one of \
 }
   \item{Data$arglist}{
 List, optional; named arguments and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
-There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', a function that takes in z and returns IGM absorption between 0 and 1, can also be numeric/NULL/'Inoue14', if numeric this is the same as function(z)\{const\} where const is some constant IGM absorption value, if NULL use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then stars start forming at the beginning of the Universe. 
+There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', a function that takes in z and returns IGM absorption between 0 and 1, can also be numeric/NULL/'Inoue14', if numeric this is the same as function(z)\{const\} where const is some constant IGM absorption value, if NULL no IGM absorption, if "Songaila04" use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then stars start forming at the beginning of the Universe. 
 }
   \item{Data$speclib}{
 List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
@@ -294,7 +300,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{SFH}}, \code{\link{magABcalc}}, \code{\link{dustmass}}, \code{\link{optim}}
+\code{\link{SFH}}, \code{\link{magABcalc}}, \code{\link{dustmass}}, \code{\link{optim}}, \code{\link{Inoue14_IGM}}
 }
 
 \examples{
@@ -336,6 +342,44 @@ plot(testSED)
 
 testSED2 = ProSpectSED(massfunc = massfunc_snorm, Z=Zfunc_massmap_box)
 plot(testSED2)
+
+## Example photoz with IGM absorption 
+
+testSED3 = ProSpectSED(z = 9, IGMabsorb = 1.0, ref = "Planck18", Dale = FALSE)
+filtout = lapply(testSED3$filters, getfilt)
+wavelength = sapply(filtout, cenwavefunc)
+flux_data = data.frame(
+  "cenwave" = wavelength,
+  "flux" = testSED3$Photom,
+  "fluxerr" = (0.05 * testSED3$Photom) + 1e-9,
+  "filters" = testSED3$filters
+)
+Data=list(
+  flux=flux_data,
+  arglist=list(photoz = TRUE, ref = "Planck18", IGMfunc = "Songaila04", z_genSF = 30),
+  filtout=filtout,
+  speclib=BC03lr,
+  SFH=SFHfunc,
+  Dale = FALSE,
+  Dale_M2L_func = NULL,
+  AGN = NULL,
+  parm.names=c('z'),
+  mon.names=c("LP"),
+  logged=c(FALSE),
+  intervals=list(lo = c(0.0001),hi = c(25)),
+  fit = 'optim',
+  N=dim(flux_data)[1],
+  verbose=FALSE
+)
+Data$flux$cenwave = flux_data$cenwave
+startpoint = (Data$intervals$lo+Data$intervals$hi)/2
+names(startpoint) = Data$parm.names
+optout = optim(par=startpoint, fn=ProSpectSEDlike, Data=Data, 
+method = 'L-BFGS-B', lower = Data$intervals$lo, upper = Data$intervals$hi)
+Data$fit = 'check'
+sedout = ProSpectSEDlike(parm=optout$par, Data=Data)
+plot(testSED3)
+plot(sedout)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
