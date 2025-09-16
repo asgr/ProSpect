@@ -48,6 +48,8 @@ ProSpectSED = function(SFH = SFHfunc,
                           L0 = 2175.8,
                           LFWHM = 470,
                           IGMabsorb = 0,
+                          Inoue14_LAFcoef = NULL,
+                          Inoue14_DLAcoef = NULL,
                           ...) {
   #call = match.call()
 
@@ -63,83 +65,102 @@ ProSpectSED = function(SFH = SFHfunc,
     }
   }
 
-  tau_birth = .interval(tau_birth, 0, 10, reflect = FALSE)
-  tau_screen = .interval(tau_screen, 0, 10, reflect = FALSE)
-  tau_AGN = .interval(tau_AGN, 0, 10, reflect = FALSE)
-  pow_birth = .interval(pow_birth, -2, 0, reflect = FALSE)
-  pow_screen = .interval(pow_screen, -2, 0, reflect = FALSE)
-  pow_AGN = .interval(pow_AGN, -2, 0, reflect = FALSE)
-  alpha_SF_birth = .interval(alpha_SF_birth, 0.0625, 4, reflect = FALSE)
-  alpha_SF_screen = .interval(alpha_SF_screen, 0.0625, 4, reflect = FALSE)
-  alpha_SF_AGN = .interval(alpha_SF_AGN, 0.0625, 4, reflect = FALSE)
+  if(!is.null(SFH)){
+    tau_birth = .interval(tau_birth, 0, 10, reflect = FALSE)
+    tau_screen = .interval(tau_screen, 0, 10, reflect = FALSE)
+    pow_birth = .interval(pow_birth, -2, 0, reflect = FALSE)
+    pow_screen = .interval(pow_screen, -2, 0, reflect = FALSE)
+    alpha_SF_birth = .interval(alpha_SF_birth, 0.0625, 4, reflect = FALSE)
+    alpha_SF_screen = .interval(alpha_SF_screen, 0.0625, 4, reflect = FALSE)
+  }
 
-  Stars = SFH(
-    z = z,
-    tau_birth = tau_birth,
-    tau_screen = tau_screen,
-    pow_birth = pow_birth,
-    pow_screen = pow_screen,
-    sparse = sparse,
-    speclib = speclib,
-    filters = NULL,
-    unimax = unimax,
-    agemax = agemax,
-    Eb = Eb,
-    L0 = L0,
-    LFWHM = LFWHM,
-    ...
-  )
+  if(!is.null(AGN)){
+    tau_AGN = .interval(tau_AGN, 0, 10, reflect = FALSE)
+    pow_AGN = .interval(pow_AGN, -2, 0, reflect = FALSE)
+    alpha_SF_AGN = .interval(alpha_SF_AGN, 0.0625, 4, reflect = FALSE)
+  }
 
-  if(!isFALSE(Dale)){
-    Dust_Birth = Dale_interp(alpha_SF = alpha_SF_birth, Dale = Dale)
-    Dust_Screen = Dale_interp(alpha_SF = alpha_SF_screen, Dale = Dale)
+  if(!is.null(SFH)){
 
-    SED_Bdust_Sdust = Dust_Birth$Aspec * Stars$lumtot_birth + Dust_Screen$Aspec *
-      Stars$lumtot_screen
-    SED_Stars_Bdust_Sdust = addspec(
-      wave1 = Stars$wave_lum,
-      flux1 = Stars$lum_atten,
-      wave2 = Dust_Screen$Wave,
-      flux2 = SED_Bdust_Sdust,
-      extrap = 0,
-      waveout = waveout
+    Stars = SFH(
+      z = z,
+      tau_birth = tau_birth,
+      tau_screen = tau_screen,
+      pow_birth = pow_birth,
+      pow_screen = pow_screen,
+      sparse = sparse,
+      speclib = speclib,
+      filters = NULL,
+      unimax = unimax,
+      agemax = agemax,
+      Eb = Eb,
+      L0 = L0,
+      LFWHM = LFWHM,
+      ...
     )
-  }else{
-    Final = data.frame(wave = Stars$wave_lum, lum = Stars$lum_atten)
+
+    if(!isFALSE(Dale)){
+      Dust_Birth = Dale_interp(alpha_SF = alpha_SF_birth, Dale = Dale)
+      Dust_Screen = Dale_interp(alpha_SF = alpha_SF_screen, Dale = Dale)
+
+      SED_Bdust_Sdust = Dust_Birth$Aspec * Stars$lumtot_birth + Dust_Screen$Aspec *
+        Stars$lumtot_screen
+      SED_Stars_Bdust_Sdust = addspec(
+        wave1 = Stars$wave_lum,
+        flux1 = Stars$lum_atten,
+        wave2 = Dust_Screen$Wave,
+        flux2 = SED_Bdust_Sdust,
+        extrap = 0,
+        waveout = waveout
+      )
+    }else{
+      Final = data.frame(wave = Stars$wave_lum, lum = Stars$lum_atten)
+      Dust_Birth = NULL
+      Dust_Screen = NULL
+      SED_Bdust_Sdust = NULL
+      SED_Stars_Bdust_Sdust = NULL
+    }
+
+    if (!is.null(Dale_M2L_func) & returnall) {
+      dustlum_birth = Stars$lumtot_birth
+      dustlum_screen = Stars$lumtot_screen
+      dustmass_birth = Stars$lumtot_birth / Dale_M2L_func(alpha_SF_birth)
+      dustmass_screen = Stars$lumtot_screen / Dale_M2L_func(alpha_SF_screen)
+    } else{
+      dustlum_birth = 0
+      dustlum_screen = 0
+      dustmass_birth = 0
+      dustmass_screen = 0
+    }
+
+    ## adding radio contribution using just FIR generated from star-formation
+    if (addradio_SF) {
+      Final = radiocont(
+        wave = SED_Stars_Bdust_Sdust$wave,
+        flux = SED_Stars_Bdust_Sdust$flux,
+        z = 0,
+        Te = Te_SF,
+        ff_frac = ff_frac_SF,
+        ff_power = ff_power_SF,
+        sy_power = sy_power_SF,
+        wavesamp = seq(6, waveout_max, by=0.1),
+        flux_in = 'wave',
+        flux_out = 'wave'
+      )
+    }else if(!isFALSE(Dale)) {
+      Final = SED_Stars_Bdust_Sdust
+    }
+  } else {
     Dust_Birth = NULL
     Dust_Screen = NULL
     SED_Bdust_Sdust = NULL
     SED_Stars_Bdust_Sdust = NULL
-  }
-
-  if (!is.null(Dale_M2L_func) & returnall) {
-    dustlum_birth = Stars$lumtot_birth
-    dustlum_screen = Stars$lumtot_screen
-    dustmass_birth = Stars$lumtot_birth / Dale_M2L_func(alpha_SF_birth)
-    dustmass_screen = Stars$lumtot_screen / Dale_M2L_func(alpha_SF_screen)
-  } else{
-    dustlum_birth = 0
-    dustlum_screen = 0
-    dustmass_birth = 0
-    dustmass_screen = 0
-  }
-
-  ## adding radio contribution using just FIR generated from star-formation
-  if (addradio_SF) {
-    Final = radiocont(
-      wave = SED_Stars_Bdust_Sdust$wave,
-      flux = SED_Stars_Bdust_Sdust$flux,
-      z = 0,
-      Te = Te_SF,
-      ff_frac = ff_frac_SF,
-      ff_power = ff_power_SF,
-      sy_power = sy_power_SF,
-      wavesamp = seq(6, waveout_max, by=0.1),
-      flux_in = 'wave',
-      flux_out = 'wave'
-    )
-  }else if(!isFALSE(Dale)) {
-    Final = SED_Stars_Bdust_Sdust
+    dustlum_birth = NULL
+    dustlum_screen = NULL
+    dustmass_birth = NULL
+    dustmass_screen = NULL
+    Stars = NULL
+    Final = NULL
   }
 
   if (is.null(AGN) | AGNlum == 0) {
@@ -147,36 +168,37 @@ ProSpectSED = function(SFH = SFHfunc,
     AGN = NULL
     dustlum_AGN = 0
     dustmass_AGN = 0
-  } else{
+  } else {
     if(isFALSE(Dale)){
       stop('Dale cannot be FALSE when using an AGN model!')
     }
 
- if(inherits(AGN, 'Fritz') | inherits(AGN, 'SKIRTOR')){
+    if(inherits(AGN, 'Fritz') |
+       inherits(AGN, 'SKIRTOR')) {
       #Use new model
-   if(inherits(AGN, 'Fritz')){
-      AGN = Fritz_interp(
-        lum = AGNlum,
-        ct = AGNct,
-        al = AGNal,
-        be = AGNbe,
-        ta = AGNta,
-        rm = AGNrm,
-        an = AGNan,
-        Fritz = AGN
-      )
-   }else if(inherits(AGN, 'SKIRTOR')){
-     AGN = SKIRTOR_interp(
-       lum = AGNlum,
-       ta = AGNta,
-       p = AGNp,
-       q = AGNq,
-       ct = AGNct,
-       rm = AGNrm,
-       an = AGNan,
-       SKIRTOR = AGN
-     )
-   }
+      if (inherits(AGN, 'Fritz')) {
+        AGN = Fritz_interp(
+          lum = AGNlum,
+          ct = AGNct,
+          al = AGNal,
+          be = AGNbe,
+          ta = AGNta,
+          rm = AGNrm,
+          an = AGNan,
+          Fritz = AGN
+        )
+      } else if (inherits(AGN, 'SKIRTOR')) {
+        AGN = SKIRTOR_interp(
+          lum = AGNlum,
+          ta = AGNta,
+          p = AGNp,
+          q = AGNq,
+          ct = AGNct,
+          rm = AGNrm,
+          an = AGNan,
+          SKIRTOR = AGN
+        )
+      }
 
       dustlum_AGN = NA
       dustmass_AGN = NA
@@ -207,14 +229,16 @@ ProSpectSED = function(SFH = SFHfunc,
         ff_frac = ff_frac_AGN,
         ff_power = ff_power_AGN,
         sy_power = sy_power_AGN,
-        wavesamp = seq(6, waveout_max, by=0.1),
+        wavesamp = seq(6, waveout_max, by = 0.1),
         flux_in = 'wave',
         flux_out = 'wave',
         subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
       )
 
       AGN = AGN$final
-      if (length(Final$flux) == length(AGN$flux)) {
+      if (is.null(Final)) {
+        Final = AGN
+      } else if (length(Final$flux) == length(AGN$flux)) {
         Final = data.frame(wave = Final$wave, flux = Final$flux +
                              AGN$flux)
       } else {
@@ -226,7 +250,7 @@ ProSpectSED = function(SFH = SFHfunc,
         )
       }
       colnames(AGN)[2] = 'lum'
-    }else{
+    } else{
       #Use old model
       #First we attenuate by the hot torus
       AGN = atten_emit(
@@ -276,20 +300,22 @@ ProSpectSED = function(SFH = SFHfunc,
         ff_frac = ff_frac_AGN,
         ff_power = ff_power_AGN,
         sy_power = sy_power_AGN,
-        wavesamp = seq(6, waveout_max, by=0.1),
+        wavesamp = seq(6, waveout_max, by = 0.1),
         flux_in = 'wave',
         flux_out = 'wave',
         subtractonly = !addradio_AGN # whether to add AGN radio or just subtract Dale radio
       )
 
       AGN = AGN$final
-      if (length(SED_Stars_Bdust_Sdust$flux) == length(AGN$flux)) {
-        Final = data.frame(wave = SED_Stars_Bdust_Sdust$wave, flux = SED_Stars_Bdust_Sdust$flux +
+      if (is.null(Final)) {
+        Final = AGN
+      } else if (length(Final$flux) == length(AGN$flux)) {
+        Final = data.frame(wave = Final$wave, flux = Final$flux +
                              AGN$flux)
-      } else{
+      } else {
         Final = addspec(
-          wave1 = SED_Stars_Bdust_Sdust$wave,
-          flux1 = SED_Stars_Bdust_Sdust$flux,
+          wave1 = Final$wave,
+          flux1 = Final$flux,
           wave2 = AGN$wave,
           flux2 = AGN$flux
         )
@@ -379,7 +405,7 @@ ProSpectSED = function(SFH = SFHfunc,
       sel = which(Flux$wave/(1+z) < 911.75)
       Flux$flux[sel] = 0
     }else if (IGMabsorb == "Inoue14"){
-      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z)
+      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef)
     }
       
     photom_out = {}
@@ -410,7 +436,7 @@ ProSpectSED = function(SFH = SFHfunc,
       sel = which(Flux$wave/(1+z) < 911.75)
       Flux$flux[sel] = 0
     }else if (IGMabsorb == "Inoue14"){
-      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z)
+      Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef)
     }
     
     photom_out = Flux
@@ -513,8 +539,10 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     if (!requireNamespace("celestial", quietly = TRUE)) {
       stop("The celestial package is needed for this to work. Please install it from GitHub/ASGR", call. = FALSE)
     }
-    if (!("ref" %in% names(Data$arglist))){
-      stop("Cosmology must be specified for photo-z")
+    if (!(c("ref") %in% names(Data$arglist))){
+      if (!all(c("H0", "OmegaM", "OmegaL") %in% names(Data$arglist))){
+        stop("Cosmology must be specified for photo-z")
+      }
     }
     if(Data$arglist$photoz){
 
@@ -529,7 +557,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         Data$arglist$IGMabsorb = Data$arglist$IGMfunc(ztest)
       }else{
         if(is.null(Data$arglist$IGMfunc)){
-          Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2) ## Default IGM absorption function
+          Data$arglist$IGMabsorb = 0 ## Default IGM absorption function
+        }else if (Data$arglist$IGMfunc == "Songaila04"){
+          Data$arglist$IGMabsorb = pnorm(ztest, mean = 3.8, sd = 1.2)
         }else if (Data$arglist$IGMfunc == "Inoue14"){
           Data$arglist$IGMabsorb = "Inoue14"
         }else if (is.numeric(Data$arglist$IGMfunc)){
@@ -538,30 +568,29 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
           stop("IGMfunc not valid type.")
         }
       }
-
-      ## pracma integral inside of UniAgeAtz has annoying cat messages 
-      ## Just use UniAgeAtz at recombination z=1100, this means in ProSpect you cant fit 'galaxies' with photoz>1100
-      UniAgeAtz_simple = function(z){
-        celestial::cosdistTravelTime(z = 1100, ref = Data$arglist$ref) - celestial::cosdistTravelTime(z = z, ref = Data$arglist$ref)
+      
+      if(is.null(Data$arglist$ref)){
+        agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years 
+        if(!is.null(z_genSF)){
+          agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL) - celestial::cosdistUniAgeAtz(z_genSF, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years 
+        }
+        LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL)
+      }else{
+        agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
+        if(!is.null(z_genSF)){
+          agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z_genSF, ref = Data$arglist$ref))*1e9 ##need to be in years 
+        }
+        LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
       }
-      agemax_new = (UniAgeAtz_simple(ztest))*1e9 ##need to be in years 
-      if(!is.null(z_genSF)){
-        agemax_new = (UniAgeAtz_simple(ztest) - UniAgeAtz_simple(z_genSF))*1e9 ##need to be in years 
-      }
-
+      
       magemax_new = agemax_new/1e9 ## need to be in Gyr
       Zagemax_new = agemax_new/1e9
-      LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
       
       ## Now update the args in Data
       Data$arglist$agemax = unname(agemax_new)
       Data$arglist$magemax = unname(magemax_new)
       Data$arglist$Zagemax = unname(Zagemax_new)
       Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
-      
-      if("mpeak" %in% Data$parm.names){
-        parm["mpeak"] = ifelse(parm["mpeak"] > magemax_new, magemax_new, parm["mpeak"])
-      }
     }
   }
   
@@ -749,15 +778,27 @@ plot.ProSpectSED = function(x,
                             ...) {
   if (type == 'lum') {
     if (ylim[1] == 'auto') {
-      ylim = c(quantile(x$FinalLum[, 2], 0.45),
+      if(!is.null(x$Stars)){
+        ylim = c(quantile(x$FinalLum[, 2], 0.45),
                max(x$StarsUnAtten, na.rm = TRUE))
+      }else{
+        ylim = c(quantile(x$FinalLum[, 2], 0.45),
+                 max(x$FinalLum[, 2], na.rm = TRUE))
+      }
     }
     if (ylab[1] == 'auto') {
       ylab = 'Luminosity Density (Lsol/Ang)'
     }
-    layout(rbind(1, 2), heights = c(0.7, 0.3))
-    par(oma = c(3.1, 3.1, 1.1, 2.1))
-    par(mar = c(0, 0, 0, 0))
+
+    if(!is.null(x$Stars)){
+      layout(rbind(1, 2), heights = c(0.7, 0.3))
+      par(oma = c(3.1, 3.1, 1.1, 2.1))
+      par(mar = c(0, 0, 0, 0))
+    }else{
+      layout(1)
+      par(mar = c(3.1, 3.1, 1.1, 1.1))
+    }
+
     if (requireNamespace("magicaxis", quietly = TRUE)) {
       magicaxis::magplot(
         x$FinalLum,
@@ -785,13 +826,19 @@ plot.ProSpectSED = function(x,
       )
       points(x$Data, col='red', pch=16)
     }
-    lines(x$StarsUnAtten,
-          col = 'blue',
-          lty = 2,
-          lwd = lwd_comp)
-    lines(x$StarsAtten, col = 'darkgreen', lwd = lwd_comp)
-    lines(x$DustEmit, col = 'brown', lwd = lwd_comp)
-    lines(x$AGN, col = 'purple', lwd = lwd_comp)
+    if(!is.null(x$Stars)){
+      lines(x$StarsUnAtten,
+            col = 'blue',
+            lty = 2,
+            lwd = lwd_comp)
+      lines(x$StarsAtten, col = 'darkgreen', lwd = lwd_comp)
+      lines(x$DustEmit, col = 'brown', lwd = lwd_comp)
+    }
+
+    if(!is.null(x$AGN)){
+      lines(x$AGN, col = 'purple', lwd = lwd_comp)
+    }
+
     legend(
       'topright',
       legend = c(
@@ -805,6 +852,10 @@ plot.ProSpectSED = function(x,
       lty = c(1, 2, 1, 1, 1),
       lwd = c(lwd_main, lwd_comp, lwd_comp, lwd_comp, lwd_comp)
     )
+
+    if(is.null(x$Stars)){
+      return(invisible(NULL))
+    }
 
     par(mar = c(0, 0, 0, 0))
     if (requireNamespace("magicaxis", quietly = TRUE)) {
