@@ -652,8 +652,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
                                    flux = Photom)
       }else{
-        SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
-                                   flux = SEDout$Photom[,'flux'])
+        Photom = SEDout$Photom[,'flux']
       }
     }else{
       Photom = SEDout$Photom
