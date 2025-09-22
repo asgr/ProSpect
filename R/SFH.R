@@ -326,7 +326,7 @@ SFHfunc = function(massfunc = massfunc_b5,
 
   if(disp_stars){
     # Here we optionally disperse the spectrum along our LoS.
-    # Remember here we are still in instrinsic luminosity space
+    # Remember here we are still in intrinsic luminosity space
 
     grid = seq(-range, range, by=res)
     weights = dnorm(grid)
@@ -352,9 +352,9 @@ SFHfunc = function(massfunc = massfunc_b5,
     lum_conv = numeric(length(lum))
 
     for(i in seq_along(grid)){
-      z_seq = grid[i]*z_disp
-      new_wave_log = wave_lum_log + log10(1 + z_seq)
-      new_lum = lum_log - log10(1 + z_seq)
+      z_seq_log = log10(1 + grid[i]*z_disp)
+      new_wave_log = wave_lum_log + z_seq_log
+      new_lum = lum_log - z_seq_log
       new_lum = 10^approx(x=new_wave_log, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
       new_lum = new_lum*weights[i]
       #lum_conv = lum_conv + new_lum

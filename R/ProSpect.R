@@ -398,7 +398,7 @@ ProSpectSED = function(SFH = SFHfunc,
     )
     Flux$flux = convert_wave2freq(flux_wave = Flux$flux * .cgs_to_jansky,
                                   wave = Flux$wave)
-    
+
     if (IGMabsorb > 0 & is.numeric(IGMabsorb)){
       sel = which(Flux$wave/(1+z) < 1215.67)
       Flux$flux[sel] = Flux$flux[sel] * (1 - IGMabsorb)
@@ -407,7 +407,7 @@ ProSpectSED = function(SFH = SFHfunc,
     }else if (IGMabsorb == "Inoue14"){
       Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef)
     }
-      
+
     photom_out = {}
     for (i in 1:length(filtout)) {
       photom_out = c(photom_out,
@@ -438,7 +438,7 @@ ProSpectSED = function(SFH = SFHfunc,
     }else if (IGMabsorb == "Inoue14"){
       Flux$flux = Flux$flux * Inoue14_IGM(Flux$wave, z, Inoue14_LAFcoef, Inoue14_DLAcoef)
     }
-    
+
     photom_out = Flux
   } else if (z <= 0 & !is.null(filtout)) {
     Flux = cbind(wave = Final$wave,
@@ -533,8 +533,8 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   names(parm) = Data$parm.names
-  
-  ## Implement Photoz fitting mode 
+
+  ## Implement Photoz fitting mode
   if(("photoz" %in% names(Data$arglist)) & ("z" %in% Data$parm.names)) {
     if (!requireNamespace("celestial", quietly = TRUE)) {
       stop("The celestial package is needed for this to work. Please install it from GitHub/ASGR", call. = FALSE)
@@ -552,7 +552,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       if(Data$logged[Data$parm.names == "z"]){
         ztest = 10^ztest
       }
-      
+
       if(is.function(Data$arglist$IGMfunc)){
         Data$arglist$IGMabsorb = Data$arglist$IGMfunc(ztest)
       }else{
@@ -568,24 +568,24 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
           stop("IGMfunc not valid type.")
         }
       }
-      
+
       if(is.null(Data$arglist$ref)){
-        agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years 
+        agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years
         if(!is.null(z_genSF)){
-          agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL) - celestial::cosdistUniAgeAtz(z_genSF, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years 
+          agemax_new = (celestial::cosdistUniAgeAtz(ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL) - celestial::cosdistUniAgeAtz(z_genSF, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL))*1e9 ##need to be in years
         }
         LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, H0 = Data$arglist$HO, OmegaM = Data$arglist$OmegaM, OmegaL = Data$arglist$OmegaL)
       }else{
-        agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref))*1e9 ##need to be in years 
+        agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref))*1e9 ##need to be in years
         if(!is.null(z_genSF)){
-          agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z_genSF, ref = Data$arglist$ref))*1e9 ##need to be in years 
+          agemax_new = (celestial::cosdistUniAgeAtz(ztest, ref = Data$arglist$ref) - celestial::cosdistUniAgeAtz(z_genSF, ref = Data$arglist$ref))*1e9 ##need to be in years
         }
         LumDist_Mpc_new = celestial::cosdistLumDist(z = ztest, ref = Data$arglist$ref)
       }
-      
+
       magemax_new = agemax_new/1e9 ## need to be in Gyr
       Zagemax_new = agemax_new/1e9
-      
+
       ## Now update the args in Data
       Data$arglist$agemax = unname(agemax_new)
       Data$arglist$magemax = unname(magemax_new)
@@ -593,7 +593,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       Data$arglist$LumDist_Mpc = unname(LumDist_Mpc_new)
     }
   }
-  
+
   if (!is.null(Data$constraints)) {
     parm = Data$constraints(parm)
   }
@@ -642,14 +642,19 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     )
     if(is.null(Data$filtout)){
       #this means we are in spec-z mode
-      Photom = specReBin(wave = SEDout$Photom[,'wave'],
-                         flux = SEDout$Photom[,'flux'],
-                         wavegrid = Data$flux[,'wave'],
-                         logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
-                         rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
-      )[,'flux']
-      SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
-                                 flux = Photom)
+      if(!isTRUE(all.equal(SEDout$Photom[,'wave'], Data$flux[,'wave']))){ #if not already on the same grid we rebin
+        Photom = specReBin(wave = SEDout$Photom[,'wave'],
+                           flux = SEDout$Photom[,'flux'],
+                           wavegrid = Data$flux[,'wave'],
+                           logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
+                           rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
+        )[,'flux']
+        SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
+                                   flux = Photom)
+      }else{
+        SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
+                                   flux = SEDout$Photom[,'flux'])
+      }
     }else{
       Photom = SEDout$Photom
     }
@@ -684,12 +689,14 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
 
     if(is.null(Data$filtout)){
       #this means we are in spec-z mode
-      Photom = specReBin(wave = Photom[,'wave'],
-                        flux = Photom[,'flux'],
-                        wavegrid = Data$flux[,'wave'],
-                        logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
-                        rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
-                        )[,'flux']
+      if(!isTRUE(all.equal(Photom[,'wave'], Data$flux[,'wave']))){ #if not already on the same grid we rebin
+        Photom = specReBin(wave = Photom[,'wave'],
+                          flux = Photom[,'flux'],
+                          wavegrid = Data$flux[,'wave'],
+                          logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
+                          rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
+                          )[,'flux']
+      }
     }
   }
 
