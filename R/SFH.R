@@ -869,6 +869,8 @@ SFHburst = function(burstmass = 1e8,
     }
   }
 
+  Zspec = speclib$Zspec
+
   if (any(speclib$Age <= 1e7)) {
     birthcloud_len = max(which(speclib$Age <= 1e7))
   } else{
