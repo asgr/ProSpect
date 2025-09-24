@@ -181,7 +181,7 @@ Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not 
 }
   \item{IGMabsorb}{
 Absorbing fraction for the intervening IGM. This should be thought of as absorption due to material between the galaxy of interest an the observer. This suppressing fraction is applied to wavelength in the Lyman regime (911.8 - 1215.7 Angstrom). Based on Songaila (2004) a resonable approximation for this is given by \option{IGMabsorb} = pnorm(z, mean=3.8, sd=1.2), meaning it is almost 0 (complete transmission) at low redshift and almost 1 (complete absorption) by redshift 8.
-Alternatively, you can pass "Inoue14" and it will apply the wavelength dependent IGM absorption from Inoue (2014). 
+Alternatively, you can pass "Inoue14" and it will apply the wavelength dependent IGM absorption from Inoue (2014).
 }
   \item{Inoue14_LAFcoef}{
 Data frame with LAF coefficients needed for the Inoue (2014) IGM absorption model. If NULL, will read from relevant data file. Only necessary for IGMabsorb="Inoue14".
@@ -200,14 +200,20 @@ Some more info on the required \option{Data} list inputs:
 
 \describe{
   \item{Data$flux}{
-Data.frame, required; 4 columns: filter [band name], cenwave [central wave, Ang], flux [Jy], fluxerr [Jy].
+Data.frame, required; 3/4 columns: filter [band name; photom mode only], cenwave [central wavelength, Ang; photom mode only], wave [wavelength, Ang; spectral mode only], flux [Jy], fluxerr [Jy]. Note when using in photom mode you need to provide 4 columns, and in spectral mode you need to provide 3 columns, the flux and flux error columns are required for both photom and spectral mode.
+}
+  \item{Data$photom}{
+Data.frame, required; 4 columns: filter [band name], cenwave [central wavelength, Ang], Ang; spectral mode only], flux [Jy], fluxerr [Jy]. This table should only be provided when \option{Data$mode} = 'both'.
+}
+  \item{Data$mode}{
+Character scalar; the mode of operation. Options are 'photom' or NULL (where the \option{Data$flux} represents broad band photometry); 'spec' (where the \option{Data$flux} represents spectral data),  or 'both' (where the \option{Data$flux} represents spectral data, and \option{Data$photom} represents broad band photometry). Basically this should not be used (left as NULL) when using the most typical broadband photometry mode of fitting data. Setting to 'both' allows us to combine both broadband data with spectral data in a subregion. If using in this mode users need to be careful of the flux calibration in the overlap regime, i.e. if your spectrum covers the r-band and you also provide r-band photometry, is the spectrum when put through \code{\link{photom_flux}} consistent with this. You often see offsets due to aperture corrections, so basically a warning to MAKE SURE YOUR DATA IS INTERNALLY CONSISTENT FIRST.
 }
   \item{Data$SFH}{
 Function, required; the star formation history function to use. Must be one of \code{\link{SFHfunc}} or \code{\link{SFHburst}}.
 }
   \item{Data$arglist}{
 List, optional; named arguments and values that are passed directly into \code{ProSpectSED}. Arguments that are not matched in \code{ProSpectSED} are passed directly onto \option{SFH}, so by this mechanism you can set function specific arguments that control the star formation history, i.e. this allows you to set values to non default even when not fitting these parameters. You almost certainly want to at least specify Data$arglist$z (the object redshift) since this almost always differ from the fiducial default of \option{z}=0.1.
-There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', a function that takes in z and returns IGM absorption between 0 and 1, can also be numeric/NULL/'Inoue14', if numeric this is the same as function(z)\{const\} where const is some constant IGM absorption value, if NULL no IGM absorption, if "Songaila04" use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then stars start forming at the beginning of the Universe. 
+There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', a function that takes in z and returns IGM absorption between 0 and 1, can also be numeric/NULL/'Inoue14', if numeric this is the same as function(z)\{const\} where const is some constant IGM absorption value, if NULL no IGM absorption, if "Songaila04" use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then stars start forming at the beginning of the Universe.
 }
   \item{Data$speclib}{
 List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
@@ -343,7 +349,7 @@ plot(testSED)
 testSED2 = ProSpectSED(massfunc = massfunc_snorm, Z=Zfunc_massmap_box)
 plot(testSED2)
 
-## Example photoz with IGM absorption 
+## Example photoz with IGM absorption
 
 testSED3 = ProSpectSED(z = 9, IGMabsorb = 1.0, ref = "Planck18", Dale = FALSE)
 filtout = lapply(testSED3$filters, getfilt)
@@ -374,7 +380,7 @@ Data=list(
 Data$flux$cenwave = flux_data$cenwave
 startpoint = (Data$intervals$lo+Data$intervals$hi)/2
 names(startpoint) = Data$parm.names
-optout = optim(par=startpoint, fn=ProSpectSEDlike, Data=Data, 
+optout = optim(par=startpoint, fn=ProSpectSEDlike, Data=Data,
 method = 'L-BFGS-B', lower = Data$intervals$lo, upper = Data$intervals$hi)
 Data$fit = 'check'
 sedout = ProSpectSEDlike(parm=optout$par, Data=Data)

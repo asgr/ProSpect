@@ -1,0 +1,165 @@
+---
+title: "Spectro-Photometric fitting"
+author: "Aaron Robotham"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Spectro-Photometric fitting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Making Mock Data
+
+Load the libraries we will need:
+
+```{r}
+library(ProSpect)
+library(LaplacesDemon)
+library(foreach)
+library(celestial)
+library(magicaxis)
+```
+
+Load some data we want to use:
+
+```{r}
+data("BC03lr") #BC03 spectral library
+data("Dale_NormTot") #Normalised Dale templates
+data("pivwave") # Pivot/effective wavelengths
+```
+
+```{r}
+set.seed(1)
+redshift = 0.1
+
+filters=c('FUV_GALEX', 'NUV_GALEX', 'u_SDSS', 'g_SDSS', 'r_SDSS', 'i_SDSS', 'Z_VISTA',
+          'Y_VISTA', 'J_VISTA', 'H_VISTA', 'K_VISTA', 'W1_WISE' , 'W2_WISE', 'W3_WISE',
+          'W4_WISE', 'P100_Herschel', 'P160_Herschel', 'S250_Herschel' , 'S350_Herschel',
+          'S500_Herschel')
+
+filtout=foreach(i = filters)%do%{approxfun(getfilt(i))}
+
+temppiv=pivwave[pivwave$filter %in% filters,]
+
+agemax = 13.3e9 - cosdistTravelTime(z=redshift, H0 = 67.8, OmegaM = 0.308)*1e9
+```
+
+Create our model galaxy We will be using a snorm_trunc SFH function and a massmap_lin metallicity with the following parameters:
+
+```{r}
+inpar=c(mSFR = 0, #log-space
+        mpeak = 0.7, #log-space
+        mperiod = 0.3, #log-space
+        mskew = 0.3,
+        tau_birth = 0, #log-space
+        tau_screen = -0.5, #log-space
+        alpha_SF_birth = 1,
+        alpha_SF_screen = 3
+        )
+```
+
+Simple function to view our target SFH:
+
+```{r}
+plotSFH=function(par, magemax=13.3, add=FALSE,col='black',ylim=NULL,...){
+ magcurve(massfunc_snorm_trunc(age=x,mSFR=10^par[1],mpeak=10^par[2],mperiod=10^par[3],
+                               mskew=par[4], magemax=magemax),0,13.8e9,add=add,col=col,
+                               ylim=ylim,xlab='Age (Yr)', ylab='SFR (Msol / Yr)',...)
+}
+```
+
+Let's take a look:
+
+```{r, fig.width=8, fig.height=6}
+plotSFH(inpar)
+```
+
+Now we can generate our galaxies SED:
+
+```{r}
+genSED=ProSpectSED(massfunc = massfunc_snorm_trunc,
+                   mSFR = 10^inpar[1],
+                   mpeak = 10^inpar[2],
+                   mperiod = 10^inpar[3],
+                   mskew = inpar[4],
+                   tau_birth = 10^inpar[5], 
+                   tau_screen = 10^inpar[6], 
+                   alpha_SF_birth = inpar[7], 
+                   alpha_SF_screen = inpar[8],
+                   z = redshift,
+                   Z = Zfunc_massmap_lin,
+                   filtout = filtout,
+                   Dale = Dale_NormTot,
+                   speclib = BC03hr,
+                   agemax = agemax,
+                   magemax = agemax/1e9,
+                   sparse = 1,
+                   waveout = NULL
+)
+```
+
+We also want a small bit of the spectrum:
+
+```{r}
+spec_input = genSED$FinalFlux[genSED$FinalFlux$wave > 3800 & genSED$FinalFlux$wave < 1e4,]
+spec_input[,'fluxerr'] = spec[,'flux']*0.05
+```
+
+At this point we create our mock photometry catalogue entry with a fractional error in flux of 0.1 assumed (roughly 0.092 mag error). The photom output of **ProSpectSED** is always Jansky, which is what we want for fitting (you shouldn't fit in magnitude space!).
+
+```{r}
+phot_input = data.frame(filter=temppiv$filter, pivwave=temppiv$pivwave, flux=genSED$Photom, fluxerr=genSED$Photom*0.1)
+print(phot_input)
+```
+
+## Fitting a Galaxy
+
+In principle if you have a real galaxy to fit and it is already in the required format of **flux_input**, you can start from this point.
+
+To speed things up we will also pre-compute the Luminosity distance to our source (since this will be the same for every iteration, and will save some computation time):
+
+```{r}
+LumDist_Mpc = cosdistLumDist(z=redshift, H0=67.8, OmegaM=0.308)
+```
+
+```{r}
+Data=list(flux = phot_input,
+          spec = spec_input,
+          mode = 'both',
+          arglist=list(z=redshift, massfunc=massfunc_snorm_trunc, agemax=agemax, magemax=agemax/1e9,
+                       Z=Zfunc_massmap_lin, LumDist_Mpc=LumDist_Mpc, sparse=1, waveout=NULL),
+          speclib=BC03hr, 
+          Dale=Dale_NormTot, 
+          filtout=filtout, 
+          SFH=SFHfunc, # the preferred functional form of the SFH (eg either SFHfunc, SFHburst)
+          parm.names=c('mSFR','mpeak','mperiod','mskew','tau_birth','tau_screen',
+                       'alpha_SF_birth','alpha_SF_screen'), # which parameters to fit for
+          logged=c(T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
+          intervals=list(lo=c(-4,-2,-1,-0.5,-2.5,-2.5,0.0625,0.0625), hi=c(3,1,1,1,1,1,4,4)), # fitting range for parameters
+          fit = 'LD', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
+          mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
+          N=length(filters), # number of observed filters
+          like='norm',
+          verbose=FALSE
+  )
+```
+
+```{r}
+ProSpectSEDlike(inpar, Data)
+```
+
+So now we can fit both the spectra and the broadband photometry at the same time!
+
+```{r, eval=FALSE}
+library(Highlander)
+badpar = (Data$intervals$lo + Data$intervals$hi) / 2
+Highout = Highlander(badpar, Data=Data, likefunc=ProSpectSEDlike, Niters=c(1e3,1e3))
+```

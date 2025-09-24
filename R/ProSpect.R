@@ -534,6 +534,26 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
 
   names(parm) = Data$parm.names
 
+  if(is.null(Data$photom) & isTRUE(Data$mode == 'photom')){
+    Data$photom = Data$flux
+  }
+
+  if(is.null(Data$spec) & isTRUE(Data$mode == 'spec')){
+    Data$spec = Data$flux
+  }
+
+  if(is.null(Data$photom) & isTRUE(Data$mode == 'both')){
+    Data$photom = Data$flux
+  }
+
+  if((isTRUE(Data$mode == 'photom') | isTRUE(Data$mode == 'both')) & is.null(Data$photom)){
+    stop('Missing photom data!')
+  }
+
+  if((isTRUE(Data$mode == 'spec') | isTRUE(Data$mode == 'both')) & is.null(Data$spec)){
+    stop('Missing spec data!')
+  }
+
   ## Implement Photoz fitting mode
   if(("photoz" %in% names(Data$arglist)) & ("z" %in% Data$parm.names)) {
     if (!requireNamespace("celestial", quietly = TRUE)) {
@@ -649,21 +669,22 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     )
     if(is.null(Data$filtout) | isTRUE(Data$mode == 'spec') | isTRUE(Data$mode == 'both')){
       #this means we are in spec-z mode
-      if(!isTRUE(all.equal(SEDout$Photom[,'wave'], Data$flux[,'wave']))){ #if not already on the same grid we rebin
+      if(isTRUE(Data$mode == 'both')){
+        Phot_out = photom_flux(SEDout$Photom[,'wave'], convert_freq2wave(SEDout$Photom[,'flux'], SEDout$Photom[,'wave'])*.jansky_to_cgs,
+                               outtype = 'Jansky', filters = Data$filtout)
+      }
+
+      if(!isTRUE(all.equal(SEDout$Photom[,'wave'], Data$spec[,'wave']))){ #if not already on the same grid we rebin
         Spec_out = specReBin(wave = SEDout$Photom[,'wave'],
                            flux = SEDout$Photom[,'flux'],
-                           wavegrid = Data$flux[,'wave'],
+                           wavegrid = Data$spec[,'wave'],
                            logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
                            rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
         )[,'flux']
-        SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
-                                   flux = Photom)
+        SEDout$Photom = data.frame(wave = Data$spec[,'wave'],
+                                   flux = Spec_out)
       }else{
         Spec_out = SEDout$Photom[,'flux']
-      }
-
-      if(isTRUE(Data$mode == 'both')){
-        Phot_out = photom_flux(SEDout$Photom, outtype = 'magAB', filters = Data$filtout)
       }
     }else{
       Phot_out = SEDout$Photom
@@ -701,19 +722,20 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     if(is.null(filtout)){
       if(is.null(Data$filtout) | isTRUE(Data$mode == 'spec') | isTRUE(Data$mode == 'both')){
         #this means we are in spec-z mode
-        if(!isTRUE(all.equal(Photom[,'wave'], Data$flux[,'wave']))){ #if not already on the same grid we rebin
+        if(isTRUE(Data$mode == 'both')){
+          Phot_out = photom_flux(Photom[,'wave'], convert_freq2wave(Photom[,'flux'], Photom[,'wave'])*.jansky_to_cgs,
+                                 outtype = 'Jansky', filters = Data$filtout)
+        }
+
+        if(!isTRUE(all.equal(Photom[,'wave'], Data$spec[,'wave']))){ #if not already on the same grid we rebin
           Spec_out = specReBin(wave = Photom[,'wave'],
                             flux = Photom[,'flux'],
-                            wavegrid = Data$flux[,'wave'],
+                            wavegrid = Data$spec[,'wave'],
                             logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
                             rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
                             )[,'flux']
         }else{
           Spec_out = Photom[,'flux']
-        }
-
-        if(isTRUE(Data$mode == 'both')){
-          Phot_out = photom_flux(Photom, outtype = 'magAB', filters = Data$filtout)
         }
       }
     }else{
@@ -725,7 +747,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     #just in normal photometry mode
     cutsig = (Data$flux[,'flux'] - Phot_out) / Data$flux[,'fluxerr']
   }else{
-    cutsig = (Data$flux[,'flux'] - Spec_out) / Data$flux[,'fluxerr']
+    cutsig = (Data$spec[,'flux'] - Spec_out) / Data$spec[,'fluxerr']
 
     if(isTRUE(Data$mode == 'both')){ #special case
       cutsig = c(cutsig, (Data$photom[,'flux'] - Phot_out) / Data$photom[,'fluxerr'])
