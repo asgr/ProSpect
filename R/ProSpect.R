@@ -538,12 +538,16 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     Data$photom = Data$flux
   }
 
-  if(is.null(Data$spec) & isTRUE(Data$mode == 'spec')){
+  if(is.null(Data$spec) & (isTRUE(Data$mode == 'spec') | is.null(Data$filtout))){
     Data$spec = Data$flux
   }
 
   if(is.null(Data$photom) & isTRUE(Data$mode == 'both')){
     Data$photom = Data$flux
+  }
+
+  if((isTRUE(Data$mode == 'photom') | isTRUE(Data$mode == 'both')) & is.null(Data$filtout)){
+    stop('Missing filout data!')
   }
 
   if((isTRUE(Data$mode == 'photom') | isTRUE(Data$mode == 'both')) & is.null(Data$photom)){
