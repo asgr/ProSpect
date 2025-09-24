@@ -624,6 +624,13 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
 
   Monitor = {}
 
+  if(isTRUE(Data$mode == 'spec') | isTRUE(Data$mode == 'both')){
+    #Because we will need to full spectrum for processing
+    filtout = NULL
+  }else{
+    filtout = Data$filtout
+  }
+
   if (returnall) {
     SEDout = do.call(
       'ProSpectSED',
@@ -633,17 +640,17 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(speclib = quote(Data$speclib)),
         list(Dale = quote(Data$Dale)),
         list(AGN = quote(Data$AGN)),
-        list(filtout = quote(Data$filtout)),
+        list(filtout = quote(filtout)),
         list(filters = NULL),
         list(returnall = TRUE),
         list(Dale_M2L_func = quote(Data$Dale_M2L_func)),
         Data$arglist
       )
     )
-    if(is.null(Data$filtout)){
+    if(is.null(Data$filtout) | isTRUE(Data$mode == 'spec') | isTRUE(Data$mode == 'both')){
       #this means we are in spec-z mode
       if(!isTRUE(all.equal(SEDout$Photom[,'wave'], Data$flux[,'wave']))){ #if not already on the same grid we rebin
-        Photom = specReBin(wave = SEDout$Photom[,'wave'],
+        Spec_out = specReBin(wave = SEDout$Photom[,'wave'],
                            flux = SEDout$Photom[,'flux'],
                            wavegrid = Data$flux[,'wave'],
                            logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
@@ -652,10 +659,14 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         SEDout$Photom = data.frame(wave = Data$flux[,'wave'],
                                    flux = Photom)
       }else{
-        Photom = SEDout$Photom[,'flux']
+        Spec_out = SEDout$Photom[,'flux']
+      }
+
+      if(isTRUE(Data$mode == 'both')){
+        Phot_out = photom_flux(SEDout$Photom, outtype = 'magAB', filters = Data$filtout)
       }
     }else{
-      Photom = SEDout$Photom
+      Phot_out = SEDout$Photom
     }
 
     if (length(grep('dustmass', Data$mon.names)) > 0) {
@@ -671,6 +682,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       Monitor = c(Monitor, SFRburst = SEDout$Stars$SFRburst)
     }
   } else{
+
     Photom = do.call(
       'ProSpectSED',
       args = c(
@@ -679,29 +691,47 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(speclib = quote(Data$speclib)),
         list(Dale = quote(Data$Dale)),
         list(AGN = quote(Data$AGN)),
-        list(filtout = quote(Data$filtout)),
+        list(filtout = quote(filtout)),
         list(filters = NULL),
         list(returnall = FALSE),
         Data$arglist
       )
     )
 
-    if(is.null(Data$filtout)){
-      #this means we are in spec-z mode
-      if(!isTRUE(all.equal(Photom[,'wave'], Data$flux[,'wave']))){ #if not already on the same grid we rebin
-        Photom = specReBin(wave = Photom[,'wave'],
-                          flux = Photom[,'flux'],
-                          wavegrid = Data$flux[,'wave'],
-                          logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
-                          rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
-                          )[,'flux']
-      }else{
-        Photom = Photom[,'flux']
+    if(is.null(filtout)){
+      if(is.null(Data$filtout) | isTRUE(Data$mode == 'spec') | isTRUE(Data$mode == 'both')){
+        #this means we are in spec-z mode
+        if(!isTRUE(all.equal(Photom[,'wave'], Data$flux[,'wave']))){ #if not already on the same grid we rebin
+          Spec_out = specReBin(wave = Photom[,'wave'],
+                            flux = Photom[,'flux'],
+                            wavegrid = Data$flux[,'wave'],
+                            logbin = ifelse(is.null(Data$logbin), TRUE, Data$logbin),
+                            rough = ifelse(is.null(Data$rough), TRUE, Data$rough)
+                            )[,'flux']
+        }else{
+          Spec_out = Photom[,'flux']
+        }
+
+        if(isTRUE(Data$mode == 'both')){
+          Phot_out = photom_flux(Photom, outtype = 'magAB', filters = Data$filtout)
+        }
       }
+    }else{
+      Phot_out = Photom
     }
   }
 
-  cutsig = (Data$flux[,'flux'] - Photom) / Data$flux[,'fluxerr']
+  if(!is.null(filtout)){
+    #just in normal photometry mode
+    cutsig = (Data$flux[,'flux'] - Phot_out) / Data$flux[,'fluxerr']
+  }else{
+    cutsig = (Data$flux[,'flux'] - Spec_out) / Data$flux[,'fluxerr']
+
+    if(isTRUE(Data$mode == 'both')){ #special case
+      cutsig = c(cutsig, (Data$photom[,'flux'] - Phot_out) / Data$photom[,'fluxerr'])
+    }
+  }
+
   if (Data$like == 'norm') {
     LL = sum(dnorm(x = cutsig, log = TRUE), na.rm = TRUE)
   } else if (Data$like == 'chisq') {
@@ -730,8 +760,8 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   if (length(grep('flux', Data$mon.names)) > 0) {
-    names(Photom) = Data$flux[,'filter']
-    Monitor = c(Monitor, flux = Photom)
+    names(Phot_out) = Data$flux[,'filter']
+    Monitor = c(Monitor, flux = Phot_out)
   }
 
   if (Data$fit == 'ld' | Data$fit == 'la' | Data$fit == 'check') {
