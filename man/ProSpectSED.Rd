@@ -380,12 +380,15 @@ Data=list(
 Data$flux$cenwave = flux_data$cenwave
 startpoint = (Data$intervals$lo+Data$intervals$hi)/2
 names(startpoint) = Data$parm.names
+
+\dontrun{
 optout = optim(par=startpoint, fn=ProSpectSEDlike, Data=Data,
 method = 'L-BFGS-B', lower = Data$intervals$lo, upper = Data$intervals$hi)
 Data$fit = 'check'
 sedout = ProSpectSEDlike(parm=optout$par, Data=Data)
 plot(testSED3)
 plot(sedout)
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

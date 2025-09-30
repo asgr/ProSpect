@@ -16,6 +16,10 @@ knitr::opts_chunk$set(
 )
 ```
 
+It is becoming more common to have access to both flux calibrated spectra and good quality broad-band photometry covering a very wide range of rest-frame wavelength (certainly optical to near-infrared). Modern programmes with JWST (NIRcam, MIRI and NIRspec) and surveys like WAVES (4MOST spectra, plus UV-FIR photometry) ideally wish to combine information from both spectra and photometry when fitting SED models to galaxies.
+
+Early on **ProSpect** was focussed on broad-band photometry modelling only, and in about 2023 it had capacity to fit spectra in a separate mode. Now (finally) you can fit both at once! Happy days. In this vignette we will look at a simple mock example of how this works in practice.
+
 ## Making Mock Data
 
 Load the libraries we will need:
@@ -110,7 +114,7 @@ We also want a small bit of the spectrum:
 
 ```{r}
 spec_input = genSED$FinalFlux[genSED$FinalFlux$wave > 3800 & genSED$FinalFlux$wave < 1e4,]
-spec_input[,'fluxerr'] = spec[,'flux']*0.05
+spec_input[,'fluxerr'] = spec_input[,'flux']*0.05
 ```
 
 At this point we create our mock photometry catalogue entry with a fractional error in flux of 0.1 assumed (roughly 0.092 mag error). The photom output of **ProSpectSED** is always Jansky, which is what we want for fitting (you shouldn't fit in magnitude space!).
@@ -145,7 +149,7 @@ Data=list(flux = phot_input,
           logged=c(T,T,T,F,T,T,F,F), # fit parameters in logged or linear space
           intervals=list(lo=c(-4,-2,-1,-0.5,-2.5,-2.5,0.0625,0.0625), hi=c(3,1,1,1,1,1,4,4)), # fitting range for parameters
           fit = 'LD', # specifies the way in which the SED should be fitted ('LD', 'optim', 'CMA', or 'check')
-          mon.names=c('LP','masstot','SFRburst',paste('flux.',flux_input$filter,sep='')),
+          mon.names=c('LP','masstot','SFRburst'),
           N=length(filters), # number of observed filters
           like='norm',
           verbose=FALSE
@@ -156,10 +160,25 @@ Data=list(flux = phot_input,
 ProSpectSEDlike(inpar, Data)
 ```
 
+```{r, eval=FALSE}
+Data$fit = 'check' #we have to set the fit type to 'check' to get the required outputs
+inputs = ProSpectSEDlike(parm=inpar, Data=Data)
+plot(inputs)
+plot(inputs$SEDout, xlim=c(1e3,2e6), ylim=c(1e3,5e6))
+```
+
 So now we can fit both the spectra and the broadband photometry at the same time!
 
 ```{r, eval=FALSE}
+Data$fit = 'optim'
 library(Highlander)
 badpar = (Data$intervals$lo + Data$intervals$hi) / 2
-Highout = Highlander(badpar, Data=Data, likefunc=ProSpectSEDlike, Niters=c(1e3,1e3))
+Highout = Highlander(badpar, Data=Data, likefunc=ProSpectSEDlike, Niters=c(1e2,1e2), optim_iters=5)
+```
+
+```{r, eval=FALSE}
+Data$fit = 'check' #we have to set the fit type to 'check' to get the required outputs
+outputs = ProSpectSEDlike(parm=Highout$parm, Data=Data)
+plot(outputs)
+plot(outputs$SEDout, xlim=c(1e3,2e6), ylim=c(1e3,5e6))
 ```

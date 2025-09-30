@@ -147,7 +147,7 @@ plot.ProSpectSED = function(x,
     }
   } else if (type == 'flux') {
     if (ylim[1] == 'auto') {
-      ylim = quantile(x$FinalFlux[, 'flux'], c(0.1, 1))
+      ylim = quantile(x$FinalFlux[x$FinalFlux[, 'flux'] > 0, 'flux'], c(0.05, 1))
     }
     if (ylab[1] == 'auto') {
       ylab = 'Flux Density (Jansky)'
@@ -192,9 +192,29 @@ plot.ProSpectSEDlike = function(x,
                                 type = 'flux',
                                 ...) {
   if (type == 'flux') {
-    layout(rbind(1, 2), heights = c(0.7, 0.3))
-    par(oma = c(3.1, 3.1, 1.1, 1.1))
-    par(mar = c(0, 0, 0, 0))
+    if(isTRUE(x$Data$mode == 'spec') | is.null(x$Data$filtout)){
+      data_mode = 'spec'
+      photom = x$SEDout$Photom[,'flux']
+      comp_type = 'l'
+    }else if(isTRUE(x$Data$mode == 'photom') | isTRUE(x$Data$mode == 'both') | !is.null(x$Data$filtout)){
+      data_mode = 'photom'
+      photom = x$SEDout$Photom
+      comp_type = 'p'
+    }
+
+    if(isTRUE(x$Data$mode == 'both')){
+      data_mode = 'both'
+    }
+
+    if(data_mode == 'photom' | data_mode == 'spec'){
+      layout(rbind(1, 2), heights = c(0.7, 0.3))
+      par(oma = c(3.1, 3.1, 1.1, 1.1))
+      par(mar = c(0, 0, 0, 0))
+    }else{
+      layout(1)
+      par(mar = c(3.1, 3.1, 1.1, 1.1))
+    }
+
     plot(
       x$SEDout,
       xlim = xlim,
@@ -205,16 +225,6 @@ plot.ProSpectSEDlike = function(x,
       type = 'flux',
       ...
     )
-
-    if(is.null(x$Data$filtout)){
-      data_mode = 'spec'
-      photom = x$SEDout$Photom[,'flux']
-      comp_type = 'l'
-    }else{
-      data_mode = 'photom'
-      photom = x$SEDout$Photom
-      comp_type = 'p'
-    }
 
     input_names = colnames(x$Data$flux)
     if('pivwave' %in% input_names){
@@ -227,30 +237,40 @@ plot.ProSpectSEDlike = function(x,
       stop('wavelength column name not recognised, must')
     }
 
-    if(data_mode == 'photom'){
+    if(data_mode == 'photom' | data_mode == 'both'){
       points(x$Data$flux[, c(wavename, 'flux')], pch = 16, col = 'red')
     }
 
-    if (requireNamespace("magicaxis", quietly = TRUE)) {
-      if(data_mode == 'photom'){
+    if(data_mode == 'both'){
+      lines(x$Data$spec[,c('wave', 'flux')], col='grey', lwd=0.5)
+    }
+
+      if(data_mode == 'photom' | data_mode == 'both'){
         magicaxis::magerr(x$Data$flux[, wavename],
                           x$Data$flux[, 'flux'],
                           ylo = x$Data$flux[, 'fluxerr'],
                           col = 'red')
-      }else{
+      }else if(data_mode == 'spec'){
         magicaxis::magerr(x$Data$flux[, wavename],
                           x$Data$flux[, 'flux'],
                           ylo = x$Data$flux[, 'fluxerr'],
                           col =  hsv(alpha=0.5),
                           poly = TRUE,
                           border = NA)
+      }else if(data_mode == 'both'){
+        magicaxis::magerr(x$Data$spec[, wavename],
+                          x$Data$spec[, 'flux'],
+                          ylo = x$Data$spec[, 'fluxerr'],
+                          col =  hsv(alpha=0.5),
+                          poly = TRUE,
+                          border = NA)
       }
-    }
 
     legend('topleft', legend = paste('LP =', round(x$LP, 3)))
 
-    par(mar = c(0, 0, 0, 0))
-    if (requireNamespace("magicaxis", quietly = TRUE)) {
+    if(data_mode == 'photom' | data_mode == 'spec'){
+      resid = (x$Data$flux[, 'flux'] - photom) / x$Data$flux[, 'fluxerr']
+      par(mar = c(0, 0, 0, 0))
       magicaxis::magplot(
         x$Data$flux[, wavename],
         (x$Data$flux[, 'flux'] - photom) / x$Data$flux[, 'fluxerr'],
@@ -264,20 +284,8 @@ plot.ProSpectSEDlike = function(x,
         xlab = xlab,
         ylab = '(Data - Model)/Error'
       )
-    } else{
-      plot(
-        x$Data$flux[, wavename],
-        x$Data$flux[, 'flux'] - photom,
-        type = comp_type,
-        pch = 16,
-        col = 'red',
-        log = 'x',
-        xlim = xlim,
-        ylim = c(-4, 4),
-        xlab = xlab,
-        ylab = '(Data - Model)/Error'
-      )
     }
+
   } else if (type == 'lum') {
     plot(
       x$SEDout,
