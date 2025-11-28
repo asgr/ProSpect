@@ -1,10 +1,10 @@
 ---
-title: "Spectro-Photometric fitting"
+title: "Spectro-Photometric Fitting"
 author: "Aaron Robotham"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Spectro-Photometric fitting}
+  %\VignetteIndexEntry{Spectro-Photometric Fitting}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

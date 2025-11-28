@@ -22,7 +22,7 @@
 }
 
 .wave_rebin_cpp <- function(wave, wave_bin, wave_bin_lo, wave_bin_hi, logbin = FALSE) {
-    .Call(`_ProSpect_wave_rebin_cpp`, wave, wave_bin, wave_bin_lo, wave_bin_hi, logbin)
+    invisible(.Call(`_ProSpect_wave_rebin_cpp`, wave, wave_bin, wave_bin_lo, wave_bin_hi, logbin))
 }
 
 .spec_rebin_cpp <- function(wave_in, flux_in, wave_out, logbin_in = FALSE, logbin_out = FALSE) {

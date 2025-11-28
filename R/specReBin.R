@@ -39,22 +39,8 @@ specReBin = function(wave, flux, wavegrid=NULL, bin=NULL, binfunc=median,
   }else{
     # The input to spec_rebin_cpp always needs to be linear, even when logbin=TRUE
     # It computes the appropriate log bin limits internally
-    tempflux = .spec_rebin_cpp(wave_in=wave, flux_in=flux, wave_out=wavegrid, logbin_in=logbin, logbin_out=logbin)
-
-    # old code
-    # if(interp == 'approx'){
-    #   tempfun = approxfun(x=wave, y=flux, yleft=0, yright=0, ...)
-    # }else if(interp == 'spline'){
-    #   tempfun = spline(x=wave, y=flux, ...)
-    # }
-    #
-    # tempflux = rep(NA, length(wavegrid))
-    # diffgrid = diff(wavegrid)
-    # lendiff = length(diffgrid)
-    # diffgrid = c(diffgrid[1], diffgrid)
-    # for(i in 1:(lendiff + 1)){
-    #   tempflux[i] = integrate(tempfun, wavegrid[i] - diffgrid[i]/2, wavegrid[i] + diffgrid[i]/2)$value/diffgrid[i]
-    # }
+    tempflux = .spec_rebin_cpp(wave_in=wave, flux_in=flux, wave_out=wavegrid,
+                               logbin_in=logbin, logbin_out=logbin)
   }
 
   return(data.frame(wave=wavegrid, flux=tempflux))
