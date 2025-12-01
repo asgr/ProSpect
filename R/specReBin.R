@@ -1,4 +1,4 @@
-specReBin = function(wave, flux, wavegrid=NULL, bin=NULL, binfunc=median,
+specReBin = function(wave, flux, wavegrid=NULL, invar=NULL, bin=NULL, binfunc=median,
                      interp='approx', logbin=TRUE, rough=FALSE, ...){
   #Does not actually matter what units wave and flux are in as long as they are linear.
 
@@ -39,7 +39,7 @@ specReBin = function(wave, flux, wavegrid=NULL, bin=NULL, binfunc=median,
   }else{
     # The input to spec_rebin_cpp always needs to be linear, even when logbin=TRUE
     # It computes the appropriate log bin limits internally
-    tempflux = .spec_rebin_cpp(wave_in=wave, flux_in=flux, wave_out=wavegrid,
+    tempflux = .spec_rebin_cpp(wave_in=wave, flux_in=flux, wave_out=wavegrid, invar_in=invar,
                                logbin_in=logbin, logbin_out=logbin)
   }
 

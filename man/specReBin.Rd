@@ -10,8 +10,8 @@ SSP Spectral Re-Binner and SSP Re-Gridder Functions
 It is often useful to rebin spectra to either log binning or linear binning. This function does just that. Also allows an entire SSP library to be rebinned (useful is using a very high resolution SSP for broad-band work etc).
 }
 \usage{
-specReBin(wave, flux, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
-  logbin = TRUE, rough = FALSE, ...)
+specReBin(wave, flux, wavegrid = NULL, invar = NULL, bin = NULL, binfunc = median,
+  interp = 'approx',  logbin = TRUE, rough = FALSE, ...)
 
 speclibReBin(speclib, wavegrid = NULL, bin = NULL, binfunc = median, interp = 'approx',
   logbin = TRUE, rough = FALSE, cores = 1L, check = FALSE, ...)
@@ -31,6 +31,9 @@ List; the spectral library (e.g. BC03hr).
 }
   \item{wavegrid}{
 Numeric vector; the target spectral wavelength grid in any linear units (must be same as \option{wave}). If this is missing then it will be computed automatically using \option{bin}. See also \option{binfunc}.
+}
+  \item{invar}{
+Numeric vector; inverse variance weighting corresponding to the input \option{flux} (i.e. if provided this needs to be the same length). If left as NULL then this will be ignored, and weighting free re-binning will be used instead.
 }
   \item{bin}{
 Numeric scalar; the bin size to use in either liner units (same as \option{wave}) or log units (i.e. dex). If not provided this will be automatically computed. If this is provided and \option{wavegrid} is missing, then internally \option{wavegrid} is computed to be \code{seq(floor(wave), ceiling(wave), by = bin)}. See also \option{binfunc}.

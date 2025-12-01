@@ -37,13 +37,25 @@ void wave_rebin_cpp(NumericVector wave, NumericVector wave_bin, NumericVector wa
 }
 
 // [[Rcpp::export(".spec_rebin_cpp")]]
-NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in,
-                NumericVector wave_out, bool logbin_in = false, bool logbin_out = false) {
+NumericVector spec_rebin_cpp(NumericVector wave_in,
+                                   NumericVector flux_in,
+                                   NumericVector wave_out,
+                                   Nullable<NumericVector> invar_in = R_NilValue,  // <-- new input: variance
+                                   bool logbin_in = false, bool logbin_out = false) {
   int wave_in_N = wave_in.length();
   int wave_out_N = wave_out.length();
 
   if (wave_in_N < 2 || wave_out_N < 2) stop("wave_in and wave_out must have at least 2 elements");
   if (flux_in.size() != wave_in_N) stop("flux_in must have same length as wave_in");
+
+  // If invar_in is provided, extract it
+  bool use_invar = invar_in.isNotNull();
+  NumericVector invar_vec;
+  if (use_invar) {
+    invar_vec = as<NumericVector>(invar_in); //need to copy into the new structure so methods work
+    if (invar_vec.size() != wave_in_N) stop("invar_in must have same length as wave_in");
+  }
+
 
   double wave_in_min = wave_in(0);
   double wave_in_max = wave_in(wave_in_N - 1);
@@ -52,12 +64,9 @@ NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in,
 
   NumericVector flux_out(wave_out_N);
 
-  if(wave_out_min > wave_in_max || wave_out_max < wave_in_min){
-    // there is no wave_bin overlap, to return all 0
-    return(flux_out);
+  if (wave_out_min > wave_in_max || wave_out_max < wave_in_min) {
+    return flux_out; // no overlap
   }
-
-  NumericVector flux_out_weight(wave_out_N);
 
   NumericVector wave_bin_in(wave_in_N);
   NumericVector wave_bin_in_lo(wave_in_N);
@@ -66,66 +75,48 @@ NumericVector spec_rebin_cpp(NumericVector wave_in, NumericVector flux_in,
   NumericVector wave_bin_out_lo(wave_out_N);
   NumericVector wave_bin_out_hi(wave_out_N);
 
-  int i, j;
-  double temp_weight = 0;
-
-  // set up wave_bin grids
-
   wave_rebin_cpp(wave_in, wave_bin_in, wave_bin_in_lo, wave_bin_in_hi, logbin_in);
-
   wave_rebin_cpp(wave_out, wave_bin_out, wave_bin_out_lo, wave_bin_out_hi, logbin_out);
 
   int jstart = 0;
+  double bin_weight = 0.0;
+  double total_weight = 0.0;
 
-  for(i = 0; i < wave_out_N ; i++){
-    if(wave_bin_out_hi(i) < wave_in_min){
-      // Skip i-loop ahead until we have overlap of interest
-      continue;
-    }
+  for (int i = 0; i < wave_out_N; i++) {
+    if (wave_bin_out_hi(i) < wave_in_min) continue;
+    if (wave_bin_out_lo(i) > wave_in_max) break;
+    total_weight = 0.0;
 
-    if(wave_bin_out_lo(i) > wave_in_max){
-      // Exit i-loop when we will have no more bin overlap
-      break; // no more overlap to worry about
-    }
+    for (int j = jstart; j < wave_in_N; j++) {
+      if (wave_bin_in_hi(j) <= wave_bin_out_lo(i)) { jstart++; continue; }
+      if (wave_bin_in_lo(j) >= wave_bin_out_hi(i)) break;
 
-    for(j = jstart; j < wave_in_N; j++){
-      if(wave_bin_in_hi(j) <= wave_bin_out_lo(i)){
-        // Skip j-loop ahead until we have overlap of interest
-        jstart++;
-        continue;
-      }
-
-      if(wave_bin_in_lo(j) >= wave_bin_out_hi(i)){
-        // Exit j-loop when we will have no more bin overlap
-        break; // no more overlap to worry about
-      }
-
-      // If we get this far, there must be something interesting to check
-      if(wave_bin_in_lo(j) <= wave_bin_out_lo(i)){ // left edge of wave_in lower than wave_out
-        if(wave_bin_in_hi(j) < wave_bin_out_hi(i)){ // right edge of wave_in lower than wave_out
-          // 2 wave_in bin cross the lower edge of the wave_out bin but not upper, so some flux is contributed
-          temp_weight = (wave_bin_in_hi(j) - wave_bin_out_lo(i)) / wave_bin_in(j);
-        }else{ // right edge of wave_in higher than wave_out
-          // 4 wave_out bin sits fully inside the wave_in bin, so some flux is contributed
-          temp_weight = (wave_bin_out_hi(i) - wave_bin_out_lo(i)) / wave_bin_in(j);
-
+      // Compute overlap fraction
+      if (wave_bin_in_lo(j) <= wave_bin_out_lo(i)) {
+        if (wave_bin_in_hi(j) < wave_bin_out_hi(i)) {
+          bin_weight = (wave_bin_in_hi(j) - wave_bin_out_lo(i)) / wave_bin_in(j);
+        } else {
+          bin_weight = (wave_bin_out_hi(i) - wave_bin_out_lo(i)) / wave_bin_in(j);
         }
-      }else{ // left edge of wave_in higher than wave_out
-        if(wave_bin_in_hi(j) <= wave_bin_out_hi(i)){  // right edge of wave_in lower than wave_out
-          // 1 wave_in bin sits fully inside the wave_out bin, so all flux is contributed
-          temp_weight = 1.0;
-        }else{ // right edge of wave_in higher than wave_out
-          // 3 wave_in bin cross the higher edge of the wave_out bin, so some flux is contributed
-          temp_weight = (wave_bin_out_hi(i) - wave_bin_in_lo(j)) / wave_bin_in(j);
+      } else {
+        if (wave_bin_in_hi(j) <= wave_bin_out_hi(i)) {
+          bin_weight = 1.0;
+        } else {
+          bin_weight = (wave_bin_out_hi(i) - wave_bin_in_lo(j)) / wave_bin_in(j);
         }
       }
 
-      flux_out(i) += flux_in(j)*temp_weight;
-      flux_out_weight(i) += temp_weight;
+      if(use_invar){
+        flux_out(i) += flux_in(j) * bin_weight * invar_vec(j);
+        total_weight += bin_weight * invar_vec(j);
+      }else{
+        flux_out(i) += flux_in(j) * bin_weight;
+        total_weight += bin_weight;
+      }
     }
 
-    if(flux_out_weight(i) > 0){
-      flux_out(i) /= flux_out_weight(i);
+    if (total_weight > 0) {
+      flux_out(i) /= total_weight;
     }
   }
 
