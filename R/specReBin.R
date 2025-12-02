@@ -43,7 +43,12 @@ specReBin = function(wave, flux, wavegrid=NULL, invar=NULL, bin=NULL, binfunc=me
                                logbin_in=logbin, logbin_out=logbin)
   }
 
-  return(data.frame(wave=wavegrid, flux=tempflux))
+  if(is.null(invar)){
+    return(data.frame(wave=wavegrid, flux=tempflux))
+  }else{
+    wave_N = length(wavegrid)
+    return(data.frame(wave=wavegrid, flux=tempflux[1:wave_N], invar=tempflux[1:wave_N + wave_N]))
+  }
 }
 
 speclibReBin = function(speclib, wavegrid=NULL, bin=NULL, binfunc=median,

@@ -62,7 +62,13 @@ NumericVector spec_rebin_cpp(NumericVector wave_in,
   double wave_out_min = wave_out(0);
   double wave_out_max = wave_out(wave_out_N - 1);
 
-  NumericVector flux_out(wave_out_N);
+  NumericVector flux_out;
+
+  if(use_invar){
+    flux_out = NumericVector(wave_out_N * 2);
+  }else{
+    flux_out = NumericVector(wave_out_N);
+  }
 
   if (wave_out_min > wave_in_max || wave_out_max < wave_in_min) {
     return flux_out; // no overlap
@@ -117,6 +123,10 @@ NumericVector spec_rebin_cpp(NumericVector wave_in,
 
     if (total_weight > 0) {
       flux_out(i) /= total_weight;
+    }
+
+    if(use_invar){
+      flux_out(i + wave_out_N) = total_weight;
     }
   }
 
