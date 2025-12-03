@@ -50,8 +50,8 @@ NumericVector spec_rebin_cpp(NumericVector wave_in,
 
   // If invar_in is provided, extract it
   bool use_invar = invar_in.isNotNull();
-  NumericVector invar_vec;
   if (use_invar) {
+    NumericVector invar_vec;
     invar_vec = as<NumericVector>(invar_in); //need to copy into the new structure so methods work
     if (invar_vec.size() != wave_in_N) stop("invar_in must have same length as wave_in");
   }
