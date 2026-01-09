@@ -13,7 +13,7 @@ The Extra Galactic Background Light (EBL) is the flux density observed across al
 
 ## Generating the EBL
 
-You will need ProSpect v0.8.6 for this vignette to fully run.
+You will need ProSpect v0.8.6 or later for this vignette to fully run.
 
 Load the libraries we need:
 
@@ -24,6 +24,10 @@ library(foreach)
 library(magicaxis)
 #library(doParallel)
 #registerDoParallel(cores=detectCores()-2)
+```
+
+```{r}
+eval_fit = FALSE
 ```
 
 Encode the Madua and Dickenson 2014 CSFH function:
@@ -130,7 +134,7 @@ magerr(EBLin$wave, EBLin$flux, ylo=EBLin$fluxerr)
 
 Here we will fit for the normalisation and the final metallicity in our closed box model (notice we do the fit in log space):
 
-```{r, eval=FALSE}
+```{r, eval=eval_fit}
 # Make likelihood function:
 EBLlike=function(par, Data){
   -sum(dnorm(x = EBL(norm=10^par[1], Zfinal=10^par[2], filters=filters)$flux,
@@ -143,14 +147,14 @@ EBLfit = optim(par=c(-2,-1.7), EBLlike, Data=EBLin, method = 'L-BFGS-B',
 
 And now we can check the outputs. Here I basically get back the model we put in:
 
-```{r, eval=FALSE}
+```{r, eval=eval_fit}
 print(10^EBLfit$par) # model parameters, I see 0.008235409, 0.012355299
 print(sqrt(diag(solve(EBLfit$hessian)))) # dex errors, I see 0.01309136, 0.11251226
 ```
 
 Compare our fitted model to the observations:
 
-```{r, eval=FALSE, fig.width=8, fig.height=6}
+```{r, eval=eval_fit, fig.width=8, fig.height=6}
 magplot(EBLin[,1:2], ylim=c(0,13), xlab='Wave / Ang', ylab='nW/m^2/sr', grid=TRUE)
 magerr(EBLin$wave, EBLin$flux, ylo=EBLin$fluxerr)
 lines(EBL(norm=10^EBLfit$par[1], Zfinal=10^EBLfit$par[2]), col='red')
