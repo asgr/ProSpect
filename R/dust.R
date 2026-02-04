@@ -185,3 +185,34 @@ dustmass=function(wave_star, lum_star_nodust, lum_star_dust, wave_dust, lum_dust
 .drude=function(wave, Eb=3.3, L0=2175.8, LFWHM=470){
   return(Eb*(LFWHM*wave)^2 / ((wave^2 - L0^2)^2 + (LFWHM*wave)^2))
 }
+
+Dale_M2L_variableDTH_func = function(alpha_SF, qPAH_VSG = 0.14, pivwave = 10^5.4, step_speed = 9){
+  Msol = 1.989e30
+  mH = 1.674e-27
+  Lsol = 3.828e26
+  DTH = 0.0073
+  
+  qBIG = 1 - qPAH_VSG
+  
+  ## Similar step function to what was obtained from comparing MAGPHYS mass contributing SED to total 
+  smoothstep =  0.5 * (tanh(step_speed*(log10(ProSpectData::Dale_Orig$Wave) - log10(pivwave))) + 1.0)
+  weight = smoothstep * (qBIG - qPAH_VSG) + qPAH_VSG
+  
+  ## Loop through the Dale templates and recalculate the M2L, similar to Dale_M2L
+  new_M2L = sapply(
+    1:64, 
+    function(i){
+      temp = ( (ProSpectData::Dale_Orig$Aspec[[1]][i, ] / Lsol) / (weight * DTH * mH/Msol) ) / ProSpectData::Dale_Orig$Wave
+      sum( c(0, diff(ProSpectData::Dale_Orig$Wave)) * temp )
+    }
+  )
+  
+  yy = approx(
+    x = ProSpectData::Dale_Orig$alpha_SF, 
+    y = new_M2L, 
+    xout = alpha_SF, 
+    rule = 2
+  )$y
+  
+  return( yy )
+}
