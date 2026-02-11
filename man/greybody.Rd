@@ -31,7 +31,7 @@ Numeric scalar; cosmological redshift, where z must be > 0.
 Numeric vector; represents emissivity, or the spectral emissivity index. This is usually in the range 1-2 (see Hildebrand 1983). For \code{blackbody_norm} and \code{greybody_norm}, this should have the same number of elements as provided for \option{Temp}, but if length=1 then the values are recycled.
 }
   \item{k850}{
-Numeric scalar; the dust mass normalisation. The default is as used in MAGPHYS (0.077 m^2/kg). A sensible alternative might be 0.0383 m^2/kg (Draine 2003). The latter requires almost twice as much dust to achieve the same luminosity (see Clemens 2013 which gives the general warning "Absolute values for dust masses are, in any case, to be used with caution.").
+Numeric scalar; the dust mass emissivity, which can be thought of as the dust mass normalisation for the black/grey body dust. The default is as used in MAGPHYS (0.077 m^2/kg). A sensible alternative might be 0.0383 m^2/kg (Draine 2003). The latter requires almost twice as much dust to achieve the same luminosity (see Clemens 2013 which gives the general warning "Absolute values for dust masses are, in any case, to be used with caution.").
 }
   \item{norm}{
 Numeric vector; for \code{blackbody_norm} and \code{greybody_norm}, the integral of the returned black/greybody spectrum over all wavelength. By default it integrates to 1. This should have the same number of elements as provided for \option{Temp}, but if length=1 then the values are recycled.
