@@ -31,7 +31,7 @@ Numeric scalar; cosmological redshift, where z must be > 0.
 Numeric vector; represents emissivity, or the spectral emissivity index. This is usually in the range 1-2 (see Hildebrand 1983). For \code{blackbody_norm} and \code{greybody_norm}, this should have the same number of elements as provided for \option{Temp}, but if length=1 then the values are recycled.
 }
   \item{k850}{
-Numeric scalar; the dust mass normalisation. The default is as used in MAGPHYS (0.077 kg/m^2). A sensible alternative might be 0.0383 (Draine 2003). The latter requires almost twice as much dust to achieve the same luminosity.
+Numeric scalar; the dust mass normalisation. The default is as used in MAGPHYS (0.077 m^2/kg). A sensible alternative might be 0.0383 m^2/kg (Draine 2003). The latter requires almost twice as much dust to achieve the same luminosity (see Clemens 2013 which gives the general warning "Absolute values for dust masses are, in any case, to be used with caution.").
 }
   \item{norm}{
 Numeric vector; for \code{blackbody_norm} and \code{greybody_norm}, the integral of the returned black/greybody spectrum over all wavelength. By default it integrates to 1. This should have the same number of elements as provided for \option{Temp}, but if length=1 then the values are recycled.
@@ -44,7 +44,11 @@ We use a modified version of Eqn 2 from Casey et al (2012). The idea is the norm
 Numeric vector; observed luminosity in units Lsol / Ang (for 1 Msol of dust) for \code{blackbody} and \code{greybody}, and normalised as specified by \option{norm} for \code{blackbody_norm} and \code{greybody_norm}.
 }
 \references{
-Casey C.M., 2012, MNRAS, 425, 3094; da Cunha E. et al, 2008, MNRAS 388, 1595; Draine B.T., 2003, ARA&A, 41, 241; Hildebrand R.H., 1983, QJRAS, 24, 267
+Casey C.M., 2012, MNRAS, 425, 3094 \cr
+Clemens M.S. et al., 2013, MNRAS 433, 695 \cr
+da Cunha E. et al, 2008, MNRAS 388, 1595 \cr
+Draine B.T., 2003, ARA&A, 41, 241 \cr
+Hildebrand R.H., 1983, QJRAS, 24, 267
 }
 \author{
 Aaron Robotham

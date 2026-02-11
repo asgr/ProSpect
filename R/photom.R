@@ -1,70 +1,46 @@
-magAB2Jansky=function(x){10^(-0.4*(x-8.9))}
-Jansky2magAB=function(x){-2.5*log10(x)+8.9}
+magAB2Jansky = function(x){10^(-0.4*(x - 8.9))}
+Jansky2magAB = function(x){-2.5*log10(x) + 8.9}
 
-magAB2CGS=function(x){10^(-0.4*(x+48.6))}
-CGS2magAB=function(x){-2.5*log10(x)-48.6}
+magAB2CGS = function(x){10^(-0.4*(x + 48.6))}
+CGS2magAB = function(x){-2.5*log10(x) - 48.6}
 
-Jansky2CGS=function(x){x*1e-23}
-CGS2Jansky=function(x){x*1e23}
+Jansky2CGS = function(x){x*1e-23}
+CGS2Jansky = function(x){x*1e23}
 
-AbsoluteToWHz=function(x){4*pi*((10*.pc_to_m)^2)*.jansky_to_si*magAB2Jansky(x)}
-WHzToAbsolute=function(x){Jansky2magAB(x/(4*pi*((10*.pc_to_m)^2)*.jansky_to_si))}
+AbsoluteToWHz = function(x){4*pi*((10*.pc_to_m)^2)*.jansky_to_si*magAB2Jansky(x)}
+WHzToAbsolute = function(x){Jansky2magAB(x/(4*pi*((10*.pc_to_m)^2)*.jansky_to_si))}
 
-magABcalc=function(wave, flux, filter='r_VST'){
+CGScalc = function(wave, flux, filter='r_VST'){
   #Data should be in erg/s / cm^2 / Angstrom
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
-      flux=wave[,2]
-      wave=wave[,1]
+      flux = wave[,2]
+      wave = wave[,1]
     }
   }
   if(is.character(filter)[1]){
-    filter=getfilt(filter[1])
+    filter = getfilt(filter[1])
   }
-  fluxnu=convert_wave2freq(flux, wave)
-  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter)
-  return(-2.5 * log10(totlumnu) - 48.6)
-}
-
-CGScalc=function(wave, flux, filter='r_VST'){
-  #Data should be in erg/s / cm^2 / Angstrom
-  if(!is.vector(wave)){
-    if(dim(wave)[2]==2){
-      flux=wave[,2]
-      wave=wave[,1]
-    }
-  }
-  if(is.character(filter)[1]){
-    filter=getfilt(filter[1])
-  }
-  fluxnu=convert_wave2freq(flux, wave)
+  fluxnu = convert_wave2freq(flux, wave)
   totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter)
   return(totlumnu)
 }
 
-Janskycalc=function(wave, flux, filter='r_VST'){
-  #Data should be in erg/s / cm^2 / Angstrom
-  if(!is.vector(wave)){
-    if(dim(wave)[2]==2){
-      flux=wave[,2]
-      wave=wave[,1]
-    }
-  }
-  if(is.character(filter)[1]){
-    filter=getfilt(filter[1])
-  }
-  fluxnu=convert_wave2freq(flux, wave)
-  totlumnu = bandpass(flux = fluxnu, wave = wave, filter = filter)
-  return(totlumnu*1e23)
+magABcalc = function(wave, flux, filter='r_VST'){
+  return(CGS2magAB(CGScalc(wave, flux, filter)))
+}
+
+Janskycalc = function(wave, flux, filter='r_VST'){
+  return(CGS2Jansky(CGScalc(wave, flux, filter)))
 }
 
 
-Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
+Lum2FluxFactor = function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
   # Assuming lum to be converted is in the BC03 Lsol / Angstrom format
   # Because AB system is explicitly erg/s/cm^2/Hz flux
   if(z > 0){
     if(is.null(LumDist_Mpc)){
-      LumDist_Mpc=cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
+      LumDist_Mpc = cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
     }
     Dl_cm = LumDist_Mpc * .mpc_to_cm
     factor = .lsol_to_erg/(4*pi*Dl_cm^2)/(1 + z)
@@ -74,12 +50,12 @@ Lum2FluxFactor=function(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
   return(factor)
 }
 
-Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
-  #Assumed lux input is Lsol / Angstrom
+Lum2Flux = function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
+  #Assumed flux input is Lsol / Angstrom
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
-      lum=wave[,2]
-      wave=wave[,1]
+      lum = wave[,2]
+      wave = wave[,1]
     }
   }
   if(z > 0){
@@ -87,7 +63,7 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
       LumDist_Mpc = cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
     }
     Dl_cm = LumDist_Mpc * .mpc_to_cm
-    flux = lum*.lsol_to_erg/(4*pi*Dl_cm^2)/(1 + z)
+    flux = lum*.lsol_to_erg / (4*pi*Dl_cm^2) / (1 + z)
     wave = wave*(1 + z)
   }else{
     flux = lum * .lsol_to_absolute
@@ -96,12 +72,12 @@ Lum2Flux=function(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - Om
   return(data.frame(wave=wave, flux=flux))
 }
 
-Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
+Flux2Lum = function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
   #Assumed flux input is erg/s/cm^2/Ang (not per Hz!)
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
-      flux=wave[,2]
-      wave=wave[,1]
+      flux = wave[,2]
+      wave = wave[,1]
     }
   }
   if(z > 0){
@@ -109,7 +85,7 @@ Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - O
       LumDist_Mpc = cosdistLumDist(z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref)
     }
     Dl_cm = LumDist_Mpc * .mpc_to_cm
-    lum = flux/(.lsol_to_erg/(4*pi*Dl_cm^2)/(1 + z))
+    lum = flux / (.lsol_to_erg / (4*pi*Dl_cm^2) / (1 + z))
     wave = wave/(1 + z)
   }else{
     lum = flux/.lsol_to_absolute
@@ -118,24 +94,26 @@ Flux2Lum=function(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - O
   return(data.frame(wave=wave, lum=lum))
 }
 
-photom_flux=function(wave, flux, outtype='mag', filters='all'){
-  
+photom_flux = function(wave, flux, outtype='mag', filters='all'){
+
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       flux=wave[,2]
       wave=wave[,1]
     }
   }
-  
+
+  outtype = tolower(outtype)
+
   if(is.matrix(filters) | is.data.frame(filters)){
     filters=list(filters)
   }
-  
+
   if (filters[1] == 'all') {
     cenwave = NULL
     data('cenwave', envir = environment())
     filters = cenwave$filter
-  }else if(filters[1] == 'GAMA'){
+  }else if(filters[1] == 'GAMA' | filters[1] == 'WAVES'){
     filters = c(
       'FUV_GALEX',
       'NUV_GALEX',
@@ -159,36 +137,38 @@ photom_flux=function(wave, flux, outtype='mag', filters='all'){
       'S500_Herschel'
     )
   }
-  
-  if(outtype=='mag' | outtype=='magAB'){
+
+  if(outtype=='mag' | outtype=='magab'){
     photom={}
     for(i in filters){
       photom=c(photom, magABcalc(wave=wave, flux=flux, filter=i))
     }
-  }else if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
+  }else if(outtype=='jansky' | outtype=='jy'){
     photom={}
     for(i in filters){
       photom=c(photom, Janskycalc(wave=wave, flux=flux, filter=i))
     }
-  }else if(outtype=='cgs' | outtype=='CGS'){
+  }else if(outtype=='cgs'){
     photom={}
     for(i in filters){
       photom=c(photom, CGScalc(wave=wave, flux=flux, filter=i))
     }
   }
-  
+
   return(photom)
 }
 
 photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, LumDist_Mpc=NULL){
-  
+
   if(!is.vector(wave)){
     if(dim(wave)[2]==2){
       lum=wave[,2]
       wave=wave[,1]
     }
   }
-  
+
+  outtype = tolower(outtype)
+
   if(is.matrix(filters) | is.data.frame(filters)){
     filters=list(filters)
   }
@@ -197,7 +177,7 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
     cenwave = NULL
     data('cenwave', envir = environment())
     filters = cenwave$filter
-  }else if(filters[1] == 'GAMA'){
+  }else if(filters[1] == 'GAMA' | filters[1] == 'WAVES'){
     filters = c(
       'FUV_GALEX',
       'NUV_GALEX',
@@ -221,26 +201,26 @@ photom_lum=function(wave, lum, outtype='mag', filters='all', z = 0.1, H0 = 67.8,
       'S500_Herschel'
     )
   }
-  
+
   flux = Lum2Flux(wave=wave, lum=lum, z=z, H0=H0, OmegaM=OmegaM, OmegaL=OmegaL, ref=ref, LumDist_Mpc=LumDist_Mpc)
-    
-  if(outtype=='mag' | outtype=='magAB'){
+
+  if(outtype=='mag' | outtype=='magab'){
     photom={}
     for(i in filters){
       photom=c(photom, magABcalc(flux, filter=i))
     }
-  }else if(outtype=='jansky' | outtype=='Jansky' | outtype=='Jy'){
+  }else if(outtype=='jansky' | outtype=='jy'){
     photom={}
     for(i in filters){
       photom=c(photom, Janskycalc(flux, filter=i))
     }
-  }else if(outtype=='cgs' | outtype=='CGS'){
+  }else if(outtype=='cgs'){
     photom={}
     for(i in filters){
       photom=c(photom, CGScalc(flux, filter=i))
     }
   }
-  
+
   return(photom)
 }
 
@@ -259,7 +239,7 @@ addspec=function(wave1, flux1, wave2, flux2, extrap='constant', waveout=NULL){
   if(is.null(waveout)){
     waveout = sort(unique(c(wave1,wave2)))
   }
-  
+
   if(extrap=='constant'){
     flux1 = 10^approx(x=wave1, y=flux1, xout=waveout, rule=2, yleft=flux1[1], yright=flux1[length(flux1)])$y
     flux2 = 10^approx(x=wave2, y=flux2, xout=waveout, rule=2, yleft=flux2[1], yright=flux2[length(flux2)])$y
@@ -270,7 +250,7 @@ addspec=function(wave1, flux1, wave2, flux2, extrap='constant', waveout=NULL){
 
   # flux1 = 10^spline(x=wave1, y=flux1, xout=waveout)$y This behaves badly as discontinuities, so safer to use approx in general
   # flux2 = 10^spline(x=wave2, y=flux2, xout=waveout)$y This behaves badly as discontinuities, so safer to use approx in general
-  
+
   flux1[is.na(flux1)] = 0
   flux2[is.na(flux2)] = 0
   return(data.frame(wave=10^waveout, flux=flux1+flux2))
@@ -291,17 +271,17 @@ bandpass=function(wave, flux, filter, flux_in='freq', flux_out='freq', detect_ty
   }
   response = filter(wave)
   response[is.na(response)] = 0
-  
+
   if(flux_in=='freq' & flux_out=='wave'){
     flux = convert_freq2wave(flux, wave)
     flux_in = 'wave'
   }
-  
+
   if(flux_in=='wave' & flux_out=='freq'){
     flux = convert_wave2freq(flux, wave)
     flux_out = 'freq'
   }
-  
+
   if(flux_out=='freq'){
     freq=1/wave
     freq_diff=abs(.qdiff(freq))
