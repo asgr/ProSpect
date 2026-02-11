@@ -20,7 +20,7 @@ Lum2Flux(wave, lum, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
   ref, LumDist_Mpc = NULL)
 Flux2Lum(wave, flux, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
   ref, LumDist_Mpc = NULL)
-Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, 
+Lum2FluxFactor(z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM, ref,
   LumDist_Mpc = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -35,7 +35,7 @@ Numeric vector; flux density in erg/s / cm^2 / Angstrom spectral units.
 Numeric vector; the spectral luminosity in Lsol / Angstrom (BC03lr / BC03hr and EMILES format).
 }
   \item{outtype}{
-Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details.
+Character scalar; specifies the type of photometry computed, must be one of 'mag' / 'magAB' (for AB magnitudes, the default), 'Jansky' / 'Jy' (for Jansky fluxes) or 'CGS' (for CGS fluxes). See \code{\link{magABcalc}} for details. \option{outtype} is internally converted to lowercase using \code{tolower} so matches will not be case sensitive (but I prefer to write them like that to make it clearer).
 }
   \item{filters}{
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters, 'GAMA' returns just the classic GAMA survey filters.. If not a character then this will be passed onto \code{\link{bandpass}}, and may therefore be a list of filter responses, or even better (faster) a list of filter functions.
