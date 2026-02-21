@@ -29,3 +29,7 @@
     .Call(`_ProSpect_spec_rebin_cpp`, wave_in, flux_in, wave_out, invar_in, logbin_in, logbin_out)
 }
 
+.disp_stars_cpp <- function(wave_log, lum_log, z_disp, grid, weights, res) {
+    .Call(`_ProSpect_disp_stars_cpp`, wave_log, lum_log, z_disp, grid, weights, res)
+}
+
