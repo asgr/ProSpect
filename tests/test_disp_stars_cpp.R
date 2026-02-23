@@ -52,7 +52,7 @@ for (tc in test_cases) {
   z_disp  <- rep(veldisp / (c_to_mps / 1000), n)  # constant z_disp for simplicity
 
   ref <- disp_stars_R(wave_log, lum_log, z_disp, grid, weights, res)
-  got <- .disp_stars_cpp(wave_log, lum_log, z_disp, grid, weights, res)
+  got <- ProSpect:::.disp_stars_cpp(wave_log, lum_log, z_disp, grid, weights, res)
 
   rel_err <- max(abs(ref - got) / pmax(abs(ref), 1e-300))
 
