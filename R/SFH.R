@@ -960,7 +960,7 @@ SFHburst = function(burstmass = 1e8,
         vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z in the oberved frame
       }else if(is.matrix(LSF) | is.data.frame(LSF)){
         vel_LSF = approx(x=log10(LSF[,1]), y=LSF[,2], xout=log10(wave_lum*(1 + z)), rule=2)$y
-      }else if(length(LSF == 1)){
+      }else if(is.numeric(LSF) && length(LSF) == 1){
         vel_LSF = rep(LSF, length(wave_lum))
       }else{
         stop('LSF is in the wrong format!')
