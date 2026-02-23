@@ -1,5 +1,9 @@
 # ProSpect (R package)
 
+<!-- badges: start -->
+![R-CMD-check](https://github.com/asgr/ProSpect/workflows/R-CMD-check/badge.svg)
+<!-- badges: end -->
+
 ## Synopsis
 
 Core package containing all the tools for simple and advanced spectral energy distribution analysis (generating and fitting).
