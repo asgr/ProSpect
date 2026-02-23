@@ -10,6 +10,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// disp_stars_cpp
+NumericVector disp_stars_cpp(NumericVector wave_log, NumericVector lum_log, NumericVector z_disp, NumericVector grid, NumericVector weights, double res);
+RcppExport SEXP _ProSpect_disp_stars_cpp(SEXP wave_logSEXP, SEXP lum_logSEXP, SEXP z_dispSEXP, SEXP gridSEXP, SEXP weightsSEXP, SEXP resSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type wave_log(wave_logSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lum_log(lum_logSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z_disp(z_dispSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type grid(gridSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type weights(weightsSEXP);
+    Rcpp::traits::input_parameter< double >::type res(resSEXP);
+    rcpp_result_gen = Rcpp::wrap(disp_stars_cpp(wave_log, lum_log, z_disp, grid, weights, res));
+    return rcpp_result_gen;
+END_RCPP
+}
 // colSums_wt_cpp
 NumericVector colSums_wt_cpp(NumericMatrix mat, NumericVector vec_wt);
 RcppExport SEXP _ProSpect_colSums_wt_cpp(SEXP matSEXP, SEXP vec_wtSEXP) {
@@ -101,6 +117,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_ProSpect_disp_stars_cpp", (DL_FUNC) &_ProSpect_disp_stars_cpp, 6},
     {"_ProSpect_colSums_wt_cpp", (DL_FUNC) &_ProSpect_colSums_wt_cpp, 2},
     {"_ProSpect_mat_vec_mult_col", (DL_FUNC) &_ProSpect_mat_vec_mult_col, 3},
     {"_ProSpect_mat_vec_mult_row", (DL_FUNC) &_ProSpect_mat_vec_mult_row, 3},

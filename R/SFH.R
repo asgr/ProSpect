@@ -349,20 +349,7 @@ SFHfunc = function(massfunc = massfunc_b5,
 
     z_disp = sqrt(veldisp^2 + vel_LSF^2)/(.c_to_mps/1000) #this will be a vector of length wave_lum
 
-    lum_conv = numeric(length(lum))
-
-    for(i in seq_along(grid)){
-      z_seq_log = log10(1 + grid[i]*z_disp)
-      new_wave_log = wave_lum_log + z_seq_log
-      new_lum = lum_log - z_seq_log
-      new_lum = 10^approx(x=new_wave_log, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
-      new_lum = new_lum*weights[i]
-      #lum_conv = lum_conv + new_lum
-      .vec_add_cpp(lum_conv, new_lum)
-    }
-
-    lum = lum_conv*res
-    rm(lum_conv)
+    lum = .disp_stars_cpp(wave_lum_log, lum_log, z_disp, grid, weights, res)
   }
 
   if (emission) {
@@ -973,7 +960,7 @@ SFHburst = function(burstmass = 1e8,
         vel_LSF = LSF(wave_lum*(1 + z)) #to get LSF dispersion in km/s into z in the oberved frame
       }else if(is.matrix(LSF) | is.data.frame(LSF)){
         vel_LSF = approx(x=log10(LSF[,1]), y=LSF[,2], xout=log10(wave_lum*(1 + z)), rule=2)$y
-      }else if(length(LSF == 1)){
+      }else if(is.numeric(LSF) && length(LSF) == 1){
         vel_LSF = rep(LSF, length(wave_lum))
       }else{
         stop('LSF is in the wrong format!')
@@ -984,20 +971,7 @@ SFHburst = function(burstmass = 1e8,
 
     z_disp = sqrt(veldisp^2 + vel_LSF^2)/(.c_to_mps/1000) #this will be a vector of length wave_lum
 
-    lum_conv = numeric(length(lum))
-
-    for(i in seq_along(grid)){
-      z_seq = grid[i]*z_disp
-      new_wave_log = wave_lum_log + log10(1 + z_seq)
-      new_lum = lum_log - log10(1 + z_seq)
-      new_lum = 10^approx(x=new_wave_log, y=new_lum, xout=wave_lum_log, rule=2, yleft=new_lum[1], yright=new_lum[length(new_lum)])$y
-      new_lum = new_lum*weights[i]
-      #lum_conv = lum_conv + new_lum
-      .vec_add_cpp(lum_conv, new_lum)
-    }
-
-    lum = lum_conv*res
-    rm(lum_conv)
+    lum = .disp_stars_cpp(wave_lum_log, lum_log, z_disp, grid, weights, res)
   }
 
   if (emission & burstage < 1e7) {
