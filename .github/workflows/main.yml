@@ -49,6 +49,7 @@ jobs:
             github::asgr/Rwcs@master,
             github::asgr/Rfits@master,
             github::ICRAR/ProFit@master,
+            github::asgr/cmaeshpc@master,
             github::asgr/Highlander@master,
             github::asgr/hyper.fit@master,
             github::asgr/ParmOff@main,
