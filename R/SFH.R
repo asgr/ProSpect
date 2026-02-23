@@ -247,10 +247,21 @@ SFHfunc = function(massfunc = massfunc_b5,
     masstot = forcemass
   }
 
-  # Here we modify the speclib if we have an escape fraction less than 1.
-  # This is because this will be the first process that occurs, before birth cloud dust or ISM screen dust
-  # This means we also need to track the luminosity of the stars before any UV absorption (lum)
+  # Compute wavelength-dependent escape multiplier once (length wave_lum).
+  # Escape is the first process; Zspec is never mutated for escape fraction.
+  esc_vec = rep(1, length(wave_lum))
+  if (any(escape_frac < 1)) {
+    if (length(Ly_limit) == 1) {
+      esc_vec[wave_lum < Ly_limit] = escape_frac
+    } else{
+      for (i in 1:(length(Ly_limit) - 1)) {
+        esc_vec[wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1]] = escape_frac[i]
+      }
+      esc_vec[wave_lum < Ly_limit[length(Ly_limit)]] = escape_frac[length(Ly_limit)]
+    }
+  }
 
+  # Accumulate intrinsic (no escape, no dust) luminosity from the spectral library.
   if (length(Zuse) > 1) {
     lum = rep(0, length(wave_lum))
     for (Zid in Zuse) {
@@ -259,49 +270,18 @@ SFHfunc = function(massfunc = massfunc_b5,
       #lum = lum + toadd
       #.vec_add_cpp(lum, .colSums_wt_cpp(Zspec[[Zid]], massvec * Zwmat[, Zid]))
       .vec_add_cpp(lum, crossprod(Zspec[[Zid]], massvec * Zwmat[, Zid])) #factor of about 2-3 faster
-      if (any(escape_frac < 1)) {
-        if (length(Ly_limit) == 1) {
-          sel = which(wave_lum < Ly_limit)
-          Zspec[[Zid]][, sel] = Zspec[[Zid]][, sel] * escape_frac
-        } else{
-          for (i in 1:(length(Ly_limit) - 1)) {
-            sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-            Zspec[[Zid]][, sel] = Zspec[[Zid]][, sel] *
-              escape_frac[i]
-          }
-          sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-          Zspec[[Zid]][, sel] = Zspec[[Zid]][, sel] * escape_frac[length(Ly_limit)]
-        }
-      }
     }
   } else{
     #lum = colSums(Zspec[[Zuse]] * massvec)
     #lum = .colSums_wt_cpp(Zspec[[Zuse]], massvec)
-    lum = crossprod(Zspec[[Zuse]], massvec) #factor of about 2-3 faster
-    # if(any(escape_frac<1)){
-    #   Zspec[[Zuse]][,wave_lum<Ly_limit]=Zspec[[Zuse]][,wave_lum<Ly_limit]*escape_frac
-    # }
-    if (any(escape_frac < 1)) {
-      if (length(Ly_limit) == 1) {
-        wave_lum_sel = wave_lum < Ly_limit
-        Zspec[[Zuse]][, wave_lum_sel] = Zspec[[Zuse]][, wave_lum_sel] * escape_frac
-        #.vec_mult_cpp(Zspec[[Zuse]][, wave_lum_sel], escape_frac)
-      } else{
-        for (i in 1:(length(Ly_limit) - 1)) {
-          wave_lum_sel = which(wave_lum < Ly_limit[i] & wave_lum > Ly_limit[i + 1])
-          Zspec[[Zuse]][, wave_lum_sel] = Zspec[[Zuse]][, wave_lum_sel] * escape_frac[i]
-          #.vec_mult_cpp(Zspec[[Zuse]][, wave_lum_sel], escape_frac[i])
-        }
-        wave_lum_sel = which(wave_lum < Ly_limit[length(Ly_limit)])
-        Zspec[[Zuse]][, wave_lum_sel] = Zspec[[Zuse]][, wave_lum_sel] * escape_frac[length(Ly_limit)]
-        #.vec_mult_cpp(Zspec[[Zuse]][, wave_lum_sel], escape_frac[length(Ly_limit)])
-      }
-    }
+    lum = as.numeric(crossprod(Zspec[[Zuse]], massvec)) #factor of about 2-3 faster
   }
 
-  # This should be pre dispersion being added, and birthcloud or ISM attenuation.
-  lumtot_unatten = sum(.qdiff(wave_lum) * lum)
+  # lum_unatten: intrinsic spectrum (no escape, no dust); lumtot_unatten from intrinsic.
+  # lum: working spectrum with escape applied (still no dust).
   lum_unatten = lum
+  lumtot_unatten = sum(.qdiff(wave_lum) * lum_unatten)
+  lum = lum_unatten * esc_vec
 
   if (tau_birth != 0) {
     birth_sel = 1:birthcloud_len
@@ -319,6 +299,7 @@ SFHfunc = function(massfunc = massfunc_b5,
         .vec_add_cpp(lum, crossprod(Zspec[[Zid]][old_sel,,drop=FALSE], massvec[old_sel]))
       }
     }
+    lum = lum * esc_vec
     lumtot_birth = lumtot_unatten - sum(.qdiff(wave_lum) * lum)
   }else{
     lumtot_birth = 0
