@@ -39,40 +39,6 @@ AGN Model | Fritz (2006) | ?Fritz, ?AGN_UnOb
 
 ## Installation
 
-### Getting R
-
-First things first, you will probably want to install a recent version of **R** that lets you build packages from source. The advantage of choosing this route is you can then update bleeding edge versions directly from GitHub. If you rely on the pre-built binaries on CRAN you might be waiting much longer.
-
-#### Mac
-
-For Mac just get the latest binaries from the **R** project pages:
-
-<https://cloud.r-project.org/bin/macosx/>
-
-#### Windows
-
-For Windows just get the latest binaries from the **R** project pages:
-
-<https://cloud.r-project.org/bin/windows/>
-
-#### Linux
-
-Debian:	`sudo apt-get install r-base r-base-dev`
-
-Fedora:	`sudo yum install R`
-
-Suse:	More of a pain, see here <https://cloud.r-project.org/bin/linux/suse/README.html>
-
-Ubuntu:	`sudo apt-get install r-base-dev`
-
-All the info on binaries is here: <https://cloud.r-project.org/bin/linux/>
-
-If you have a poorly supported version of Linux (e.g. CentOS) you will need to install **R** from source with the development flags (this bit is important). You can read more here: <https://cloud.r-project.org/sources.html>
-
-Now you have the development version of **R** installed (hopefully) I would also suggest you get yourself **R-Studio**. It is a very popular and well maintained **R** IDE that gives you a lot of helpful shortcuts to scripting and analysing with **R**. The latest version can be grabbed from <https://www.rstudio.com/products/rstudio/> where you almost certainly want the free Desktop version.
-
-If you wish to use the command line version of **R** on Mac (why?!) then you might need to separately install **XQuartz** and set the DISPLAY system variable via something like export DISPLAY=:0 (this is not an issue for most people however).
-
 ### Getting ProSpect
 
 As of v1.5.0 **ProSpect** now *depends* on the **ProSpectData** package. This is basically a package containing all the static data that we in practice do not regularly update (the various BC03 and EMILES SSPs etc). You will need to install **ProSpectData** first, using a strategy similar to that of **ProSpect** (outlined below). Note because it is big, sometimes GitHub itself will complain about the package IO via the API interface, in that case you can manually download it (tar.gz, ZIP or clone) and install using the `R CMD install` command discussed below.
