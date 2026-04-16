@@ -1,12 +1,15 @@
-CF=function(wave, tau=0.3, pow=-0.7, pivot=5500){
+CF = function(wave, tau=0.3, pow=-0.7, pivot=5500){
+  if(tau == 0){return(0)}
   return(exp(-tau*(wave/pivot)^pow))
 }
 
-CF_birth=function(wave, tau=1.0, pow=-0.7, pivot=5500){
+CF_birth = function(wave, tau=1.0, pow=-0.7, pivot=5500){
+  if(tau == 0){return(0)}
   return(exp(-tau*(wave/pivot)^pow))
 }
 
-CF_screen=function(wave, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470){
+CF_screen = function(wave, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470){
+  if(tau == 0){return(0)}
   if(Eb>0){
     return(exp(-tau*((wave/pivot)^pow + .drude(wave, Eb=Eb, L0=L0, LFWHM=LFWHM))))
   }else{
@@ -58,26 +61,29 @@ screen_atten = function(wave, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LF
 }
 
 CF_birth_atten=function(wave, flux, tau=1.0, pow=-0.7, pivot=5500){
-  flux_atten=CF_birth(wave, tau=tau, pow=pow, pivot=pivot)*flux
-  unatten=sum(flux*c(0,diff(wave)))
-  atten=sum(flux_atten*c(0,diff(wave)))
-  total_atten=unatten-atten
+  if(tau == 0){return(list(flux=flux, total_atten=0, attenfrac=0))}
+  flux_atten = CF_birth(wave, tau=tau, pow=pow, pivot=pivot)*flux
+  unatten = sum(flux*c(0,diff(wave)))
+  atten = sum(flux_atten*c(0,diff(wave)))
+  total_atten = max(unatten - atten, 0)
   return(list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten))
 }
 
 CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470, dust_law='CF', delta=0, B=0, Rv=4.05){
+  if(tau == 0){return(list(flux=flux, total_atten=0, attenfrac=0))}
   flux_atten=screen_atten(wave, tau=tau, pow=pow, pivot=pivot, Eb=Eb, L0=L0, LFWHM=LFWHM, dust_law=dust_law, delta=delta, B=B, Rv=Rv)*flux
-  unatten=sum(flux*c(0,diff(wave)))
-  atten=sum(flux_atten*c(0,diff(wave)))
-  total_atten=unatten-atten
+  unatten = sum(flux*c(0,diff(wave)))
+  atten = sum(flux_atten*c(0,diff(wave)))
+  total_atten = max(unatten - atten, 0)
   return(list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten))
 }
 
 CF_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
-  flux_atten=CF_screen(wave, tau=tau, pow=pow, pivot=pivot)*flux
-  unatten=sum(flux*c(0,diff(wave)))
-  atten=sum(flux_atten*c(0,diff(wave)))
-  total_atten=unatten-atten
+  if(tau == 0){return(list(flux=flux, total_atten=0, attenfrac=0))}
+  flux_atten = CF_screen(wave, tau=tau, pow=pow, pivot=pivot)*flux
+  unatten = sum(flux*c(0,diff(wave)))
+  atten = sum(flux_atten*c(0,diff(wave)))
+  total_atten = max(unatten - atten, 0)
   return(list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten))
 }
 
@@ -234,28 +240,28 @@ Dale_M2L_variableDTH_func = function(alpha_SF, qPAH_VSG = 0.14, pivwave = 10^5.4
   mH = 1.674e-27
   Lsol = 3.828e26
   DTH = 0.0073
-  
+
   qBIG = 1 - qPAH_VSG
-  
-  ## Similar step function to what was obtained from comparing MAGPHYS mass contributing SED to total 
+
+  ## Similar step function to what was obtained from comparing MAGPHYS mass contributing SED to total
   smoothstep =  0.5 * (tanh(step_speed*(log10(ProSpectData::Dale_Orig$Wave) - log10(pivwave))) + 1.0)
   weight = smoothstep * (qBIG - qPAH_VSG) + qPAH_VSG
-  
+
   ## Loop through the Dale templates and recalculate the M2L, similar to Dale_M2L
   new_M2L = sapply(
-    1:64, 
+    1:64,
     function(i){
       temp = ( (ProSpectData::Dale_Orig$Aspec[[1]][i, ] / Lsol) / (weight * DTH * mH/Msol) ) / ProSpectData::Dale_Orig$Wave
       sum( c(0, diff(ProSpectData::Dale_Orig$Wave)) * temp )
     }
   )
-  
+
   yy = approx(
-    x = ProSpectData::Dale_Orig$alpha_SF, 
-    y = new_M2L, 
-    xout = alpha_SF, 
+    x = ProSpectData::Dale_Orig$alpha_SF,
+    y = new_M2L,
+    xout = alpha_SF,
     rule = 2
   )$y
-  
+
   return( yy )
 }
