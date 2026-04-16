@@ -49,7 +49,7 @@ Salim18_screen = function(wave, tau = 0.3, delta = 0, B = 0, pivot = 5500, Rv = 
 
 screen_atten = function(wave, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470, dust_law='CF', delta=0, B=0, Rv=4.05){
   if(dust_law == 'Salim18'){
-    if(B == 0 & Eb != 0){
+    if(B == 0 && Eb != 0){
       B = Eb
     }
     return(Salim18_screen(wave = wave, tau = tau, delta = delta, B = B, pivot = pivot, Rv = Rv, L0 = L0, LFWHM = LFWHM))

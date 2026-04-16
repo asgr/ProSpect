@@ -29,6 +29,6 @@ stopifnot(isTRUE(all.equal(salim_from_Eb, salim_from_B, tolerance = 1e-12)))
 
 flux <- rep(1, length(wave))
 atten <- CF_screen_atten(wave = wave, flux = flux, tau = tau, dust_law = "Salim18", delta = 0.1, B = 0.5)
-stopifnot(atten$attenfrac >= 0 && atten$attenfrac <= 1)
+stopifnot(all(atten$attenfrac >= 0 & atten$attenfrac <= 1))
 
 cat("All Salim+18 dust attenuation tests passed.\n")

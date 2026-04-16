@@ -92,6 +92,7 @@ We use the simple dust models for birth clouds and dust screens as given by Char
 The defaults should be reasonable in the regime they are used over, where birth cloud dust should only be applied to stellar populations younger than 10 Myrs. Note that BC03 has 70 stellar population spectra which are younger than this, whilst EMILES has none. This means that EMILES cannot realistically capture the birth dust attenuation phase, so for highly star bursting populations BC03 should probably be preferred.
 
 For screen dust, the Salim et al. (2018) modified Calzetti law is also available via \code{Salim18_screen} and \code{screen_atten(..., dust_law='Salim18')}, with free slope (\option{delta}) and UV bump strength (\option{B}).
+For this law \option{LFWHM} defaults to 350 Ang in \code{Salim18_screen}, matching common modified Calzetti/Noll-style bump choices, while the existing Charlot \& Fall bump-related defaults remain unchanged.
 }
 \value{
 For \code{CF}, \code{CF_birth}, \code{CF_screen}, \code{Salim18_screen} and \code{screen_atten}, a numeric vector; the attenuation curve that fluxes should be multiplied by.
