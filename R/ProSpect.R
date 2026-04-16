@@ -47,6 +47,10 @@ ProSpectSED = function(SFH = SFHfunc,
                           Eb = 0,
                           L0 = 2175.8,
                           LFWHM = 470,
+                          dust_law = 'CF',
+                          delta_screen = 0,
+                          B_screen = 0,
+                          Rv_screen = 4.05,
                           IGMabsorb = 0,
                           Inoue14_LAFcoef = NULL,
                           Inoue14_DLAcoef = NULL,
@@ -74,6 +78,10 @@ ProSpectSED = function(SFH = SFHfunc,
     alpha_SF_screen = .interval(alpha_SF_screen, 0.0625, 4, reflect = FALSE)
   }
 
+  if(!dust_law %in% c('CF', 'Salim18')){
+    stop("dust_law must be one of 'CF' or 'Salim18'")
+  }
+
   if(!is.null(AGN)){
     tau_AGN = .interval(tau_AGN, 0, 10, reflect = FALSE)
     pow_AGN = .interval(pow_AGN, -2, 0, reflect = FALSE)
@@ -96,6 +104,10 @@ ProSpectSED = function(SFH = SFHfunc,
       Eb = Eb,
       L0 = L0,
       LFWHM = LFWHM,
+      dust_law = dust_law,
+      delta_screen = delta_screen,
+      B_screen = B_screen,
+      Rv_screen = Rv_screen,
       ...
     )
 
@@ -213,7 +225,11 @@ ProSpectSED = function(SFH = SFHfunc,
         waveout = waveout,
         Eb = Eb,
         L0 = L0,
-        LFWHM = LFWHM
+        LFWHM = LFWHM,
+        dust_law = dust_law,
+        delta = delta_screen,
+        B = B_screen,
+        Rv = Rv_screen
       )
       if (!is.null(Dale_M2L_func) & returnall) {
         dustlum_screen = dustlum_screen + AGN$total_atten
@@ -280,7 +296,11 @@ ProSpectSED = function(SFH = SFHfunc,
         waveout = waveout,
         Eb = Eb,
         L0 = L0,
-        LFWHM = LFWHM
+        LFWHM = LFWHM,
+        dust_law = dust_law,
+        delta = delta_screen,
+        B = B_screen,
+        Rv = Rv_screen
       )
 
       if (!is.null(Dale_M2L_func) & returnall) {
