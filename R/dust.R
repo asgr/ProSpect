@@ -14,6 +14,49 @@ CF_screen=function(wave, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=4
   }
 }
 
+.k_calzetti = function(wave, Rv = 4.05){
+  wave_um = wave / 1e4
+  k = rep(NA_real_, length(wave_um))
+
+  blue_sel = wave_um >= 0.12 & wave_um < 0.63
+  red_sel = wave_um >= 0.63 & wave_um <= 2.2
+  low_sel = wave_um < 0.12
+  high_sel = wave_um > 2.2
+
+  if(any(blue_sel)){
+    w = wave_um[blue_sel]
+    k[blue_sel] = 2.659 * (-2.156 + 1.509 / w - 0.198 / w^2 + 0.011 / w^3) + Rv
+  }
+  if(any(red_sel)){
+    w = wave_um[red_sel]
+    k[red_sel] = 2.659 * (-1.857 + 1.040 / w) + Rv
+  }
+  if(any(low_sel)){
+    k[low_sel] = 2.659 * (-2.156 + 1.509 / 0.12 - 0.198 / 0.12^2 + 0.011 / 0.12^3) + Rv
+  }
+  if(any(high_sel)){
+    k[high_sel] = 2.659 * (-1.857 + 1.040 / 2.2) + Rv
+  }
+  return(k)
+}
+
+Salim18_screen = function(wave, tau = 0.3, delta = 0, B = 0, pivot = 5500, Rv = 4.05, L0 = 2175.8, LFWHM = 350){
+  curve = (.k_calzetti(wave = wave, Rv = Rv) + .drude(wave = wave, Eb = B, L0 = L0, LFWHM = LFWHM)) *
+    (wave / pivot)^delta
+  curve_pivot = (.k_calzetti(wave = pivot, Rv = Rv) + .drude(wave = pivot, Eb = B, L0 = L0, LFWHM = LFWHM))
+  return(exp(-tau * curve / curve_pivot))
+}
+
+screen_atten = function(wave, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470, dust_law='CF', delta=0, B=0, Rv=4.05){
+  if(dust_law == 'Salim18'){
+    if(B == 0 & Eb != 0){
+      B = Eb
+    }
+    return(Salim18_screen(wave = wave, tau = tau, delta = delta, B = B, pivot = pivot, Rv = Rv, L0 = L0, LFWHM = LFWHM))
+  }
+  return(CF_screen(wave = wave, tau = tau, pow = pow, pivot = pivot, Eb = Eb, L0 = L0, LFWHM = LFWHM))
+}
+
 CF_birth_atten=function(wave, flux, tau=1.0, pow=-0.7, pivot=5500){
   flux_atten=CF_birth(wave, tau=tau, pow=pow, pivot=pivot)*flux
   unatten=sum(flux*c(0,diff(wave)))
@@ -22,8 +65,8 @@ CF_birth_atten=function(wave, flux, tau=1.0, pow=-0.7, pivot=5500){
   return(list(flux=flux_atten, total_atten=total_atten, attenfrac=atten/unatten))
 }
 
-CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470){
-  flux_atten=CF_screen(wave, tau=tau, pow=pow, pivot=pivot, Eb=Eb, L0=L0, LFWHM=LFWHM)*flux
+CF_screen_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500, Eb=0, L0=2175.8, LFWHM=470, dust_law='CF', delta=0, B=0, Rv=4.05){
+  flux_atten=screen_atten(wave, tau=tau, pow=pow, pivot=pivot, Eb=Eb, L0=L0, LFWHM=LFWHM, dust_law=dust_law, delta=delta, B=B, Rv=Rv)*flux
   unatten=sum(flux*c(0,diff(wave)))
   atten=sum(flux_atten*c(0,diff(wave)))
   total_atten=unatten-atten
@@ -42,8 +85,8 @@ CF_atten=function(wave, flux, tau=0.3, pow=-0.7, pivot=5500){
   return(wave^(-beta)/(850e4^(-beta)))
 }
 
-atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale_M2L_func=NULL, waveout=NULL, Eb=0, L0=2175.8, LFWHM=470){
-  atten=CF_screen_atten(wave=wave, flux=flux, tau=tau, pow=pow, Eb=Eb, L0=L0, LFWHM=LFWHM)
+atten_emit=function(wave, flux, tau=0.3, pow=-0.7, alpha_SF=1.5, Dale=NULL, Dale_M2L_func=NULL, waveout=NULL, Eb=0, L0=2175.8, LFWHM=470, dust_law='CF', delta=0, B=0, Rv=4.05){
+  atten=CF_screen_atten(wave=wave, flux=flux, tau=tau, pow=pow, Eb=Eb, L0=L0, LFWHM=LFWHM, dust_law=dust_law, delta=delta, B=B, Rv=Rv)
   emit=Dale_interp(alpha_SF=alpha_SF, AGNfrac = 0, Dale=Dale)
   emit$Aspec=emit$Aspec*atten$total_atten
   final=addspec(wave1=wave, flux1=atten$flux, wave2=emit$Wave, flux2=emit$Aspec, extrap=0, waveout=waveout)

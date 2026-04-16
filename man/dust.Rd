@@ -5,6 +5,8 @@
 \alias{CF_birth_atten}
 \alias{CF_screen}
 \alias{CF_screen_atten}
+\alias{Salim18_screen}
+\alias{screen_atten}
 \alias{atten_emit}
 \alias{dust}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -21,10 +23,15 @@ CF_birth(wave, tau = 1.0, pow = -0.7, pivot = 5500)
 CF_birth_atten(wave, flux, tau = 1.0, pow = -0.7, pivot = 5500)
 CF_screen(wave, tau = 0.3, pow = -0.7, pivot = 5500, Eb = 0, L0 = 2175.8,
   LFWHM = 470)
-CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500, Eb = 0,
-  L0 = 2175.8, LFWHM = 470)
+Salim18_screen(wave, tau = 0.3, delta = 0, B = 0, pivot = 5500, Rv = 4.05,
+  L0 = 2175.8, LFWHM = 350)
+screen_atten(wave, tau = 0.3, pow = -0.7, pivot = 5500, Eb = 0, L0 = 2175.8,
+  LFWHM = 470, dust_law = "CF", delta = 0, B = 0, Rv = 4.05)
+CF_screen_atten(wave, flux, tau = 0.3, pow = -0.7, pivot = 5500, Eb = 0, L0 = 2175.8,
+  LFWHM = 470, dust_law = "CF", delta = 0, B = 0, Rv = 4.05)
 atten_emit(wave, flux, tau = 0.3, pow = -0.7, alpha_SF = 1.5, Dale = NULL,
-Dale_M2L_func = NULL, waveout = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470) 
+Dale_M2L_func = NULL, waveout = NULL, Eb = 0, L0 = 2175.8, LFWHM = 470,
+dust_law = "CF", delta = 0, B = 0, Rv = 4.05) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -52,6 +59,18 @@ Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do n
   \item{LFWHM}{
 Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this). 
 }
+  \item{delta}{
+Numeric scalar; power-law tilt for the modified Calzetti attenuation law (Salim+18).
+}
+  \item{B}{
+Numeric scalar; amplitude of the UV bump for the modified Calzetti attenuation law (Salim+18).
+}
+  \item{Rv}{
+Numeric scalar; V-band normalisation term in the Calzetti law (default 4.05).
+}
+  \item{dust_law}{
+Character scalar; attenuation law for screen dust. One of \option{'CF'} (default) or \option{'Salim18'}.
+}
   \item{alpha_SF}{
 Numeric scalar; desired interpolated alpha slope of the star forming population. Lower values mean hotter dust.  
 }
@@ -71,13 +90,15 @@ We use the simple dust models for birth clouds and dust screens as given by Char
 \deqn{A=\exp(-\tau*(\lambda/\lambda_{piv})^n)}{A=exp(-tau*(wave/pivot)^pow)}
 
 The defaults should be reasonable in the regime they are used over, where birth cloud dust should only be applied to stellar populations younger than 10 Myrs. Note that BC03 has 70 stellar population spectra which are younger than this, whilst EMILES has none. This means that EMILES cannot realistically capture the birth dust attenuation phase, so for highly star bursting populations BC03 should probably be preferred.
+
+For screen dust, the Salim et al. (2018) modified Calzetti law is also available via \code{Salim18_screen} and \code{screen_atten(..., dust_law='Salim18')}, with free slope (\option{delta}) and UV bump strength (\option{B}).
 }
 \value{
-For \code{CF}, \code{CF_birth} and \code{CF_screen}, a numeric vector; the attenuation curve that fluxes should be multiplied by.
+For \code{CF}, \code{CF_birth}, \code{CF_screen}, \code{Salim18_screen} and \code{screen_atten}, a numeric vector; the attenuation curve that fluxes should be multiplied by.
 
 For \code{CF_atten}, \code{CF_birth_atten} and \code{CF_screen_atten}, a list where the first element is the attenuated flux [flux], the second is the total energy of the flux attenuated (i.e. this is the amount that should be re-radiated elsewhere) [total_atten], and the third is the ratio of attenuated to unattenuated stellar light (i.e. 1 would mean no flux has been attenuated by dust, and 0 would mean 100\% attenuation).
 
-For \code{atten_emit} the input spectrum is attenuated by the specified Charlot and Fall mode, and then re-emitted with the specified Dale dust template. Returns a list containing:
+For \code{atten_emit} the input spectrum is attenuated by the specified screen dust law, and then re-emitted with the specified Dale dust template. Returns a list containing:
 
 \describe{
   \item{final}{Two column data.frame; Wavelength in Ang, attenuated and re-emitted flux in user units.}
@@ -90,7 +111,8 @@ For \code{atten_emit} the input spectrum is attenuated by the specified Charlot 
 }
 \references{
 Charlot & Fall, 2000, ApJ, 539, 718 \cr
-da Cunha et al, 2008, MNRAS, 388, 1595
+da Cunha et al, 2008, MNRAS, 388, 1595 \cr
+Salim et al., 2018, ApJ, 859, 11
 }
 \author{
 Aaron Robotham
