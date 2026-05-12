@@ -623,8 +623,9 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   if (!is.null(Data$intervals)) {
-    parm[parm < Data$intervals$lo] = Data$intervals$lo[parm < Data$intervals$lo]
-    parm[parm > Data$intervals$hi] = Data$intervals$hi[parm > Data$intervals$hi]
+    #parm[parm < Data$intervals$lo] = Data$intervals$lo[parm < Data$intervals$lo]
+    #parm[parm > Data$intervals$hi] = Data$intervals$hi[parm > Data$intervals$hi]
+    parm = pmin(pmax(parm, Data$intervals$lo), Data$intervals$hi)
   }
 
   if (!is.null(Data$logged)) {
@@ -643,7 +644,16 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   if (Data$verbose) {
-    print(parmlist)
+    message(parmlist)
+  }
+
+  if('scat_scale' %in% Data$parm.names){
+    sel = which('scat_scale' == Data$parm.names)
+    scat_scale = parmlist[sel]
+    parmlist = parmlist[-sel]
+    Data$parm.names = Data$parm.names[-sel]
+  }else{
+    scat_scale = 1
   }
 
   Monitor = {}
@@ -759,7 +769,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   if (Data$like == 'norm') {
-    LL = sum(dnorm(x = cutsig, log = TRUE), na.rm = TRUE)
+    LL = sum(dnorm(x = cutsig, mean=0, sd=scat_scale, log = TRUE), na.rm = TRUE)
   } else if (Data$like == 'chisq') {
     LL = dchisq(sum(cutsig ^ 2),
                 df = length(Data$filtout) - length(parm),
@@ -782,7 +792,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     LP = LL + as.numeric(Data$prior(parm))
   }
   if (Data$verbose) {
-    print(LP)
+    message(LP)
   }
 
   if (length(grep('flux', Data$mon.names)) > 0) {
