@@ -637,18 +637,27 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     parm = Data$constraints(parm)
   }
 
+  if('scat_scale' %in% Data$parm.names){
+    sel = which('scat_scale' == Data$parm.names)
+    scat_scale = parmlist[sel]
+    parmlist = parmlist[-sel]
+    Data$parm.names = Data$parm.names[-sel]
+  }else{
+    scat_scale = 1
+  }
+  
   parm_lower = NULL
   parm_upper = NULL
   if (!is.null(Data$intervals)) {
-    parm_lower = Data$intervals$lo
-    parm_upper = Data$intervals$hi
+    parm_lower = as.list(Data$intervals$lo)
+    parm_upper = as.list(Data$intervals$hi)
     names(parm_lower) = Data$parm.names
     names(parm_upper) = Data$parm.names
   }
-
+  
   parmlist = ParmOff::ParmOff(
     .func = ProSpectSED,
-    .args = as.list(parm),
+    .args = parm,
     .lower = parm_lower,
     .upper = parm_upper,
     .logged = logged_parm_names,
@@ -662,15 +671,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
 
   if (Data$verbose) {
     message(parmlist)
-  }
-
-  if('scat_scale' %in% Data$parm.names){
-    sel = which('scat_scale' == Data$parm.names)
-    scat_scale = parmlist[sel]
-    parmlist = parmlist[-sel]
-    Data$parm.names = Data$parm.names[-sel]
-  }else{
-    scat_scale = 1
   }
 
   Monitor = {}
