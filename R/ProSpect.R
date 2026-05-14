@@ -533,6 +533,21 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   names(parm) = Data$parm.names
+  
+  if (!requireNamespace("ParmOff", quietly = TRUE)) {
+    stop("The ParmOff package is needed for parameter mapping in ProSpectSEDlike. Please install it from GitHub/asgr/ParmOff.", call. = FALSE)
+  }
+  
+  logged_parm_names = NULL
+  if (!is.null(Data$logged)) {
+    if (length(Data$logged) == 1) {
+      if (Data$logged) {
+        logged_parm_names = Data$parm.names
+      }
+    } else {
+      logged_parm_names = Data$parm.names[Data$logged]
+    }
+  }
 
   if(is.null(Data$photom) & isTRUE(Data$mode == 'photom')){
     Data$photom = Data$flux
@@ -573,7 +588,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       z_genSF = Data$arglist$z_genSF ## What redshift should we start star formation?
 
       ztest = parm["z"]
-      if(Data$logged[Data$parm.names == "z"]){
+      if("z" %in% logged_parm_names){
         ztest = 10^ztest
       }
 
@@ -622,26 +637,28 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     parm = Data$constraints(parm)
   }
 
+  parm_lower = NULL
+  parm_upper = NULL
   if (!is.null(Data$intervals)) {
-    #parm[parm < Data$intervals$lo] = Data$intervals$lo[parm < Data$intervals$lo]
-    #parm[parm > Data$intervals$hi] = Data$intervals$hi[parm > Data$intervals$hi]
-    parm = pmin(pmax(parm, Data$intervals$lo), Data$intervals$hi)
+    parm_lower = Data$intervals$lo
+    parm_upper = Data$intervals$hi
+    names(parm_lower) = Data$parm.names
+    names(parm_upper) = Data$parm.names
   }
 
-  if (!is.null(Data$logged)) {
-    if (length(Data$logged) == 1) {
-      if (Data$logged) {
-        parmlist = 10 ^ parm
-      } else{
-        parmlist = parm
-      }
-    } else{
-      parmlist = parm
-      parmlist[Data$logged] = 10 ^ parm[Data$logged]
-    }
-  } else{
-    parmlist = parm
+  parmlist = ParmOff::ParmOff(
+    .func = ProSpectSED,
+    .args = as.list(parm),
+    .lower = parm_lower,
+    .upper = parm_upper,
+    .logged = logged_parm_names,
+    .return = 'args',
+    .check = FALSE
+  )$current_args
+  if(any(lengths(parmlist) != 1L)){
+    stop('All fitting parameters must be scalar values.')
   }
+  parmlist = unlist(parmlist, recursive = FALSE, use.names = TRUE)
 
   if (Data$verbose) {
     message(parmlist)
@@ -666,20 +683,22 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   if (returnall) {
-    SEDout = do.call(
-      'ProSpectSED',
-      args = c(
-        parmlist,
-        list(SFH = quote(Data$SFH)),
-        list(speclib = quote(Data$speclib)),
-        list(Dale = quote(Data$Dale)),
-        list(AGN = quote(Data$AGN)),
-        list(filtout = quote(filtout)),
+    SEDout = ParmOff::ParmOff(
+      .func = ProSpectSED,
+      .args = c(
+        as.list(parmlist),
+        list(SFH = Data$SFH),
+        list(speclib = Data$speclib),
+        list(Dale = Data$Dale),
+        list(AGN = Data$AGN),
+        list(filtout = filtout),
         list(filters = NULL),
         list(returnall = TRUE),
-        list(Dale_M2L_func = quote(Data$Dale_M2L_func)),
+        list(Dale_M2L_func = Data$Dale_M2L_func),
         Data$arglist
-      )
+      ),
+      .return = 'func',
+      .check = FALSE
     )
     if(is.null(Data$filtout) | isTRUE(Data$mode == 'spec') | isTRUE(Data$mode == 'both')){
       #this means we are in spec-z mode
@@ -718,19 +737,21 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     }
   } else{
 
-    Photom = do.call(
-      'ProSpectSED',
-      args = c(
-        parmlist,
-        list(SFH = quote(Data$SFH)),
-        list(speclib = quote(Data$speclib)),
-        list(Dale = quote(Data$Dale)),
-        list(AGN = quote(Data$AGN)),
-        list(filtout = quote(filtout)),
+    Photom = ParmOff::ParmOff(
+      .func = ProSpectSED,
+      .args = c(
+        as.list(parmlist),
+        list(SFH = Data$SFH),
+        list(speclib = Data$speclib),
+        list(Dale = Data$Dale),
+        list(AGN = Data$AGN),
+        list(filtout = filtout),
         list(filters = NULL),
         list(returnall = FALSE),
         Data$arglist
-      )
+      ),
+      .return = 'func',
+      .check = FALSE
     )
 
     if(is.null(filtout)){
