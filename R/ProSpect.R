@@ -533,19 +533,23 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
   }
 
   names(parm) = Data$parm.names
-  
+
   if (!requireNamespace("ParmOff", quietly = TRUE)) {
     stop("The ParmOff package is needed for parameter mapping in ProSpectSEDlike. Please install it from GitHub/asgr/ParmOff.", call. = FALSE)
   }
-  
+
   logged_parm_names = NULL
   if (!is.null(Data$logged)) {
-    if (length(Data$logged) == 1) {
-      if (Data$logged) {
-        logged_parm_names = Data$parm.names
+    if(is.logical(Data$logged)){
+      if (length(Data$logged) == 1) {
+        if (Data$logged) {
+          logged_parm_names = Data$parm.names
+        }
+      } else {
+        logged_parm_names = Data$parm.names[Data$logged]
       }
-    } else {
-      logged_parm_names = Data$parm.names[Data$logged]
+    }else{
+      logged_parm_names = Data$logged
     }
   }
 
@@ -637,15 +641,6 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     parm = Data$constraints(parm)
   }
 
-  if('scat_scale' %in% Data$parm.names){
-    sel = which('scat_scale' == Data$parm.names)
-    scat_scale = parmlist[sel]
-    parmlist = parmlist[-sel]
-    Data$parm.names = Data$parm.names[-sel]
-  }else{
-    scat_scale = 1
-  }
-  
   parm_lower = NULL
   parm_upper = NULL
   if (!is.null(Data$intervals)) {
@@ -654,7 +649,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     names(parm_lower) = Data$parm.names
     names(parm_upper) = Data$parm.names
   }
-  
+
   parmlist = ParmOff::ParmOff(
     .func = ProSpectSED,
     .args = parm,
@@ -664,13 +659,22 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     .return = 'args',
     .check = FALSE
   )$current_args
+
   if(any(lengths(parmlist) != 1L)){
     stop('All fitting parameters must be scalar values.')
   }
-  parmlist = unlist(parmlist, recursive = FALSE, use.names = TRUE)
+
+  if('scat_scale' %in% Data$parm.names){
+    scat_scale = parmlist[['scat_scale']]
+    #parm = parm[-sel]
+    #Data$parm.names = Data$parm.names[-sel]
+  }else{
+    scat_scale = 1
+  }
 
   if (Data$verbose) {
-    message(parmlist)
+    parmlist_print = unlist(parmlist, recursive = FALSE, use.names = TRUE)
+    message(parmlist_print)
   }
 
   Monitor = {}
@@ -686,7 +690,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     SEDout = ParmOff::ParmOff(
       .func = ProSpectSED,
       .args = c(
-        as.list(parmlist),
+        parmlist,
         list(SFH = Data$SFH),
         list(speclib = Data$speclib),
         list(Dale = Data$Dale),
@@ -697,6 +701,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(Dale_M2L_func = Data$Dale_M2L_func),
         Data$arglist
       ),
+      .rem_args = 'scat_scale',
       .return = 'func',
       .check = FALSE
     )
@@ -740,7 +745,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
     Photom = ParmOff::ParmOff(
       .func = ProSpectSED,
       .args = c(
-        as.list(parmlist),
+        parmlist,
         list(SFH = Data$SFH),
         list(speclib = Data$speclib),
         list(Dale = Data$Dale),
@@ -750,6 +755,7 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
         list(returnall = FALSE),
         Data$arglist
       ),
+      .rem_args = 'scat_scale',
       .return = 'func',
       .check = FALSE
     )
