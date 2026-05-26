@@ -66,7 +66,7 @@ Marvil et al, 2015, AJ, 149, 32
 Aaron Robotham
 }
 \seealso{
-\code{\link{Dale}}
+\code{\link[ProSpectData:Dale]{Dale}}
 }
 \examples{
 data('BC03lr')

@@ -55,7 +55,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{dust}}, \code{\link{Dale}}
+\code{\link{dust}}, \code{\link[ProSpectData:Dale]{Dale}}
 }
 \examples{
 #The greybody_norm function can take vector inputs:

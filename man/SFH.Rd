@@ -67,10 +67,10 @@ Logical or numeric scalar; if FALSE then the stellar mass is directly computed f
 Numeric scalar; scaling to apply to the ages (which will passed in years) to \option{massfunc}. E.g. if left at \option{agescale}=1 then \option{massfunc} is expecting the age in years, but if set to 1e-6/1e-9 then \option{massfunc} is expecting the age in Myrs/Gyrs.
 }
   \item{stellpop}{
-Character scalar; which stellar population library to use, one of \code{\link{BC03lr}} (default), \code{\link{BC03hr}}, \code{\link{EMILES}}.
+Character scalar; which stellar population library to use, one of \code{\link[ProSpectData:BC03lr]{BC03lr}} (default), \code{\link[ProSpectData:BC03hr]{BC03hr}}, \code{\link[ProSpectData:EMILES]{EMILES}}.
 }
   \item{speclib}{
-Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
+Pass in the spectral library directly. Must be one of \code{\link[ProSpectData:BC03lr]{BC03lr}}, \code{\link[ProSpectData:BC03hr]{BC03hr}}, \code{\link[ProSpectData:EMILES]{EMILES}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
 }
   \item{tau_birth}{
 Numeric scalar; dust tau of birth clouds. Associated with sub 10 Myr star formation. See \code{\link{CF_birth}}.
@@ -88,7 +88,7 @@ Numeric scalar; power to further raise the dust attenuation of the dust screen. 
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters, 'GAMA' returns just the classic GAMA survey filters. Can also be a list of matrices or functions to pass into \code{\link{bandpass}}. This creates increasingly faster code, but requires more user effort. Setting to NULL will not process the spectrum through filters at all, which is useful if you just want some of the other output which are quicker to produce.
 }
   \item{Z}{
-Numeric integer/scalar (\code{SFHfunc}, \code{SFHburst}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. If integer \option{Z} is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the index 5 for BC03lr is solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Z (so 0.02 for solar). \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. For convenience, if a non-integer value is provided then this is interpreted as the desired metallicity value (so Z=0.02 for solar etc), and converted into the appropriate function internally, e.g. \option{Z}=5 and \option{Z}=0.02 will give the same outputs for \code{\link{BC03}}. Now we are using a wider variety of SPLs and SSPs, \option{Z} = 0.02 is the default (so output should be close to solar).
+Numeric integer/scalar (\code{SFHfunc}, \code{SFHburst}), or a function (\code{SFHfunc}); specifies which metallicity to use for each star formation phase. If integer \option{Z} is the vector location \option{Z} in BC03lr$Z / BC03hr$Z / EMILES$Z., i.e. the index 5 for BC03lr is solar (BC03lr$Z[5]=0.02). For \code{SFHfunc} the functional form takes age as an input (in units of \option{agescale}) and outputs the target metallicity in terms of Z (so 0.02 for solar). \option{Z} function arguments can be passed down via the \dots (useful for fitting), so be careful to give additional arguments unique names compared to \code{SFHfunc}. For convenience, if a non-integer value is provided then this is interpreted as the desired metallicity value (so Z=0.02 for solar etc), and converted into the appropriate function internally, e.g. \option{Z}=5 and \option{Z}=0.02 will give the same outputs for \code{\link[ProSpectData:BC03]{BC03}}. Now we are using a wider variety of SPLs and SSPs, \option{Z} = 0.02 is the default (so output should be close to solar).
 }
   \item{emission}{
 Logical; should emission features be added to the spectrum? This will be done using \code{\link{emissionLines}}.
@@ -133,7 +133,7 @@ Numeric scalar; Omega Matter today (default is 0.308).
 Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL = 1 - OmegaM = 0.692).
 }
   \item{ref}{
-The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
+The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link[celestial:cosref]{cosref}} for details.
 }
   \item{unimax}{
 Numeric scalar; maximum allowed age in years of any stellar population relative to z=0 (i.e. today). Any star formation that is older than this will be set to 0. Overridden by \option{agemax} if that is provided.
@@ -209,7 +209,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}, \code{\link{massfunc}}, \code{\link{emissionLines}}
+\code{\link{ProSpectSED}}, \code{\link{photom}}, \code{\link[ProSpectData:BC03lr]{BC03lr}}, \code{\link[ProSpectData:BC03hr]{BC03hr}}, \code{\link[ProSpectData:EMILES]{EMILES}}, \code{\link{massfunc}}, \code{\link{emissionLines}}
 }
 \examples{
 #A pretty full example showing some low level things:

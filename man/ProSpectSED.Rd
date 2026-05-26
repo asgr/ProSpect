@@ -50,13 +50,13 @@ Numeric scalar; power to further raise the dust attenuation of the dust screen. 
 Numeric scalar; power to further raise the dust attenuation of the AGN torus. See \code{\link{CF_screen}}.
 }
   \item{alpha_SF_birth}{
-Numeric scalar; alpha slope of the birth cloud dust. Lower values mean hotter dust. See \code{\link{Dale}}.
+Numeric scalar; alpha slope of the birth cloud dust. Lower values mean hotter dust. See \code{\link[ProSpectData:Dale]{Dale}}.
 }
   \item{alpha_SF_screen}{
-Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. See \code{\link{Dale}}.
+Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. See \code{\link[ProSpectData:Dale]{Dale}}.
 }
   \item{alpha_SF_AGN}{
-Numeric scalar; alpha slope of the AGN torus dust. Lower values mean hotter dust. See \code{\link{Dale}}.
+Numeric scalar; alpha slope of the AGN torus dust. Lower values mean hotter dust. See \code{\link[ProSpectData:Dale]{Dale}}.
 }
   \item{AGNlum}{
 Numeric scalar; AGN bolometric luminosity in erg/s for both the Fritz and SKIRTOR.
@@ -65,13 +65,13 @@ Numeric scalar; AGN bolometric luminosity in erg/s for both the Fritz and SKIRTO
 Numeric scalar; amount of sparse sampling of the spectra to make.
 }
   \item{speclib}{
-Object; optional. Pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}} or \code{\link{BPASS}}. Default of NULL will load the \code{\link{BC03lr}} library, but faster to pass it in if being used for e.g. fitting.
+Object; optional. Pass in the spectral library directly. Must be one of \code{\link[ProSpectData:BC03lr]{BC03lr}}, \code{\link[ProSpectData:BC03hr]{BC03hr}}, \code{\link[ProSpectData:EMILES]{EMILES}} or \code{\link[ProSpectData:BPASS]{BPASS}}. Default of NULL will load the \code{\link[ProSpectData:BC03lr]{BC03lr}} library, but faster to pass it in if being used for e.g. fitting.
 }
   \item{Dale}{
-Object or scalar logical; optional. Pass in the Dale dust library \code{\link{Dale_NormTot}} directly (otherwise will run, but not work correctly). Default of NULL will load the \code{\link{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting. If FALSE it will not re-emit the attenuated light in the MIR/FIR using Dale templates. This might be desired if the range of interest is purely the UV-NIR and you want faster generation/fitting (since the re-emitted dust will not be notable until at least the MIR).
+Object or scalar logical; optional. Pass in the Dale dust library \code{\link[ProSpectData:Dale_NormTot]{Dale_NormTot}} directly (otherwise will run, but not work correctly). Default of NULL will load the \code{\link[ProSpectData:Dale_NormTot]{Dale_NormTot}} library, but faster to pass it in if being used for e.g. fitting. If FALSE it will not re-emit the attenuated light in the MIR/FIR using Dale templates. This might be desired if the range of interest is purely the UV-NIR and you want faster generation/fitting (since the re-emitted dust will not be notable until at least the MIR).
 }
   \item{AGN}{
-Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link{Fritz}}, or \code{\link{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
+Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link[ProSpectData:Fritz]{Fritz}}, or \code{\link[ProSpectData:SKIRTOR]{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
 }
 
   \item{filtout}{
@@ -81,7 +81,7 @@ Object; required. Pass in the photometric filters directly (either matrices of f
 Character vector; names of filters to use. See \code{\link{filters}} for options. Default 'all' selects all filters, 'GAMA' returns just the classic GAMA survey filters. Can also be a list of matrices or functions to pass into \code{\link{bandpass}}. This creates increasingly faster code, but requires more user effort.
 }
   \item{Dale_M2L_func}{
-Function; if dust masses and luminosities are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
+Function; if dust masses and luminosities are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link[ProSpectData:Dale_M2L_func]{Dale_M2L_func}}
 }
   \item{returnall}{
 Logical; if true then returns all the various sub SEDs. See Details. If FALSE then code just returns \option{photom_out} (photometry in Jansky).
@@ -99,7 +99,7 @@ Numeric scalar; Omega Lambda today (default is for a flat Universe with OmegaL =
 Numeric vector; desired output log10 wavelength grid to use in Ang. Default covers typical range of galaxy SED data at a resolution good enough for broad band photometry. Spectroscopic work requires the resolution to be increase by a factor ~10. If \option{emission}=TRUE (to be passed down to \code{\link{SFHfunc}}) and \option{waveout} is missing (so not explicitly supplied by the user) then \option{waveout} is internally set to NULL, meaning the full available resolution is used to ensure a good reproduction of the emission features. This operation is generally desirable, since it would be a bad idea to produce emission features, but then sample the wavelength range too coarsely to see any!
 }
   \item{ref}{
-The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link{cosref}} for details.
+The name of a reference cosmology to use, one of 137 / 737 / Planck / Planck13 / Planck15 / Planck18 / WMAP / WMAP9 / WMAP7 / WMAP5 / WMAP3 / WMAP1 / Millennium / GiggleZ. Planck = Planck18 and WMAP = WMAP9. The usage is case insensitive, so wmap9 is an allowed input. This overrides any other settings for H0, OmegaM and OmegaL. If OmegaR is missing from the reference set then it is inherited from the function input (0 by default). See \code{\link[celestial:cosref]{cosref}} for details.
 }
   \item{unimax}{
 Numeric scalar; maximum allowed age of any stellar population relative to z=0 (i.e. today) in years. Any star formation that is older than this will be set to 0. Overridden by \option{agemax} if that is provided.
@@ -111,7 +111,7 @@ Numeric scalar; maximum allowed age of any stellar population relative to the re
 Numeric scalar; Luminosity distance computed in units of cm. Default is NULL. The luminosity distance can be supplied for repeated computations when the redshift of the object is constant. This should be supplied using the "correct" cosmology (as near as possible), i.e. using H0 ~ 70 km/s/Mpc (not 100).
 }
   \item{addradio_SF}{
-Logical scalar; should free-free and synchrotron radio continuum linked to star-formation be computed and appended to the spectrum? If TRUE, emission range is controlled by \option{waveout}. Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). Note that even with this set to FALSE (default) the output spectrum will still have the radio continuum computed for the \code{\link{Dale}} templates. The default arguments almost perfectly reproduce the  \code{\link{Dale}} results, so it is only necessary to set \option{addradio_SF} = TRUE if you want to change the \option{Te}, \option{ff_frac}, \option{ff_power} and \option{sy_power} parameters to non-default values.
+Logical scalar; should free-free and synchrotron radio continuum linked to star-formation be computed and appended to the spectrum? If TRUE, emission range is controlled by \option{waveout}. Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). Note that even with this set to FALSE (default) the output spectrum will still have the radio continuum computed for the \code{\link[ProSpectData:Dale]{Dale}} templates. The default arguments almost perfectly reproduce the  \code{\link[ProSpectData:Dale]{Dale}} results, so it is only necessary to set \option{addradio_SF} = TRUE if you want to change the \option{Te}, \option{ff_frac}, \option{ff_power} and \option{sy_power} parameters to non-default values.
 }
   \item{Te_SF}{
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}}. Leave as the default (10,000 K), unless you know what you are doing.
@@ -126,7 +126,7 @@ Numeric scalar; power-law slope of the free-free nebular plasma thermal radio em
 Numeric scalar; power-law slope of the synchrotron radio emission associated with star-formation used in \code{\link{radiocont}} (should be between -0.8 and -0.6 typically).
 }
   \item{addradio_AGN}{
-Logical; should separate free-free and synchrotron radio continuum associated with an AGN be added? Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). If FALSE (default) then any radio continuum computed for the AGN component within \code{\link{Dale}} will be subtracted regardless of the value of \option{addradio_SF}.
+Logical; should separate free-free and synchrotron radio continuum associated with an AGN be added? Uses the \code{\link{radiocont}} function to compute and append the radio continuum (see there for details). If FALSE (default) then any radio continuum computed for the AGN component within \code{\link[ProSpectData:Dale]{Dale}} will be subtracted regardless of the value of \option{addradio_SF}.
 }
   \item{Te_AGN}{
 Numeric scalar; effective HII nebular plasma temperature in Kelvin used in \code{\link{radiocont}} for the AGN component. Leave as the default (10,000 K), unless you know what you are doing.
@@ -216,7 +216,7 @@ List, optional; named arguments and values that are passed directly into \code{P
 There are also additional arguments for redshift fitting mode: 'photoz', Boolean, fit for redshift or not; 'IGMfunc', a function that takes in z and returns IGM absorption between 0 and 1, can also be numeric/NULL/'Inoue14', if numeric this is the same as function(z)\{const\} where const is some constant IGM absorption value, if NULL no IGM absorption, if "Songaila04" use pnorm(z,3.2,1.8), if 'Inoue14' use IGM absorption from Inoue (2014); z_genSF, numeric scalar, redshift at which stars began forming, if NULL then stars start forming at the beginning of the Universe.
 }
   \item{Data$speclib}{
-List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link{BC03lr}}, \code{\link{BC03hr}}, \code{\link{EMILES}}.
+List, optional but recommended; pass in the spectral library directly. Must be one of \code{\link[ProSpectData:BC03lr]{BC03lr}}, \code{\link[ProSpectData:BC03hr]{BC03hr}}, \code{\link[ProSpectData:EMILES]{EMILES}}.
 }
   \item{Data$Dale}{
 List, optional but recommended; pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly). If set to FALSE then there will be no FIR re-emission.
