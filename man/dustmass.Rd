@@ -25,7 +25,7 @@ Numeric vector; predicted attenuated stellar luminosity in units Lsol / Ang (for
 Numeric vector; observed dust wavelength in Angstroms (same number of elements as \option{lum_dust}).
 }
   \item{lum_dust}{
-Numeric vector; observed luminosity in units Lsol / Ang (for 1 Msol of dust), as per \code{\link{blackbody}}, \code{\link{greybody}} and \code{\link{Dale_Msol}}.
+Numeric vector; observed luminosity in units Lsol / Ang (for 1 Msol of dust), as per \code{\link{blackbody}}, \code{\link{greybody}} and \code{\link[ProSpectData:Dale_Msol]{Dale_Msol}}.
 }
 }
 \details{
@@ -39,7 +39,7 @@ Aaron Robotham
 }
 
 \seealso{
-\code{\link{blackbody}}, \code{\link{greybody}}, \code{\link{Dale_Msol}}
+\code{\link{blackbody}}, \code{\link{greybody}}, \code{\link[ProSpectData:Dale_Msol]{Dale_Msol}}
 }
 \examples{
 #Let's try varying our burst mass and seeing what happen to various outputs:

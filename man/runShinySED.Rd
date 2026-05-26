@@ -51,13 +51,13 @@ Numeric scalar; dust tau of the dust screen. See \code{\link{CF_screen}}.
 Numeric scalar; dust tau of the dust screen. See \code{\link{CF}}.
 }
   \item{alpha_SF_birth}{
-Numeric scalar; alpha slope of the birth cloud dust. Lower values mean hotter dust. See \code{\link{Dale}}.
+Numeric scalar; alpha slope of the birth cloud dust. Lower values mean hotter dust. See \code{\link[ProSpectData:Dale]{Dale}}.
 }
   \item{alpha_SF_screen}{
-Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. See \code{\link{Dale}}.
+Numeric scalar; alpha slope of the screen dust. Lower values mean hotter dust. See \code{\link[ProSpectData:Dale]{Dale}}.
 }
   \item{alpha_SF_AGN}{
-Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dust. See \code{\link{Dale}}.
+Numeric scalar; alpha slope of the AGN taurus dust. Lower values mean hotter dust. See \code{\link[ProSpectData:Dale]{Dale}}.
 }
   \item{AGNlum}{
 Numeric scalar; AGN bolometric luminosity in erg.

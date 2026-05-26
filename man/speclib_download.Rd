@@ -52,14 +52,14 @@ Logical; should the coverage (Z, Age, Wave) of \option{speclib} be checked? If T
 \details{
 This interface has proven necessary in order to provide flexible SSPs without making the core package too big. We have also had issue with the package getting close to the file size limit of GitHub. In future all additional SSP will be provided through this mechanism.
 
-Internally a \code{ProSpect} compatible format (e.g. as seen for \code{\link{BC03}} / \code{\link{EMILES}} / \code{\link{BPASS}}, as output by \code{speclib_FITSload}, and as verified with \code{speclib_check}) looks like a list containing:
+Internally a \code{ProSpect} compatible format (e.g. as seen for \code{\link[ProSpectData:BC03]{BC03}} / \code{\link[ProSpectData:EMILES]{EMILES}} / \code{\link[ProSpectData:BPASS]{BPASS}}, as output by \code{speclib_FITSload}, and as verified with \code{speclib_check}) looks like a list containing:
 
 Z: Numeric vector of available template metallicities (ascending order). \cr
 Age: Numeric vector of available template ages in Yrs (ascending order). \cr
 AgeBins: Numeric vector of available template age bin limits in Yrs (ascending order, must be 1 longer than "Age" vector to cover lower and upper limits). \cr
 AgeWeights: Numeric vector of available template age weights (bin sizes) in Yrs (same length as "Age"). \cr
 Wave: Numeric vector of spectral wavelength in Angstroms (ascending order). \cr
-Labels: List of the labels required for plotting (see \code{\link{BC03}}). \cr
+Labels: List of the labels required for plotting (see \code{\link[ProSpectData:BC03]{BC03}}). \cr
 Zspec: List containing the spectra in units Lsun / Ang (for 1 Msun SF). The list must correspond to the 'Z' vector metallicities. Each list item is a numeric matrix of spectra with Nrow equal to the number of age bins (corresponding with 'Age') and Ncol the number of wavelength element (corresponding with 'Wave'). \cr
 Zevo: List containing the mean evolutionary tracks of the SSPs (as determined by the route isochrones). The list must correspond to the 'Z' vector metallicities. Each list item is a data.frame with columns 'SMstar' (fraction of mass in luminous stars) 'SMgas' (fraction of mass in gas) 'SMtot' (fraction of total mass, always 1 in practice) 'SFR' (star formation rate, always 0 in practice) 'SMrem' (fraction of mass in stellar remnants, e.g. black holes etc). Nrow should be equal to the number of age bins (corresponding with 'Age').
 

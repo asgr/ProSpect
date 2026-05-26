@@ -82,7 +82,7 @@ Stalevski et al, 2016, MNRAS, 458, 2288
 Aaron Robotham & Adam Marshall
 }
 \seealso{
-\code{\link{Fritz}}, \code{\link{SKIRTOR}}
+\code{\link[ProSpectData:Fritz]{Fritz}}, \code{\link[ProSpectData:SKIRTOR]{SKIRTOR}}
 }
 \examples{
 \dontrun{

@@ -19,14 +19,14 @@ Numeric scalar; desired interpolated alpha slope of the star forming population.
 Numeric scalar; desired interpolated AGN fraction linearly mixed in energy over the range 5-20 microns (see Dale 2014).
 }
   \item{type}{
-Character scalar; type of Dale template to interpolate. One of: Orig, Msol, NormTot, NormAGN, NormSFR (see \code{\link{Dale}}).
+Character scalar; type of Dale template to interpolate. One of: Orig, Msol, NormTot, NormAGN, NormSFR (see \code{\link[ProSpectData:Dale]{Dale}}).
 }
   \item{Dale}{
-Pass in the Dale dust library directly. Must be one of \code{\link{Dale_Orig}}, \code{\link{Dale_Msol}}, \code{\link{Dale_NormTot}}, \code{\link{Dale_NormAGN}}, \code{\link{Dale_NormSFR}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
+Pass in the Dale dust library directly. Must be one of \code{\link[ProSpectData:Dale_Orig]{Dale_Orig}}, \code{\link[ProSpectData:Dale_Msol]{Dale_Msol}}, \code{\link[ProSpectData:Dale_NormTot]{Dale_NormTot}}, \code{\link[ProSpectData:Dale_NormAGN]{Dale_NormAGN}}, \code{\link[ProSpectData:Dale_NormSFR]{Dale_NormSFR}}. Doing this speeds up the compute time, since there is no need to lazy load from the package.
 }
 }
 \details{
-This function does a simple 2D bilinear interpolation to create templates for values of \option{AGNfrac} and \option{alpha_SF} that are not precisely provided by \code{\link{Dale}}.
+This function does a simple 2D bilinear interpolation to create templates for values of \option{AGNfrac} and \option{alpha_SF} that are not precisely provided by \code{\link[ProSpectData:Dale]{Dale}}.
 }
 \value{
 Two column data.frame containing the wavelength (Wave) and the interpolated luminosity values (Aspec) in the same units as the input Dale dust library (from argument \option{Dale}).
@@ -38,7 +38,7 @@ Dale et al, 2014, ApJ, 784, 11
 Aaron Robotham
 }
 \seealso{
-\code{\link{Dale}}, \code{\link{interp_param}}
+\code{\link[ProSpectData:Dale]{Dale}}, \code{\link{interp_param}}
 }
 \examples{
 #Example output showing also the 4 surrounding interpolation points used.

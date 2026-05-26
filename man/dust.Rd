@@ -59,7 +59,7 @@ Numeric scalar; desired interpolated alpha slope of the star forming population.
 Pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR}).
 }
   \item{Dale_M2L_func}{
-Function; if dust masses are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link{Dale_M2L_func}}
+Function; if dust masses are desired then the user should supply a function to convert \option{alpha_SF} to mass-to-light, e.g. \code{\link[ProSpectData:Dale_M2L_func]{Dale_M2L_func}}
 }
   \item{waveout}{
 Numeric vector; desired output wavelength grid to use for adding together spectra. See \code{\link{addspec}}.

@@ -24,7 +24,7 @@ Numeric vector; the values to be interpolated.
 Logical scalar; should the interpolation be done in linear space (\option{log}=FALSE, the default), or log space (\option{log}=TRUE).
 }
   \item{method}{
-One of “constant", “linear", “nearest", “spline", or “cubic"; default is “linear". This is passed to \code{\link{interp1}}.
+One of “constant", “linear", “nearest", “spline", or “cubic"; default is “linear". This is passed to \code{\link[pracma:interp1]{interp1}}.
 }
 }
 \details{
