@@ -17,9 +17,10 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
   waveout = seq(2, 9.35, by = 0.01), ref, unimax = 1.38e+10, agemax = NULL,
   LumDist_Mpc = NULL, addradio_SF = FALSE, addradio_AGN = FALSE, Te_SF = 10000,
   ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, Te_AGN = 10000,
-  ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
-  AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
-  LFWHM = 470, IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL, ...)
+   ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
+   AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
+   LFWHM = 470, dust_law = "CF", delta_screen = 0, B_screen = 0, Rv_screen = 4.05,
+   IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL, ...)
 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -178,6 +179,18 @@ Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do n
 }
   \item{LFWHM}{
 Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
+}
+  \item{dust_law}{
+Character scalar; attenuation law for screen dust. One of \option{'CF'} (default) or \option{'Salim18'}.
+}
+  \item{delta_screen}{
+Numeric scalar; power-law tilt of the Salim et al. (2018) modified Calzetti screen attenuation law.
+}
+  \item{B_screen}{
+Numeric scalar; UV bump amplitude of the Salim et al. (2018) modified Calzetti screen attenuation law.
+}
+  \item{Rv_screen}{
+Numeric scalar; V-band normalisation term for the Salim et al. (2018) modified Calzetti screen attenuation law.
 }
   \item{IGMabsorb}{
 Absorbing fraction for the intervening IGM. This should be thought of as absorption due to material between the galaxy of interest an the observer. This suppressing fraction is applied to wavelength in the Lyman regime (911.8 - 1215.7 Angstrom). Based on Songaila (2004) a resonable approximation for this is given by \option{IGMabsorb} = pnorm(z, mean=3.8, sd=1.2), meaning it is almost 0 (complete transmission) at low redshift and almost 1 (complete absorption) by redshift 8.

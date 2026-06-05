@@ -33,12 +33,20 @@ SFHfunc = function(massfunc = massfunc_b5,
                    Eb = 0,
                    L0 = 2175.8,
                    LFWHM = 470,
+                   dust_law = 'CF',
+                   delta_screen = 0,
+                   B_screen = 0,
+                   Rv_screen = 4.05,
                    SMstar = FALSE,
                    ...) {
   #Ly_limit should be 911.75 Ang (the actual ionisation limit) or sometimes 1215.67 Ang (Lyman alpha)
 
   dots = list(...)
   massfunc_args = dots[names(dots) %in% names(formals(massfunc))]
+
+  if(!dust_law %in% c('CF', 'Salim18')){
+    stop("dust_law must be one of 'CF' or 'Salim18'")
+  }
 
   if (is.null(speclib)) {
     if (stellpop == 'BC03lr') {
@@ -413,13 +421,17 @@ SFHfunc = function(massfunc = massfunc_b5,
   }
 
   if (tau_screen != 0) {
-    lum = lum * CF_screen(
+    lum = lum * screen_atten(
       wave_lum,
       tau = tau_screen,
       pow = pow_screen,
       Eb = Eb,
       L0 = L0,
-      LFWHM = LFWHM
+      LFWHM = LFWHM,
+      dust_law = dust_law,
+      delta = delta_screen,
+      B = B_screen,
+      Rv = Rv_screen
     )
     lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) * lum)
 
@@ -808,8 +820,16 @@ SFHburst = function(burstmass = 1e8,
                     Eb = 0,
                     L0 = 2175.8,
                     LFWHM = 470,
+                    dust_law = 'CF',
+                    delta_screen = 0,
+                    B_screen = 0,
+                    Rv_screen = 4.05,
                     ...) {
   burstmass = .interval(burstmass, 0, Inf, reflect = FALSE)
+
+  if(!dust_law %in% c('CF', 'Salim18')){
+    stop("dust_law must be one of 'CF' or 'Salim18'")
+  }
 
   if (stellpop == 'BC03lr') {
     if (is.null(speclib)) {
@@ -1025,13 +1045,17 @@ SFHburst = function(burstmass = 1e8,
   }
 
   if (tau_screen != 0) {
-    lum = lum * CF_screen(
+    lum = lum * screen_atten(
       wave_lum,
       tau = tau_screen,
       pow = pow_screen,
       Eb = Eb,
       L0 = L0,
-      LFWHM = LFWHM
+      LFWHM = LFWHM,
+      dust_law = dust_law,
+      delta = delta_screen,
+      B = B_screen,
+      Rv = Rv_screen
     )
     lumtot_screen = (lumtot_unatten - lumtot_birth) - sum(.qdiff(wave_lum) * lum)
   } else{
