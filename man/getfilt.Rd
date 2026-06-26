@@ -66,15 +66,15 @@ For the full set now available see options at \code{\link{filters}}, where all l
   S850    \tab  JCMT SCUBA-2 850 band  \cr
   1mm     \tab  Aztec 1mm band \cr
   2mm     \tab  Gizmo 2mm band \cr
-  Band9   \tab  ALMA Band 9 \cr
-  Band8   \tab  ALMA Band 8 \cr
-  Band7   \tab  ALMA Band 7 \cr
-  Band6   \tab  ALMA Band 6 \cr
-  Band5   \tab  ALMA Band 5 \cr
-  Band4   \tab  ALMA Band 4 \cr
-  Band3   \tab  ALMA Band 3 \cr
-  Band2   \tab  ALMA Band 2 \cr
-  Band1   \tab  ALMA Band 1 \cr
+  Band9_ALMA   \tab  ALMA Band 9 \cr
+  Band8_ALMA   \tab  ALMA Band 8 \cr
+  Band7_ALMA   \tab  ALMA Band 7 \cr
+  Band6_ALMA   \tab  ALMA Band 6 \cr
+  Band5_ALMA   \tab  ALMA Band 5 \cr
+  Band4_ALMA   \tab  ALMA Band 4 \cr
+  Band3_ALMA   \tab  ALMA Band 3 \cr
+  Band2_ALMA   \tab  ALMA Band 2 \cr
+  Band1_ALMA   \tab  ALMA Band 1 \cr
   BandQ_VLA   \tab  VLA Band Q \cr
   BandKa_VLA  \tab  VLA Band Ka \cr
   BandK_VLA   \tab  VLA Band K \cr
@@ -84,10 +84,10 @@ For the full set now available see options at \code{\link{filters}}, where all l
   BandS_VLA   \tab  VLA Band S \cr
   BandL_VLA   \tab  VLA Band L \cr
   BandP_VLA   \tab  VLA Band P \cr
-  Band5   \tab  GMRT Band 5 \cr
-  Band4   \tab  GMRT Band 4 \cr
-  Band3   \tab  GMRT Band 3 \cr
-  Band2   \tab  GMRT Band 2 \cr
+  Band5_GMRT   \tab  GMRT Band 5 \cr
+  Band4_GMRT   \tab  GMRT Band 4 \cr
+  Band3_GMRT   \tab  GMRT Band 3 \cr
+  Band2_GMRT   \tab  GMRT Band 2 \cr
 }
 }
 }

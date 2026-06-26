@@ -7,10 +7,10 @@ getfilt=function(filter){
 
   valid_filters = c(
     # GALEX
-    "FUV_GALEX", "FUV", "NUV_GALEX", "NUV",
+    "FUV_GALEX", "NUV_GALEX",
 
     # SDSS
-    "u_SDSS", "u", "g_SDSS", "g", "r_SDSS", "r", "i_SDSS", "i", "z_SDSS", "z",
+    "u_SDSS", "g_SDSS", "r_SDSS", "i_SDSS", "z_SDSS",
 
     # VST
     "u_VST", "g_VST", "r_VST", "i_VST", "z_VST",
@@ -23,8 +23,7 @@ getfilt=function(filter){
     "g_HSC", "r_HSC", "i_HSC", "z_HSC", "y_HSC", "Y_HSC",
 
     # VISTA
-    "Z_VISTA", "Z", "Y_VISTA", "Y", "J_VISTA", "J", "H_VISTA", "H", "K_VISTA", "K",
-    "Ks_VISTA", "Ks",
+    "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "Ks_VISTA",
 
     # UKIRT
     "Z_UKIRT", "Y_UKIRT", "J_UKIRT", "H_UKIRT", "K_UKIRT",
@@ -47,26 +46,25 @@ getfilt=function(filter){
     "VIS_Euclid", "Y_Euclid", "Blue_Euclid", "J_Euclid", "Red_Euclid", "H_Euclid",
 
     # WISE
-    "W1_WISE", "W1", "W2_WISE", "W2", "W3_WISE", "W3", "W4_WISE", "W4",
+    "W1_WISE", "W2_WISE", "W3_WISE", "W4_WISE",
 
     # Spitzer
-    "I1_Spitzer", "I1", "I2_Spitzer", "I2", "I3_Spitzer", "I3", "I4_Spitzer", "I4",
-    "M24_Spitzer", "M24", "M70_Spitzer", "M70", "M160_Spitzer", "M160",
+    "I1_Spitzer", "I2_Spitzer", "I3_Spitzer", "I4_Spitzer", "M24_Spitzer",
+    "M70_Spitzer", "M160_Spitzer",
 
     # Herschel
-    "P70_Herschel", "P70", "P100_Herschel", "P100", "P160_Herschel", "P160",
-    "S250_Herschel", "S250", "S350_Herschel", "S350", "S500_Herschel", "S500",
+    "P70_Herschel", "P100_Herschel", "P160_Herschel", "S250_Herschel",
+    "S350_Herschel", "S500_Herschel",
 
     # JCMT
-    "S450_JCMT", "S450", "S850_JCMT", "S850",
+    "S450_JCMT", "S850_JCMT",
 
     # mm
-    "1mm_Aztec", "1mm", "2mm_Gizmo", "2mm",
+    "1mm_Aztec", "2mm_Gizmo",
 
     # ALMA
-    "Band9_ALMA", "Band9", "Band8_ALMA", "Band8", "Band7_ALMA", "Band7", "Band6_ALMA",
-    "Band6", "Band5_ALMA", "Band5", "Band4_ALMA", "Band4", "Band3_ALMA", "Band3",
-    "Band2_ALMA", "Band2", " Band1_ALMA", "Band1",
+    "Band9_ALMA", "Band8_ALMA", "Band7_ALMA", "Band6_ALMA", "Band5_ALMA",
+    "Band4_ALMA", "Band3_ALMA", "Band2_ALMA", " Band1_ALMA",
 
     # VLA
     "BandQ_VLA", "BandQ", "BandKa_VLA", "BandKa", "BandK_VLA", "BandK", "BandKu_VLA",
@@ -77,6 +75,41 @@ getfilt=function(filter){
     "Band5_GMRT", "Band4_GMRT", "Band3_GMRT", "Band2_GMRT"
   )
 
+  if(filter %in% c('FUV', 'NUV')){
+    filter = paste(filter,'GALEX',sep='_')
+  }
+
+  if(filter %in% c('u', 'g', 'r', 'i', 'z')){
+    filter = paste(filter,'SDSS',sep='_')
+  }
+
+  if(filter %in% c('Z', 'Y', 'J', 'H', 'K', 'Ks')){
+    filter = paste(filter,'VISTA',sep='_')
+  }
+
+  if(filter %in% c('W1', 'W2', 'W3', 'W4')){
+    filter = paste(filter,'WISE',sep='_')
+  }
+
+  if(filter %in% c('I1', 'I2', 'I3', 'I4', 'M24', 'M70', 'M160')){
+    filter = paste(filter,'Spitzer',sep='_')
+  }
+
+  if(filter %in% c('P70', 'P100', 'P160', 'S250', 'S350', 'S500')){
+    filter = paste(filter,'Herschel',sep='_')
+  }
+
+  if(filter %in% c('S450', 'S850')){
+    filter = paste(filter,'JCMT',sep='_')
+  }
+
+  if(filter %in% c('Band1', 'Band2', 'Band3', 'Band4', 'Band5', 'Band6', 'Band7', 'Band8', 'Band9')){
+    filter = paste(filter,'ALMA',sep='_')
+  }
+
+  if(filter %in% c('BandQ', 'BandKa', 'BandK', 'BandKu', 'BandX', 'BandC', 'BandS', 'BandL', 'BandP')){
+    filter = paste(filter,'VLA',sep='_')
+  }
 
   if (filter %in% valid_filters) {
     varname <- paste0("filt_", filter)
