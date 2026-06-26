@@ -18,13 +18,13 @@ For the full set now available see options at \code{\link{filters}}, where all l
 %%     ~~Describe \code{filter} here~~
 \tabular{ll}{
   Name    \tab  Filter reference \cr
-  FUV     \tab  GALEX FUV band \cr
-  NUV     \tab  GALEX NUV band \cr
-  u  \tab  Sloan u band \cr
-  g  \tab  Sloan g band \cr
-  r  \tab  Sloan r band \cr
-  i  \tab  Sloan i band \cr
-  z  \tab  Sloan z band \cr
+  FUV_GALEX     \tab  GALEX FUV band \cr
+  NUV_GALEX     \tab  GALEX NUV band \cr
+  u_SDSS  \tab  Sloan u band \cr
+  g_SDSS  \tab  Sloan g band \cr
+  r_SDSS  \tab  Sloan r band \cr
+  i_SDSS  \tab  Sloan i band \cr
+  z_SDSS  \tab  Sloan z band \cr
   u_VST  \tab  VST u band \cr
   g_VST  \tab  VST g band \cr
   r_VST  \tab  VST r band \cr
@@ -35,37 +35,38 @@ For the full set now available see options at \code{\link{filters}}, where all l
   i_HSC  \tab  HSC i band \cr
   z_HSC  \tab  HSC z band \cr
   Y_HSC  \tab  HSC Y band \cr
-  Z  \tab  VISTA Z band \cr
-  Y  \tab  VISTA Y band \cr
-  J  \tab  VISTA J band \cr
-  H  \tab  VISTA H band \cr
-  K or Ks  \tab  VISTA Ks band \cr
+  Z_VISTA  \tab  VISTA Z band \cr
+  Y_VISTA  \tab  VISTA Y band \cr
+  J_VISTA  \tab  VISTA J band \cr
+  H_VISTA  \tab  VISTA H band \cr
+  K_VISTA  \tab  VISTA Ks band \cr
+  Ks_VISTA  \tab  VISTA Ks band \cr
   Z_UKIRT  \tab  UKIRT Z band \cr
   Y_UKIRT  \tab  UKIRT Y band \cr
   J_UKIRT  \tab  UKIRT J band \cr
   H_UKIRT  \tab  UKIRT H band \cr
   K_UKIRT  \tab  UKIRT K band \cr
-  W1      \tab  Wise W1 band  \cr
-  W2      \tab  Wise W2 band  \cr
-  W3      \tab  Wise W3 band  \cr
-  W4      \tab  Wise W4 band  \cr
-  I1      \tab  Spitzer I1 band  \cr
-  I2      \tab  Spitzer I2 band  \cr
-  I3      \tab  Spitzer I3 band  \cr
-  I4      \tab  Spitzer I4 band  \cr
-  M24     \tab  Spitzer M24 band  \cr
-  M70     \tab  Spitzer M70 band  \cr
-  M160    \tab  Spitzer M160 band  \cr
-  P70     \tab  Herschel PACS 70 band  \cr
-  P100    \tab  Herschel PACS 100 band  \cr
-  P160    \tab  Herschel PACS 160 band  \cr
-  S250    \tab  Herschel Spire 250 band  \cr
-  S350    \tab  Herschel Spire 350 band  \cr
-  S500    \tab  Herschel Spire 500 band  \cr
-  S450    \tab  JCMT SCUBA-2 450 band  \cr
-  S850    \tab  JCMT SCUBA-2 850 band  \cr
-  1mm     \tab  Aztec 1mm band \cr
-  2mm     \tab  Gizmo 2mm band \cr
+  W1_WISE      \tab  Wise W1 band  \cr
+  W2_WISE      \tab  Wise W2 band  \cr
+  W3_WISE      \tab  Wise W3 band  \cr
+  W4_WISE      \tab  Wise W4 band  \cr
+  I1_Spitzer      \tab  Spitzer I1 band  \cr
+  I2_Spitzer      \tab  Spitzer I2 band  \cr
+  I3_Spitzer      \tab  Spitzer I3 band  \cr
+  I4_Spitzer      \tab  Spitzer I4 band  \cr
+  M24_Spitzer     \tab  Spitzer M24 band  \cr
+  M70_Spitzer     \tab  Spitzer M70 band  \cr
+  M160_Spitzer    \tab  Spitzer M160 band  \cr
+  P70_Herschel     \tab  Herschel PACS 70 band  \cr
+  P100_Herschel    \tab  Herschel PACS 100 band  \cr
+  P160_Herschel    \tab  Herschel PACS 160 band  \cr
+  S250_Herschel    \tab  Herschel Spire 250 band  \cr
+  S350_Herschel    \tab  Herschel Spire 350 band  \cr
+  S500_Herschel    \tab  Herschel Spire 500 band  \cr
+  S450_JCMT    \tab  JCMT SCUBA-2 450 band  \cr
+  S850_JCMT    \tab  JCMT SCUBA-2 850 band  \cr
+  1mm_Aztec     \tab  Aztec 1mm band \cr
+  2mm_Gizmo     \tab  Gizmo 2mm band \cr
   Band9_ALMA   \tab  ALMA Band 9 \cr
   Band8_ALMA   \tab  ALMA Band 8 \cr
   Band7_ALMA   \tab  ALMA Band 7 \cr
