@@ -72,6 +72,22 @@ For the full set now available see options at \code{\link{filters}}, where all l
   Band6   \tab  ALMA Band 6 \cr
   Band5   \tab  ALMA Band 5 \cr
   Band4   \tab  ALMA Band 4 \cr
+  Band3   \tab  ALMA Band 3 \cr
+  Band2   \tab  ALMA Band 2 \cr
+  Band1   \tab  ALMA Band 1 \cr
+  BandQ_VLA   \tab  VLA Band Q \cr
+  BandKa_VLA  \tab  VLA Band Ka \cr
+  BandK_VLA   \tab  VLA Band K \cr
+  BandKu_VLA  \tab  VLA Band Ku \cr
+  BandX_VLA   \tab  VLA Band X \cr
+  BandC_VLA   \tab  VLA Band C \cr
+  BandS_VLA   \tab  VLA Band S \cr
+  BandL_VLA   \tab  VLA Band L \cr
+  BandP_VLA   \tab  VLA Band P \cr
+  Band5   \tab  GMRT Band 5 \cr
+  Band4   \tab  GMRT Band 4 \cr
+  Band3   \tab  GMRT Band 3 \cr
+  Band2   \tab  GMRT Band 2 \cr
 }
 }
 }
