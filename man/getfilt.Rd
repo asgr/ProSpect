@@ -182,6 +182,30 @@ For the full set now available see options at \code{\link{filters}}, where all l
   Band4_GMRT \tab GMRT Band 4 \cr
   Band3_GMRT \tab GMRT Band 3 \cr
   Band2_GMRT \tab GMRT Band 2 \cr
+
+  % ROMAN
+  F062_WFI_ROMAN \tab ROMAN WFI F062 \cr
+  F087_WFI_ROMAN \tab ROMAN WFI F087 \cr
+  F106_WFI_ROMAN \tab ROMAN WFI F106 \cr
+  F129_WFI_ROMAN \tab ROMAN WFI F129 \cr
+  F146_WFI_ROMAN \tab ROMAN WFI F146 \cr
+  F158_WFI_ROMAN \tab ROMAN WFI F158 \cr
+  F184_WFI_ROMAN \tab ROMAN WFI F184 \cr
+  F213_WFI_ROMAN \tab ROMAN WFI F213 \cr
+
+  % COBE/DIRBE
+  COBE_DIRBE_60m \tab COBE DIRBE 60m \cr 
+  COBE_DIRBE_100m \tab COBE DIRBE 100m \cr 
+  COBE_DIRBE_140m \tab COBE DIRBE 140m \cr 
+  COBE_DIRBE_240m \tab COBE DIRBE 240m \cr 
+
+  % PLANCK
+  PLANCK_HFI_100GHz \tab PLANCK HFI 100GHz \cr 
+  PLANCK_HFI_143GHz \tab PLANCK HFI 143GHz \cr 
+  PLANCK_HFI_217GHz \tab PLANCK HFI 217GHz \cr 
+  PLANCK_HFI_353GHz \tab PLANCK HFI 353GHz \cr 
+  PLANCK_HFI_545GHz \tab PLANCK HFI 545GHz \cr 
+  PLANCK_HFI_857GHz \tab PLANCK HFI 857GHz \cr 
 }
 }
 }
