@@ -86,7 +86,7 @@ Let's take a look:
 plotSFH(inpar)
 ```
 
-Now we can generate our galaxies SED:
+Now we can generate our galaxy's SED:
 
 ```{r}
 genSED=ProSpectSED(massfunc = massfunc_snorm_trunc,
