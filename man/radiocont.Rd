@@ -36,7 +36,7 @@ Numeric scalar; power-law slope of the free-free nebular plasma thermal radio em
 Numeric scalar; power-law slope of the synchrotron radio emission (should be between -0.8 and -0.6 typically).
 }
   \item{wavesamp}{
-Numeric vector; desired output log10 wavelength radio emission grid to use in Ang. The default covers the FIR the 1.4 Ghz range, so is usually appropriate for the radio SED extension.
+Numeric vector; desired output log10 wavelength radio emission grid to use in Ang. The default covers the FIR the 1.4 Ghz range, so is usually appropriate for the radio SED extension. If the supplied grid does not reach as long as \code{max(wave)}, it is automatically extended at its native spacing out to \code{max(wave)}. This is necessary because the subtraction always runs over all wavelengths beyond 1e6 Ang, so emission added over a shorter range would leave a hole (i.e. a sharp discontinuity) at the end of the output spectrum.
 }
   \item{flux_in}{
 Character scalar; the input type of flux spectral density used. Should be either 'freq' (default, power per Hz) or 'wave' (power per Ang)
@@ -54,6 +54,10 @@ This radio continuum extension for \code{ProSpect} is mostly based on the work o
 The default options closely reproduce the Dale template radio emission. The advantage of using this interface is the user has fine control over the free-free and synchrotron radio emission mixing (which is fixed to 1:9 at 1.4 Ghz in the Dale templates), and also control over the power-law indices (fixed to -0.1 and -0.8 respectively in the Dale templates).
 
 Condon & Yin (1990) suggest that \option{ff_frac} is seen to typically span the range 0.05 to 0.2, so it should probably be kept within these limits for generative and fitting purposes.
+
+The \option{ff_frac} parameter changes only the free-free to synchrotron mix. The total 1.4 Ghz flux is anchored to the FIR luminosity via the Dale template calibration (which assumes a 1:9 free-free to synchrotron ratio), so varying \option{ff_frac} does not change the normalisation of the radio SED.
+
+The FIR luminosity is estimated from the flux at 1.4 Ghz (i.e. 2.14e9 Ang rest frame), which must therefore fall within the supplied \option{wave} range for any radio emission to be computed. If it does not, a warning is issued and the input spectrum is returned unchanged. Note this requires the input grid to reach log10 wavelength 9.331 or beyond, which is close to the \code{\link{ProSpectSED}} default of \option{waveout} ending at 9.35; shortening \option{waveout} will silently suppress the radio continuum unless this warning is heeded.
 }
 \value{
 Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed flux in the units of \option{flux_out}.

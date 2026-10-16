@@ -202,6 +202,7 @@ ProSpectSED = function(SFH = SFHfunc,
 
       dustlum_AGN = NA
       dustmass_AGN = NA
+      #Second we re-attenuate the above by the screen (since it still has to pass out of the galaxy)
       AGN = atten_emit(
         wave = AGN$wave,
         flux = AGN$lum * .erg_to_lsol,
@@ -250,7 +251,7 @@ ProSpectSED = function(SFH = SFHfunc,
         )
       }
       colnames(AGN)[2] = 'lum'
-    } else{
+    } else {
       #Use old model
       #First we attenuate by the hot torus
       AGN = atten_emit(
