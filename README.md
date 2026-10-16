@@ -6,7 +6,7 @@
 
 ## Synopsis
 
-Core package containing all the tools for simple and advanced spectral energy distribution analysis (generating and fitting).
+Core package containing all the tools for simple and advanced spectral energy distribution analysis (generating and fitting). If you want to know the gory (but interesting) details please check out the paper: https://ui.adsabs.harvard.edu/abs/2020MNRAS.495..905R/abstract. Don't be afraid to cite it when relevant either!
 
 ## Getting Started
 

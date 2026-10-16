@@ -6,3 +6,4 @@
 .Rhistory
 ^\.positai$
 ^\.claude$
+^\.posit/assistant$
