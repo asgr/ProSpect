@@ -4,17 +4,22 @@
   return((nu1_nu2^alpha_mid - nu1_nu2^-0.8) / (nu1_nu2^-0.1 - nu1_nu2^-0.8))
 }
 
-.radioemission_nu = function(freq=1.4e9, FIR=10e-14, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8,
-                             ff_frac_cal=0.1){
+#Free-free fraction (at 1.4 GHz) of the Dale templates, i.e. a 1:9 thermal:non-thermal mix. This is a
+#fixed property of the templates, NOT a free parameter. The FIR is calibrated against the free-free radio,
+#so this is the ff_frac at which the new radio must be generated to reproduce the template's own radio;
+#radiocont uses it for the subtraction, and the addition uses the user's ff_frac.
+.ff_frac_cal = 0.1
+
+.radioemission_nu = function(freq=1.4e9, FIR=10e-14, Te=1e4, ff_frac=.ff_frac_cal, ff_power=-0.1, sy_power=-0.8){
   #freq in Hz, FIR in W/m^2, Te in K
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
-  #ff_frac_cal is the free-free fraction assumed by the FIR -> 1.4 GHz calibration (0.1 for the Dale
-  #templates). Anchoring the total on this, rather than deriving it from ff_frac, lets ff_frac set the
-  #thermal/non-thermal mix without rescaling the total 1.4 GHz flux by 0.1/ff_frac.
-  tot_1p4Ghz = 13536775000 * FIR * (Te/1e4)^0.45 / ff_frac_cal # Jy at 1.4 Ghz, first part is 1.4e10*(1.4^-0.1) = 13536775000
+  #The FIR is calibrated against the free-free 1.4 GHz flux, so ff_flux is anchored on the FIR and the
+  #synchrotron term is tied to it by the observed mix. This keeps the thermal term on its physical
+  #prediction, at the cost of the TOTAL 1.4 GHz flux scaling as 1/ff_frac.
+  ff_1p4Ghz = 13536775000 * FIR * (Te/1e4)^0.45 # Jy at 1.4 Ghz, first part is 1.4e10*(1.4^-0.1) = 13536775000
 
-  ff_flux = tot_1p4Ghz * ff_frac * (freq/1.4e9)^ff_power
-  sy_flux = tot_1p4Ghz * (1 - ff_frac) * (freq/1.4e9)^sy_power
+  ff_flux = ff_1p4Ghz * (freq/1.4e9)^ff_power
+  sy_flux = ff_1p4Ghz * (1 - ff_frac)/ff_frac * (freq/1.4e9)^sy_power
   tot_flux = ff_flux + sy_flux
 
   output=matrix(nrow=length(freq), ncol=3)
@@ -26,10 +31,10 @@
 }
 
 .radioemission_lam = function(wave=2.141e9, FIR=10e-14, Te=1e4,
-                              ff_frac=0.1, ff_power=-0.1, sy_power=-0.8, ff_frac_cal=0.1){
+                              ff_frac=.ff_frac_cal, ff_power=-0.1, sy_power=-0.8){
   #wave in Ang, FIR in W/m^2, Te in K
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
-  return(.radioemission_nu(freq=.c_to_mps/(wave/1e10), FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power, ff_frac_cal=ff_frac_cal))
+  return(.radioemission_nu(freq=.c_to_mps/(wave/1e10), FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power))
 }
 
 radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_power=-0.8,
@@ -85,14 +90,18 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
   }
   #freqsamp = .c_to_mps / (wavesamp / 1e10)
   selwave = wave > 1e6 #only subtract off FIR and longer
-  radio_sub = .radioemission_nu(freq=freq[selwave], FIR=FIR, ff_frac_cal=0.1)[,'tot_flux']
+  #Both Te and ff_frac are left at their defaults (not passed down) because what is being removed is the
+  #radio the Dale templates already contain, at their own 1e4 K and 1:9 thermal:non-thermal mix. The
+  #addition below uses the user's Te and ff_frac. Getting the template's fraction right here matters: the
+  #subtracted total is FF/ff_frac, so it must use .ff_frac_cal or the round trip will not be an identity.
+  radio_sub = .radioemission_nu(freq=freq[selwave], FIR=FIR)[,'tot_flux']
   #lines(wave[selwave], radio_sub, col='blue',lwd=3)
   flux[selwave] = flux[selwave] - radio_sub
   flux[flux<=0] = 1e-200
   #Coerced rather than compared against the assignable F symbol; this also keeps numeric 0/1 working
   if(!isTRUE(as.logical(subtractonly))){
     ## adding new radio in
-    radio_add = .radioemission_lam(wave=wavesamp, FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power, ff_frac_cal=0.1)[,'tot_flux']
+    radio_add = .radioemission_lam(wave=wavesamp, FIR=FIR, Te=Te, ff_frac=ff_frac, ff_power=ff_power, sy_power=sy_power)[,'tot_flux']
     #lines(wavesamp, radio_add, col='red',lwd=1)
     output = addspec(wave, flux,
                      wavesamp, radio_add,
