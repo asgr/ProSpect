@@ -25,7 +25,7 @@ Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc
   if(missing(massfunc)){
     stop('Need massfunc!')
   }
-  masssum = integrate(massfunc, 0, Zagemax, ...)$value
+  masssum = integrate(massfunc, 0, Zagemax, stop.on.error=FALSE, ...)$value
   if(masssum > 0){
     massvec = massfunc(seq(0,Zagemax+1e8,by=1e8), ...)
     massCDF = 1 - cumsum(massvec*1e8)/masssum
@@ -52,7 +52,7 @@ Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13
   if(missing(massfunc)){
     stop('Need massfunc!')
   }
-  masssum=integrate(massfunc, 0, Zagemax, ...)$value
+  masssum=integrate(massfunc, 0, Zagemax, stop.on.error=FALSE, ...)$value
   if(masssum > 0){
     massvec = massfunc(seq(0,Zagemax + 1e8,by=1e8), ...)
     massCDF = (1-cumsum(massvec*1e8)/masssum)*massfrac_final
