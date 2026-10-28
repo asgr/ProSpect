@@ -25,13 +25,18 @@ Zfunc_massmap_lin=function(age, Zstart=1e-4, Zfinal=0.02, Zagemax=13.8, massfunc
   if(missing(massfunc)){
     stop('Need massfunc!')
   }
-  masssum = integrate(massfunc, 0, Zagemax, stop.on.error=FALSE, ...)$value
+  #Build the total with the same rectangle rule used for the CDF, so the CDF is
+  #self-consistent and ends exactly at 0. Adaptive integrate() disagrees with
+  #the rectangle sum by ~0.8% and can miss a narrow burst entirely, returning a
+  #silently wrong normalisation that flattens the whole Z history.
+  agegrid = seq(0,Zagemax+1e8,by=1e8)
+  massvec = massfunc(agegrid, ...)
+  masssum = sum(massvec*1e8)
   if(masssum > 0){
-    massvec = massfunc(seq(0,Zagemax+1e8,by=1e8), ...)
     massCDF = 1 - cumsum(massvec*1e8)/masssum
     massCDF[which(massCDF < 0)] = 0
     massCDF[which(massCDF > 1)] = 1
-    tempfunc = approxfun(seq(0,Zagemax + 1e8,by=1e8), massCDF)
+    tempfunc = approxfun(agegrid, massCDF)
     temp = Zstart + tempfunc(age)*(Zfinal - Zstart)
     temp[temp < Zstart] = Zstart
     temp[age > Zagemax] = Zstart
@@ -52,13 +57,15 @@ Zfunc_massmap_box=function(age, Zstart=1e-4, Zfinal=0.02, yield=0.03, Zagemax=13
   if(missing(massfunc)){
     stop('Need massfunc!')
   }
-  masssum=integrate(massfunc, 0, Zagemax, stop.on.error=FALSE, ...)$value
+  #Same rectangle rule as the CDF below, see Zfunc_massmap_lin for why
+  agegrid = seq(0,Zagemax+1e8,by=1e8)
+  massvec = massfunc(agegrid, ...)
+  masssum = sum(massvec*1e8)
   if(masssum > 0){
-    massvec = massfunc(seq(0,Zagemax + 1e8,by=1e8), ...)
     massCDF = (1-cumsum(massvec*1e8)/masssum)*massfrac_final
     massCDF[which(massCDF < 0)] = 0
     massCDF[which(massCDF > 1)] = 1
-    tempfunc = approxfun(seq(0,Zagemax+1e8,by=1e8),massCDF)
+    tempfunc = approxfun(agegrid,massCDF)
     temp= -yield*log(1-tempfunc(age))+Zstart
     temp[temp < Zstart] = Zstart
     temp[age > Zagemax] = Zstart
