@@ -212,7 +212,7 @@ For the full set now available see options at \code{\link{filters}}, where all l
 \details{
 Returns a target named filter from the internal database of filters. Filters returned are of the type to be used when calculating AB magnitudes in \code{\link{bandpass}}.
 \cr
-Note LSST filters can also be accessed with "Rubin" (the preferred new shorthand name for the observatory).
+Note LSST filters can also be accessed with "Rubin" (the preferred new shorthand name for the observatory), e.g. "g_Rubin" returns the same curve as "g_LSST". Each survey has a single y band, so "Y_LSST"/"y_LSST" and "y_HSC"/"Y_HSC" are pairs of aliases for the same curve.
 }
 \value{
 Two column matrix. First column is the wavelength in Angstrom and second column is the filter response.

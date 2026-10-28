@@ -6,7 +6,9 @@ filterTranMags = function(mag_in, mag_out, return='all'){
     inputnames = colnames(mag_in)
     mag_in = as.matrix(mag_in)
   }
-  if(!is.vector(mag_out)){'mag_out should be a vector!'}
+  if(!is.vector(mag_out)){
+    stop('mag_out must be a vector!', call. = FALSE)
+  }
   
   fits=list()
   ref_bands={}
@@ -76,6 +78,17 @@ filterTranMags = function(mag_in, mag_out, return='all'){
   )
 }
 
+#Name for the target column of the sampled magnitude table. filt_out is usually
+#a bare function (so names() is NULL), in which case fall back to 'Target'.
+#This used to be names('Target'), which is always NULL and left the column unnamed.
+.tranTargetName = function(filt_out){
+  outname = names(filt_out)
+  if(length(outname)!=1){
+    outname = 'Target'
+  }
+  return(outname)
+}
+
 filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=666, return='all'){
   if(is.list(filt_in)){
     Nfilt_in = length(filt_in)
@@ -101,11 +114,7 @@ filterTranBands = function(filt_in, filt_out, zrange=c(0,0.5), Nsamp=1e3, seed=6
                     returnall = FALSE)
   }
   ranSFHs = data.frame(ranSFHs)
-  if(length(names(filt_out))==1){
-    colnames(ranSFHs) = c(names(filt_in), names(filt_out))
-  }else{
-    colnames(ranSFHs) = c(names(filt_in), names('Target'))
-  }
+  colnames(ranSFHs) = c(names(filt_in), .tranTargetName(filt_out))
   for(i in 1:dim(ranSFHs)[2]){
     ranSFHs[,i] = Jansky2magAB(ranSFHs[,i])
   }

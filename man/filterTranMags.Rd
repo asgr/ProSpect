@@ -19,7 +19,7 @@ return = 'all')
 Numeric matrix, data.frame or vector; columns should be observed magnitudes from bluest (LHS) to reddest (RHS). If \option{mag_in} is a vector then only the offset beta is computed, not colour terms, i.e. \option{mag_out} ~ \option{mag_in} + beta.
 }
   \item{mag_out}{
-Numeric vector; magnitudes of target filter to map.
+Numeric vector; magnitudes of target filter to map. Must be a vector (a matrix or data.frame of target magnitudes is an error).
 }
   \item{return}{
 Character scalar; either 'all' (returning all fit combinations); 'bestalpha' (returning just the best in terms of alpha, where smallest alpha term is preferred); 'bestbeta' (returning just the best in terms of beta, where smallest beta term is preferred); 'bestscat' (returning just the best in terms of scatter, where smallest scat term is preferred); 'bestall' (returning the best for all terms, where the smallest sum of 2.alpha^2 + beta^2 + scat^2 is preferred).

@@ -128,15 +128,15 @@
 \alias{filt_Band4_GMRT}
 \alias{filt_Band3_GMRT}
 \alias{filt_Band2_GMRT}
-\alias{filt_F062_ROMAN}
-\alias{filt_F087_ROMAN}
-\alias{filt_F106_ROMAN}
-\alias{filt_F129_ROMAN}
-\alias{filt_F146_ROMAN}
-\alias{filt_F158_ROMAN}
-\alias{filt_F184_ROMAN}
-\alias{filt_F213_ROMAN}
-\alias{filt_W146_ROMAN}
+\alias{filt_F062_WFI_ROMAN}
+\alias{filt_F087_WFI_ROMAN}
+\alias{filt_F106_WFI_ROMAN}
+\alias{filt_F129_WFI_ROMAN}
+\alias{filt_F146_WFI_ROMAN}
+\alias{filt_F158_WFI_ROMAN}
+\alias{filt_F184_WFI_ROMAN}
+\alias{filt_F213_WFI_ROMAN}
+\alias{filt_W146_WFI_ROMAN}
 \alias{filt_COBE_DIRBE_60m}
 \alias{filt_COBE_DIRBE_100m}
 \alias{filt_COBE_DIRBE_140m}
@@ -286,15 +286,15 @@ data("filt_Band5_GMRT")
 data("filt_Band4_GMRT")
 data("filt_Band3_GMRT")
 data("filt_Band2_GMRT")
-data("filt_F062_ROMAN")
-data("filt_F087_ROMAN")
-data("filt_F106_ROMAN")
-data("filt_F129_ROMAN")
-data("filt_F146_ROMAN")
-data("filt_F158_ROMAN")
-data("filt_F184_ROMAN")
-data("filt_F213_ROMAN")
-data("filt_W146_ROMAN")
+data("filt_F062_WFI_ROMAN")
+data("filt_F087_WFI_ROMAN")
+data("filt_F106_WFI_ROMAN")
+data("filt_F129_WFI_ROMAN")
+data("filt_F146_WFI_ROMAN")
+data("filt_F158_WFI_ROMAN")
+data("filt_F184_WFI_ROMAN")
+data("filt_F213_WFI_ROMAN")
+data("filt_W146_WFI_ROMAN")
 data("filt_COBE_DIRBE_60m")
 data("filt_COBE_DIRBE_100m")
 data("filt_COBE_DIRBE_140m")
@@ -315,6 +315,8 @@ data("filt_PLANCK_HFI_857GHz")
 }
 \details{
 Note the filter for VISTA is actually Ks (for K-short) which makes it approximately similar to 2MASS. This differs to WFCAM (e.g. UKIDSS) which used a full K filter. Both K_VISTA and Ks_VISTA are provided to prevent silly name convention mistakes, but these response curves are in fact identical (i.e. Ks).
+
+Two distinct Roman Space Telescope filter sets are provided, and they are not aliases of one another. The older WFIRST set (\option{*_WFIRST}, 7 filters) uses HST-style band names (R062, Z087, Y106, J129, H158) plus F184 and W146. The current Roman WFI set (\option{*_WFI_ROMAN}, 9 filters) uses the Roman filter names (F062, F087, F106, F129, F146, F158, F184, F213 and W146) and covers a different set of band passes at slightly different wavelengths. Use the WFI set for current work; only F184 and W146 share a name between the two.
 
 You can get additional (obscure) filters at \url{http://svo2.cab.inta-csic.es/theory/fps/index.php}.
 }

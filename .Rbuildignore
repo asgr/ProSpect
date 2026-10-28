@@ -7,3 +7,4 @@
 ^\.positai$
 ^\.claude$
 ^\.posit/assistant$
+^AGENTS\.md$

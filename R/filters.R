@@ -16,11 +16,10 @@ getfilt=function(filter){
     "u_VST", "g_VST", "r_VST", "i_VST", "z_VST",
 
     # LSST / Rubin
-    "u_LSST", "u_Rubin", "g_LSST", "g_Rubin", "r_Rubin", "r_LSST", "i_LSST", "i_Rubin",
-    "z_LSST", "z_Rubin", "y_LSST", "Y_LSST", "y_Rubin", "Y_Rubin",
+    "u_LSST", "g_LSST", "r_LSST", "i_LSST", "z_LSST", "y_LSST",
 
     # HSC
-    "g_HSC", "r_HSC", "i_HSC", "z_HSC", "y_HSC", "Y_HSC",
+    "g_HSC", "r_HSC", "i_HSC", "z_HSC", "Y_HSC",
 
     # VISTA
     "Z_VISTA", "Y_VISTA", "J_VISTA", "H_VISTA", "K_VISTA", "Ks_VISTA",
@@ -64,7 +63,7 @@ getfilt=function(filter){
 
     # ALMA
     "Band9_ALMA", "Band8_ALMA", "Band7_ALMA", "Band6_ALMA", "Band5_ALMA",
-    "Band4_ALMA", "Band3_ALMA", "Band2_ALMA", " Band1_ALMA",
+    "Band4_ALMA", "Band3_ALMA", "Band2_ALMA", "Band1_ALMA",
 
     # VLA
     "BandQ_VLA", "BandQ", "BandKa_VLA", "BandKa", "BandK_VLA", "BandK", "BandKu_VLA",
@@ -111,6 +110,19 @@ getfilt=function(filter){
 
   if(filter %in% c('S450', 'S850')){
     filter = paste(filter,'JCMT',sep='_')
+  }
+
+  #Rubin is the renamed LSST, so Rubin names are aliases of the LSST curves
+  if(filter %in% c('u_Rubin', 'g_Rubin', 'r_Rubin', 'i_Rubin', 'z_Rubin', 'y_Rubin', 'Y_Rubin')){
+    filter = sub('_Rubin$', '_LSST', filter)
+  }
+
+  #Each survey has only one y band, so y_/Y_ are the same curve within a survey
+  if(filter %in% c('Y_LSST', 'y_LSST')){
+    filter = 'y_LSST'
+  }
+  if(filter %in% c('y_HSC', 'Y_HSC')){
+    filter = 'Y_HSC'
   }
 
   if(filter %in% c('Band1', 'Band2', 'Band3', 'Band4', 'Band5', 'Band6', 'Band7', 'Band8', 'Band9')){
