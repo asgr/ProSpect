@@ -19,7 +19,8 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
   ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, Te_AGN = 10000,
   ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
   AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
-  LFWHM = 470, IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL, ...)
+  LFWHM = 470, IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL,
+  AGN_emission = "viewing_angle", AGN_anav = NULL, ...)
 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -72,6 +73,27 @@ Object or scalar logical; optional. Pass in the Dale dust library \code{\link[Pr
 }
   \item{AGN}{
 Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link[ProSpectData:Fritz]{Fritz}}, or \code{\link[ProSpectData:SKIRTOR]{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
+}
+  \item{AGN_emission}{
+Character scalar; \code{"viewing_angle"} (default) or \code{"angle_averaged"}.
+The default reproduces the upstream behaviour: the AGN spectrum at \option{AGNan}
+sets both the emergent AGN light and the energy absorbed and re-emitted by the
+host dust screen. For Fritz or SKIRTOR models, \code{"angle_averaged"} instead
+uses the angle-averaged AGN spectrum to compute screen heating and dust
+re-emission, while the directly transmitted, emergent AGN spectrum is still
+computed at \option{AGNan}. It does not replace the emergent AGN with an
+angle-averaged spectrum. The screen is controlled by \option{tau_screen},
+\option{pow_screen}, and \option{alpha_SF_screen}. Angle-averaged mode requires
+a Fritz or SKIRTOR model when the AGN is active.
+}
+  \item{AGN_anav}{
+Object; optional preloaded angle-averaged AGN template library, used only when
+\option{AGN_emission} is \code{"angle_averaged"}. Must have class
+\code{Fritz_anav} for a Fritz \option{AGN}, or \code{SKIRTOR_anav} for a SKIRTOR
+\option{AGN}. If NULL, the matching \code{Fritz_anav} or \code{SKIRTOR_anav}
+dataset is loaded with \code{data()}; it must be available in an installed data
+package. Passing a preloaded library avoids repeated disk IO. The ordinary
+viewing-angle template is still supplied separately through \option{AGN}.
 }
 
   \item{filtout}{
@@ -222,7 +244,18 @@ List, optional but recommended; pass in the spectral library directly. Must be o
 List, optional but recommended; pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly). If set to FALSE then there will be no FIR re-emission.
 }
   \item{Data$AGN}{
-Data.frame, optional; pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
+Object, optional; pass in the viewing-angle AGN template to use. Accepts the
+same template classes as \option{AGN}, including Fritz and SKIRTOR.
+}
+  \item{Data$AGN_emission}{
+Character scalar, optional; AGN emission mode passed to \code{ProSpectSED}.
+It can also be supplied as \code{Data$arglist$AGN_emission}; a non-NULL
+\code{Data$AGN_emission} takes precedence. Defaults to \code{"viewing_angle"}.
+}
+  \item{Data$AGN_anav}{
+Object, optional; matching angle-averaged AGN library passed to
+\code{ProSpectSED}. It can also be supplied as \code{Data$arglist$AGN_anav};
+a non-NULL \code{Data$AGN_anav} takes precedence. See \option{AGN_anav}.
 }
   \item{Data$filtout}{
 List; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).
