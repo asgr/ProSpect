@@ -75,7 +75,7 @@ Object or scalar logical; optional. Pass in the Dale dust library \code{\link[Pr
 Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link[ProSpectData:Fritz]{Fritz}}, or \code{\link[ProSpectData:SKIRTOR]{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
 }
   \item{AGN_screen_model}{
-Character vector; Choice of use of viewing_angle or angle_averaged AGN SED to calculate FIR emission due to UV attenuation by the ISM. The angle-averaged mode internally uses the matching \code{Fritz_anav} or \code{SKIRTOR_anav} template.
+Character scalar; \code{"viewing_angle"} (default), \code{"angle_averaged"}, or \code{"None"}. Choice of AGN SED to calculate FIR emission due to UV attenuation by the ISM. The angle-averaged mode internally uses the matching \code{Fritz_anav} or \code{SKIRTOR_anav} template. \code{None} is equivalent to zero screen optical depth for the AGN only.
   }
   \item{AGN_anav}{
 Object; optional. Pass in the angle-averaged AGN template to use when \option{AGN_screen_model} = \code{"angle_averaged"}. Must be one of \code{Fritz_anav} or \code{SKIRTOR_anav}. Providing this avoids reloading the averaged template from disk on each call.
