@@ -75,25 +75,10 @@ Object or scalar logical; optional. Pass in the Dale dust library \code{\link[Pr
 Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link[ProSpectData:Fritz]{Fritz}}, or \code{\link[ProSpectData:SKIRTOR]{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
 }
   \item{AGN_emission}{
-Character scalar; \code{"viewing_angle"} (default) or \code{"angle_averaged"}.
-The default reproduces the upstream behaviour: the AGN spectrum at \option{AGNan}
-sets both the emergent AGN light and the energy absorbed and re-emitted by the
-host dust screen. For Fritz or SKIRTOR models, \code{"angle_averaged"} instead
-uses the angle-averaged AGN spectrum to compute screen heating and dust
-re-emission, while the directly transmitted, emergent AGN spectrum is still
-computed at \option{AGNan}. It does not replace the emergent AGN with an
-angle-averaged spectrum. The screen is controlled by \option{tau_screen},
-\option{pow_screen}, and \option{alpha_SF_screen}. Angle-averaged mode requires
-a Fritz or SKIRTOR model when the AGN is active.
-}
+Character vector; Choice of use of viewing_angle or angle_averaged AGN SED to calculate FIR emission due to UV attenuation by the ISM. The angle-averaged mode internally uses the matching \code{Fritz_anav} or \code{SKIRTOR_anav} template.
+  }
   \item{AGN_anav}{
-Object; optional preloaded angle-averaged AGN template library, used only when
-\option{AGN_emission} is \code{"angle_averaged"}. Must have class
-\code{Fritz_anav} for a Fritz \option{AGN}, or \code{SKIRTOR_anav} for a SKIRTOR
-\option{AGN}. If NULL, the matching \code{Fritz_anav} or \code{SKIRTOR_anav}
-dataset is loaded with \code{data()}; it must be available in an installed data
-package. Passing a preloaded library avoids repeated disk IO. The ordinary
-viewing-angle template is still supplied separately through \option{AGN}.
+Object; optional. Pass in the angle-averaged AGN template to use when \option{AGN_emission} = \code{"angle_averaged"}. Must be one of \code{Fritz_anav} or \code{SKIRTOR_anav}. Providing this avoids reloading the averaged template from disk on each call.
 }
 
   \item{filtout}{
