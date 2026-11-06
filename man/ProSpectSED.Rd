@@ -20,7 +20,7 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
   ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
   AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
   LFWHM = 470, IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL,
-  AGN_emission = "viewing_angle", AGN_anav = NULL, ...)
+  AGN_screen_model = "viewing_angle", AGN_anav = NULL, ...)
 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -74,11 +74,11 @@ Object or scalar logical; optional. Pass in the Dale dust library \code{\link[Pr
   \item{AGN}{
 Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link[ProSpectData:Fritz]{Fritz}}, or \code{\link[ProSpectData:SKIRTOR]{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
 }
-  \item{AGN_emission}{
+  \item{AGN_screen_model}{
 Character vector; Choice of use of viewing_angle or angle_averaged AGN SED to calculate FIR emission due to UV attenuation by the ISM. The angle-averaged mode internally uses the matching \code{Fritz_anav} or \code{SKIRTOR_anav} template.
   }
   \item{AGN_anav}{
-Object; optional. Pass in the angle-averaged AGN template to use when \option{AGN_emission} = \code{"angle_averaged"}. Must be one of \code{Fritz_anav} or \code{SKIRTOR_anav}. Providing this avoids reloading the averaged template from disk on each call.
+Object; optional. Pass in the angle-averaged AGN template to use when \option{AGN_screen_model} = \code{"angle_averaged"}. Must be one of \code{Fritz_anav} or \code{SKIRTOR_anav}. Providing this avoids reloading the averaged template from disk on each call.
 }
 
   \item{filtout}{
@@ -232,10 +232,10 @@ List, optional but recommended; pass in the Dale dust library directly (should b
 Object, optional; pass in the viewing-angle AGN template to use. Accepts the
 same template classes as \option{AGN}, including Fritz and SKIRTOR.
 }
-  \item{Data$AGN_emission}{
+  \item{Data$AGN_screen_model}{
 Character scalar, optional; AGN emission mode passed to \code{ProSpectSED}.
-It can also be supplied as \code{Data$arglist$AGN_emission}; a non-NULL
-\code{Data$AGN_emission} takes precedence. Defaults to \code{"viewing_angle"}.
+It can also be supplied as \code{Data$arglist$AGN_screen_model}; a non-NULL
+\code{Data$AGN_screen_model} takes precedence. Defaults to \code{"viewing_angle"}.
 }
   \item{Data$AGN_anav}{
 Object, optional; matching angle-averaged AGN library passed to
