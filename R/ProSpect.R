@@ -57,8 +57,8 @@ ProSpectSED = function(SFH = SFHfunc,
 
   if (!is.character(AGN_screen_model) || length(AGN_screen_model) != 1L ||
       is.na(AGN_screen_model) ||
-      !AGN_screen_model %in% c('viewing_angle', 'angle_averaged')) {
-    stop("AGN_screen_model must be either 'viewing_angle' or 'angle_averaged'.", call. = FALSE)
+      !AGN_screen_model %in% c('viewing_angle', 'angle_averaged', 'None')) {
+    stop("AGN_screen_model must be 'viewing_angle', 'angle_averaged', or 'None'.", call. = FALSE)
   }
 
   if(!is.null(waveout)){
@@ -181,27 +181,9 @@ ProSpectSED = function(SFH = SFHfunc,
       stop('Dale cannot be FALSE when using an AGN model!')
     }
 
-    if (AGN_screen_model == 'angle_averaged') {
-      if (!inherits(AGN, 'Fritz') && !inherits(AGN, 'SKIRTOR')) {
-        stop('Angle-averaged AGN emission requires a Fritz or SKIRTOR model')
-      }
-      if (inherits(AGN, 'Fritz')) {
-        if (is.null(AGN_anav)) {
-          data('Fritz_anav', envir = environment())
-          AGN_anav = get('Fritz_anav', envir = environment())
-        }
-        if (!inherits(AGN_anav, 'Fritz_anav')) {
-          stop("AGN_anav must be a Fritz_anav object when AGN is Fritz and AGN_screen_model = 'angle_averaged'")
-        }
-      } else {
-        if (is.null(AGN_anav)) {
-          data('SKIRTOR_anav', envir = environment())
-          AGN_anav = get('SKIRTOR_anav', envir = environment())
-        }
-        if (!inherits(AGN_anav, 'SKIRTOR_anav')) {
-          stop("AGN_anav must be a SKIRTOR_anav object when AGN is SKIRTOR and AGN_screen_model = 'angle_averaged'")
-        }
-      }
+    if (AGN_screen_model == 'angle_averaged' &&
+        !inherits(AGN, 'Fritz') && !inherits(AGN, 'SKIRTOR')) {
+      stop('Angle-averaged AGN emission requires a Fritz or SKIRTOR model')
     }
 
     if(inherits(AGN, 'Fritz') |
@@ -257,7 +239,7 @@ ProSpectSED = function(SFH = SFHfunc,
       AGN = atten_emit(
         wave = AGN$wave,
         flux = AGN$lum * .erg_to_lsol,
-        tau = tau_screen,
+        tau = if (AGN_screen_model == 'None') 0 else tau_screen,
         pow = pow_screen,
         alpha_SF = alpha_SF_screen,
         Dale = Dale,
@@ -332,7 +314,7 @@ ProSpectSED = function(SFH = SFHfunc,
       AGN = atten_emit(
         wave = AGN$final$wave,
         flux = AGN$final$flux,
-        tau = tau_screen,
+        tau = if (AGN_screen_model == 'None') 0 else tau_screen,
         pow = pow_screen,
         alpha_SF = alpha_SF_screen,
         Dale = Dale,
@@ -569,8 +551,8 @@ ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
       (!is.character(Data$arglist$AGN_screen_model) ||
        length(Data$arglist$AGN_screen_model) != 1L ||
        is.na(Data$arglist$AGN_screen_model) ||
-       !Data$arglist$AGN_screen_model %in% c('viewing_angle', 'angle_averaged'))) {
-    stop("Data$AGN_screen_model must be either 'viewing_angle' or 'angle_averaged'.", call. = FALSE)
+       !Data$arglist$AGN_screen_model %in% c('viewing_angle', 'angle_averaged', 'None'))) {
+    stop("Data$AGN_screen_model must be 'viewing_angle', 'angle_averaged', or 'None'.", call. = FALSE)
   }
 
   if (is.null(Data$fit)) {
