@@ -12,7 +12,7 @@ plot.ProSpectSED = function(x,
     if (ylim[1] == 'auto') {
       if(!is.null(x$Stars)){
         ylim = c(quantile(x$FinalLum[, 2], 0.45),
-                 max(x$StarsUnAtten, na.rm = TRUE))
+                 max(x$StarsUnAtten$lum, na.rm = TRUE))
       }else{
         ylim = c(quantile(x$FinalLum[, 2], 0.45),
                  max(x$FinalLum[, 2], na.rm = TRUE))
