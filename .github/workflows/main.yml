@@ -58,6 +58,7 @@ jobs:
             github::asgr/Highlander@master,
             github::asgr/hyper.fit@master,
             github::asgr/ParmOff@main,
+            any::testthat,
             any::knitr,
             any::rmarkdown
 
