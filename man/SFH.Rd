@@ -21,7 +21,8 @@ SFHfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  Ly_limit = 911.75, LKL10 = NULL, disp_stars = FALSE, LSF = NULL, z = 0.1, H0 = 67.8,
  OmegaM = 0.308, OmegaL = 1 - OmegaM, ref, outtype = "mag", sparse = 5, intSFR = FALSE,
  unimax = 1.38e+10, agemax = NULL, LumDist_Mpc = NULL, Eb = 0, L0 = 2175.8,
- LFWHM = 470, SMstar = FALSE, ...)
+ LFWHM = 470, dust_law = "CF", delta_screen = 0, B_screen = 0, Rv_screen = 4.05,
+ SMstar = FALSE, ...)
 
 SMstarfunc(massfunc = massfunc_b5, forcemass = FALSE, agescale = 1,
  burstage = c(0, 1e+08), youngage = c(1e+08, 1e+09), midage = c(1e+09, 5e+09),
@@ -35,7 +36,8 @@ SFHburst(burstmass = 1e8, burstage = 0, stellpop = 'BC03lr', speclib = NULL,
  emission_scale = "FUV", escape_frac = 1 - emission, Ly_limit = 911.75, LKL10 = NULL,
  disp_stars = FALSE, LSF = NULL, z = 0.1, H0 = 67.8, OmegaM = 0.308, OmegaL = 1 - OmegaM,
  ref, outtype = 'mag', sparse = 5, unimax=  13.8e9, agemax = NULL, LumDist_Mpc = NULL,
- Eb = 0, L0 = 2175.8, LFWHM = 470, ...)
+ Eb = 0, L0 = 2175.8, LFWHM = 470, dust_law = "CF", delta_screen = 0, B_screen = 0,
+ Rv_screen = 4.05, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -161,6 +163,18 @@ Numeric scalar; location of the 2175.8 Ang dust bump in Angstroms (probably do n
 }
   \item{LFWHM}{
 Numeric scalar; width of the 2175.8 Ang dust bump in Angstroms (probably do not adjust this).
+}
+  \item{dust_law}{
+Character scalar; attenuation law for screen dust. One of \option{'CF'} (default) or \option{'Salim18'}.
+}
+  \item{delta_screen}{
+Numeric scalar; power-law tilt of the Salim et al. (2018) modified Calzetti screen attenuation law.
+}
+  \item{B_screen}{
+Numeric scalar; UV bump amplitude of the Salim et al. (2018) modified Calzetti screen attenuation law.
+}
+  \item{Rv_screen}{
+Numeric scalar; V-band normalisation term for the Salim et al. (2018) modified Calzetti screen attenuation law.
 }
   \item{SMstar}{
 Logical; if you have the \code{ParmOff} package (on Github asgr/ParmOff, required for correct argument matching between the various functions used) setting this to TRUE will also compute the various stellar mass calculations of \code{\link{SMstarfunc}} including stellar mass remaining (TotSMstar) which is the reason this function is usually run. The output appears in the list object 'SMstar'.
