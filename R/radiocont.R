@@ -54,7 +54,13 @@ radiocont = function(wave, flux, z=0, Te=1e4, ff_frac=0.1, ff_power=-0.1, sy_pow
     flux = convert_wave2freq(flux, wave)
   }
   #magplot(wave, flux, log='xy',type='l', xlim=range(c(wave,10^wavesamp)), ylim=c(1e-4,1e-3))
-  tempfun = approxfun(log10(freq), log10(flux), yleft=-200, yright=-200)
+  #Zero flux gives log10 = -Inf, and approxfun between two -Inf nodes returns NaN (the
+  #interpolant evaluates -Inf + (Inf - Inf)*t), which then poisons FIR and every radio term.
+  #AGN-only spectra hit this because the torus templates stop at 1e7 Ang and addspec(extrap=0)
+  #zero-fills beyond, so the 1.4 GHz pivot is bracketed by zeros. Floor the nodes at the same
+  #-200 sentinel used for yleft/yright: no radio is the correct answer for a zero-radio input.
+  #A no-op for any spectrum whose flux stays above 1e-200.
+  tempfun = approxfun(log10(freq), pmax(log10(flux), -200), yleft=-200, yright=-200)
   #FIR in integral in W/m^2 between 42.5e-6m and 122.5e-6m (in the FIR)
   #FIR = integrate(tempfun, 2.447285e+12, 7.05394e+12)$value * 1e-26 OLD LESS ACCURATE FIR
   #FIR = 0.1 * (10^tempfun(9.146128)) / (1.4e10 * (1.4)^(-0.1))
