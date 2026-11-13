@@ -50,8 +50,16 @@ ProSpectSED = function(SFH = SFHfunc,
                           IGMabsorb = 0,
                           Inoue14_LAFcoef = NULL,
                           Inoue14_DLAcoef = NULL,
+                          AGN_screen_model = 'viewing_angle',
+                          AGN_anav = NULL,
                           ...) {
   #call = match.call()
+
+  if (!is.character(AGN_screen_model) || length(AGN_screen_model) != 1L ||
+      is.na(AGN_screen_model) ||
+      !AGN_screen_model %in% c('viewing_angle', 'angle_averaged', 'None')) {
+    stop("AGN_screen_model must be 'viewing_angle', 'angle_averaged', or 'None'.", call. = FALSE)
+  }
 
   if(!is.null(waveout)){
     waveout_max = max(waveout)
@@ -173,10 +181,21 @@ ProSpectSED = function(SFH = SFHfunc,
       stop('Dale cannot be FALSE when using an AGN model!')
     }
 
+    if (AGN_screen_model == 'angle_averaged' &&
+        !inherits(AGN, 'Fritz') && !inherits(AGN, 'SKIRTOR')) {
+      stop('Angle-averaged AGN emission requires a Fritz or SKIRTOR model')
+    }
+
     if(inherits(AGN, 'Fritz') |
        inherits(AGN, 'SKIRTOR')) {
       #Use new model
       if (inherits(AGN, 'Fritz')) {
+        if (AGN_screen_model == 'angle_averaged') {
+          AGN_mean = Fritz_anav_interp(
+            lum = AGNlum, ct = AGNct, rm = AGNrm, ta = AGNta,
+            al = AGNal, be = AGNbe, Fritz_anav = AGN_anav
+          )
+        }
         AGN = Fritz_interp(
           lum = AGNlum,
           ct = AGNct,
@@ -188,6 +207,12 @@ ProSpectSED = function(SFH = SFHfunc,
           Fritz = AGN
         )
       } else if (inherits(AGN, 'SKIRTOR')) {
+        if (AGN_screen_model == 'angle_averaged') {
+          AGN_mean = SKIRTOR_anav_interp(
+            lum = AGNlum, ta = AGNta, p = AGNp, q = AGNq,
+            ct = AGNct, rm = AGNrm, SKIRTOR_anav = AGN_anav
+          )
+        }
         AGN = SKIRTOR_interp(
           lum = AGNlum,
           ta = AGNta,
@@ -203,10 +228,18 @@ ProSpectSED = function(SFH = SFHfunc,
       dustlum_AGN = NA
       dustmass_AGN = NA
       #Second we re-attenuate the above by the screen (since it still has to pass out of the galaxy)
+      if (AGN_screen_model == 'angle_averaged') {
+        direct = CF_screen_atten(
+          wave = AGN$wave, flux = AGN$lum * .erg_to_lsol,
+          tau = tau_screen, pow = pow_screen, Eb = Eb, L0 = L0, LFWHM = LFWHM
+        )
+        selected = AGN
+        AGN = AGN_mean
+      }
       AGN = atten_emit(
         wave = AGN$wave,
         flux = AGN$lum * .erg_to_lsol,
-        tau = tau_screen,
+        tau = if (AGN_screen_model == 'None') 0 else tau_screen,
         pow = pow_screen,
         alpha_SF = alpha_SF_screen,
         Dale = Dale,
@@ -216,6 +249,14 @@ ProSpectSED = function(SFH = SFHfunc,
         L0 = L0,
         LFWHM = LFWHM
       )
+      if (AGN_screen_model == 'angle_averaged') {
+        #The sightline sets direct light; the angular mean sets dust heating.
+        AGN$final = addspec(
+          wave1 = selected$wave, flux1 = direct$flux,
+          wave2 = AGN$emit$wave, flux2 = AGN$emit$flux,
+          extrap = 0, waveout = waveout
+        )
+      }
       if (!is.null(Dale_M2L_func) & returnall) {
         dustlum_screen = dustlum_screen + AGN$total_atten
         dustmass_screen = dustmass_screen + AGN$dustmass
@@ -273,7 +314,7 @@ ProSpectSED = function(SFH = SFHfunc,
       AGN = atten_emit(
         wave = AGN$final$wave,
         flux = AGN$final$flux,
-        tau = tau_screen,
+        tau = if (AGN_screen_model == 'None') 0 else tau_screen,
         pow = pow_screen,
         alpha_SF = alpha_SF_screen,
         Dale = Dale,
@@ -500,6 +541,20 @@ ProSpectSED = function(SFH = SFHfunc,
 }
 
 ProSpectSEDlike = function(parm = c(8, 9, 10, 10, 0, -0.5, 0.2), Data) {
+  if (!is.null(Data$AGN_screen_model)) {
+    Data$arglist$AGN_screen_model = Data$AGN_screen_model
+  }
+  if (!is.null(Data$AGN_anav)) {
+    Data$arglist$AGN_anav = Data$AGN_anav
+  }
+  if (!is.null(Data$arglist$AGN_screen_model) &&
+      (!is.character(Data$arglist$AGN_screen_model) ||
+       length(Data$arglist$AGN_screen_model) != 1L ||
+       is.na(Data$arglist$AGN_screen_model) ||
+       !Data$arglist$AGN_screen_model %in% c('viewing_angle', 'angle_averaged', 'None'))) {
+    stop("Data$AGN_screen_model must be 'viewing_angle', 'angle_averaged', or 'None'.", call. = FALSE)
+  }
+
   if (is.null(Data$fit)) {
     Data$fit = 'optim'
   }

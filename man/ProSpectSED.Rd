@@ -19,7 +19,8 @@ ProSpectSED(SFH = SFHfunc, z = 0.1, tau_birth = 1, tau_screen = 0.3, tau_AGN = 1
   ff_frac_SF = 0.1, ff_power_SF = -0.1, sy_power_SF = -0.8, Te_AGN = 10000,
   ff_frac_AGN = 0.1, ff_power_AGN = -0.1, sy_power_AGN = -0.8, AGNct = 40, AGNrm = 60,
   AGNan = 30, AGNta = 1, AGNal = 4, AGNbe = -0.5, AGNp = 1, AGNq = 1, Eb = 0, L0 = 2175.8,
-  LFWHM = 470, IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL, ...)
+  LFWHM = 470, IGMabsorb = 0, Inoue14_LAFcoef = NULL, Inoue14_DLAcoef = NULL,
+  AGN_screen_model = "viewing_angle", AGN_anav = NULL, ...)
 
 ProSpectSEDlike(parm = c(8,9,10,10,0,-0.5,0.2), Data)
 }
@@ -72,6 +73,12 @@ Object or scalar logical; optional. Pass in the Dale dust library \code{\link[Pr
 }
   \item{AGN}{
 Object; optional. Pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}}, \code{\link{AGN_UnOb_Sparse}}, \code{\link[ProSpectData:Fritz]{Fritz}}, or \code{\link[ProSpectData:SKIRTOR]{SKIRTOR}}. These objects have classes attached, when ensures the correct AGN code is executed (so users should not simply try to load their own specific AGN model).
+}
+  \item{AGN_screen_model}{
+Character scalar; \code{"viewing_angle"} (default), \code{"angle_averaged"}, or \code{"None"}. Choice of AGN SED to calculate FIR emission due to UV attenuation by the ISM. The angle-averaged mode internally uses the matching \code{Fritz_anav} or \code{SKIRTOR_anav} template. \code{None} is equivalent to zero screen optical depth for the AGN only.
+  }
+  \item{AGN_anav}{
+Object; optional. Pass in the angle-averaged AGN template to use when \option{AGN_screen_model} = \code{"angle_averaged"}. Must be one of \code{Fritz_anav} or \code{SKIRTOR_anav}. Providing this avoids reloading the averaged template from disk on each call.
 }
 
   \item{filtout}{
@@ -222,7 +229,18 @@ List, optional but recommended; pass in the spectral library directly. Must be o
 List, optional but recommended; pass in the Dale dust library directly (should be one of \option{Dale_NormTot}, \option{Dale_NormSFR} otherwise will run, but not work correctly). If set to FALSE then there will be no FIR re-emission.
 }
   \item{Data$AGN}{
-Data.frame, optional; pass in the AGN template to use. Must be one of \code{\link{AGN_UnOb}} or \code{\link{AGN_UnOb_Sparse}}.
+Object, optional; pass in the viewing-angle AGN template to use. Accepts the
+same template classes as \option{AGN}, including Fritz and SKIRTOR.
+}
+  \item{Data$AGN_screen_model}{
+Character scalar, optional; AGN emission mode passed to \code{ProSpectSED}.
+It can also be supplied as \code{Data$arglist$AGN_screen_model}; a non-NULL
+\code{Data$AGN_screen_model} takes precedence. Defaults to \code{"viewing_angle"}.
+}
+  \item{Data$AGN_anav}{
+Object, optional; matching angle-averaged AGN library passed to
+\code{ProSpectSED}. It can also be supplied as \code{Data$arglist$AGN_anav};
+a non-NULL \code{Data$AGN_anav} takes precedence. See \option{AGN_anav}.
 }
   \item{Data$filtout}{
 List; required. Pass in the photometric filters directly. If \code{filters} is a vector of filter names, this can be achieved efficiently with a command like: filtout=foreach(i = filters)\%do\%{getfilt(i)} or filtout=foreach(i = filters)\%do\%{approxfun(getfilt(i))}, where the latter will be faster (see \code{\link{getfilt}}).

@@ -2,12 +2,18 @@
 \alias{AGNinterp}
 \alias{Fritz_interp}
 \alias{SKIRTOR_interp}
+\alias{Fritz_anav_interp}
+\alias{SKIRTOR_anav_interp}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Interpolate the Fritz (2006) and SKIRTOR (2016) AGN Templates
 }
 \description{
 Interpolates between non-computed values of the Fritz 2006 AGN Templates using a mixture of schemes. This is similar to the approach used for \code{\link{Dale_interp}}. The model is much too complex to summarise here, so interested readers should refer to the source papers if using this function for science.
+
+\code{Fritz_anav_interp} and \code{SKIRTOR_anav_interp} interpolate the
+angle-averaged template libraries. They have no viewing-angle argument and
+retain the luminosity normalisation of the corresponding viewing-angle models.
 }
 \usage{
 Fritz_interp(lum = 1e+44, ct = 40, rm = 60, an = 30, ta = 1, al = 4, be = -0.5,
@@ -15,6 +21,12 @@ Fritz_interp(lum = 1e+44, ct = 40, rm = 60, an = 30, ta = 1, al = 4, be = -0.5,
 
 SKIRTOR_interp(lum = 1e+44, ct = 40, rm = 60, an = 30, ta = 1, p = 1, q = 1,
   SKIRTOR = NULL)
+
+Fritz_anav_interp(lum = 1e+44, ct = 40, rm = 60, ta = 1, al = 4, be = -0.5,
+  Fritz_anav = NULL)
+
+SKIRTOR_anav_interp(lum = 1e+44, ct = 40, rm = 60, ta = 1, p = 1, q = 1,
+  SKIRTOR_anav = NULL)
 }
 \arguments{
   \item{lum}{
@@ -50,6 +62,14 @@ The \option{Fritz} data. Providing this directly reduces disk IO since it will u
   \item{SKIRTOR}{
 The \option{SKIRTOR} data. Providing this directly reduces disk IO since it will use the copy already loaded into RAM. If not provided it will load the data from disk.
 }
+  \item{Fritz_anav}{
+The angle-averaged \code{Fritz_anav} template library. If NULL, it is loaded
+with \code{data("Fritz_anav")}. Pass a preloaded library to avoid repeated disk IO.
+}
+  \item{SKIRTOR_anav}{
+The angle-averaged \code{SKIRTOR_anav} template library. If NULL, it is loaded
+with \code{data("SKIRTOR_anav")}. Pass a preloaded library to avoid repeated disk IO.
+}
 }
 \details{
 The below is taken directly from the included Fritz AGN documentation:
@@ -70,7 +90,9 @@ Previously, we have found that an advantageous property of such two-phase medium
 If \option{an} this is larger then \option{ct}/2 then by definition a significant component of the AGN accretion disk light is being attenuated by the torus (AKA type II AGN). If \option{an} is less then \option{ct}/2 then we have a direct line-of-sight to the AGN accretion disk and will observe much more UV flux in particular (AKA type I AGN, including blazars and quasars).
 }
 \value{
-Numeric Matrix; first column is observed wavelength (Angstroms) and second column is observed luminosity (erg/s/Ang).
+Data frame with columns \code{wave} (rest-frame wavelength in Angstroms) and
+\code{lum} (luminosity density in erg/s/Ang). The angle-averaged helpers return
+angle-averaged luminosity density rather than a particular viewing direction.
 }
 \references{
 Feltre et al, 2012, MNRAS, 426, 120 \cr
